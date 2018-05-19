@@ -88,6 +88,17 @@ void feld::init()
 	initKeyWaveform();
 	set_scope_mode(Digiscope::BLANK);
 	put_MODEstatus(mode);
+
+	if (progdefaults.StartAtSweetSpot)
+		set_freq(progdefaults.PSKsweetspot);
+	else if (progStatus.carrier != 0) {
+		set_freq(progStatus.carrier);
+#if !BENCHMARK_MODE
+		progStatus.carrier = 0;
+#endif
+	} else
+		set_freq(wf->Carrier());
+
 }
 
 void feld::restart()

@@ -221,6 +221,16 @@ void psk::init()
 	snratio = 1.0;
 	imdratio = 0.001;
 	rx_init();
+
+	if (progdefaults.StartAtSweetSpot)
+		set_freq(progdefaults.PSKsweetspot);
+	else if (progStatus.carrier != 0) {
+		set_freq(progStatus.carrier);
+#if !BENCHMARK_MODE
+		progStatus.carrier = 0;
+#endif
+	} else
+		set_freq(wf->Carrier());
 }
 
 psk::~psk()

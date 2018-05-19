@@ -327,6 +327,19 @@ void mt63::init()
 	restart();
 	flushbuffer = false;
 	maxval = 0.0;
+
+	if (progdefaults.mt63_at500) {
+		frequency = 500 + bandwidth / 2;
+		modem::set_freq(frequency);
+	}
+	else if (progStatus.carrier != 0) {
+		set_freq(progStatus.carrier);
+#if !BENCHMARK_MODE
+		progStatus.carrier = 0;
+#endif
+	} else
+		set_freq(wf->Carrier());
+
 }
 
 mt63::mt63 (trx_mode mt63_mode) : modem()

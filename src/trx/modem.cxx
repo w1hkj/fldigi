@@ -217,10 +217,10 @@ modem::modem()
 {
 	scptr = 0;
 
-	if( !progdefaults.retain_freq_lock ) {
-		freqlock = false;
+	if (wf)
+		frequency = tx_frequency = wf->Carrier();
+	else
 		frequency = tx_frequency = 1000;
-	}
 
 	sigsearch = 0;
 	if (wf) {
@@ -247,16 +247,6 @@ void modem::init()
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;
-
-	if (progdefaults.StartAtSweetSpot) {
-		set_freq(progdefaults.PSKsweetspot);
-	} else if (progStatus.carrier != 0) {
-		set_freq(progStatus.carrier);
-#if !BENCHMARK_MODE
-		progStatus.carrier = 0;
-#endif
-	} else
-		set_freq(wf->Carrier());
 }
 
 void modem::set_freq(double freq)

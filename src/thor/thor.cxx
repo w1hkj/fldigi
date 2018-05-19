@@ -161,6 +161,17 @@ void thor::init()
 {
 //LOG_INFO("%s", "thor::init");
 	modem::init();
+
+	if (progdefaults.StartAtSweetSpot)
+		set_freq(progdefaults.PSKsweetspot);
+	else if (progStatus.carrier != 0) {
+		set_freq(progStatus.carrier);
+#if !BENCHMARK_MODE
+		progStatus.carrier = 0;
+#endif
+	} else
+		set_freq(wf->Carrier());
+
 //	reset_filters();
 	rx_init();
 	imageheader.clear();

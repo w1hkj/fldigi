@@ -401,6 +401,17 @@ void olivia::init()
 	restart();
 	modem::init();
 	set_scope_mode(Digiscope::BLANK);
+
+	if (progdefaults.StartAtSweetSpot)
+		set_freq(progdefaults.PSKsweetspot);
+	else if (progStatus.carrier != 0) {
+		set_freq(progStatus.carrier);
+#if !BENCHMARK_MODE
+		progStatus.carrier = 0;
+#endif
+	} else
+		set_freq(wf->Carrier());
+
 }
 
 olivia::olivia(trx_mode omode)
