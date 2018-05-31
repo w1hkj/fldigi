@@ -1058,3 +1058,20 @@ void reconnect_to_flrig()
 	pthread_mutex_unlock(&mutex_flrig);
 }
 
+void xmlrpc_send_command(std::string cmd)
+{
+	if (!connected_to_flrig) return;
+
+	guard_lock flrig_lock(&mutex_flrig);
+
+	XmlRpcValue val, result;
+	try {
+		val = string(cmd);
+		if (!flrig_client->execute("rig.cat_string", val, result, timeout)) {
+			LOG_ERROR("%s", "rig.cat_string failed");
+		} else {
+			LOG_VERBOSE("rig.cat_string: %s", cmd.c_str());
+		}
+	} catch (...) {}
+}
+

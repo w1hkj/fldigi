@@ -2022,6 +2022,57 @@ static void pRIGCAT(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static void doFLRIG(std::string s)
+{
+	size_t start = s.find(':');
+	std::string cmd = s.substr(start + 1, s.length() - start + 1);
+
+	LOG_INFO("!FLRIG %s", cmd.c_str());
+
+	xmlrpc_send_command(cmd);
+
+	que_ok = true;
+}
+
+static void pTxQueFLRIG(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFLRIG };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pRxQueFLRIG(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFLRIG };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
+}
+
+static void pFLRIG(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+
+	LOG_INFO("flrig CAT cmd: %s", s.substr(i, endbracket - i + 1).c_str());
+
+	size_t start = s.find(':');
+	std::string cmd = s.substr(start + 1, s.length() - start + 1);
+
+	xmlrpc_send_command(cmd);
+
+	s.replace(i, endbracket - i + 1, "");
+}
+
 static void doVIDEO(string s)
 {
 	trx_mode id = active_modem->get_mode();
@@ -3965,6 +4016,7 @@ static const MTAGS mtags[] = {
 {"<TX/RX>",		pTXRX},
 {"<VER>",		pVER},
 {"<RIGCAT:",	pRIGCAT},
+{"<FLRIG:",		pFLRIG},
 {"<CNTR>",		pCNTR},
 {"<DECR>",		pDECR},
 {"<INCR>",		pINCR},
@@ -4057,6 +4109,7 @@ static const MTAGS mtags[] = {
     {"<!RIGLO:",    pTxQueRIGLO},
 	{"<!TXATTEN:",	pTxQueTXATTEN},
 	{"<!RIGCAT:",	pTxQueRIGCAT},
+	{"<!FLRIG:",	pTxQueFLRIG},
 	{"<!PUSH",		pTxQuePUSH},
 	{"<!POP>",		pTxQuePOP},
 	{"<!DIGI>",		pTxDIGI},
@@ -4064,6 +4117,7 @@ static const MTAGS mtags[] = {
 // Rx After action
 	{"<@MODEM:",	pRxQueMODEM},
 	{"<@RIGCAT:",	pRxQueRIGCAT},
+	{"<@FLRIG:",	pRxQueFLRIG},
 	{"<@GOFREQ:",	pRxQueGOFREQ},
 	{"<@GOHOME>",	pRxQueGOHOME},
 	{"<@RIGMODE:",	pRxQueRIGMODE},

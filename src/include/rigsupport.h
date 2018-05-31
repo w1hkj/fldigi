@@ -86,6 +86,7 @@ extern bool connected_to_flrig;
 
 extern void xmlrpc_rig_set_qsy(long long rfc);
 extern bool xmlrpc_USB();
+extern void xmlrpc_send_command(std::string cmd);
 
 extern void FLRIG_set_flrig_ab(int n);
 extern void FLRIG_start_flrig_thread();

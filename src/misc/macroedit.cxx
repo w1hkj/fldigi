@@ -211,6 +211,7 @@ void loadBrowser(Fl_Widget *widget) {
 
 	w->add(LINE_SEP);
 	w->add(_("<RIGCAT:[\"text\"][hex ...]:ret>\tsend CAT cmd"));
+	w->add(_("<FLRIG:[\"text\"][hex ...]>\tsend CAT cmd"));
 
 	w->add(LINE_SEP);
 	w->add(_("<AFC:on|off|t>\tAFC  on,off,toggle"));
