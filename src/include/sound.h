@@ -129,7 +129,7 @@ public:
 	virtual void    flush(unsigned dir = UINT_MAX) = 0;
 	virtual bool	must_close(int dir = 0) = 0;
 #if USE_SNDFILE
-	void	get_file_params(const char* def_fname, std::string &fname, int* format);
+	void	get_file_params(std::string def_fname, std::string &fname, int &format);
 	int		Capture(bool val);
 	int		Playback(bool val);
 	int		Generate(bool val);

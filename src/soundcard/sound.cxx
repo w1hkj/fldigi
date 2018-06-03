@@ -165,39 +165,63 @@ SoundBase::~SoundBase()
 }
 
 #if USE_SNDFILE
-void SoundBase::get_file_params(const char* def_fname, std::string &fname, int* format)
+void SoundBase::get_file_params(std::string def_fname, std::string &fname, int &format)
 {
-	std::string filters = _("Waveform Audio Format\t*.wav\n" "AU\t*.{au,snd}\n");
-	int nfilt = 2;
+	std::string filters = _("Waveform Audio Format\t*.wav\n");
+	filters.append(_("AU\t*.{au,snd}\n"));
 	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16)) {
-		filters += _("Free Lossless Audio Codec\t*.flac");
-		nfilt++;
+		filters.append(_("Free Lossless Audio Codec\t*.flac"));
 	}
 
+	format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 	int fsel;
 	const char *fn = 0;
-	if (strstr(def_fname, "playback"))
-		fn = FSEL::select(_("Audio file"), filters.c_str(), def_fname, &fsel);
+	if (def_fname.find("playback") != std::string::npos)
+		fn = FSEL::select(_("Audio file"), filters.c_str(), def_fname.c_str(), &fsel);
 	else
-		fn = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname, &fsel);
+		fn = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname.c_str(), &fsel);
+
 	if (!fn || !*fn) {
 		fname = "";
 		return;
 	}
 	fname = fn;
 
-	if (fsel >= nfilt) // "Default" save-as type on OS X
-		fsel = 0;
+	bool check_replace = false;
+	fsel = 0;
 	switch (fsel) {
-	case 0:
-		*format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-		break;
-	case 1:
-		*format = SF_FORMAT_AU | SF_FORMAT_FLOAT | SF_ENDIAN_CPU;
-		break;
-	case 2:
-		*format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
-		break;
+		default:
+		case 0:
+			format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+			if (fname.find(".wav") == std::string::npos) {
+				fname.append(".wav");
+				check_replace = true;
+			}
+			break;
+		case 1:
+			format = SF_FORMAT_AU | SF_FORMAT_FLOAT | SF_ENDIAN_CPU;
+			if (fname.find(".au") == std::string::npos ||
+				fname.find(".snd") == std::string::npos) {
+				fname.append(".au");
+				check_replace = true;
+			}
+			break;
+		case 2:
+			format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
+			if (fname.find(".flac") == std::string::npos) {
+				fname.append(".flac");
+				check_replace = true;
+			}
+			break;
+	}
+
+	if (check_replace) {
+		FILE *f = fopen(fname.c_str(), "r");
+		if (f) {
+			fclose(f);
+			int ans = fl_choice("Replace %s?", "Yes", "No", 0, fname.c_str());
+			if ( ans == 1) fname = "";
+		}
 	}
 }
 
@@ -216,7 +240,8 @@ int SoundBase::Capture(bool val)
 
 	std::string fname;
 	int format;
-	get_file_params("capture.wav", fname, &format);
+	get_file_params("capture", fname, format);
+
 	if (fname.empty())
 		return 0;
 
@@ -252,7 +277,7 @@ int SoundBase::Generate(bool val)
 
 	std::string fname;
 	int format;
-	get_file_params("generate.wav", fname, &format);
+	get_file_params("generate", fname, format);
 	if (fname.empty())
 		return 0;
 
@@ -296,7 +321,7 @@ int SoundBase::Playback(bool val)
 	}
 	std::string fname;
 	int format;
-	get_file_params("playback.wav", fname, &format);
+	get_file_params("playback", fname, format);
 	if (fname.empty())
 		return -1;
 
@@ -501,16 +526,12 @@ bool SoundBase::format_supported(int format)
 		0,
 		sndfile_samplerate[progdefaults.wavSampleRate],
 		progdefaults.record_both_channels ? 2 : 1,
-//		SNDFILE_CHANNELS,
 		format, 0, 0 };
-	FILE* f;
-	if ((f = tmpfile()) == NULL)
-		return false;
-	SNDFILE* sndf = sf_open_fd(fileno(f), SFM_WRITE, &info, SF_FALSE);
-	fclose(f);
-	if (sndf)
-		sf_close(sndf);
-	return sndf;
+	SNDFILE* sndf = sf_open("temp.audio", SFM_WRITE, &info);
+	sf_close(sndf);
+	remove("temp.audio");
+	if (sndf) return true;
+	return false;
 }
 
 void SoundBase::tag_file(SNDFILE *sndfile, const char *title)

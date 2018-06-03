@@ -278,7 +278,7 @@ const char* saveas(const char* title, const char* filter, const char* def, int* 
 	if (!sdef.empty()) native.preset_file(sdef.c_str());
 	if (!sdirectory.empty()) native.directory(sdirectory.c_str());
 	native.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
-	native.options(Fl_Native_File_Chooser::NEW_FOLDER || Fl_Native_File_Chooser::SAVEAS_CONFIRM);
+	native.options(Fl_Native_File_Chooser::NEW_FOLDER | Fl_Native_File_Chooser::SAVEAS_CONFIRM);
 
 //	pfile(sdirectory.c_str(), sdef.c_str(), sfilter.c_str());
 
