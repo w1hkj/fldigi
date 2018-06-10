@@ -1,11 +1,38 @@
 
 
+=Version 4.0.17=
+
+2018-06-10  David Freese  <w1hkj@bellsouth.net>
+
+	88fd54d: flarq idtimer
+	d58b0b7: Greek language update
+	4c3ca8f: tmpfile
+	87cb7e1: xmlrpc cat string
+	4f72635: Modem start frequency
+	dc68d02: Serial port discovery
+	55aa627: Log entries
+	2fea354: flarq appdir
+	c480982: rx/tx
+	56553fa: RTTY Quick pick
+	79aa5d6: quick pick rtty baud
+	d1f91ea: Documentation Update
+	e4a5cec: CW/FSK I/O on start
+	a9df13f: WinKey PTT
+	6de7360: Navigator
+	fa8e53e: nanoIO
+	202ad12: Default Lighted Button
+	dfd1b0b: ST/PR macro tags
+	490f683: K2/K3/KX3 data modes
+	c39a88b: Logbook read
+	6cb1e5a: 8pskF
+	89ff7c8: fsq/ifkp audit logs
+	cd7e502: RTTY browser decode
+
+
 =Version 4.0.16=
 
-2018-02-08  David Freese  <w1hkj@bellsouth.net>
-
-	54c63f9: wo seg fault
-	8fa88c7: 8psk lockup problem
+	c73419e: wo seg fault
+	3cec915: 8psk lockup problem
 	45a8991: Miscellaneous menu
 	8ff1cd6: pskrep autostart
 	4a78b53: OS X build script
