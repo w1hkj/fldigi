@@ -47,6 +47,9 @@ extern int		iretries;
 extern long		iwaittime;
 extern long		itimeout;
 extern int		bcnInterval;
+extern int		idtimer;
+
+extern void		cb_idtimer();
 
 // used by xmlrpc interface
 extern int			arqstate;

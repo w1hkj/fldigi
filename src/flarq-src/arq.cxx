@@ -147,6 +147,7 @@ arq::arq()
  	retrytime = RetryTime / ARQLOOPTIME;
  	timeout = Timeout / ARQLOOPTIME;
  	loopcount = 0;
+ 	set_idtimer();
 
  	tx2txdelay = 0;//TxDelay / ARQLOOPTIME;
 
@@ -282,6 +283,8 @@ void arq::connectFrame()
 
 	LinkState = ARQ_CONNECTING;
 	printSTATUS(TXCONNECT, 5.0);
+
+	set_idtimer();
 }
 
 
@@ -311,6 +314,7 @@ void arq::ackFrame ()
 
 	addToTxQue(Frame);
 	printSTATUS(TXCONNACK, 5.0);
+	set_idtimer();
 }
 
 // Connect (caller:port, static:port)
@@ -338,6 +342,7 @@ void arq::ttyconnectFrame()
 	Frame += EOT;
 
 	addToTxQue(Frame);
+	set_idtimer();
 }
 
 // Connect acknowledge (server:port, client:port)
@@ -363,6 +368,7 @@ void arq::ttyackFrame()
 	Frame += EOT;
 
 	addToTxQue(Frame);
+	set_idtimer();
 }
 
 // Identify
@@ -387,6 +393,7 @@ void arq::identFrame()
 	snprintf(szIDENT,sizeof(szIDENT), TXIDENT.c_str(), retries);
 	printSTATUS(szIDENT, 5.0);
 
+	set_idtimer();
 }
 
 // e.g. Ping frame
@@ -407,6 +414,7 @@ void arq::pingFrame()
 	Frame += EOT;
 
 	addToTxQue(Frame);
+	set_idtimer();
 }
 
 // talk frame
@@ -430,6 +438,7 @@ void arq::talkFrame(string txt)
 	Frame += EOT;
 
 	addToTxQue(Frame);
+	set_idtimer();
 }
 
 void arq::ackAbortFrame()
@@ -457,6 +466,8 @@ void arq::ackAbortFrame()
 //
 void arq::statFrame()
 {
+	if (idtimer && _idtimer <= 0) talkFrame("auto ID");
+
 	IdHeader();
 	Header += STATUS;
 
@@ -492,6 +503,7 @@ void arq::disconnectFrame()
 
 	addToTxQue(Frame);
 	printSTATUS(TXDISCONN, 5.0);
+	set_idtimer();
 }
 
 void arq::disackFrame()
@@ -507,6 +519,7 @@ void arq::disackFrame()
 	Frame += EOT;
 	addToTxQue(Frame);
 	printSTATUS(TXDISACK, 5.0);
+	set_idtimer();
 }
 
 // ABORT session
@@ -525,6 +538,7 @@ void arq::abortFrame()
 	Frame += EOT;
 
 	addToTxQue(Frame);
+	set_idtimer();
 }
 
 // Beacon frame
@@ -550,6 +564,7 @@ void arq::beaconFrame(string txt)
 
 	addToTxQue(Frame);
 	printSTATUS(TXBEACON, 5.0);
+	set_idtimer();
 }
 
 // poll
@@ -572,6 +587,7 @@ void arq::pollFrame()
 
 	addToTxQue(Frame);
 	printSTATUS(TXPOLL, 5.0);
+	set_idtimer();
 }
 
 // Text frame
@@ -1289,6 +1305,8 @@ void arqloop(void *who)
 {
 	arq *me = (arq *)who;
 	char c;
+
+	if (idtimer) me->_idtimer--;
 
 // check for received chars including 0x06 for Sending = 0
 	if (me->getc1(c) == true) {

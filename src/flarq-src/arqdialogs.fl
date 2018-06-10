@@ -24,8 +24,8 @@ Function {arq_dialog()} {open
 } {
   Fl_Window {} {
     label flarq
-    callback {arqCLOSE();} open
-    xywh {458 188 515 415} type Double color 50 resizable visible
+    callback {arqCLOSE();}
+    xywh {825 38 515 415} type Double color 50 resizable visible
   } {
     Fl_Menu_Bar mnu {open
       xywh {0 0 516 22}
@@ -36,7 +36,7 @@ Function {arq_dialog()} {open
       } {
         MenuItem mnu_nbems_files {
           label {NBEMS files}
-          callback {open_nbems_file_folder();} selected
+          callback {open_nbems_file_folder();}
           xywh {0 0 36 20} divider
         }
         MenuItem mnuExit {
@@ -195,10 +195,11 @@ Function {arq_dialog()} {open
   }
 }
 
-Function {arq_configure()} {} {
+Function {arq_configure()} {open
+} {
   Fl_Window {} {
     label {Configure flarq} open
-    xywh {475 671 480 162} type Double hide resizable
+    xywh {741 499 480 190} type Double resizable visible
   } {
     Fl_Input txtMyCall {
       label {My Call:}
@@ -217,7 +218,7 @@ Function {arq_configure()} {} {
     Fl_Spinner spnRetries {
       label {Retries:}
       callback {iretries = (int)o->value();
-cbSetConfig();}
+cbSetConfig();} selected
       tooltip {\# retries before connection declared down} xywh {146 71 45 22}
       code0 {o->minimum(2);}
       code1 {o->maximum(20);}
@@ -268,10 +269,16 @@ cbSetConfig();}
       code2 {o->value(bcnInterval);}
       class Fl_Spinner2
     }
-    Fl_Button btnOK {
-      label Ok
-      callback {closeConfig();}
-      xywh {406 126 62 24}
+    Fl_Spinner spnIDtimer {
+      label {ID timer (min):}
+      callback {idtimer = (int)(o->value());
+cb_idtimer();}
+      tooltip {ID timer\\n0 = disable} xywh {121 155 70 22} minimum 0 maximum 10
+      code0 {o->minimum(0);}
+      code1 {o->maximum(10);}
+      code2 {o->step(1);}
+      code3 {o->value(idtimer);}
+      class Fl_Spinner2
     }
     Fl_Group choiceBlockSize {
       label {Block Size:}
@@ -280,14 +287,18 @@ cbSetConfig();} open
       xywh {314 126 72 24} box DOWN_BOX color 7 align 4
       class Fl_ComboBox
     } {}
+    Fl_Button btnOK {
+      label Ok
+      callback {closeConfig();}
+      xywh {406 154 62 24}
+    }
   }
 }
 
-Function {arq_SendSelect()} {open
-} {
+Function {arq_SendSelect()} {} {
   Fl_Window {} {
     label {Select Email} open
-    xywh {427 717 500 170} type Double hide resizable modal
+    xywh {768 532 500 170} type Double hide resizable modal
   } {
     Fl_Box tblOutgoing {
       xywh {0 3 500 140} box DOWN_BOX color 7 selection_color 246 align 16
@@ -309,8 +320,7 @@ Function {arq_SendSelect()} {open
   }
 }
 
-Function {arq_composer()} {open
-} {
+Function {arq_composer()} {} {
   Fl_Window {} {
     label {Flarq Mail Composer} open
     xywh {575 537 515 275} type Double hide resizable

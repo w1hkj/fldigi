@@ -173,6 +173,12 @@ files in sequential numeric order without creating duplicates.  This is
 primarily for Linux users.  Windows users should leave this box unchecked
 unless they are using the Sylpheed Mail Client.
 
+ID timer - ARQ receiving station does not broadcast MYCALL during a status
+frame.  The ID timer counts down from a fixed time interval in seconds, default 10.  If
+MYCALL has not been sent during the interval the receiving station will transmit
+an UNPROTO frame to self identify.  This transmission will not interfere with
+the normal ARQ processing.
+
 \section sConnecting Connecting
 
 The normal connection process is that the station with traffic will request

@@ -190,7 +190,9 @@ int	   txdelay = 500;
 int    iretries = 5;
 long   iwaittime = 10000;
 long   itimeout = 60000;
+int    idtimer = 10;
 int	   bcnInterval = 30;
+
 bool   autobeacon = false;
 bool   beaconrcvd = false;
 
@@ -688,6 +690,11 @@ void closeConfig()
 	if (dlgconfig)
 		dlgconfig->hide();
 	cbSetConfig();
+}
+
+void cb_idtimer()
+{
+	digi_arq->set_idtimer();
 }
 
 void cbMenuConfig()

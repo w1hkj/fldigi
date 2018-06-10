@@ -47,6 +47,8 @@
 
 #include <FL/Fl.H>
 
+extern int idtimer;
+
 using namespace std;
 
 #define DEBUG
@@ -232,7 +234,8 @@ private:
 	int	Timeout;
 	int	tx2txdelay;
 	int	TxDelay;
-	int    loopcount;
+	int	loopcount;
+	int	_idtimer;
 
 	int	baseRetryTime;
 	int	baseTimeout;
@@ -388,6 +391,11 @@ public:
 	void	setTxDelay ( int r2t ) { TxDelay = r2t; }
 	int		getTxDelay() { return (int) TxDelay; }
 	int		getRetryCount() { return (int)(Retries - retries + 1); }
+
+	void	set_idtimer() {
+		if (idtimer) _idtimer = (idtimer * 60 - 10) * 1000 / ARQLOOPTIME;
+		else _idtimer = (10 * 60 - 10) * 1000 / ARQLOOPTIME;
+	}
 
 	void	setrxUrCall( void (*f)(string s)) { rxUrCall = f;}
 	void	setQualityValue( void (*f)(string s)) { qualityfnc = f;}

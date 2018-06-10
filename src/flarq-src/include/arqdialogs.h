@@ -53,8 +53,9 @@ extern Fl_Spinner2 *spnWaitTime;
 extern Fl_Spinner2 *spnTimeout;
 extern Fl_Spinner2 *spnTxDelay;
 extern Fl_Spinner2 *spnBcnInterval;
-extern Fl_Button *btnOK;
+extern Fl_Spinner2 *spnIDtimer;
 extern Fl_ComboBox *choiceBlockSize;
+extern Fl_Button *btnOK;
 Fl_Double_Window* arq_configure();
 #include "table.h"
 extern Table *tblOutgoing;

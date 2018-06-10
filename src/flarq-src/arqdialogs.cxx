@@ -324,10 +324,11 @@ static void cb_spnBcnInterval(Fl_Spinner2* o, void*) {
 cbSetConfig();
 }
 
-Fl_Button *btnOK=(Fl_Button *)0;
+Fl_Spinner2 *spnIDtimer=(Fl_Spinner2 *)0;
 
-static void cb_btnOK(Fl_Button*, void*) {
-  closeConfig();
+static void cb_spnIDtimer(Fl_Spinner2* o, void*) {
+  idtimer = (int)(o->value());
+cb_idtimer();
 }
 
 Fl_ComboBox *choiceBlockSize=(Fl_ComboBox *)0;
@@ -337,9 +338,15 @@ static void cb_choiceBlockSize(Fl_ComboBox* o, void*) {
 cbSetConfig();
 }
 
+Fl_Button *btnOK=(Fl_Button *)0;
+
+static void cb_btnOK(Fl_Button*, void*) {
+  closeConfig();
+}
+
 Fl_Double_Window* arq_configure() {
   Fl_Double_Window* w;
-  { Fl_Double_Window* o = new Fl_Double_Window(480, 162, "Configure flarq");
+  { Fl_Double_Window* o = new Fl_Double_Window(480, 190, "Configure flarq");
     w = o; if (w) {/* empty */}
     { Fl_Input2* o = txtMyCall = new Fl_Input2(98, 13, 150, 24, "My Call:");
       txtMyCall->box(FL_DOWN_BOX);
@@ -454,9 +461,25 @@ Fl_Double_Window* arq_configure() {
       o->step(30);
       o->value(bcnInterval);
     } // Fl_Spinner2* spnBcnInterval
-    { btnOK = new Fl_Button(406, 126, 62, 24, "Ok");
-      btnOK->callback((Fl_Callback*)cb_btnOK);
-    } // Fl_Button* btnOK
+    { Fl_Spinner2* o = spnIDtimer = new Fl_Spinner2(121, 155, 70, 22, "ID timer (min):");
+      spnIDtimer->tooltip("ID timer\\n0 = disable");
+      spnIDtimer->box(FL_NO_BOX);
+      spnIDtimer->color(FL_BACKGROUND_COLOR);
+      spnIDtimer->selection_color(FL_BACKGROUND_COLOR);
+      spnIDtimer->labeltype(FL_NORMAL_LABEL);
+      spnIDtimer->labelfont(0);
+      spnIDtimer->labelsize(14);
+      spnIDtimer->labelcolor(FL_FOREGROUND_COLOR);
+      spnIDtimer->minimum(0);
+      spnIDtimer->maximum(10);
+      spnIDtimer->callback((Fl_Callback*)cb_spnIDtimer);
+      spnIDtimer->align(Fl_Align(FL_ALIGN_LEFT));
+      spnIDtimer->when(FL_WHEN_RELEASE);
+      o->minimum(0);
+      o->maximum(10);
+      o->step(1);
+      o->value(idtimer);
+    } // Fl_Spinner2* spnIDtimer
     { choiceBlockSize = new Fl_ComboBox(314, 126, 72, 24, "Block Size:");
       choiceBlockSize->box(FL_DOWN_BOX);
       choiceBlockSize->color(FL_BACKGROUND2_COLOR);
@@ -470,6 +493,9 @@ Fl_Double_Window* arq_configure() {
       choiceBlockSize->when(FL_WHEN_RELEASE);
       choiceBlockSize->end();
     } // Fl_ComboBox* choiceBlockSize
+    { btnOK = new Fl_Button(406, 154, 62, 24, "Ok");
+      btnOK->callback((Fl_Callback*)cb_btnOK);
+    } // Fl_Button* btnOK
     o->end();
   } // Fl_Double_Window* o
   return w;
