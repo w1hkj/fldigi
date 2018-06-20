@@ -8033,7 +8033,6 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(35, 35, 529, 245, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -8127,6 +8126,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
@@ -10071,6 +10071,7 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(-5, 25, 610, 365, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(-5, 25, 610, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -12904,7 +12905,6 @@ le Earth)"));
         { tabsRig = new Fl_Tabs(0, 25, 600, 365);
           tabsRig->selection_color(FL_LIGHT1);
           { tabFLRIG = new Fl_Group(0, 50, 600, 340, _("flrig"));
-            tabFLRIG->hide();
             { Fl_Group* o = new Fl_Group(10, 210, 580, 90, _("\"Disable PTT keys modem if multiple instances of fldigi (client)\nare connec\
 ted to a single flrig (server)."));
               o->box(FL_ENGRAVED_BOX);
@@ -12976,6 +12976,7 @@ i.e. localhost"));
             tabFLRIG->end();
           } // Fl_Group* tabFLRIG
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("RigCAT"));
+            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(245, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -13141,7 +13142,7 @@ i.e. localhost"));
                 chkRigCatRTSCTSflow->callback((Fl_Callback*)cb_chkRigCatRTSCTSflow);
                 o->value(progdefaults.RigCatRTSCTSflow);
               } // Fl_Check_Button* chkRigCatRTSCTSflow
-              { Fl_Check_Button* o = chk_restore_tio = new Fl_Check_Button(100, 332, 205, 20, _("Restore Settings on Close"));
+              { Fl_Check_Button* o = chk_restore_tio = new Fl_Check_Button(100, 332, 205, 20, _("Restore UART Settings on Close"));
                 chk_restore_tio->tooltip(_("Restore the serial (COM) port settings"));
                 chk_restore_tio->down_box(FL_DOWN_BOX);
                 chk_restore_tio->callback((Fl_Callback*)cb_chk_restore_tio);
