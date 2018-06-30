@@ -155,12 +155,12 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_THOR50x2, &thor50x2_modem, "THOR50x2", "THOR 50 x2", "THOR50x2", "THOR-50X2", "TH52", ARQ_IO | KISS_IO },
 	{ MODE_THOR100, &thor100_modem, "THOR100", "THOR 100", "THOR100", "THOR-100", "TH100", ARQ_IO | KISS_IO },
 
-	{ MODE_THROB1, &throb1_modem, "THROB1", "Throb 1", "", "THROB1", "TB1", DISABLED_IO },
-	{ MODE_THROB2, &throb2_modem, "THROB2", "Throb 2", "", "THROB2", "TB2", DISABLED_IO },
-	{ MODE_THROB4, &throb4_modem, "THROB4", "Throb 4", "", "THROB4", "TB4", DISABLED_IO },
-	{ MODE_THROBX1, &throbx1_modem, "THRBX1", "ThrobX 1", "", "THRBX1", "TX1", DISABLED_IO },
-	{ MODE_THROBX2, &throbx2_modem, "THRBX2", "ThrobX 2", "", "THRBX2", "TX2", DISABLED_IO },
-	{ MODE_THROBX4, &throbx4_modem, "THRBX4", "ThrobX 4", "", "THRBX4", "TX4", DISABLED_IO },
+	{ MODE_THROB1, &throb1_modem, "THROB1", "Throb 1", "", "THRB", "TB1", DISABLED_IO },
+	{ MODE_THROB2, &throb2_modem, "THROB2", "Throb 2", "", "THRB", "TB2", DISABLED_IO },
+	{ MODE_THROB4, &throb4_modem, "THROB4", "Throb 4", "", "THRB", "TB4", DISABLED_IO },
+	{ MODE_THROBX1, &throbx1_modem, "THRBX1", "ThrobX 1", "", "THRBX", "TX1", DISABLED_IO },
+	{ MODE_THROBX2, &throbx2_modem, "THRBX2", "ThrobX 2", "", "THRBX", "TX2", DISABLED_IO },
+	{ MODE_THROBX4, &throbx4_modem, "THRBX4", "ThrobX 4", "", "THRBX", "TX4", DISABLED_IO },
 
 //	{ MODE_PACKET, &pkt_modem, "PACKET", "Packet", "", "PKT", "PKT", ARQ_IO | KISS_IO },
 
