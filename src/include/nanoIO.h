@@ -78,6 +78,7 @@ extern void set_nanoIO_keyer(int indx);
 
 extern void set_nano_dash2dot(float wt);
 extern void nano_CW_query();
+extern void nano_help();
 extern void nano_CW_save();
 extern void nanoCW_tune(int val);
 extern void set_nanoIO_incr();

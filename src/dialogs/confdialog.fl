@@ -3509,7 +3509,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group tabsCW_general {
                 label General open
-                xywh {0 75 600 315} align 5 hide
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {
                   label Receive open
@@ -4424,7 +4424,7 @@ for information regarding extended Morse characters.} open
               }
               Fl_Group tab_nanoCW {
                 label nanoCW open
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group select_nanoCW_CommPort {
                   label {Ser. Port}
@@ -5395,7 +5395,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group tab_Rx_TTY {
                 label Rx open
-                xywh {0 75 600 315} align 5 hide
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {
                   label Receive open
@@ -5515,7 +5515,7 @@ progdefaults.changed = true;
               }
               Fl_Group tab_SndCrd_FSK {
                 label Tx open
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
                   label {Sound Card FSK} open
@@ -5674,7 +5674,7 @@ progdefaults.changed = true;}
               }
               Fl_Group tab_nanoIO {
                 label {nanoIO Tx} open
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group select_nanoIO_CommPort {
                   label {Ser. Port}

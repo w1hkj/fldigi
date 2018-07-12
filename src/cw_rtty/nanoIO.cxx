@@ -275,7 +275,6 @@ int open_port(std::string PORT)
 
 	if (!nano_serial.OpenPort()) {
 		nano_display_io("\nCould not open serial port!", FTextBase::ALTR);
-//		ReceiveText->add("\nCould not open serial port!");
 		LOG_ERROR("Could not open %s", progdefaults.nanoIO_serial_port_name.c_str());
 		return false;
 	}
@@ -283,7 +282,6 @@ int open_port(std::string PORT)
 	use_nanoIO = true;
 
 	nano_display_io("\nConnected to nanoIO\n", FTextBase::RECV);
-//	ReceiveText->add("\nConnected to nanoIO\n");
 
 	return true;
 }
@@ -320,7 +318,6 @@ void close_nanoIO()
 	use_nanoIO = false;
 
 	nano_display_io("\nDisconnected from nanoIO\n", FTextBase::RECV);
-//	ReceiveText->add("\nDisconnected from nanoIO\n");
 
 	if (nano_morse) {
 		delete nano_morse;
@@ -340,8 +337,6 @@ bool open_nano()
 	if (!open_port(progdefaults.nanoIO_serial_port_name))
 		return false;
 
-	nano_display_io("Initializing interface\n", FTextBase::RECV);
-
 	return true;
 }
 
@@ -353,9 +348,6 @@ bool open_nanoIO()
 	progStatus.nanoFSK_online = false;
 
 	if (open_nano()) {
-
-		rsp = nano_read_string(5000, "cmd:");
-		rcvd(rsp);
 
 		set_nanoIO();
 
@@ -387,9 +379,6 @@ bool open_nanoCW()
 
 	std::string rsp;
 	if (open_nano()) {
-
-		rsp = nano_read_string(5000, "cmd:");
-		rcvd(rsp);
 
 		set_nanoCW();
 
@@ -479,6 +468,15 @@ void nano_CW_query()
 	nano_sendString("~?");
 	string resp = nano_read_string(5000, "keyer");
 
+	rcvd(resp);
+	nano_display_io(resp, FTextBase::ALTR);
+}
+
+void nano_help()
+{
+	nano_serial_flush();
+	nano_sendString("~~");
+	string resp = nano_read_string(5000, "cmds");
 	rcvd(resp);
 	nano_display_io(resp, FTextBase::ALTR);
 }
