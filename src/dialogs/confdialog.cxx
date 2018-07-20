@@ -12062,7 +12062,7 @@ ded Morse characters."));
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cnt_pilot_power
                 { Fl_Check_Button* o = btnPSK8Preamble = new Fl_Check_Button(410, 340, 113, 20, _("Short Preamble"));
-                btnPSK8Preamble->tooltip(_("Enable encode/decode vestigial pilot tone"));
+                btnPSK8Preamble->tooltip(_("Enable short preamble for 8PSK transmission"));
                 btnPSK8Preamble->down_box(FL_DOWN_BOX);
                 btnPSK8Preamble->callback((Fl_Callback*)cb_btnPSK8Preamble);
                 o->value(progStatus.psk8DCDShortFlag);

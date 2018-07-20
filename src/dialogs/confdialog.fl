@@ -5282,7 +5282,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabPSK {
-            label PSK
+            label PSK open
             xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsPSK {open
@@ -5379,7 +5379,7 @@ progdefaults.changed = true;}
                   Fl_Check_Button btnPSK8Preamble {
                     label {Short Preamble}
                     callback {progStatus.psk8DCDShortFlag = o->value();}
-                    tooltip {Enable encode/decode vestigial pilot tone} xywh {410 340 113 20} down_box DOWN_BOX
+                    tooltip {Enable short preamble for 8PSK transmission} xywh {410 340 113 20} down_box DOWN_BOX
                     code0 {o->value(progStatus.psk8DCDShortFlag);}
                   }
                 }
