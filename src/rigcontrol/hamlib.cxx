@@ -582,10 +582,10 @@ static bool rig_cmp(const struct rig_caps* rig1, const struct rig_caps* rig2)
 	if (ret < 0) return true;
 	ret = strcasecmp(rig1->model_name, rig2->model_name);
 	if (ret > 0) return false;
-	if (ret <= 0) return true;
-	if (rig1->rig_model > rig2->rig_model)
-		return false;
-	return true;
+	if (ret < 0) return true;
+	if (rig1->rig_model < rig2->rig_model)
+		return true;
+	return false;
 }
 
 void hamlib_get_rigs(void)
