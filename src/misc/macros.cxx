@@ -2328,9 +2328,9 @@ static void doIMAGE(std::string s)
 				active_modem->send_Grey_image(fname) :
 				active_modem->send_color_image(fname);
 		} else if (active_mode >= MODE_THOR_FIRST && active_mode <= MODE_THOR_LAST) {
-			thor_load_scaled_image(fname);
+			thor_load_scaled_image(fname, Greyscale);
         } else if (active_mode == MODE_IFKP) {
-			ifkp_load_scaled_image(fname);
+			ifkp_load_scaled_image(fname, Greyscale);
 		}
 	}
 	que_ok = true;
@@ -2375,9 +2375,9 @@ static void doINSERTIMAGE(std::string s)
 					active_modem->send_color_image(fname);
 		}
 		else if (md == MODE_IFKP)
-			ifkp_load_scaled_image(fname);
+			ifkp_load_scaled_image(fname, Greyscale);
 		else if (md >= MODE_THOR_FIRST && md <= MODE_THOR_LAST)
-			thor_load_scaled_image(fname);
+			thor_load_scaled_image(fname, Greyscale);
 	}
 	que_ok = true;
 }

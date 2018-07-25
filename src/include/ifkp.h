@@ -120,6 +120,9 @@ protected:
 	std::ofstream	heard_log;
 	std::ofstream	audit_log;
 
+	static std::string		imageheader;
+	static std::string		avatarheader;
+
 public:
 //----
 // virtual in base class
@@ -175,7 +178,7 @@ public:
 	void	send_avatar();
 	void	ifkp_send_avatar();
 	void	m_ifkp_send_avatar();
-	void	ifkp_send_image(std::string s = "");
+	void	ifkp_send_image(std::string s = "", bool grey = false);
 
 	void	toggle_logs();
 };

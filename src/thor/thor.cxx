@@ -365,7 +365,7 @@ thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
 
 	IMAGEspp = THOR_IMAGESPP;
 	pixfilter = new Cmovavg(IMAGEspp);
-	pixsyncfilter = new Cmovavg(3*IMAGEspp);
+	pixsyncfilter = new Cmovavg(IMAGEspp * 2);//3*IMAGEspp);
 
 	init();
 
@@ -410,10 +410,14 @@ void thor::parse_pic(int ch)
 		switch (pic_str[4]) {
 			case 'A':	picW = 59; picH = 74; b_ava = true; break;
 			case 'T':	picW = 59; picH = 74; break;
+			case 't':	picW = 59; picH = 74; image_mode = 1; break;
 			case 'S':	picW = 160; picH = 120; break;
+			case 's':	picW = 160; picH = 120; image_mode = 1; break;
 			case 'L':	picW = 320; picH = 240; break;
-			case 'F':	picW = 640; picH = 480; break;
+			case 'l':	picW = 320; picH = 240; image_mode = 1; break;
 			case 'V':	picW = 640; picH = 480; break;
+			case 'v':	picW = 640; picH = 480; image_mode = 1; break;
+			case 'F':	picW = 640; picH = 480; image_mode = 1; break;
 			case 'P':	picW = 240; picH = 300; break;
 			case 'p':	picW = 240; picH = 300; image_mode = 1; break;
 			case 'M':	picW = 120; picH = 150; break;
@@ -957,8 +961,6 @@ void thor::recvpic(double smpl)
 	sync = (samplerate / TWOPI) * pixsyncfilter->run(dphase);
 	prevz = currz;
 
-//if (image_counter == - (symlen / 2)) std::cout << "IMAGE START\n";
-
 	image_counter++;
 	if (image_counter < 0)
 		return;
@@ -966,14 +968,12 @@ void thor::recvpic(double smpl)
 	if (state == IMAGE_START) {
 		if (sync < -0.59 * bandwidth) {
 			state = IMAGE_SYNC;
-//std::cout << "IMAGE SYNC " << image_counter << "\n";
 		}
 		return;
 	}
 	if (state == IMAGE_SYNC) {
-		if (sync > -0.51 * bandwidth) {
+		if (sync > -0.5 * bandwidth) {//-0.51 * bandwidth) {
 			state = IMAGE;
-//std::cout << "IMAGE RECV " << image_counter << "\n";
 		}
 		return;
 	}
@@ -1019,15 +1019,6 @@ void thor::recvpic(double smpl)
 				REQ(thor_enableshift);
 			}
 		}
-/*
-		amplitude *= (samplerate/2)*(.734); // sqrt(3000 / (11025/2))
-		s2n = 10 * log10(snfilt->run( amplitude * amplitude / noise));
-
-		metric = 2 * (s2n + 20);
-		metric = CLAMP(metric, 0, 100.0);  // -20 to +30 db range
-		display_metric(metric);
-		amplitude = 0;
-*/
 	}
 }
 
@@ -1294,9 +1285,11 @@ int thor::tx_process()
 
 #define PHASE_CORR  20
 
-void thor::send_image() {
+static bool send_gray = false;
+
+void thor::send_image()
+{
 	int W = 640, H = 480;  // grey scale transfer (FAX)
-	bool color = true;
 	float freq, phaseincr;
 	float radians = 2.0 * M_PI / samplerate;
 
@@ -1308,14 +1301,11 @@ void thor::send_image() {
 
 	switch (selthorpicSize->value()) {
 		case 0 : W = 59; H = 74; break;
-		case 1 : W = 160; H = 120; break;
-		case 2 : W = 320; H = 240; break;
-		case 3 : W = 640; H = 480; color = false; break;
-		case 4 : W = 640; H = 480; break;
-		case 5 : W = 240; H = 300; break;
-		case 6 : W = 240; H = 300; color = false; break;
-		case 7 : W = 120; H = 150; break;
-		case 8 : W = 120; H = 150; color = false; break;
+		case 1 : W = 120; H = 150; break;
+		case 2 : W = 240; H = 300; break;
+		case 3 : W = 160; H = 120; break;
+		case 4 : W = 320; H = 240; break;
+		case 5 : W = 640; H = 480; break;
 	}
 
 	REQ(thor_clear_tximage);
@@ -1338,7 +1328,7 @@ void thor::send_image() {
 		ModulateXmtr(black, symlen);
 	}
 
-	if (color == false) {  // grey scale image
+	if (send_gray) {  // grey scale image
 		for (int row = 0; row < H; row++) {
 			memset(outbuf, 0, IMAGEspp * sizeof(*outbuf));
 			for (int col = 0; col < W; col++) {
@@ -1386,8 +1376,9 @@ void thor::send_image() {
 	start_deadman();
 }
 
-void thor::thor_send_image(std::string image_str) {
+void thor::thor_send_image(std::string image_str, bool gray) {
 	if (!image_str.empty()) {
+		send_gray = gray;
 		hide_after_sending = true;
 		imageheader = image_str;
 	}

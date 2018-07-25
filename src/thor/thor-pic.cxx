@@ -47,6 +47,7 @@ Fl_Button			*btnthorpicTxSendAbort = (Fl_Button *)0;
 Fl_Button			*btnthorpicTxLoad = (Fl_Button *)0;
 Fl_Button			*btnthorpicTxClose = (Fl_Button *)0;
 Fl_Choice			*selthorpicSize = (Fl_Choice *)0;
+Fl_Check_Button		*btnthorTxGrey = (Fl_Check_Button *)0;
 
 void thor_showRxViewer(char c);
 void thor_createRxViewer();
@@ -77,6 +78,8 @@ static bool enabled = false;
 std::string thor::imageheader;
 std::string thor::avatarheader;
 int thor::IMAGEspp = THOR_IMAGESPP;
+
+static string thor_fname;
 
 void thor_correct_video()
 {
@@ -110,7 +113,8 @@ void thor_updateRxPic(unsigned char data, int pos)
 	thorpicRx->pixel(data, pos);
 
 	int W = thorpicRx->w();
-	if (thor_image_type == 'F' || thor_image_type == 'p' || thor_image_type == 'm') {
+	if (thor_image_type == 'F' || thor_image_type == 'p' || thor_image_type == 'm' ||
+		thor_image_type == 'l' || thor_image_type == 's' || thor_image_type == 'v') {
 		int n = RAWSTART + thor::IMAGEspp*(thor_rawcol + W * (thor_rawrgb + 3 * thor_rawrow));
 		if (n < RAWSIZE)
 			for (int i = 0; i < thor::IMAGEspp; i++) thor_rawvideo[n + i] = data;
@@ -138,18 +142,16 @@ void cb_btnthorRxReset(Fl_Widget *, void *)
 
 void thor_save_raw_video()
 {
-	string fname = "YYYYMMDDHHMMSSz";
-
 	time_t time_sec = time(0);
 	struct tm ztime;
 	(void)gmtime_r(&time_sec, &ztime);
-	char sztime[fname.length()+1];
+	char sztime[20];
 
 	strftime(sztime, sizeof(sztime), "%Y%m%d%H%M%Sz", &ztime);
 
-	fname.assign(PicsDir).append("THOR").append(sztime).append(".raw");
+	thor_fname.assign(PicsDir).append("THOR").append(sztime);
 
-	FILE *raw = fl_fopen(fname.c_str(), "wb");
+	FILE *raw = fl_fopen(string(thor_fname).append(".raw").c_str(), "wb");
 	fwrite(&thor_image_type, 1, 1, raw);
 	fwrite(thor_rawvideo, 1, RAWSIZE, raw);
 	fclose(raw);
@@ -159,7 +161,7 @@ void thor_load_raw_video()
 {
 // abort & close any Rx video processing
 	int image_type = 0;
-	string image_types = "TSLFVPpMm";
+	string image_types = "TtSsLlFVvPpMm";
 
 	if (!thorpicRxWin)
 		thor_createRxViewer();
@@ -170,6 +172,10 @@ void thor_load_raw_video()
 			_("Load raw image file"), "Image\t*.raw\n", PicsDir.c_str());
 
 	if (!p || !*p) return;
+
+	thor_fname.assign(p);
+	size_t p_raw = thor_fname.find(".raw");
+	if (p_raw != std::string::npos) thor_fname.erase(p_raw);
 
 	FILE *raw = fl_fopen(p, "rb");
 	int numread = fread(&image_type, 1, 1, raw);
@@ -199,7 +205,7 @@ void thor_load_raw_video()
 
 void cb_btnthorRxSave(Fl_Widget *, void *)
 {
-	thorpicRx->save_png(PicsDir.c_str());
+	thorpicRx->save_png(string(thor_fname).append(".png").c_str());
 }
 
 void cb_btnthorRxClose(Fl_Widget *, void *)
@@ -300,14 +306,11 @@ void thor_showRxViewer(char itype)
 	int W = 320;
 	int H = 240;
 	switch (itype) {
-		case 'L' : W = 320; H = 240; break;
-		case 'S' : W = 160; H = 120; break;
-		case 'F' : W = 640; H = 480; break;
-		case 'V' : W = 640; H = 480; break;
-		case 'P' : W = 240; H = 300; break;
-		case 'p' : W = 240; H = 300; break;
-		case 'M' : W = 120; H = 150; break;
-		case 'm' : W = 120; H = 150; break;
+		case 'L' : case 'l' : W = 320; H = 240; break;
+		case 'S' : case 's' : W = 160; H = 120; break;
+		case 'V' : case 'F' : W = 640; H = 480; break;
+		case 'P' : case 'p' : W = 240; H = 300; break;
+		case 'M' : case 'm' : W = 120; H = 150; break;
 		case 'T' : W = 59; H = 74; break;
 	}
 
@@ -351,7 +354,7 @@ void thor_clear_rximage()
 // image transmit functions
 //------------------------------------------------------------------------------
 
-void thor_load_scaled_image(std::string fname)
+void thor_load_scaled_image(std::string fname, bool gray)
 {
 
 	if (!thorpicTxWin) thor_createTxViewer();
@@ -383,39 +386,58 @@ void thor_load_scaled_image(std::string fname)
 		if (iW >= 640) {
 			W = 640; H = 480;
 			winW = 644; winH = 484;
-			aspect = 4;
+			aspect = 5;
 			picmode[4] = 'V';
+			if (gray) {
+				picmode[4] = 'F';
+			}
 		}
 		else if (iW >= 320) {
 			W = 320; H = 240;
 			winW = 324; winH = 244;
-			aspect = 2;
+			aspect = 4;
 			picmode[4] = 'L';
+			if (gray) {
+				picmode[4] = 'l';
+			}
 		}
 		else {
 			W = 160; H = 120;
 			winW = 164; winH = 124;
-			aspect = 1;
+			aspect = 3;
 			picmode[4] = 'S';
+			if (gray) {
+				picmode[4] = 's';
+			}
 		}
 	} else {
 		if (iH >= 300) {
 			W = 240; H = 300;
 			winW = 244; winH = 304;
-			aspect = 5;
+			aspect = 2;
 			picmode[4] = 'P';
+			if (gray) {
+				picmode[4] = 'p';
+			}
 		}
 		else if (iH >= 150) {
 			W = 120; H = 150;
 			winW = 124; winH = 154;
-			aspect = 7;
+			aspect = 1;
 			picmode[4] = 'M';
+			if (gray) {
+				picmode[4] = 'm';
+			}
 		}
 		else {
 			W = 59; H = 74;
 			winW = 67; winH = 82;
 			aspect = 0;
 			picmode[4] = 'T';
+			if (gray) {
+				aspect = 0;
+				picmode[4] = 't';
+			}
 		}
 	}
 
@@ -484,7 +506,7 @@ void thor_load_scaled_image(std::string fname)
 
 	thorpicTxWin->show();
 
-	active_modem->thor_send_image(picmode);
+	active_modem->thor_send_image(picmode, gray);
 
 	return;
 }
@@ -499,14 +521,11 @@ int thor_load_image(const char *n) {
 
 	switch (selthorpicSize->value()) {
 		case 0 : W = 59; H = 74; break;
-		case 1 : W = 160; H = 120; break;
-		case 2 : W = 320; H = 240; break;
-		case 3 : W = 640; H = 480; break;
-		case 4 : W = 640; H = 480; break;
-		case 5 : W = 240; H = 300; break;
-		case 6 : W = 240; H = 300; break;
-		case 7 : W = 120; H = 150; break;
-		case 8 : W = 120; H = 150; break;
+		case 1 : W = 120; H = 150; break;
+		case 2 : W = 240; H = 300; break;
+		case 3 : W = 160; H = 120; break;
+		case 4 : W = 320; H = 240; break;
+		case 5 : W = 640; H = 480; break;
 	}
 
 	if (thorTxImg) {
@@ -600,20 +619,19 @@ int thorpic_TxGetPixel(int pos, int color)
 
 void cb_thorpicTransmit( Fl_Widget *w, void *)
 {
-	std::string header = "\npic%";
+	std::string header = "pic% ";
+	bool grey = btnthorTxGrey->value();
+	char ch = ' ';
 	switch (selthorpicSize->value()) {
-		case 0: header += 'T'; break;
-		case 1: header += 'S'; break;
-		case 2: header += 'L'; break;
-		case 3: header += 'F'; break;
-		case 4: header += 'V'; break;
-		case 5: header += 'P'; break;
-		case 6: header += 'p'; break;
-		case 7: header += 'M'; break;
-		case 8: header += 'm'; break;
+		case 0 : thor_showTxViewer(ch = (grey ? 't' : 'T')); break; // 59 x 74
+		case 1 : thor_showTxViewer(ch = (grey ? 'm' : 'M')); break; // 120 x 150
+		case 2 : thor_showTxViewer(ch = (grey ? 'p' : 'P')); break; // 240 x 300
+		case 3 : thor_showTxViewer(ch = (grey ? 's' : 'S')); break; // 160 x 120
+		case 4 : thor_showTxViewer(ch = (grey ? 'l' : 'L')); break; // 320 x 240
+		case 5 : thor_showTxViewer(ch = (grey ? 'F' : 'V')); break; // 640 x 480
 	}
-	thor::imageheader = header;
-	active_modem->thor_send_image();
+	header[4] = ch;
+	active_modem->thor_send_image(header, grey);
 }
 
 void cb_thorpicTxSendAbort( Fl_Widget *w, void *)
@@ -624,15 +642,12 @@ void cb_thorpicTxSendAbort( Fl_Widget *w, void *)
 void cb_selthorpicSize( Fl_Widget *w, void *)
 {
 	switch (selthorpicSize->value()) {
-		case 0 : thor_showTxViewer('T'); break;
-		case 1 : thor_showTxViewer('S'); break;
-		case 2 : thor_showTxViewer('L'); break;
-		case 3 : thor_showTxViewer('F'); break;
-		case 4 : thor_showTxViewer('V'); break;
-		case 5 : thor_showTxViewer('P'); break;
-		case 6 : thor_showTxViewer('p'); break;
-		case 7 : thor_showTxViewer('M'); break;
-		case 8 : thor_showTxViewer('m'); break;
+		case 0 : thor_showTxViewer('T'); break; // 59 x 74
+		case 1 : thor_showTxViewer('M'); break; // 120 x 150
+		case 2 : thor_showTxViewer('P'); break; // 240 x 300
+		case 3 : thor_showTxViewer('S'); break; // 160 x 120
+		case 4 : thor_showTxViewer('L'); break; // 320 x 240
+		case 5 : thor_showTxViewer('V'); break; // 640 x 480
 	}
 }
 
@@ -647,20 +662,21 @@ void thor_createTxViewer()
 	thorpicTx->noslant();
 	thorpicTx->hide();
 
-	selthorpicSize = new Fl_Choice(5, 244, 110, 24);
-	selthorpicSize->add("59 x 74 clr");	// case 0
-	selthorpicSize->add("160x120 clr");	// case 1
-	selthorpicSize->add("320x240 clr");	// case 2
-	selthorpicSize->add("640x480 gry");	// case 3
-	selthorpicSize->add("640x480 clr");	// case 4
-	selthorpicSize->add("240x300 clr");	// case 5
-	selthorpicSize->add("240x300 gry");	// case 6
-	selthorpicSize->add("120x150 clr");	// case 7
-	selthorpicSize->add("120x150 gry");	// case 8
-	selthorpicSize->value(0);
+	selthorpicSize = new Fl_Choice(5, 244, 90, 24);
+	selthorpicSize->add("59 x 74");
+	selthorpicSize->add("120x150");
+	selthorpicSize->add("240x300");
+	selthorpicSize->add("160x120");
+	selthorpicSize->add("320x240");
+	selthorpicSize->add("640x480");
+	selthorpicSize->value(1);
 	selthorpicSize->callback(cb_selthorpicSize, 0);
 
-	btnthorpicTxLoad = new Fl_Button(120, 244, 60, 24, _("Load"));
+	btnthorTxGrey = new Fl_Check_Button(99, 247, 18, 18);
+	btnthorTxGrey->value(0);
+	btnthorTxGrey->tooltip(_("Check for grey image"));
+
+	btnthorpicTxLoad = new Fl_Button(133, 244, 60, 24, _("Load"));
 	btnthorpicTxLoad->callback(cb_thorpicTxLoad, 0);
 
 	btnthorpicTransmit = new Fl_Button(thorpicTxWin->w() - 130, 244, 60, 24, "Xmt");
@@ -689,43 +705,29 @@ void thor_showTxViewer(char c)
 	thorpicTx->clear();
 
 	switch (c) {
-		case 'T' :
+		case 'T' : case 't' :
 			W = 59; H = 74; winW = 324; winH = 184;
 			selthorpicSize->value(0);
 			break;
-		case 'S' :
-		case 's' :
+		case 'S' : case 's' :
 			W = 160; H = 120; winW = 324; winH = 154;
-			selthorpicSize->value(1);
-			break;
-		case 'L' :
-		case 'l' :
-			W = 320; H = 240; winW = 324; winH = 274; 
-			selthorpicSize->value(2);
-			break;
-		case 'F' :
-			W = 640; H = 480; winW = 644; winH = 514;
 			selthorpicSize->value(3);
 			break;
-		case 'V' :
-			W = 640; H = 480; winW = 644; winH = 514;
+		case 'L' : case 'l' :
+			W = 320; H = 240; winW = 324; winH = 274; 
 			selthorpicSize->value(4);
 			break;
-		case 'P' :
-			W = 240; H = 300; winW = 324; winH = 334;
+		case 'F' : case 'V' :
+			W = 640; H = 480; winW = 644; winH = 514;
 			selthorpicSize->value(5);
 			break;
-		case 'p' :
+		case 'P' : case 'p' :
 			W = 240; H = 300; winW = 324; winH = 334;
-			selthorpicSize->value(6);
+			selthorpicSize->value(2);
 			break;
-		case 'M' :
+		case 'M' : case 'm' :
 			W = 120; H = 150; winW = 324; winH = 184;
-			selthorpicSize->value(7);
-			break;
-		case 'm' :
-			W = 120; H = 150; winW = 324; winH = 184;
-			selthorpicSize->value(8);
+			selthorpicSize->value(1);
 			break;
 	}
 
@@ -734,9 +736,11 @@ void thor_showTxViewer(char c)
 	thorpicY = (winH - 26 - H) / 2;
 	thorpicTx->resize(thorpicX, thorpicY, W, H);
 
-	selthorpicSize->resize(5, winH - 26, 110, 24);
+	selthorpicSize->resize(5, winH - 26, 90, 24);
 
-	btnthorpicTxLoad->resize(120, winH - 26, 60, 24);
+	btnthorTxGrey->resize(selthorpicSize->x() + selthorpicSize->w() + 4, winH - 23, 18, 18);
+
+	btnthorpicTxLoad->resize(btnthorTxGrey->x() + btnthorTxGrey->w() + 4, winH - 26, 60, 24);
 
 	btnthorpicTransmit->resize(winW - 130, winH - 26, 60, 24);
 	btnthorpicTxSendAbort->resize(winW - 130, winH - 26, 60, 24);

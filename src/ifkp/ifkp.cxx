@@ -134,21 +134,22 @@ ifkp::ifkp(trx_mode md) : modem()
 	txphase = 0;
 	basetone = 197;
 
-	rxfilter = new C_FIR_filter();
 	float lo = frequency - 0.75 * bandwidth;
 	float hi = frequency + 0.75 * bandwidth;
+
+	rxfilter = new C_FIR_filter();
 	rxfilter->init_bandpass(129, 1, lo/samplerate, hi/samplerate);
 
 	picfilter = new C_FIR_filter();
-	picfilter->init_lowpass(257, 1, 1.0 * bandwidth / samplerate);
+	picfilter->init_lowpass(129, 1, 2.0 * bandwidth / samplerate);
 
 	phase = 0;
 	phidiff = 2.0 * M_PI * frequency / samplerate;
 
 	IMAGEspp = IMAGESPP;
-	pixfilter = new Cmovavg(IMAGEspp);
+	pixfilter = new Cmovavg(IMAGEspp / 2);
 	ampfilter = new Cmovavg(IMAGEspp);
-	syncfilter = new Cmovavg(3*IMAGEspp);
+	syncfilter = new Cmovavg(IMAGEspp / 2);
 
 	bkptr = 0;
 	peak_counter = 0;
@@ -269,12 +270,15 @@ void ifkp::set_freq(double f)
 	REQ(put_freq, frequency);
 
 	set_bandwidth(33 * IFKP_SPACING * samplerate / symlen);
+
 	basetone = ceil((frequency - bandwidth / 2.0) * symlen / samplerate);
 
 	float lo = frequency - 0.75 * bandwidth;
 	float hi = frequency + 0.75 * bandwidth;
+
 	rxfilter->init_bandpass(129, 1, lo/samplerate, hi/samplerate);
-	picfilter->init_lowpass(257, 1, 1.0 * bandwidth / samplerate);
+	picfilter->init_lowpass(129, 1, 2.0 * bandwidth / samplerate);
+
 	phase = 0;
 	phidiff = 2.0 * M_PI * frequency / samplerate;
 
@@ -286,6 +290,7 @@ void ifkp::set_freq(double f)
 	it << "\ncenter ........ " << frequency;
 	it << "\nSymbol length.. " << symlen    << "\nBlock size..... " << IFKP_SHIFT_SIZE;
 	it << "\nMinimum Hits... " << peak_hits << "\nBasetone....... " << basetone << "\n";
+
 	LOG_VERBOSE("%s", it.str().c_str());
 }
 
@@ -373,35 +378,47 @@ bool ifkp::valid_char(int ch)
 
 void ifkp::parse_pic(int ch)
 {
-	pic_str.erase(0,1);
-	pic_str += ch;
 	b_ava = false;
 	image_mode = 0;
+
+	pic_str.erase(0,1);
+	pic_str += ch;
+
 	if (pic_str.find("pic%") == 0) {
 		switch (pic_str[4]) {
 			case 'A':	picW = 59; picH = 74; b_ava = true; break;
 			case 'T':	picW = 59; picH = 74; break;
+			case 't':	picW = 59; picH = 74; image_mode = 1; break;
 			case 'S':	picW = 160; picH = 120; break;
+			case 's':	picW = 160; picH = 120; image_mode = 1; break;
 			case 'L':	picW = 320; picH = 240; break;
-			case 'F':	picW = 640; picH = 480; break;
+			case 'l':	picW = 320; picH = 240; image_mode = 1; break;
 			case 'V':	picW = 640; picH = 480; break;
+			case 'v':	picW = 640; picH = 480; image_mode = 1; break;
+			case 'F':	picW = 640; picH = 480; image_mode = 1; break;
 			case 'P':	picW = 240; picH = 300; break;
 			case 'p':	picW = 240; picH = 300; image_mode = 1; break;
 			case 'M':	picW = 120; picH = 150; break;
 			case 'm':	picW = 120; picH = 150; image_mode = 1; break;
-			default: return;
+			default: 
+				syncfilter->reset();
+				pixfilter->reset();
+				ampfilter->reset();
+				return;
 		}
 	} else
 		return;
+
 	if (!b_ava)
 		REQ( ifkp_showRxViewer, pic_str[4]);
 	else
 		REQ( ifkp_clear_avatar );
+
 	image_counter = -symlen / 2;
 	col = row = rgb = 0;
 	syncfilter->reset();
 	pixfilter->reset();
-	ampfilter->reset();
+//	ampfilter->reset();
 	state = IMAGE_START;
 }
 
@@ -433,14 +450,15 @@ void ifkp::process_symbol(int sym)
 			curr_ch = ifkp_varidecode[prev_nibble * 32 + curr_nibble];
 		}
 		if (curr_ch > 0) {
-//			if (ch_sqlch_open || metric >= progStatus.sldrSquelchValue) {
-			if (metric >= progStatus.sldrSquelchValue) {
+			if (ch_sqlch_open || metric >= progStatus.sldrSquelchValue) {
+//			if (metric >= progStatus.sldrSquelchValue) {
 				put_rx_char(curr_ch, FTextBase::RECV);
 				if (enable_audit_log) {
 					audit_log << ifkp_ascii[curr_ch];
 					if (curr_ch == '\n') audit_log << '\n';
 				}
 				parse_pic(curr_ch);
+				if (state != IMAGE_START) {
 				station_calling = valid_callsign(curr_ch);
 				if (!station_calling.empty()) {
 					snprintf(szestimate, sizeof(szestimate), "%.0f db", s2n );
@@ -454,6 +472,7 @@ void ifkp::process_symbol(int sym)
 						heard_log.flush();
 					}
 				}
+			}
 			}
 		}
 		prev_nibble = curr_nibble;
@@ -530,6 +549,7 @@ void ifkp::process_tones()
 
 void ifkp::recvpic(double smpl)
 {
+	phidiff = 2.0 * M_PI * frequency / samplerate;
 	phase -= phidiff;
 	if (phase < 0) phase += 2.0 * M_PI;
 
@@ -537,15 +557,17 @@ void ifkp::recvpic(double smpl)
 	picfilter->run( z, currz);
 	pixel = (samplerate / TWOPI) * pixfilter->run(arg(conj(prevz) * currz));
 	sync = (samplerate / TWOPI) * syncfilter->run(arg(conj(prevz) * currz));
+
 	prevz = currz;
 
 	image_counter++;
+
 	if (image_counter < 0) return;
 
 	if (state == IMAGE_START) {
 		if (sync < -0.59 * bandwidth) {
 			state = IMAGE_SYNC;
-		}
+				}
 		return;
 	}
 	if (state == IMAGE_SYNC) {
@@ -556,7 +578,6 @@ void ifkp::recvpic(double smpl)
 	}
 
 	if ((image_counter % IMAGEspp) == 0) {
-
 		byte = pixel * 256.0 / bandwidth + 128;
 		byte = (int)CLAMP( byte, 0.0, 255.0);
 
@@ -742,10 +763,11 @@ void ifkp::send_avatar()
 	}
 }
 
+static bool send_color = true;
+
 void ifkp::send_image()
 {
 	int W = 640, H = 480;  // grey scale transfer (FAX)
-	bool color = true;
 	float freq, phaseincr;
 	float radians = 2.0 * M_PI / samplerate;
 
@@ -755,40 +777,39 @@ void ifkp::send_image()
 
 	switch (selifkppicSize->value()) {
 		case 0 : W = 59; H = 74; break;
-		case 1 : W = 160; H = 120; break;
-		case 2 : W = 320; H = 240; break;
-		case 3 : W = 640; H = 480; color = false; break;
-		case 4 : W = 640; H = 480; break;
-		case 5 : W = 240; H = 300; break;
-		case 6 : W = 240; H = 300; color = false; break;
-		case 7 : W = 120; H = 150; break;
-		case 8 : W = 120; H = 150; color = false; break;
-	}
-
-	while (!ifkp_image_header.empty()) {
-		send_char(ifkp_image_header[0]);
-		ifkp_image_header.erase(0,1);
+		case 1 : W = 120; H = 150; break;
+		case 2 : W = 240; H = 300; break;
+		case 3 : W = 160; H = 120; break;
+		case 4 : W = 320; H = 240; break;
+		case 5 : W = 640; H = 480; break;
 	}
 
 	REQ(ifkp_clear_tximage);
 
 	stop_deadman();
 
-	freq = frequency - 0.6 * bandwidth;
-	#define PHASE_CORR  (3 * symlen / 2)
-	phaseincr = radians * freq;
-	for (int n = 0; n < PHASE_CORR; n++) {
-		outbuf[n] = cos(txphase);
-		txphase -= phaseincr;
-		if (txphase < 0) txphase += TWOPI;
-	}
-	transmit(outbuf, PHASE_CORR);
+	for (size_t n = 0; n < imageheader.length(); n++)
+		send_char(imageheader[n]);
+	send_char(0); // needed to flush the header at the Rx decoder
 
-	if (color == false) {  // grey scale image
+	freq = frequency - 0.6 * bandwidth; // black-black
+	phaseincr = radians * freq;
+
+	for (int j = 0; j < 7; j++) {
+		for (int i = 0; i < symlen/2; i++) {
+			outbuf[i] = cos(txphase);
+			txphase -= phaseincr;
+			if (txphase < 0) txphase += TWOPI;
+		}
+		transmit(outbuf, symlen/2);
+	}
+
+	if (send_color == false) {  // grey scale image
 		for (int row = 0; row < H; row++) {
 			memset(outbuf, 0, IMAGEspp * sizeof(*outbuf));
 			for (int col = 0; col < W; col++) {
-				if (stopflag) return;
+				if (stopflag)
+					goto end_image;
 				tx_pixelnbr = col + row * W;
 				tx_pixel =	0.3 * ifkppic_TxGetPixel(tx_pixelnbr, 0) +   // red
 							0.6 * ifkppic_TxGetPixel(tx_pixelnbr, 1) +   // green
@@ -812,7 +833,8 @@ void ifkp::send_image()
 			for (int color = 0; color < 3; color++) {
 				memset(outbuf, 0, IMAGEspp * sizeof(*outbuf));
 				for (int col = 0; col < W; col++) {
-					if (stopflag) return;
+					if (stopflag)
+						goto end_image;
 					tx_pixelnbr = col + row * W;
 					tx_pixel = ifkppic_TxGetPixel(tx_pixelnbr, color);
 					REQ(ifkp_updateTxPic, tx_pixel, tx_pixelnbr*3 + color);
@@ -826,22 +848,25 @@ void ifkp::send_image()
 					transmit(outbuf, IMAGEspp);
 				}
 				Fl::awake();
+				if (stopflag) goto end_image;
 			}
 		}
 	}
+end_image:
 	start_deadman();
 }
 
 std::string img_str;
 
-void ifkp::ifkp_send_image(std::string image_str) {
-	img_str = image_str;
+void ifkp::ifkp_send_image(std::string image_str, bool gray) {
+	send_color = !gray;
+	imageheader = image_str;
 	TX_IMAGE = true;
 	start_tx();
 }
 
 void ifkp::ifkp_send_avatar() {
-	img_str = "\npic%A\n";
+	img_str = "\npic%A";
 	TX_AVATAR = true;
 	start_tx();
 }
@@ -901,23 +926,27 @@ int ifkp::tx_process()
 				send_char(img_str[n]);
 		}
 		img_str.clear();
+
 		if (TX_IMAGE) {
 			send_image();
 			ifkppicTxWin->hide();
 		}
 		if (TX_AVATAR)
 			send_avatar();
+
 		send_char(0);
 
-		stopflag = false;
 		TX_IMAGE = false;
 		TX_AVATAR = false;
+		ifkppicTxWin->hide();
+
 		return 0;
+
 	}
 	if ( stopflag || c == GET_TX_CHAR_ETX) { // aborts transmission
 		send_char(0);
-		TX_IMAGE = false;
-		TX_AVATAR = false;
+//		TX_IMAGE = false;
+//		TX_AVATAR = false;
 		stopflag = false;
 		return -1;
 	}

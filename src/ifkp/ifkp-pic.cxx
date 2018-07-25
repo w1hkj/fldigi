@@ -22,6 +22,7 @@
 // ----------------------------------------------------------------------------
 #include <FL/Fl_Counter.H>
 #include <FL/Fl_Choice.H>
+#include <iostream>
 
 #include "gettext.h"
 #include "fileselect.h"
@@ -42,6 +43,7 @@ Fl_Button			*btnifkppicTxSendAbort = (Fl_Button *)0;
 Fl_Button			*btnifkppicTxLoad = (Fl_Button *)0;
 Fl_Button			*btnifkppicTxClose = (Fl_Button *)0;
 Fl_Choice			*selifkppicSize = (Fl_Choice *)0;
+Fl_Check_Button		*btnifkppicTxGrey = (Fl_Check_Button *)0;
 
 void ifkp_showRxViewer(char c);
 void ifkp_createRxViewer();
@@ -68,6 +70,11 @@ char ifkp_txgry_tooltip[24];
 
 static int translate = 0;
 static bool enabled = false;
+
+static string ifkp_fname;
+
+std::string ifkp::imageheader;
+std::string ifkp::avatarheader;
 
 void ifkp_correct_video()
 {
@@ -101,7 +108,8 @@ void ifkp_updateRxPic(unsigned char data, int pos)
 	ifkppicRx->pixel(data, pos);
 
 	int W = ifkppicRx->w();
-	if (ifkp_image_type == 'F' || ifkp_image_type == 'p' || ifkp_image_type == 'm') {
+	if (ifkp_image_type == 'F' || ifkp_image_type == 'p' || ifkp_image_type == 'm' ||
+		ifkp_image_type == 'l' || ifkp_image_type == 's' || ifkp_image_type == 'v') {
 		int n = RAWSTART + ifkp::IMAGEspp*(ifkp_rawcol + W * (ifkp_rawrgb + 3 * ifkp_rawrow));
 		if (n < RAWSIZE)
 			for (int i = 0; i < ifkp::IMAGEspp; i++) ifkp_rawvideo[n + i] = data;
@@ -129,7 +137,7 @@ void cb_btnifkpRxReset(Fl_Widget *, void *)
 
 void cb_btnifkpRxSave(Fl_Widget *, void *)
 {
-	ifkppicRx->save_png(PicsDir.c_str());
+	ifkppicRx->save_png(string(ifkp_fname).append(".png").c_str());
 }
 
 void cb_btnifkpRxClose(Fl_Widget *, void *)
@@ -140,18 +148,16 @@ void cb_btnifkpRxClose(Fl_Widget *, void *)
 
 void ifkp_save_raw_video()
 {
-	string fname = "YYYYMMDDHHMMSSz";
-
 	time_t time_sec = time(0);
 	struct tm ztime;
 	(void)gmtime_r(&time_sec, &ztime);
-	char sztime[fname.length()+1];
+	char sztime[20];
 
 	strftime(sztime, sizeof(sztime), "%Y%m%d%H%M%Sz", &ztime);
 
-	fname.assign(PicsDir).append("IFKP").append(sztime).append(".raw");
+	ifkp_fname.assign(PicsDir).append("IFKP").append(sztime);
 
-	FILE *raw = fl_fopen(fname.c_str(), "wb");
+	FILE *raw = fl_fopen(string(ifkp_fname).append(".raw").c_str(), "wb");
 	fwrite(&ifkp_image_type, 1, 1, raw);
 	fwrite(ifkp_rawvideo, 1, RAWSIZE, raw);
 	fclose(raw);
@@ -161,7 +167,7 @@ void ifkp_load_raw_video()
 {
 // abort & close any Rx video processing
 	int image_type = 0;
-	string image_types = "TSLFVPpMm";
+	string image_types = "TtSsLlFVvPpMm";
 
 	if (!ifkppicRxWin)
 		ifkp_createRxViewer();
@@ -172,6 +178,10 @@ void ifkp_load_raw_video()
 			_("Load raw image file"), "Image\t*.raw\n", PicsDir.c_str());
 
 	if (!p || !*p) return;
+
+	ifkp_fname.assign(p);
+	size_t p_raw = ifkp_fname.find(".raw");
+	if (p_raw != std::string::npos) ifkp_fname.erase(p_raw);
 
 	FILE *raw = fl_fopen(p, "rb");
 	int numread = fread(&image_type, 1, 1, raw);
@@ -291,14 +301,11 @@ void ifkp_showRxViewer(char itype)
 	int W = 320;
 	int H = 240;
 	switch (itype) {
-		case 'L' : W = 320; H = 240; break;
-		case 'S' : W = 160; H = 120; break;
-		case 'F' : W = 640; H = 480; break;
-		case 'V' : W = 640; H = 480; break;
-		case 'P' : W = 240; H = 300; break;
-		case 'p' : W = 240; H = 300; break;
-		case 'M' : W = 120; H = 150; break;
-		case 'm' : W = 120; H = 150; break;
+		case 'L' : case 'l' : W = 320; H = 240; break;
+		case 'S' : case 's' : W = 160; H = 120; break;
+		case 'V' : case 'F' : W = 640; H = 480; break;
+		case 'P' : case 'p' : W = 240; H = 300; break;
+		case 'M' : case 'm' : W = 120; H = 150; break;
 		case 'T' : W = 59; H = 74; break;
 	}
 
@@ -351,14 +358,11 @@ int ifkp_load_image(const char *n) {
 
 	switch (selifkppicSize->value()) {
 		case 0 : W = 59; H = 74; break;
-		case 1 : W = 160; H = 120; break;
-		case 2 : W = 320; H = 240; break;
-		case 3 : W = 640; H = 480; break;
-		case 4 : W = 640; H = 480; break;
-		case 5 : W = 240; H = 300; break;
-		case 6 : W = 240; H = 300; break;
-		case 7 : W = 120; H = 150; break;
-		case 8 : W = 120; H = 150; break;
+		case 1 : W = 120; H = 150; break;
+		case 2 : W = 240; H = 300; break;
+		case 3 : W = 160; H = 120; break;
+		case 4 : W = 320; H = 240; break;
+		case 5 : W = 640; H = 480; break;
 	}
 
 	if (ifkpTxImg) {
@@ -450,24 +454,21 @@ int ifkppic_TxGetPixel(int pos, int color)
 	return ifkpxmtimg[3*pos + color]; // color = {RED, GREEN, BLUE}
 }
 
-string ifkp_image_header;
-
 void cb_ifkppicTransmit( Fl_Widget *w, void *)
 {
+	bool grey = btnifkppicTxGrey->value();
+	char ch = ' ';
 	string picmode = " pic%";
 	switch (selifkppicSize->value()) {
-		case 0: picmode += 'T'; break;
-		case 1: picmode += 'S'; break;
-		case 2: picmode += 'L'; break;
-		case 3: picmode += 'F'; break;
-		case 4: picmode += 'V'; break;
-		case 5: picmode += 'P'; break;
-		case 6: picmode += 'p'; break;
-		case 7: picmode += 'M'; break;
-		case 8: picmode += 'm'; break;
+		case 0 : ifkp_showTxViewer(ch = (grey ? 't' : 'T')); break; // 59 x 74
+		case 1 : ifkp_showTxViewer(ch = (grey ? 'm' : 'M')); break; // 120 x 150
+		case 2 : ifkp_showTxViewer(ch = (grey ? 'p' : 'P')); break; // 240 x 300
+		case 3 : ifkp_showTxViewer(ch = (grey ? 's' : 'S')); break; // 160 x 120
+		case 4 : ifkp_showTxViewer(ch = (grey ? 'l' : 'L')); break; // 320 x 240
+		case 5 : ifkp_showTxViewer(ch = (grey ? 'F' : 'V')); break; // 640 x 480
 	}
-	ifkp_image_header = picmode;
-	active_modem->ifkp_send_image();
+	picmode += ch;
+	active_modem->ifkp_send_image(picmode, grey);
 }
 
 void cb_ifkppicTxSendAbort( Fl_Widget *w, void *)
@@ -479,14 +480,11 @@ void cb_selifkppicSize( Fl_Widget *w, void *)
 {
 	switch (selifkppicSize->value()) {
 		case 0 : ifkp_showTxViewer('T'); break;
-		case 1 : ifkp_showTxViewer('S'); break;
-		case 2 : ifkp_showTxViewer('L'); break;
-		case 3 : ifkp_showTxViewer('F'); break;
-		case 4 : ifkp_showTxViewer('V'); break;
-		case 5 : ifkp_showTxViewer('P'); break;
-		case 6 : ifkp_showTxViewer('p'); break;
-		case 7 : ifkp_showTxViewer('M'); break;
-		case 8 : ifkp_showTxViewer('m'); break;
+		case 1 : ifkp_showTxViewer('M'); break;
+		case 2 : ifkp_showTxViewer('P'); break;
+		case 3 : ifkp_showTxViewer('S'); break;
+		case 4 : ifkp_showTxViewer('L'); break;
+		case 5 : ifkp_showTxViewer('V'); break;
 	}
 }
 
@@ -501,18 +499,19 @@ void ifkp_createTxViewer()
 	ifkppicTx->noslant();
 	ifkppicTx->hide();
 
-	selifkppicSize = new Fl_Choice(5, 244, 110, 24);
-	selifkppicSize->add("59 x 74 clr");	// case 0
-	selifkppicSize->add("160x120 clr");	// case 1
-	selifkppicSize->add("320x240 clr");	// case 2
-	selifkppicSize->add("640x480 gry");	// case 3
-	selifkppicSize->add("640x480 clr");	// case 4
-	selifkppicSize->add("240x300 clr");	// case 5
-	selifkppicSize->add("240x300 gry");	// case 6
-	selifkppicSize->add("120x150 clr");	// case 7
-	selifkppicSize->add("120x150 gry");	// case 8
-	selifkppicSize->value(0);
+	selifkppicSize = new Fl_Choice(5, 244, 90, 24);
+	selifkppicSize->add("59 x 74");
+	selifkppicSize->add("120x150");
+	selifkppicSize->add("240x300");
+	selifkppicSize->add("160x120");
+	selifkppicSize->add("320x240");
+	selifkppicSize->add("640x480");
+	selifkppicSize->value(1);
 	selifkppicSize->callback(cb_selifkppicSize, 0);
+
+	btnifkppicTxGrey = new Fl_Check_Button(99, 247, 18, 18);
+	btnifkppicTxGrey->tooltip(_("Send grey scale image"));
+	btnifkppicTxGrey->value(0);
 
 	btnifkppicTxLoad = new Fl_Button(120, 244, 60, 24, _("Load"));
 	btnifkppicTxLoad->callback(cb_ifkppicTxLoad, 0);
@@ -534,7 +533,7 @@ void ifkp_createTxViewer()
 }
 
 
-void ifkp_load_scaled_image(std::string fname)
+void ifkp_load_scaled_image(std::string fname, bool gray)
 {
 
 	if (!ifkppicTxWin) ifkp_createTxViewer();
@@ -566,39 +565,45 @@ void ifkp_load_scaled_image(std::string fname)
 		if (iW >= 640) {
 			W = 640; H = 480;
 			winW = 644; winH = 484;
-			aspect = 4;
+			aspect = 5;
 			picmode[4] = 'V';
+			if (gray) picmode[4] = 'F';
 		}
 		else if (iW >= 320) {
 			W = 320; H = 240;
 			winW = 324; winH = 244;
-			aspect = 2;
+			aspect = 4;
 			picmode[4] = 'L';
+			if (gray) picmode[4] = 'l';
 		}
 		else {
 			W = 160; H = 120;
 			winW = 164; winH = 124;
-			aspect = 1;
+			aspect = 3;
 			picmode[4] = 'S';
+			if (gray) picmode[4] = 's';
 		}
 	} else {
 		if (iH >= 300) {
 			W = 240; H = 300;
 			winW = 244; winH = 304;
-			aspect = 5;
+			aspect = 2;
 			picmode[4] = 'P';
+			if (gray) picmode[4] = 'p';
 		}
 		else if (iH >= 150) {
 			W = 120; H = 150;
 			winW = 124; winH = 154;
-			aspect = 7;
+			aspect = 1;
 			picmode[4] = 'M';
+			if (gray) picmode[4] = 'm';
 		}
 		else {
 			W = 59; H = 74;
 			winW = 67; winH = 82;
 			aspect = 0;
 			picmode[4] = 'T';
+			if (gray) picmode[4] = 't';
 		}
 	}
 
@@ -667,7 +672,7 @@ void ifkp_load_scaled_image(std::string fname)
 
 	ifkppicTxWin->show();
 
-	active_modem->ifkp_send_image(picmode);
+	active_modem->ifkp_send_image(picmode, gray);
 
 	return;
 }
@@ -682,43 +687,29 @@ void ifkp_showTxViewer(char c)
 	ifkppicTx->clear();
 
 	switch (c) {
-		case 'T' :
+		case 'T' : case 't' :
 			W = 59; H = 74; winW = 324; winH = 184;
 			selifkppicSize->value(0);
 			break;
-		case 'S' :
-		case 's' :
+		case 'S' : case 's' :
 			W = 160; H = 120; winW = 324; winH = 154;
-			selifkppicSize->value(1);
-			break;
-		case 'L' :
-		case 'l' :
-			W = 320; H = 240; winW = 324; winH = 274;
-			selifkppicSize->value(2);
-			break;
-		case 'F' :
-			W = 640; H = 480; winW = 644; winH = 514;
 			selifkppicSize->value(3);
 			break;
-		case 'V' :
-			W = 640; H = 480; winW = 644; winH = 514;
+		case 'L' : case 'l' :
+			W = 320; H = 240; winW = 324; winH = 274; 
 			selifkppicSize->value(4);
 			break;
-		case 'P' :
-			W = 240; H = 300; winW = 324; winH = 334;
+		case 'F' : case 'V' :
+			W = 640; H = 480; winW = 644; winH = 514;
 			selifkppicSize->value(5);
 			break;
-		case 'p' :
+		case 'P' : case 'p' :
 			W = 240; H = 300; winW = 324; winH = 334;
-			selifkppicSize->value(6);
+			selifkppicSize->value(2);
 			break;
-		case 'M' :
+		case 'M' : case 'm' :
 			W = 120; H = 150; winW = 324; winH = 184;
-			selifkppicSize->value(7);
-			break;
-		case 'm' :
-			W = 120; H = 150; winW = 324; winH = 184;
-			selifkppicSize->value(8);
+			selifkppicSize->value(1);
 			break;
 	}
 
@@ -727,9 +718,11 @@ void ifkp_showTxViewer(char c)
 	ifkppicY = (winH - 26 - H) / 2;
 	ifkppicTx->resize(ifkppicX, ifkppicY, W, H);
 
-	selifkppicSize->resize(5, winH - 26, 110, 24);
+	selifkppicSize->resize(5, winH - 26, 90, 24);
 
-	btnifkppicTxLoad->resize(120, winH - 26, 60, 24);
+	btnifkppicTxGrey->resize(selifkppicSize->x() + selifkppicSize->w() + 4, winH - 23, 18, 18);
+
+	btnifkppicTxLoad->resize(btnifkppicTxGrey->x() + btnifkppicTxGrey->w() + 4, winH - 26, 60, 24);
 
 	btnifkppicTransmit->resize(winW - 130, winH - 26, 60, 24);
 	btnifkppicTxSendAbort->resize(winW - 130, winH - 26, 60, 24);
