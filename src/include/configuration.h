@@ -684,6 +684,9 @@
         ELEM_(bool, mt63_at500, "MT63AT500",                                            \
               "Always transmit lowest tone at 500 Hz",                                  \
               false)                                                                    \
+        ELEM_(bool, mt63_centered, "MT63CENTERED",                                      \
+              "Always transmit centered at 1500 Hz (SHARES requirement)",               \
+              false)                                                                    \
         /* FSQ */                                                                       \
         ELEM_(int, fsq_frequency, "FSQFREQUENCY",                                       \
               "0 - 1150 Hz, 1 - 1500 Hz, 2 - Variable",                                 \

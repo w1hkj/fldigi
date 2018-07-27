@@ -478,6 +478,8 @@ extern Fl_Check_Button *btnMT63_usetones;
 extern Fl_Check_Button *btnMT63_upper_lower;
 extern Fl_Spinner2 *MT63_tone_duration;
 extern Fl_Check_Button *btnMT63_at500;
+extern Fl_Check_Button *btnMT63_centered;
+extern Fl_Check_Button *btnMT63_manual;
 extern Fl_Group *tabOlivia;
 extern Fl_ListBox *i_listbox_olivia_bandwidth;
 extern Fl_ListBox *i_listbox_olivia_tones;

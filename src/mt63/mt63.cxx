@@ -332,6 +332,10 @@ void mt63::init()
 		frequency = 500 + bandwidth / 2;
 		modem::set_freq(frequency);
 	}
+	else if (progdefaults.mt63_centered) {
+		frequency = 1500;
+		modem::set_freq(frequency);
+	}
 	else if (progStatus.carrier != 0) {
 		set_freq(progStatus.carrier);
 #if !BENCHMARK_MODE
@@ -404,6 +408,8 @@ void mt63::set_freq(double f)
 {
 	if (progdefaults.mt63_at500)
 		frequency = 500 + bandwidth / 2;
+	else if (progdefaults.mt63_centered)
+		frequency = 1500;
 	else
 		frequency = f;
 

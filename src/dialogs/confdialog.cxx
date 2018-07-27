@@ -4199,7 +4199,33 @@ progdefaults.changed = true;
 Fl_Check_Button *btnMT63_at500=(Fl_Check_Button *)0;
 
 static void cb_btnMT63_at500(Fl_Check_Button* o, void*) {
-  progdefaults.mt63_at500 = !o->value();
+  o->value(1);
+progdefaults.mt63_at500 = true;
+progdefaults.mt63_centered = false;
+btnMT63_centered->value(0);
+btnMT63_manual->value(0);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnMT63_centered=(Fl_Check_Button *)0;
+
+static void cb_btnMT63_centered(Fl_Check_Button* o, void*) {
+  o->value(1);
+progdefaults.mt63_centered = true;
+progdefaults.mt63_at500 = false;
+btnMT63_at500->value(0);
+btnMT63_manual->value(0);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnMT63_manual=(Fl_Check_Button *)0;
+
+static void cb_btnMT63_manual(Fl_Check_Button* o, void*) {
+  o->value(1);
+progdefaults.mt63_centered = false;
+progdefaults.mt63_at500 = false;
+btnMT63_at500->value(0);
+btnMT63_centered->value(0);
 progdefaults.changed = true;
 }
 
@@ -8049,6 +8075,7 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(35, 35, 529, 245, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10087,11 +10114,11 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(-5, 25, 610, 365, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(-5, 25, 610, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 605, 340, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 605, 340);
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
@@ -11689,7 +11716,6 @@ ded Morse characters."));
             tabIFKP->end();
           } // Fl_Group* tabIFKP
           { tabMT63 = new Fl_Group(0, 50, 600, 340, _("MT-63"));
-            tabMT63->hide();
             { Fl_Group* o = new Fl_Group(55, 73, 490, 84);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11709,7 +11735,7 @@ ded Morse characters."));
               } // Fl_Check_Button* btnMT63_rx_integration
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(55, 169, 490, 131);
+            { Fl_Group* o = new Fl_Group(55, 169, 490, 178);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnMT63_usetones = new Fl_Check_Button(199, 177, 200, 20, _("Transmit lower start tone"));
                 btnMT63_usetones->down_box(FL_DOWN_BOX);
@@ -11738,11 +11764,21 @@ ded Morse characters."));
                 o->value(progdefaults.mt63_tone_duration);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* MT63_tone_duration
-              { Fl_Check_Button* o = btnMT63_at500 = new Fl_Check_Button(199, 262, 200, 20, _("Allow manual tuning"));
+              { Fl_Check_Button* o = btnMT63_at500 = new Fl_Check_Button(199, 262, 200, 20, _("Low tone at 500 Hz"));
                 btnMT63_at500->down_box(FL_DOWN_BOX);
                 btnMT63_at500->callback((Fl_Callback*)cb_btnMT63_at500);
-                o->value(!progdefaults.mt63_at500);
+                o->value(progdefaults.mt63_at500);
               } // Fl_Check_Button* btnMT63_at500
+              { Fl_Check_Button* o = btnMT63_centered = new Fl_Check_Button(199, 287, 248, 20, _("Centered at 1500 Hz (SHARES)"));
+                btnMT63_centered->down_box(FL_DOWN_BOX);
+                btnMT63_centered->callback((Fl_Callback*)cb_btnMT63_centered);
+                o->value(progdefaults.mt63_centered);
+              } // Fl_Check_Button* btnMT63_centered
+              { Fl_Check_Button* o = btnMT63_manual = new Fl_Check_Button(199, 312, 200, 20, _("Manual tuning"));
+                btnMT63_manual->down_box(FL_DOWN_BOX);
+                btnMT63_manual->callback((Fl_Callback*)cb_btnMT63_manual);
+                o->value(!progdefaults.mt63_at500 && !progdefaults.mt63_centered);
+              } // Fl_Check_Button* btnMT63_manual
               o->end();
             } // Fl_Group* o
             tabMT63->end();

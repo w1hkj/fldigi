@@ -439,8 +439,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 600 365} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 600 365} when 1 hide
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -3498,14 +3498,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {-5 25 610 365} hide
+        xywh {-5 25 610 365}
       } {
         Fl_Tabs tabsModems {open
           xywh {-5 25 610 365} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 605 340}
+            xywh {0 50 605 340} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 605 340} selection_color 50
@@ -5090,8 +5090,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabMT63 {
-            label {MT-63}
-            xywh {0 50 600 340} hide
+            label {MT-63} open
+            xywh {0 50 600 340}
           } {
             Fl_Group {} {open
               xywh {55 73 490 84} box ENGRAVED_FRAME align 21
@@ -5112,7 +5112,7 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group {} {open
-              xywh {55 169 490 131} box ENGRAVED_FRAME
+              xywh {55 169 490 178} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnMT63_usetones {
                 label {Transmit lower start tone}
@@ -5146,11 +5146,37 @@ progdefaults.changed = true;}
                 class Fl_Spinner2
               }
               Fl_Check_Button btnMT63_at500 {
-                label {Allow manual tuning}
-                callback {progdefaults.mt63_at500 = !o->value();
-progdefaults.changed = true;}
+                label {Low tone at 500 Hz}
+                callback {o->value(1);
+progdefaults.mt63_at500 = true;
+progdefaults.mt63_centered = false;
+btnMT63_centered->value(0);
+btnMT63_manual->value(0);
+progdefaults.changed = true;} selected
                 xywh {199 262 200 20} down_box DOWN_BOX
-                code0 {o->value(!progdefaults.mt63_at500);}
+                code0 {o->value(progdefaults.mt63_at500);}
+              }
+              Fl_Check_Button btnMT63_centered {
+                label {Centered at 1500 Hz (SHARES)}
+                callback {o->value(1);
+progdefaults.mt63_centered = true;
+progdefaults.mt63_at500 = false;
+btnMT63_at500->value(0);
+btnMT63_manual->value(0);
+progdefaults.changed = true;}
+                xywh {199 287 248 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.mt63_centered);}
+              }
+              Fl_Check_Button btnMT63_manual {
+                label {Manual tuning}
+                callback {o->value(1);
+progdefaults.mt63_centered = false;
+progdefaults.mt63_at500 = false;
+btnMT63_at500->value(0);
+btnMT63_centered->value(0);
+progdefaults.changed = true;}
+                xywh {199 312 200 20} down_box DOWN_BOX
+                code0 {o->value(!progdefaults.mt63_at500 && !progdefaults.mt63_centered);}
               }
             }
           }
