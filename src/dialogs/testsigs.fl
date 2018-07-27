@@ -12,12 +12,12 @@ Function {make_testdialog()} {open
 } {
   Fl_Window {} {
     label {Test Signals} open
-    xywh {569 35 480 100} type Double visible
+    xywh {999 31 480 100} type Double visible
   } {
     Fl_Counter noiseDB {
       label {Noise level (db)}
       callback {progdefaults.s2n = o->value();} selected
-      xywh {10 41 127 21} align 1 minimum -18 maximum 60 value 20
+      xywh {10 41 127 21} align 1 minimum -30 maximum 60 value 20
       code0 {o->value(progdefaults.s2n);}
       code1 {o->lstep(1);}
       code2 {\#include "flslider2.h"}

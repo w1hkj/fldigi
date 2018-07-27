@@ -441,7 +441,7 @@ extern Fl_Value_Slider *valhits;
 extern Fl_Choice *sel_fsq_lpf;
 extern Fl_Value_Slider *sldrMovAvg;
 extern Fl_Choice *sel_fsq_heard_aging;
-extern Fl_Round_Button *btn_fsqbaud[4];
+extern Fl_Round_Button *btn_fsqbaud[5];
 extern Fl_Choice *sel_fsq_frequency;
 extern Fl_Choice *sel_fsq_sounder;
 extern Fl_Check_Button *btn_fsq_lowercase;

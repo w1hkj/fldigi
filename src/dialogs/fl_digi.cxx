@@ -593,6 +593,7 @@ void cb_fsq2(Fl_Widget *w, void *arg);
 void cb_fsq3(Fl_Widget *w, void *arg);
 void cb_fsq4p5(Fl_Widget *w, void *arg);
 void cb_fsq6(Fl_Widget *w, void *arg);
+void cb_fsq1p5(Fl_Widget *w, void *arg);
 
 void cb_ifkp0p5(Fl_Widget *w, void *arg);
 void cb_ifkp1p0(Fl_Widget *w, void *arg);
@@ -819,7 +820,8 @@ static const Fl_Menu_Item quick_change_rtty[] = {
 };
 
 static const Fl_Menu_Item quick_change_fsq[] = {
-	{ "FSQ2", 0, cb_fsq2, (void *)MODE_FSQ },
+	{ "FSQ1.5", 0, cb_fsq1p5, (void *)MODE_FSQ },
+        { "FSQ2", 0, cb_fsq2, (void *)MODE_FSQ },
 	{ "FSQ3", 0, cb_fsq3, (void *)MODE_FSQ },
 	{ "FSQ4.5", 0, cb_fsq4p5, (void *)MODE_FSQ },
 	{ "FSQ6", 0, cb_fsq6, (void *)MODE_FSQ },
@@ -1071,10 +1073,19 @@ void set_fsq_tab_widgets()
 	btn_fsqbaud[1]->value(0);
 	btn_fsqbaud[2]->value(0);
 	btn_fsqbaud[3]->value(0);
-	if (progdefaults.fsqbaud == 2.0) btn_fsqbaud[0]->value(1);
-	else if (progdefaults.fsqbaud == 3.0) btn_fsqbaud[1]->value(1);
-	else if (progdefaults.fsqbaud == 4.5) btn_fsqbaud[2]->value(1);
-	else btn_fsqbaud[3]->value(1);
+	btn_fsqbaud[4]->value(0);
+	if (progdefaults.fsqbaud == 1.5) btn_fsqbaud[0]->value(1);
+	else if (progdefaults.fsqbaud == 2.0) btn_fsqbaud[1]->value(1);
+	else if (progdefaults.fsqbaud == 3.0) btn_fsqbaud[2]->value(1);
+	else if (progdefaults.fsqbaud == 4.5) btn_fsqbaud[3]->value(1);
+	else btn_fsqbaud[4]->value(1);
+}
+
+void cb_fsq1p5(Fl_Widget *w, void *arg)
+{
+	progdefaults.fsqbaud = 1.5;
+	set_fsq_tab_widgets();
+	cb_init_mode(w, arg);
 }
 
 void cb_fsq2(Fl_Widget *w, void *arg)
@@ -4774,6 +4785,7 @@ static Fl_Menu_Item menu_[] = {
 { "FSQ-4.5", 0, cb_fsq4p5, (void *)MODE_FSQ, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "FSQ-3", 0, cb_fsq3, (void *)MODE_FSQ, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "FSQ-2", 0, cb_fsq2, (void *)MODE_FSQ, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "FSQ-1.5", 0, cb_fsq1p5, (void *)MODE_FSQ, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"Hell", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},

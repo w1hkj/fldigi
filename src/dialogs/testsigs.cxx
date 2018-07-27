@@ -36,7 +36,7 @@ Fl_Double_Window* make_testdialog() {
       noiseDB->labelfont(0);
       noiseDB->labelsize(14);
       noiseDB->labelcolor(FL_FOREGROUND_COLOR);
-      noiseDB->minimum(-18);
+      noiseDB->minimum(-30);
       noiseDB->maximum(60);
       noiseDB->value(20);
       noiseDB->callback((Fl_Callback*)cb_noiseDB);

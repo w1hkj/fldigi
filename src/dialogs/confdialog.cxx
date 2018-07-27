@@ -34,6 +34,7 @@ extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
 #if USE_HAMLIB
   #include "hamlib.h"
 #endif
+#include "fsq.h"
 Fl_Double_Window *dlgConfig; 
 Mode_Browser* mode_browser; 
 
@@ -3838,42 +3839,57 @@ progdefaults.changed = true;
 
 static void cb_btn_fsqbaud(Fl_Round_Button* o, void*) {
   if (o->value() == 1) {
-progdefaults.fsqbaud = 2;
+progdefaults.fsqbaud = 1.5;
 btn_fsqbaud[1]->value(0);
 btn_fsqbaud[2]->value(0);
 btn_fsqbaud[3]->value(0);
+btn_fsqbaud[4]->value(0);
 }
 progdefaults.changed = true;
 }
 
 static void cb_btn_fsqbaud1(Fl_Round_Button* o, void*) {
   if (o->value() == 1) {
-progdefaults.fsqbaud = 3;
+progdefaults.fsqbaud = 2;
 btn_fsqbaud[0]->value(0);
 btn_fsqbaud[2]->value(0);
 btn_fsqbaud[3]->value(0);
+btn_fsqbaud[4]->value(0);
 }
 progdefaults.changed = true;
 }
 
 static void cb_btn_fsqbaud2(Fl_Round_Button* o, void*) {
   if (o->value() == 1) {
-progdefaults.fsqbaud = 4.5;
+progdefaults.fsqbaud = 3;
 btn_fsqbaud[0]->value(0);
 btn_fsqbaud[1]->value(0);
 btn_fsqbaud[3]->value(0);
+btn_fsqbaud[4]->value(0);
 }
 progdefaults.changed = true;
 }
 
-Fl_Round_Button *btn_fsqbaud[4]={(Fl_Round_Button *)0};
-
 static void cb_btn_fsqbaud3(Fl_Round_Button* o, void*) {
+  if (o->value() == 1) {
+progdefaults.fsqbaud = 4.5;
+btn_fsqbaud[0]->value(0);
+btn_fsqbaud[1]->value(0);
+btn_fsqbaud[2]->value(0);
+btn_fsqbaud[4]->value(0);
+}
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btn_fsqbaud[5]={(Fl_Round_Button *)0};
+
+static void cb_btn_fsqbaud4(Fl_Round_Button* o, void*) {
   if (o->value() == 1) {
 progdefaults.fsqbaud = 6;
 btn_fsqbaud[0]->value(0);
 btn_fsqbaud[1]->value(0);
 btn_fsqbaud[2]->value(0);
+btn_fsqbaud[3]->value(0);
 }
 progdefaults.changed = true;
 }
@@ -11432,13 +11448,14 @@ ded Morse characters."));
                 sldrMovAvg->tooltip(_("Filter FFT output"));
                 sldrMovAvg->type(1);
                 sldrMovAvg->minimum(1);
-                sldrMovAvg->maximum(4);
+                sldrMovAvg->maximum(15);
                 sldrMovAvg->step(1);
                 sldrMovAvg->value(4);
                 sldrMovAvg->textsize(14);
                 sldrMovAvg->callback((Fl_Callback*)cb_sldrMovAvg);
                 sldrMovAvg->align(Fl_Align(FL_ALIGN_LEFT));
                 o->value(progdefaults.fsq_movavg);
+                o->maximum(MOVAVGLIMIT);
               } // Fl_Value_Slider* sldrMovAvg
               { Fl_Choice* o = sel_fsq_heard_aging = new Fl_Choice(433, 94, 102, 22, _("Heard aging"));
                 sel_fsq_heard_aging->tooltip(_("Remove call after ..."));
@@ -11452,26 +11469,31 @@ ded Morse characters."));
             { Fl_Group* o = new Fl_Group(5, 125, 585, 95, _("Tx Parameters"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Round_Button* o = btn_fsqbaud[0] = new Fl_Round_Button(150, 135, 55, 15, _("2 baud"));
+              { Fl_Round_Button* o = btn_fsqbaud[0] = new Fl_Round_Button(124, 135, 55, 15, _("1.5 baud"));
                 btn_fsqbaud[0]->down_box(FL_ROUND_DOWN_BOX);
                 btn_fsqbaud[0]->callback((Fl_Callback*)cb_btn_fsqbaud);
-                o->value(progdefaults.fsqbaud == 2);
+                o->value(progdefaults.fsqbaud == 1.5);
               } // Fl_Round_Button* btn_fsqbaud[0]
-              { Fl_Round_Button* o = btn_fsqbaud[1] = new Fl_Round_Button(258, 135, 55, 15, _("3 baud"));
+              { Fl_Round_Button* o = btn_fsqbaud[1] = new Fl_Round_Button(217, 135, 55, 15, _("2 baud"));
                 btn_fsqbaud[1]->down_box(FL_ROUND_DOWN_BOX);
                 btn_fsqbaud[1]->callback((Fl_Callback*)cb_btn_fsqbaud1);
-                o->value(progdefaults.fsqbaud == 3);
+                o->value(progdefaults.fsqbaud == 2);
               } // Fl_Round_Button* btn_fsqbaud[1]
-              { Fl_Round_Button* o = btn_fsqbaud[2] = new Fl_Round_Button(366, 135, 55, 15, _("4.5 baud"));
+              { Fl_Round_Button* o = btn_fsqbaud[2] = new Fl_Round_Button(310, 135, 55, 15, _("3 baud"));
                 btn_fsqbaud[2]->down_box(FL_ROUND_DOWN_BOX);
                 btn_fsqbaud[2]->callback((Fl_Callback*)cb_btn_fsqbaud2);
-                o->value(progdefaults.fsqbaud == 4.5);
+                o->value(progdefaults.fsqbaud == 3);
               } // Fl_Round_Button* btn_fsqbaud[2]
-              { Fl_Round_Button* o = btn_fsqbaud[3] = new Fl_Round_Button(475, 135, 55, 15, _("6 baud"));
+              { Fl_Round_Button* o = btn_fsqbaud[3] = new Fl_Round_Button(403, 135, 55, 15, _("4.5 baud"));
                 btn_fsqbaud[3]->down_box(FL_ROUND_DOWN_BOX);
                 btn_fsqbaud[3]->callback((Fl_Callback*)cb_btn_fsqbaud3);
-                o->value(progdefaults.fsqbaud == 6);
+                o->value(progdefaults.fsqbaud == 4.5);
               } // Fl_Round_Button* btn_fsqbaud[3]
+              { Fl_Round_Button* o = btn_fsqbaud[4] = new Fl_Round_Button(497, 135, 55, 15, _("6 baud"));
+                btn_fsqbaud[4]->down_box(FL_ROUND_DOWN_BOX);
+                btn_fsqbaud[4]->callback((Fl_Callback*)cb_btn_fsqbaud4);
+                o->value(progdefaults.fsqbaud == 6);
+              } // Fl_Round_Button* btn_fsqbaud[4]
               { Fl_Choice* o = sel_fsq_frequency = new Fl_Choice(250, 199, 102, 21, _("Center freq"));
                 sel_fsq_frequency->down_box(FL_BORDER_BOX);
                 sel_fsq_frequency->callback((Fl_Callback*)cb_sel_fsq_frequency);

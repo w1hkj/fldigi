@@ -175,7 +175,7 @@ fsq::fsq(trx_mode md) : modem()
 //	baudfilt = new Cmovavg(3);
 	movavg_size = progdefaults.fsq_movavg;
 	if (movavg_size < 1) movavg_size = progdefaults.fsq_movavg = 1;
-	if (movavg_size > 4) movavg_size = progdefaults.fsq_movavg = 4;
+	if (movavg_size > MOVAVGLIMIT) movavg_size = progdefaults.fsq_movavg = MOVAVGLIMIT;
 	for (int i = 0; i < NUMBINS; i++) binfilt[i] = new Cmovavg(movavg_size);
 	spacing = 3;
 	txphase = 0;
@@ -295,7 +295,9 @@ void fsq::set_freq(double f)
 
 void fsq::show_mode()
 {
-	if (speed == 2.0)
+        if (speed == 1.5 )
+      		put_MODEstatus("FSQ-1.5");
+	else if (speed == 2.0)
 		put_MODEstatus("FSQ-2");
 	else if (speed == 3.0)
 		put_MODEstatus("FSQ-3");
@@ -309,7 +311,9 @@ void fsq::adjust_for_speed()
 {
 	speed = progdefaults.fsqbaud;
 
-	if (speed == 2.0) {
+	if( speed == 1.5 ) {
+	        symlen = 8192;
+	} else if (speed == 2.0) {
 		symlen = 6144;
 	} else if (speed == 3.0) {
 		symlen = 4096;
@@ -370,7 +374,7 @@ void fsq::restart()
 
 	movavg_size = progdefaults.fsq_movavg;
 	if (movavg_size < 1) movavg_size = progdefaults.fsq_movavg = 1;
-	if (movavg_size > 4) movavg_size = progdefaults.fsq_movavg = 4;
+	if (movavg_size > MOVAVGLIMIT) movavg_size = progdefaults.fsq_movavg = MOVAVGLIMIT;
 
 	for (int i = 0; i < NUMBINS; i++) binfilt[i]->setLength(movavg_size);
 
@@ -759,6 +763,10 @@ void fsq::parse_pound(std::string relay)
 	if (fname.find(".txt") == std::string::npos) fname.append(".txt");
 	if (rx_text[rx_text.length() -1] != '\n') rx_text.append("\n");
 
+	size_t p3 = NIT;
+	while( (p3 = fname.find("/")) != NIT) fname[p3] = '.';
+	while( (p3 = fname.find("\\")) != NIT) fname[p3] = '.';
+
 	std::ofstream rxfile;
 	fname.insert(0, TempDir);
 	if (progdefaults.always_append) {
@@ -932,7 +940,10 @@ void fsq::parse_greater(std::string relay)
 	if (!relay.empty()) response.append(";").append(relay);
 
 	double spd = progdefaults.fsqbaud;
-	if (spd == 2.0) {
+	if (spd == 1.5 ) {
+	        spd = 2.0;
+	        response.append(" 2.0 baud");
+	} else if (spd == 2.0) {
 		spd = 3.0;
 		response.append(" 3.0 baud");
 	} else if (spd == 3.0) {
@@ -958,7 +969,8 @@ void fsq::parse_less(std::string relay)
 
 	double spd = progdefaults.fsqbaud;
 	if (spd == 2.0) {
-		response.append(" 2.0 baud");
+	  	spd = 1.5;
+		response.append(" 1.5 baud");
 	} else if (spd == 3.0) {
 		spd = 2.0;
 		response.append(" 2.0 baud");
@@ -1044,7 +1056,18 @@ void fsq::process_symbol(int sym)
 			if (fsq_squelch_open()) {
 				write_rx_mon_char(curr_ch);
 				if (b_bot)
-					display_fsq_mon_text( fsq_bot, FTextBase::CTRL);
+				  {
+				    char ztbuf[20];
+				    struct timeval tv;
+				    gettimeofday(&tv,NULL);
+				    struct tm tm;
+				    time_t t_temp;
+				    t_temp=(time_t)tv.tv_sec;
+				    gmtime_r(&t_temp, &tm);
+				    strftime(ztbuf,sizeof(ztbuf),"%m/%d %H:%M:%S ",&tm);
+				    display_fsq_mon_text( ztbuf, FTextBase::CTRL);
+				    display_fsq_mon_text( fsq_bot, FTextBase::CTRL);
+				  }
 				if (b_eol) {
 					display_fsq_mon_text( fsq_eol, FTextBase::CTRL);
 					noisefilt->reset();
@@ -1094,16 +1117,13 @@ void fsq::process_tones()
 	peak = NUMBINS / 2;
 
 // examine FFT bin contents over bandwidth +/- ~ 50 Hz
-// 8 * 12000 / 2048 = 46.875 Hz
 	int firstbin = frequency * FSQ_SYMLEN / samplerate - NUMBINS / 2;
 
 	double sigval = 0;
 
-	double mins[3];
 	double min = 3.0e8;
-	double temp;
+    int minbin = NUMBINS / 2;
 
-	mins[0] = mins[1] = mins[2] = 1.0e8;
 	for (int i = 0; i < NUMBINS; ++i) {
 		val = norm(fft_data[i + firstbin]);
 // looking for maximum signal
@@ -1113,19 +1133,23 @@ void fsq::process_tones()
 			peak = i;
 		}
 // looking for minimum signal in a 3 bin sequence
-		mins[2] = tones[i];
-		temp = mins[0] + mins[1] + mins[2];
-		mins[0] = mins[1];
-		mins[1] = mins[2];
-		if (temp < min) min = temp;
+        if (tones[i] < min) {
+            min = tones[i];
+            minbin = i;
+        }
 	}
 
-	sigval = tones[peak-1] + tones[peak] + tones[peak+1];
+	sigval = tones[(peak-1) < 0 ? (NUMBINS - 1) : (peak - 1)] + 
+             tones[peak] + 
+             tones[(peak+1) == NUMBINS ? 0 : (peak + 1)];
+
+	min = tones[(minbin-1) < 0 ? (NUMBINS - 1) : (minbin - 1)] + 
+          tones[minbin] + 
+          tones[(minbin+1) == NUMBINS ? 0 : (minbin + 1)];
+
 	if (min == 0) min = 1e-10;
 
-	s2n = 10 * log10( snfilt->run(sigval/min)) - 36.0;
-
-//	if (s2n > 0) s2n *= 1.3;  // very empirical
+	s2n = 10 * log10( snfilt->run(sigval/min)) - 34.0 + movavg_size / 4;
 
 	if (s2n <= 0) metric = 2 * (25 + s2n);
 	if (s2n > 0) metric = 50 * ( 1 + s2n / 45);

@@ -121,6 +121,9 @@ decl {\#if USE_HAMLIB
 \#endif} {private local
 }
 
+decl {\#include "fsq.h"} {private local
+}
+
 decl {Fl_Double_Window *dlgConfig;} {public local
 }
 
@@ -429,7 +432,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {755 54 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {982 39 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-5 0 610 390} color 50 selection_color 50
@@ -4700,8 +4703,9 @@ progdefaults.changed = true;} open
                 label {MovAvg:}
                 callback {progdefaults.fsq_movavg = o->value();
 progdefaults.changed = true;}
-                tooltip {Filter FFT output} xywh {410 65 125 22} type Horizontal align 4 minimum 1 maximum 4 step 1 value 4 textsize 14
+                tooltip {Filter FFT output} xywh {410 65 125 22} type Horizontal align 4 minimum 1 maximum 15 step 1 value 4 textsize 14
                 code0 {o->value(progdefaults.fsq_movavg);}
+                code1 {o->maximum(MOVAVGLIMIT);}
               }
               Fl_Choice sel_fsq_heard_aging {
                 label {Heard aging}
@@ -4717,51 +4721,68 @@ progdefaults.changed = true;} open
               xywh {5 125 585 95} box ENGRAVED_BOX align 21
             } {
               Fl_Round_Button {btn_fsqbaud[0]} {
-                label {2 baud}
+                label {1.5 baud}
                 callback {if (o->value() == 1) {
-progdefaults.fsqbaud = 2;
+progdefaults.fsqbaud = 1.5;
 btn_fsqbaud[1]->value(0);
 btn_fsqbaud[2]->value(0);
 btn_fsqbaud[3]->value(0);
+btn_fsqbaud[4]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {150 135 55 15} down_box ROUND_DOWN_BOX
-                code0 {o->value(progdefaults.fsqbaud == 2);}
+                xywh {124 135 55 15} down_box ROUND_DOWN_BOX
+                code0 {o->value(progdefaults.fsqbaud == 1.5);}
               }
               Fl_Round_Button {btn_fsqbaud[1]} {
+                label {2 baud}
+                callback {if (o->value() == 1) {
+progdefaults.fsqbaud = 2;
+btn_fsqbaud[0]->value(0);
+btn_fsqbaud[2]->value(0);
+btn_fsqbaud[3]->value(0);
+btn_fsqbaud[4]->value(0);
+}
+progdefaults.changed = true;}
+                xywh {217 135 55 15} down_box ROUND_DOWN_BOX
+                code0 {o->value(progdefaults.fsqbaud == 2);}
+              }
+              Fl_Round_Button {btn_fsqbaud[2]} {
                 label {3 baud}
                 callback {if (o->value() == 1) {
 progdefaults.fsqbaud = 3;
 btn_fsqbaud[0]->value(0);
-btn_fsqbaud[2]->value(0);
+btn_fsqbaud[1]->value(0);
 btn_fsqbaud[3]->value(0);
+btn_fsqbaud[4]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {258 135 55 15} down_box ROUND_DOWN_BOX
+                xywh {310 135 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 3);}
               }
-              Fl_Round_Button {btn_fsqbaud[2]} {
+              Fl_Round_Button {btn_fsqbaud[3]} {
                 label {4.5 baud}
                 callback {if (o->value() == 1) {
 progdefaults.fsqbaud = 4.5;
 btn_fsqbaud[0]->value(0);
 btn_fsqbaud[1]->value(0);
-btn_fsqbaud[3]->value(0);
+btn_fsqbaud[2]->value(0);
+btn_fsqbaud[4]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {366 135 55 15} down_box ROUND_DOWN_BOX
+                xywh {403 135 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 4.5);}
               }
-              Fl_Round_Button {btn_fsqbaud[3]} {
+              Fl_Round_Button {btn_fsqbaud[4]} {
                 label {6 baud}
                 callback {if (o->value() == 1) {
 progdefaults.fsqbaud = 6;
 btn_fsqbaud[0]->value(0);
 btn_fsqbaud[1]->value(0);
 btn_fsqbaud[2]->value(0);
+btn_fsqbaud[3]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {475 135 55 15} down_box ROUND_DOWN_BOX
+                xywh {497 135 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 6);}
               }
               Fl_Choice sel_fsq_frequency {

@@ -46,6 +46,8 @@ class fsq : public modem {
 #define BLOCK_SIZE	FFTSIZE
 #define SHIFT_SIZE	(FSQ_SYMLEN / 16)
 
+#define MOVAVGLIMIT 15
+  
 enum STATE {TEXT, IMAGE};
 
 friend void timed_xmt(void *);
