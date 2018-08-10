@@ -617,15 +617,33 @@ void Socket::open(const Address& addr)
 {
 	address = addr;
 	size_t n = address.size();
+	const addr_info_t* info = (addr_info_t *)0;
+	ainfo = info;
 
-	for (anum = n-1; anum >= 0; anum--) {
-		ainfo = address.get(anum);
-		LOG_INFO("Trying %s", address.get_str(ainfo).c_str());
-		if ((sockfd = socket(ainfo->ai_family, ainfo->ai_socktype, ainfo->ai_protocol)) != -1)
-			break;
+	for (anum = 0; anum < n; anum++) {
+		info = address.get(anum);
+LOG_DEBUG("\n\
+Address    %s\n\
+Family     %s\n\
+Sock type  %d\n\
+Protocol   %d",
+address.get_str(info).c_str(),
+(info->ai_family == AF_INET6 ? "AF_INET6" :\
+(info->ai_family == AF_INET ? "AF_INET" : "unknown")),
+info->ai_socktype,
+info->ai_protocol);
+		if (info->ai_family == AF_INET) ainfo = info;
 	}
-	if (sockfd == -1)
-		throw SocketException(errno, "socket");
+
+	if (ainfo == (addr_info_t *)0) {
+		LOG_ERROR("Cannot find IPv4 address");
+		throw SocketException("Cannot find IPv4 address");
+	}
+
+	LOG_INFO("Trying %s", address.get_str(ainfo).c_str());
+	if ((sockfd = socket(ainfo->ai_family, ainfo->ai_socktype, ainfo->ai_protocol)) == -1) { //!= -1) {
+		throw SocketException(errno, "Open socket");
+	}
 	set_close_on_exec(true);
 }
 
