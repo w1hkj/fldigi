@@ -1,10 +1,24 @@
 
 
+=Version 4.0.18=
+
+2018-08-12  David Freese  <w1hkj@bellsouth.net>
+
+	2fef9cb: CPS testing
+	aa757af: ipv6 addressing
+	c62662c: MT63 centering
+	9460c00: fsq mods
+	5a7377f: IFKP/THOR greyscale image
+	51e2829: Hamlib bug fix
+	58c6362: Tooltip
+	47d2c6c: nanoIO
+	a253603: THROB adif
+	f46cb9b: RigCAT dialog
+
+
 =Version 4.0.17=
 
-2018-06-10  David Freese  <w1hkj@bellsouth.net>
-
-	88fd54d: flarq idtimer
+	a2b9172: flarq idtimer
 	d58b0b7: Greek language update
 	4c3ca8f: tmpfile
 	87cb7e1: xmlrpc cat string
