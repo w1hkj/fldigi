@@ -285,8 +285,8 @@ static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 
 	stopMacroTimer();
 	active_modem->set_stopflag(false);
+
 	PERFORM_CPS_TEST = true;
-	trx_transmit();
 	int s0 = number_of_samples("");
 // sample count for characters ' ' through '~'
 	for(int j = 0; j < 256; j++) {
@@ -361,11 +361,9 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 
 			stopMacroTimer();
 			active_modem->set_stopflag(false);
+
 			PERFORM_CPS_TEST = true;
-			trx_transmit();
-
 			int s0 = number_of_samples("");
-
 			num_cps_chars = 0;
 			CPS_report(number_of_samples(buffer), s0);
 			PERFORM_CPS_TEST = false;
@@ -424,15 +422,14 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 
 		stopMacroTimer();
 		active_modem->set_stopflag(false);
+
 		PERFORM_CPS_TEST = true;
-		trx_transmit();
-
 		int s0 = number_of_samples("");
-
 		num_cps_chars = 0;
 		testfilename = txtbuf;
 		CPS_report(number_of_samples(buffer), s0);
 		PERFORM_CPS_TEST = false;
+
 	} else {
 		string resp = "Text not specified";
 		LOG_WARN("%s", resp.c_str());
@@ -494,15 +491,14 @@ static void pCPS_N(std::string &s, size_t &i, size_t endbracket)
 
 	stopMacroTimer();
 	active_modem->set_stopflag(false);
+
 	PERFORM_CPS_TEST = true;
-	trx_transmit();
-
 	int s0 = number_of_samples("");
-
 	num_cps_chars = 0;
 	testfilename = "Random group test";
 	CPS_report(number_of_samples(buffer), s0);
 	PERFORM_CPS_TEST = false;
+
 	return;
 }
 

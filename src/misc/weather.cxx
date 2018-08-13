@@ -221,7 +221,7 @@ void getwx(string& wx, const char *metar)
 	}
 
 	if (!fetch_http_gui(url, text, 5.0)) {
-		LOG_WARN("%s", "url not available\n");
+		LOG_WARN("%s\n%s", "url not available", text.c_str());
 		return;
 	}
 	p2 = text.find(wxsta);

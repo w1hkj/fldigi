@@ -1734,7 +1734,7 @@ int xmltest_char()
 {
 	guard_lock xmlchr_lock(&tx_queue_mutex);
 	if (xmlchars.empty() || !xmltest_char_available)
-		return 0;
+		return -3;
 	if (pxmlchar >= xmlchars.length() ) {
 		xmlchars.clear();
 		pxmlchar = 0;
