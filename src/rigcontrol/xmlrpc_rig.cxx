@@ -141,7 +141,6 @@ void exec_flrig_ptt() {
 	int resp, res;
 
 	try {
-//std::cout << "flrig_ptt " << new_ptt << std::endl;
 		res = flrig_client->execute("rig.set_ptt", new_ptt, result, timeout);
 		if (res) {
 			for (int j = 0; j < 5; j++) {
@@ -149,7 +148,6 @@ void exec_flrig_ptt() {
 				res = flrig_client->execute("rig.get_ptt", XmlRpcValue(), result2, 10);
 				if (res) {
 					resp = int(result2);
-//std::cout << "response (" << j+1 << ") " << resp << std::endl;
 					if (resp == new_ptt) {
 						wait_ptt = true;
 						wait_ptt_timeout = 10;
@@ -164,17 +162,15 @@ void exec_flrig_ptt() {
 			}
 		}
 	} catch (...) {
-//std:cout << "catch error in rig.set_ptt" << std::endl;
-last_new_ptt = new_ptt;
-new_ptt = -1;
-wait_ptt = false;
-wait_ptt_timeout = 0;
-return;
+		last_new_ptt = new_ptt;
+		new_ptt = -1;
+		wait_ptt = false;
+		wait_ptt_timeout = 0;
+		return;
 	}
 
 	wait_ptt = false;
 	wait_ptt_timeout = 0;
-//std::cout << "rig.set_ptt timeout" << std::endl;
 
 	LOG_ERROR("fldigi/flrig PTT %s failure", new_ptt ? "ON" : "OFF");
     last_new_ptt = new_ptt;
@@ -549,7 +545,8 @@ void do_flrig_get_bw()
 			wait_bw_timeout = 0;
 			LOG_ERROR("%s", "get bw failed!");
 		}
-	} catch (...) {}
+	} catch (...) {
+		}
 }
 
 void flrig_get_bw()
@@ -871,10 +868,15 @@ void flrig_get_pwrmeter()
 // transceiver get name
 //==============================================================================
 
-void xmlrpc_rig_show_xcvr_name(void *)
+static void xmlrpc_rig_show_xcvr_name(void *)
 {
 	xcvr_title = xcvr_name;
 	setTitle();
+}
+
+static void no_rig_init(void *)
+{
+	init_NoRig_RigDialog();
 }
 
 bool flrig_get_xcvr()
@@ -903,7 +905,7 @@ bool flrig_get_xcvr()
 			if (xcvr_name != "") {
 				xcvr_name = "";
 				Fl::awake(xmlrpc_rig_show_xcvr_name);
-				init_NoRig_RigDialog();
+				Fl::awake(no_rig_init);
 			}
 			connected_to_flrig = false;
 		}
@@ -911,7 +913,7 @@ bool flrig_get_xcvr()
 		if (xcvr_name != "") {
 			xcvr_name = "";
 			Fl::awake(xmlrpc_rig_show_xcvr_name);
-			init_NoRig_RigDialog();
+			Fl::awake(no_rig_init);
 		}
 		connected_to_flrig = false;
 	}
