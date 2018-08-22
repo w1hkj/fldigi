@@ -11,7 +11,14 @@
 \image latex browser-panel.png "Browser Panel" width=5.0in
 <br>
 
-Fldigi can display multiple decoded signals in both PSK and RTTY modes.
+Signals can be viewed in a multi-channel context for the following modes:
+<ul>
+<li>CW</li>
+<li>PSK-31, PSK-63, PSK-63F, PSK-125, PSK-250, PSK-250, PSK-500</li>
+<li>PSK-125R, PSK-250R, PSK-500R</li>
+<li>QPSK-31, QPSK-63, QPSK-125, QPSK-250, QPSK-500</li>
+<li>RTTY</li>
+</ul>
 The multi-channel display is either a separate dialog or an embedded resizable
 panel.
 

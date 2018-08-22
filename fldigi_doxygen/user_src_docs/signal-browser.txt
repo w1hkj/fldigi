@@ -8,7 +8,14 @@
 \image latex view-menu.png "View Menu" width=2.0in
 <br>
 
-PSK and RTTY signals can be viewed in a multi-channel context.
+Signals can be viewed in a multi-channel context for the following modes:
+<ul>
+<li>CW</li>
+<li>PSK-31, PSK-63, PSK-63F, PSK-125, PSK-250, PSK-250, PSK-500</li>
+<li>PSK-125R, PSK-250R, PSK-500R</li>
+<li>QPSK-31, QPSK-63, QPSK-125, QPSK-250, QPSK-500</li>
+<li>RTTY</li>
+</ul>
 You can open an embedded or a separate dialog to access the
 browser.  These browsers can help to locate a signal of interest
 on a busy band.  The browsers can be visible at any time, but are only
@@ -49,9 +56,7 @@ a channel number, <br>
 the waterfall audio frequency, <br>
 the transceiver HF frequency + waterfall, or<br>
 no annotation.<br>
-
 <br>
-
 Left click on a line of received text to move the waterfall frequency
 and Rx panel tracking to that signal.  The contents of the line of
 text is transferred to the Rx text widget, and the main signal processing loop
@@ -61,8 +66,10 @@ detection.  You may have to do this occasionally if the detector
 for that channel has locked on to a sideband of a PSK signal.
 This is most likely to occur when the received signal as a marginal or
 bad IMD.  Use the <b>Clear</b> button to clear and reset all of the
-channels.  Channel signal detection and processing should restart immediately.
+channels.  Channel signal detection and processing should restart immediately.<br>
 <br>
+The slider control is a squelch for the channel detectors.  Move it to the left until
+the decoders are displaying noise, then to the right to squelch the noise.
 <br>
 \ref ui_configuration_broswer_page "Configuring the browser"
 
