@@ -1180,6 +1180,8 @@ int main(int argc, char ** argv)
 
 	Fl::add_timeout(.25, delayed_startup);
 
+	Fl::set_color(FL_SELECTION_COLOR, 0, 0, 128);
+
 	int ret = Fl::run();
 
 	return ret;
