@@ -1069,8 +1069,7 @@ int rtty::tx_process()
 
 	int c = get_tx_char();
 
-	if (use_nanoIO) {
-		set_nanoIO();
+	if (progStatus.nanoFSK_online) {
 		if (preamble) {
 			start_deadman();
 			for (int i = 0; i < progdefaults.TTY_LTRS; i++)
