@@ -182,103 +182,105 @@ int Fl_Input2::handle_key_ascii(int key)
 //----------------------------------------------------------------------
 int Fl_Input2::handle(int event)
 {
-	switch (event) {
 	if (event == FL_LEAVE) {
 		do_callback();
 		return 1;
 	}
-	case FL_KEYBOARD: {
-		int b = Fl::event_key();
+	switch (event) {
+		case FL_KEYBOARD: {
+			int b = Fl::event_key();
 
-		if (b == FL_Enter || b == FL_KP_Enter) {
-			do_callback();
-			return Fl_Input::handle(event);
-		}
-		if (b == FL_Tab) {
-			do_callback();
-			return Fl_Input::handle(event);
-		}
+			if (b == FL_Enter || b == FL_KP_Enter) {
+				do_callback();
+				return Fl_Input::handle(event);
+			}
+			if (b == FL_Tab) {
+				do_callback();
+				return Fl_Input::handle(event);
+			}
 
-		if ((Fl::event_state() & FL_CTRL) && (isdigit(b) || isdigit(b - FL_KP))) {
-			if (handle_key_ascii(b)) {
-				if (utf8text) {
-					insert(utf8text, utf8cnt);
-					delete utf8text;
+			if ((Fl::event_state() & FL_CTRL) && (isdigit(b) || isdigit(b - FL_KP))) {
+				if (handle_key_ascii(b)) {
+					if (utf8text) {
+						insert(utf8text, utf8cnt);
+						delete utf8text;
+					}
+					ascii_cnt = 0;
+					ascii_chr = 0;
 				}
-				ascii_cnt = 0;
-				ascii_chr = 0;
+				return 1;
 			}
+			ascii_cnt = 0;
+			ascii_chr = 0;
+
+			int p = position();
+// stop the move-to-next-field madness, we have Tab for that!
+			if (unlikely((b == FL_Left && p == 0) || (b == FL_Right && p == size()) ||
+					(b == FL_Up && line_start(p) == 0) ||
+					(b == FL_Down && line_end(p) == size())))
+				return 1;
+			else if (unlikely(Fl::event_state() & (FL_ALT | FL_META))) {
+				switch (b) {
+					case 'c': 
+					{ // capitalise
+						if (readonly() || p == size())
+							return 1;
+						while (p < size() && isspace(*(value() + p)))
+							p++;
+						if (p == size())
+							return 1;
+						char c = toupper(*(value() + p));
+						replace(p, p + 1, &c, 1);
+						position(word_end(p));
+					}
+						return 1;
+					case 'u': case 'l':
+					{ // upper/lower case
+						if (readonly() || p == size())
+							return 1;
+						while (p < size() && isspace(*(value() + p)))
+							p++;
+						int n = word_end(p) - p;
+						if (n == 0)
+						return 1;
+
+						char* s = new char[n];
+						memcpy(s, value() + p, n);
+						if (b == 'u')
+							for (int i = 0; i < n; i++)
+								s[i] = toupper(s[i]);
+						else
+							for (int i = 0; i < n; i++)
+								s[i] = tolower(s[i]);
+						replace(p, p + n, s, n);
+						position(p + n);
+						delete [] s;
+						return 1;
+					}
+					default:
+						break;
+				}
+			}
+		}
+		return Fl_Input::handle(event);
+
+		case FL_MOUSEWHEEL: {
+			if (!((type() & (FL_MULTILINE_INPUT | FL_MULTILINE_OUTPUT)) && Fl::event_inside(this)))
+				return Fl_Input::handle(event);
+			int d;
+			if (!((d = Fl::event_dy()) || (d = Fl::event_dx())))
+				return Fl_Input::handle(event);
+			if (Fl::focus() != this)
+				take_focus();
+			up_down_position(d + (d > 0 ? line_end(position()) : line_start(position())));
 			return 1;
 		}
-		ascii_cnt = 0;
-		ascii_chr = 0;
-
-		int p = position();
-		// stop the move-to-next-field madness, we have Tab for that!
-		if (unlikely((b == FL_Left && p == 0) || (b == FL_Right && p == size()) ||
-			     (b == FL_Up && line_start(p) == 0) ||
-			     (b == FL_Down && line_end(p) == size())))
-			return 1;
-		else if (unlikely(Fl::event_state() & (FL_ALT | FL_META))) {
-			switch (b) {
-			case 'c': { // capitalise
-				if (readonly() || p == size())
-					return 1;
-
-				while (p < size() && isspace(*(value() + p)))
-					p++;
-				if (p == size())
-					return 1;
-				char c = toupper(*(value() + p));
-				replace(p, p + 1, &c, 1);
-				position(word_end(p));
-			}
-				return 1;
-			case 'u': case 'l': { // upper/lower case
-				if (readonly() || p == size())
-					return 1;
-				while (p < size() && isspace(*(value() + p)))
-					p++;
-				int n = word_end(p) - p;
-				if (n == 0)
-					return 1;
-
-				char* s = new char[n];
-				memcpy(s, value() + p, n);
-				if (b == 'u')
-					for (int i = 0; i < n; i++)
-						s[i] = toupper(s[i]);
-				else
-					for (int i = 0; i < n; i++)
-						s[i] = tolower(s[i]);
-				replace(p, p + n, s, n);
-				position(p + n);
-				delete [] s;
-				return 1;
-			}
-			default:
+		case FL_PUSH:
+			if (Fl::event_button() == FL_RIGHT_MOUSE)
 				break;
-			}
-		}
-	}
-		return Fl_Input::handle(event);
-	case FL_MOUSEWHEEL: {
-		if (!((type() & (FL_MULTILINE_INPUT | FL_MULTILINE_OUTPUT)) && Fl::event_inside(this)))
+// fall through
+		default:
 			return Fl_Input::handle(event);
-		int d;
-		if (!((d = Fl::event_dy()) || (d = Fl::event_dx())))
-			return Fl_Input::handle(event);
-		if (Fl::focus() != this)
-			take_focus();
-		up_down_position(d + (d > 0 ? line_end(position()) : line_start(position())));
-		return 1;
-	}
-	case FL_PUSH:
-		if (Fl::event_button() == FL_RIGHT_MOUSE)
-			break;
-		// fall through
-	default:
-		return Fl_Input::handle(event);
 	}
 
 	bool sel = position() != mark(), ro = readonly();
@@ -299,31 +301,32 @@ int Fl_Input2::handle(int event)
 
 	if (!m)
 		return 1;
+
 	switch (m - cmenu) {
-	case OP_UNDO:
-		undo();
-		break;
-	case OP_CUT:
-		cut();
-		copy_cuts();
-		break;
-	case OP_COPY:
-		copy(1);
-		break;
-	case OP_PASTE:
-		Fl::paste(*this, 1);
-		break;
-	case OP_DELETE:
-		cut();
-		break;
-	case OP_CLEAR:
-		cut(0, size());
-		break;
-	case OP_SELECT_ALL:
-		position(0, size());
-		break;
-	default:
-		insert(m->text, 1);
+		case OP_UNDO:
+			undo();
+			break;
+		case OP_CUT:
+			cut();
+			copy_cuts();
+			break;
+		case OP_COPY:
+			copy(1);
+			break;
+		case OP_PASTE:
+			Fl::paste(*this, 1);
+			break;
+		case OP_DELETE:
+			cut();
+			break;
+		case OP_CLEAR:
+			cut(0, size());
+			break;
+		case OP_SELECT_ALL:
+			position(0, size());
+			break;
+		default:
+			insert(m->text, 1);
 	}
 
 	return 1;

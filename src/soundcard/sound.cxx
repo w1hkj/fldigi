@@ -1133,12 +1133,12 @@ SoundPort::~SoundPort()
 	for (size_t i = 0; i < 2; i++) {
 		if (pthread_mutex_destroy(sd[i].cmutex) == -1) {
 			pa_perror(errno, "pthread mutex destroy");
-			throw SndException(errno);
+			terminate(); //throw SndException(errno);
 		}
 		delete sd[i].cmutex;
 		if (pthread_cond_destroy(sd[i].ccond) == -1) {
 			pa_perror(errno, "pthread cond destroy");
-			throw SndException(errno);
+			terminate(); //throw SndException(errno);
 		}
 		delete sd[i].ccond;
 	}
