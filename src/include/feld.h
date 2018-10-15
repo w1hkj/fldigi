@@ -74,9 +74,8 @@ protected:
 	double filter_bandwidth;
 
 	int depth;
-	int dxmode;
-	bool hardkeying;
 	double feldcolumnrate;
+	int hardkeying;
 
 	int preamble;
 	int postamble;

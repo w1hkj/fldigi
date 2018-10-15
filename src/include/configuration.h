@@ -548,10 +548,13 @@
         ELEM_(bool, HellXmtIdle, "HELLXMTIDLE",                                         \
               "Transmit periods (.) when idle",                                         \
               false)                                                                    \
-        ELEM_(bool, HellPulseFast, "HELLPULSEFAST",                                     \
+        ELEM_(int, HellPulseFast, "HELLPULSEFAST",                                      \
               "Raised cosine pulse shape factor. Values are as follows:\n"              \
-              "  0: slow (4 ms); 1: fast (2 ms).",                                      \
-              false)   /* slow */                                                       \
+              "  0: slow (4 ms)\n"                                                      \
+              "  1: med (2 ms)\n"                                                       \
+              "  2: fast (1 ms)\n"                                                      \
+              "  3: Hard (off)",                                                        \
+              1)       /* slow */                                                       \
         ELEM_(int, hellagc, "HELLAGC",                                                  \
               "1 - slow, 2 - medium, 3 - fast",                                         \
               2)                                                                        \

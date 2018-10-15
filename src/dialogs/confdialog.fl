@@ -3505,7 +3505,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 605 340} hide
+            xywh {0 50 605 340}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 605 340} selection_color 50
@@ -4582,7 +4582,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabFeld {
-            label Feld
+            label Feld open
             xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
@@ -4605,8 +4605,7 @@ progdefaults.changed = true;} open
                 callback {progdefaults.HellPulseFast = o->index();
 progdefaults.changed = true;} open
                 tooltip {Raised cosine pulse shape factor} xywh {70 145 150 22} box DOWN_BOX color 7 align 5
-                code0 {o->add(_("Slow (4 msec)"));}
-                code1 {o->add(_("Fast (2 msec)"));}
+                code0 {o->add(_("Slow (4 msec)|Med (2 msec)|Fast (1 msec)|Hard Keying"));}
                 code2 {o->index(progdefaults.HellPulseFast);
                        o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox

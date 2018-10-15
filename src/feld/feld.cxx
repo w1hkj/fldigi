@@ -484,7 +484,7 @@ int feld::get_font_data(unsigned char c, int col)
 	if (col > 15 || c < ' ' || c > '~')
 		return -1;
 	mask = 1 << (15 - col);
-	switch (fntnbr) {
+	switch (progdefaults.feldfontnbr) {
 		case 0: font = feld7x7_14; break;
 		case 1: font = feld7x7n_14; break;
 		case 2: font = feldDx_14; break;
@@ -528,22 +528,21 @@ double feld::nco(double freq)
 
 void feld::send_symbol(int currsymb, int nextsymb)
 {
-	double tone = get_txfreq_woffset();
-	double tone2 = 0;
-	double Amp = 1.0;
-	double ncoval = 0;
 	int outlen = 0;
 
-	if (mode >= MODE_FSKHELL && mode <= MODE_HELL80) {
-		tone += (reverse ? -1 : 1) * (prevsymb ? -1 : 1) * bandwidth / 2.0;
-		tone2 += (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
+	double Amp = 1.0;
+	double tone = get_txfreq_woffset();
+
+	if (hardkeying != progdefaults.HellPulseFast) {
+		hardkeying = progdefaults.HellPulseFast;
+		initKeyWaveform();
 	}
+
+	if (mode == MODE_FSKHELL || mode == MODE_FSKH105 || mode == MODE_HELL80)
+		tone += (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
 	for (;;) {
 		switch (mode) {
-			ncoval = nco(tone);
 			case MODE_FSKHELL : case MODE_FSKH105 : case MODE_HELL80 :
-				if ((tone2 != tone) && ((1.0 - fabs(ncoval)) < .001))
-					tone = tone2;
 				break;
 			case MODE_HELLX5 : case MODE_HELLX9 :
 				Amp = currsymb;
@@ -562,6 +561,7 @@ void feld::send_symbol(int currsymb, int nextsymb)
 
 		if (outlen >= OUTBUFSIZE) {
 			LOG_DEBUG("feld reset");
+			outlen = 0;
 			break;
 		}
 		txcounter += upsampleinc;
@@ -597,7 +597,7 @@ void feld::tx_char(char c)
 		send_null_column();
 	} else {
 		while ((bits = get_font_data(c, column)) != -1) {
-			for (int col = 0; col < dxmode; col++) {
+			for (int col = 0; col < progdefaults.HellXmtWidth; col++) {
 				colbits = bits;
 				for (int i = 0; i < 14; i++) {
 					currbit = colbits & 1;
@@ -618,14 +618,9 @@ int feld::tx_process()
 	modem::tx_process();
 
 	int c;
-	bool hdkey;
 
-	dxmode = progdefaults.HellXmtWidth;
-	hdkey = progdefaults.HellPulseFast;
-
-	fntnbr = progdefaults.feldfontnbr;
-	if (hardkeying != hdkey) {
-		hardkeying = hdkey;
+	if (hardkeying != progdefaults.HellPulseFast) {
+		hardkeying = progdefaults.HellPulseFast;
 		initKeyWaveform();
 	}
 
@@ -682,10 +677,21 @@ void feld::initKeyWaveform()
 		OffShape[i] = 0.0;
 	}
 	for (int i = 0; i < 32; i++) {
-		if (hardkeying == false)
-			OnShape[i] = 0.5*(1.0 - cos(M_PI * i / 33)); // raised cosine with 4 msec rise
-		else if (i < 16)
-			OnShape[i] = 0.5*(1.0 - cos(M_PI * i / 16)); // raised cosine with 2 msec rise
+		switch (hardkeying) {
+			case 0:
+				OnShape[i] = 0.5*(1.0 - cos(M_PI * i / 33)); // raised cosine with 4 msec rise
+				break;
+			case 1:
+				if (i < 16)
+					OnShape[i] = 0.5*(1.0 - cos(M_PI * i / 16)); // raised cosine with 2 msec rise
+				break;
+			case 2:
+				if (i < 8)
+					OnShape[i] = 0.5*(1.0 - cos(M_PI * i / 8)); // raised cosine with 1 msec rise
+			case 3:
+			default:	// square shaped pulse
+				break;
+		}
 		OffShape[31 - i] = OnShape[i];
 	}
 }
