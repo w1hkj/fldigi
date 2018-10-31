@@ -2649,6 +2649,25 @@ void cb_mnuOnLineDOCS(Fl_Widget *, void *)
 	}
 }
 
+inline int version_check(string v1, string v2) {
+	long v1a, v1b, v1c, v1d = 0;
+	long v2a, v2b, v2c, v2d = 0;
+	size_t p;
+	p = v1.find("."); v1a = atol(v1.substr(0, p).c_str()); v1.erase(0, p+1);
+	p = v1.find("."); v1b = atol(v1.substr(0,p).c_str()); v1.erase(0, p+1);
+	p = v1.find("."); v1c = atol(v1.c_str()); v1.erase(0, p+1);
+	if (!v1.empty()) v1d = atol(v1.c_str());
+	p = v2.find("."); v2a = atol(v2.substr(0, p).c_str()); v2.erase(0, p+1);
+	p = v2.find("."); v2b = atol(v2.substr(0,p).c_str()); v2.erase(0, p+1);
+	p = v2.find("."); v2c = atol(v2.c_str()); v2.erase(0, p+1);
+	if (!v2.empty()) v2d = atol(v2.c_str());
+	if (v1a < v2a) return -1; if (v1a > v2a) return 1;
+	if (v1b < v2b) return -1; if (v1b > v2b) return 1;
+	if (v1c < v2c) return -1; if (v1c > v2c) return 1;
+	if (v1d < v2d) return -1; if (v1d > v2d) return 1;
+	return 0;
+}
+
 void cb_mnuCheckUpdate(Fl_Widget *, void *)
 {
 	const char *url = "http://www.w1hkj.com/files/fldigi/";
@@ -2669,10 +2688,14 @@ void cb_mnuCheckUpdate(Fl_Widget *, void *)
 	p2 += 7;
 	version_str = reply.substr(p2, p - p2);
 
-	bool is_ok = string(PACKAGE_VERSION) >= version_str;
+	int is_ok = version_check(string(PACKAGE_VERSION), version_str);
 
-	if (is_ok)
+	if (is_ok == 0)
 		fl_message2(_("You are running the latest version"));
+	else if (is_ok > 0)
+		fl_message2(_("\
+You are probably running an alpha version, %s\n\
+\nPosted version: %s"), PACKAGE_VERSION, version_str.c_str());
 	else
 		fl_message2(_("Version %s is available at Source Forge"),
 				  version_str.c_str());
