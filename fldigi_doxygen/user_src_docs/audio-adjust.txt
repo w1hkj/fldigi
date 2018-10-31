@@ -16,22 +16,33 @@ signal is applied to the a/d input then either one of two things may occur,
 (1) the audio is clipped, or (2) the audio is wrapped, large positive signals
 wrap to large negative signals and vice versa.
 
+Signal decoding and signal display are two separate software processing paths:
+
+<center>
+\image html signal_flow.png "Signal Path"
+\image latex signal_flow.png "Signal Path" width=4.0in
+</center>
+
 The objective in adjusting the Rx audio is to use the full dynamic range of the
 a/d without incurring overdrive.  fldigi provides a number of display controls to
-assist in setting up the Rx audio.  There are two controls that ONLY adjust the
-visual appearance of the waterfall and DO NOT effect the a/d or the signal decoders.
-These controls are below and to the left of the waterfall, "Upper signal level (dB)", and
-"Signal range (dB)".
+assist in setting up the Rx audio.  There are two controls that adjust the
+visual appearance of the waterfall.  These controls are below and to the 
+left of the waterfall, "Upper signal level (dB)", and "Signal range (dB)".
+The "Upper signal level" control is a gain control.  0 dB == x1,-6 dB = x2.
+These values are dB relative to input signal level.  This control will effect 
+the Waterfall, FFT, and SIGnal views.  The
+"Signal range" control will only effect the Waterfall and FFT views.
 
 <center>
 \image html win10-fldigi-wf-adjust.png "Waterfall level/range controls"
 \image latex win10-fldigi-wf-adjust.png "Waterfall level/range controls" width=1.5in
 </center>
 
-Change the waterfall display to the "Scope" view.  Do this by pressing the "WF" button twice if
-it is currently displaying the waterfall.  You can also right click once on that button.  That
-button acts as a rotary and is left/right click sensitive.  The display should show what looks
-like an oscilloscope view of the received audio.  This is the entire audio signal and not just
+Change the waterfall display to the "Scope" view.  Do this by pressing the 
+"WF" button twice if it is currently displaying the waterfall.  You can also 
+right click once on that button.  That button acts as a rotary and is left/right 
+click sensitive.  The display should show what looks like an oscilloscope view 
+of the received audio.  This is the entire audio signal and not just
 the signal that is currently decoded.
 
 <center>
@@ -46,15 +57,22 @@ the transceiver audio output and the operating system mixer controls so that the
 not exceed the upper/lower gray lines on the display.  The diamond indicator to the left of the
 fldigi AFC button will be colored as follows:
 <ul>
-<li>BLACK - no signal, or insufficient Rx audio</li>
-<li>GREEN - signals are in the correct range</li>
-<li>YELLOW - signals are exceed 75% of maximum, but are less than 90% of maximum</li>
-<li>RED - signals exceed 90% of maximum a/d capability - WARNING WILL ROBINSON!</li>
+<li>BLACK - no signal present, or < 50 mv peak of audio</li>
+<li>GREEN - signals are in the correct range, 50 mv to 900 mv peak audio</li>
+<li>YELLOW - signals exceed 900 mv, but are less than 980 mv peak</li>
+<li>RED - signals exceed 980 mv or 98% of maximum a/d capability</li>
 </ul>
-You can then proceed to adjust the waterfall/fft appearance when you have the audio Rx level adjusted correctly.
 
-The three signal views should be similar to this with the level/range controls set to 0 and 60 respectively.  The
-waterfall palette used is "default.pal", and the received signal is about 20 dB above the noise floor.
+Set the left hand control to 0 dB and adjust the Rx audio (at the transceiver or OS mixer)
+for about 1/2 scale on the SIG display for an S9 signal.  WWV or an AM station
+carrier is a good signal to use for this adjustment.
+
+You can then proceed to adjust the waterfall/fft appearance when you have the 
+audio Rx level adjusted correctly.
+
+The three signal views should be similar to this with the level/range controls set 
+to 0 and 60 respectively.  The waterfall palette used is "default.pal", and the 
+received signal is about 20 dB above the noise floor.
 <center>
   \image html win10-fldigi-wf.png "Waterfall"
   \image latex win10-fldigi-wf.png "Waterfall" width=1.5in
