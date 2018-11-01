@@ -2062,8 +2062,7 @@ static void pFLRIG(std::string &s, size_t &i, size_t endbracket)
 	LOG_INFO("flrig CAT cmd: %s", s.substr(i, endbracket - i + 1).c_str());
 
 	size_t start = s.find(':');
-	std::string cmd = s.substr(start + 1, s.length() - start + 1);
-
+	std::string cmd = s.substr(start + 1, s.length() - start - 2);
 	xmlrpc_send_command(cmd);
 
 	s.replace(i, endbracket - i + 1, "");
