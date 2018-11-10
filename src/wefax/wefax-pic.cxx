@@ -1080,7 +1080,7 @@ class wefax_map_scroll : public wefax_map
 	/// wefax_map::resize destroys the image, we do not want that when displaying.
 	virtual void resize(int x, int y, int w, int h)
 	{
-		LOG_DEBUG("resize: %d %d %d %d", x, y, w, h );
+//		LOG_DEBUG("resize: %d %d %d %d", x, y, w, h );
 		Fl_Widget::resize( x, y, w, h );
 	}
 

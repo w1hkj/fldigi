@@ -4086,10 +4086,10 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			btnAltMacros2->deactivate();
 			HTh -= mh;
 			center_group->resize(x, y1, w, HTh);
-			text_panel->resize(x, y1, w, HTh);
-			wefax_group->resize(x, y1, w, HTh);
-			fsq_group->resize(x, y1, w, HTh);
-			ifkp_group->resize(x, y1, w, HTh);
+//			text_panel->resize(x, y1, w, HTh);
+//			wefax_group->resize(x, y1, w, HTh);
+//			fsq_group->resize(x, y1, w, HTh);
+//			ifkp_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe_1(x, y1, w, mh);
