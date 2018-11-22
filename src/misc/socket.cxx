@@ -1007,18 +1007,14 @@ size_t Socket::send(const void* buf, size_t len)
 	// if we have a nonblocking socket and a nonzero timeout,
 	// wait for fd to become writeable
 	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
-		if (!wait(1))
+		if (!wait(1)) {
+			LOG_ERROR("Select failed on %d", sockfd);
 			return 0;
+		}
 
 	size_t nToWrite = len;
 	int r = 0;
 	const char *sp = (const char *)buf;
-
-LOG_INFO("\n\
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\
-%s\n\
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-sp);
 
 	while ( nToWrite > 0) {
 #if defined(__WIN32__)
@@ -1109,8 +1105,8 @@ size_t Socket::recv(string& buf)
 			buf.append(buffer, r);
 			n += r;
 		}
-	} catch (...) {
-		throw;
+	} catch (SocketException &e) {
+		throw e;
 	}
 
 	return n;
@@ -1177,7 +1173,7 @@ size_t Socket::sendTo(const void* buf, size_t len)
 				shutdown(sockfd, SHUT_WR);
 				throw SocketException(errno, "send");
 			} else if (r == -1) {
-				if (errno != EAGAIN) {
+				if (errno != EAGAIN && errno != 0) {
 					LOG_INFO("errno = %d (%s) r %d buff %s", errno, strerror(errno), r, sp);
 				}
 				r = 0;
@@ -1415,7 +1411,7 @@ size_t Socket::recvFrom(std::string& buf)
 ///
 void Socket::shut_down(void)
 {
-	::shutdown(sockfd, SHUT_RD);
+	::shutdown(sockfd, SHUT_RDWR);
 }
 
 ///
