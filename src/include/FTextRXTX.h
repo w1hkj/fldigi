@@ -38,7 +38,7 @@ public:
 
 	virtual int	handle(int event);
 
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR >= 3
 	virtual void	add(unsigned int  c, int attr = RECV);
 	virtual	void	add(const char *s, int attr = RECV)
         {

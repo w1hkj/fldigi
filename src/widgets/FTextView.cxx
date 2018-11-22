@@ -131,7 +131,7 @@ void FTextBase::add(const char *s, int attr)
 /// @param s 
 /// @param attr 
 ///
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR >= 3
 void FTextBase::add(unsigned int c, int attr)
 #else
 void FTextBase::add(unsigned char c, int attr)

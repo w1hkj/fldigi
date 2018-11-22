@@ -205,10 +205,7 @@ WFdisp::~WFdisp() {
 }
 
 void WFdisp::initMarkers() {
-	uchar *c1 = (uchar *)markerimage,
-		  *c2 = c1 + RGBwidth * (WFMARKER - 1);
-	memset(c1, 196, RGBwidth);
-	memset(c2, 196, RGBwidth);
+	memset(markerimage, 224, RGBwidth * WFMARKER); 
 }
 
 // draw a marker of specified width and colour centred at freq and clrM
@@ -345,9 +342,8 @@ void WFdisp::makeMarker()
 	for (int y = 0; y < WFMARKER - 2; y++) {
 		int incr = y * scale_width;
 		int msize = (WFMARKER - 2 - y)*RGBsize*step/4;
-		*(clrM + incr - 1)	=
-		*(clrM + incr)		=
-		*(clrM + incr + 1)	= RGBcursor;
+		for (int m = -step; m < step; m++)
+			*(clrM + incr + m) = RGBcursor;
 
 		if (xp - (bw_lo + msize) > 0)
 			for (int i = bw_lo - msize; i <= bw_lo + msize; i++)
@@ -361,27 +357,23 @@ void WFdisp::makeMarker()
 
 void WFdisp::makeScale() {
 	uchar *gmap = scaleimage;
-	int hwidth = step / 2;
 	memset(scline, 0, scale_width);
 
 	for (int tic = 500; tic < scale_width; tic += 500) {
-		if (hwidth)
-			for (int ticn = -hwidth; ticn < hwidth; ticn++)
-				scline[tic + ticn] = 255;
-		else
-			scline[tic] = 255;
+		scline[tic] = 255;
+		for (int ticn = 1; ticn < step; ticn++)
+			if (tic + ticn < scale_width) scline[tic + ticn] = 255;
 	}
+
 	for (int i = 0; i < WFSCALE - 5; i++) {
 		memcpy(gmap, scline, scale_width);
 		gmap += (scale_width);
 	}
 
 	for (int tic = 100; tic < scale_width ; tic += 100) {
-		if (hwidth)
-			for (int ticn = -hwidth; ticn < hwidth; ticn++)
-				scline[tic + ticn] = 255;
-		else
-			scline[tic] = 255;
+		scline[tic] = 255;
+		for (int ticn = 1; ticn < step; ticn++)
+			if (tic + ticn < scale_width) scline[tic + ticn] = 255;
 	}
 	for (int i = 0; i < 5; i++) {
 		memcpy(gmap, scline, scale_width);
@@ -414,7 +406,7 @@ void WFdisp::initmaps() {
 
 	memset (fft_img, 0, image_area * sizeof(RGBI) );
 	memset (scaleimage, 0, scale_width * WFSCALE);
-	memset (markerimage, 0, IMAGE_WIDTH * WFMARKER);
+	memset (markerimage, 0, RGBwidth * WFMARKER);
 	memset (fft_sig_img, 0, image_area);
 	memset (sig_img, 0, sig_image_area);
 
@@ -846,7 +838,7 @@ void WFdisp::drawScale() {
 			w(), WFSCALE,
 			step, scale_width);
 
-		fl_color(fl_rgb_color(228));
+		fl_color(0xFFFFFF00);
 		fl_font(progdefaults.WaterfallFontnbr, progdefaults.WaterfallFontsize);
 
 		for (int i = 1; ; i++) {
@@ -892,7 +884,7 @@ void WFdisp::drawScale() {
 		w(), WFSCALE,
 		step, scale_width);
 
-	fl_color(fl_rgb_color(228));
+	fl_color(0xFFFFFF00);
 	fl_font(progdefaults.WaterfallFontnbr, progdefaults.WaterfallFontsize);
 
 	for (int i = 1; ; i++) {
@@ -918,11 +910,17 @@ void WFdisp::drawScale() {
 void WFdisp::drawMarker() {
 	if (mode == SCOPE) return;
 	uchar *pixmap = (uchar *)(markerimage + (int)(offset));
-	fl_draw_image(
-		pixmap,
-		x(), y() + WFSCALE + WFTEXT,
-		w(), WFMARKER,
-		step * RGBsize, RGBwidth);
+	uchar map[RGBsize * scale_width];
+	int y1 = y() + WFSCALE + WFTEXT;
+	for (int yp = 0; yp < WFMARKER; yp++) {
+		for (int xp = 0; xp < scale_width; xp++) {
+			map[RGBsize * xp] = pixmap[RGBsize * (yp * scale_width + xp * step)];
+			map[RGBsize * xp + 1] = pixmap[RGBsize * (yp * scale_width + xp * step) + 1];
+			map[RGBsize * xp + 2] = pixmap[RGBsize * (yp * scale_width + xp * step) + 2];
+		}
+		fl_draw_image((const uchar *)map, x(), y1 + yp, w(), 1, RGBsize, 0);
+	}
+	return;
 }
 
 void WFdisp::update_waterfall() {
