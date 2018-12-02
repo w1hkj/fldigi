@@ -1055,13 +1055,13 @@ bool remove_comments()
 	while ((p0 = strXML.find("<!--")) != string::npos) {
 		p1 = strXML.find("-->", p0);
 		if (p1 == string::npos) {
-			fl_alert2("Corrupt rig XML defintion file\nMismatched comment tags!");
+			fl_alert2("Corrupt rig XML definition file\nMismatched comment tags!");
 			return false;
 		}
 		strXML.erase(p0, p1 - p0 + 3);
 	}
 	if (strXML.find("-->") != string::npos) {
-		fl_alert2("Corrupt rig XML defintion file\nMismatched comment tags!");
+		fl_alert2("Corrupt rig XML definition file\nMismatched comment tags!");
 		return false;
 	}
 	return true;

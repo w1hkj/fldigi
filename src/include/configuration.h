@@ -1239,11 +1239,11 @@
         /* GPIO parameters */                                                           \
         ELEM_(long, enable_gpio, "ENABLE_GPIO",                                         \
               "GPIO enable\n"                                                           \
-              "bits 0 - 16; bit 0 --> gpio pin N",                                      \
+              "bits 0 - 16; bit 0 : gpio pin N",                                        \
               0)                                                                        \
         ELEM_(long, gpio_on, "GPIO_STATE",                                              \
               "GPIO State\n"                                                            \
-              "bits 0 - 16; bit 0 --> PTT ON state on pin N",                           \
+              "bits 0 - 16; bit 0 : PTT ON state on pin N",                             \
               0)                                                                        \
         ELEM_(int, gpio_pulse_width, "GPIO_PULSE_WIDTH",                                \
               "GPIO pulse width setting for PiHpSDR PTT",                               \
