@@ -1,0 +1,524 @@
+/**
+\page contesting_page  Contesting with fldigi
+
+\tableofcontents
+
+Fldigi supports a full range of contests, either using it's internal
+logbook or when linked to one of the N3FJP loggers.  Each contest's unique data
+exchange is captured either in a generic multi word exchange field, or in
+contest specific fields that are displayed in the main dialog logging group.
+
+\image html config-ui-contest.png "UI Contest"
+\image latex config-ui-contest.png "UI Contest" width=5.0in
+
+<ul>
+<li>Generic contest</li>
+<li>Africa All-Mode International</li>
+<li>ARRL Field Day</li>
+<li>ARRL International DX (cw)</li>
+<li>ARRL Jamboree on the Air</li>
+<li>ARRL Kids Day</li>
+<li>ARRL Rookie Roundup</li>
+<li>ARRL RTTY Roundup</li>
+<li>ARRL School Club Roundup</li>
+<li>ARRL November Sweepstakes</li>
+<li>Winter FD</li>
+<li>BARTG RTTY contest</li>
+<li>CQ WPX</li>
+<li>CQ WW DX</li>
+<li>CQ WW DX RTTY</li>
+<li>Italian A.R.I. International DX</li>
+<li>North American QSO Party</li>
+<li>North American Sprint</li>
+<li>Ten Ten</li>
+<li>VHF</li>
+<li>State & Regional QSO parties</li>
+</ul>
+
+\section stand-alone-contesting Contesting with fldigi's built-in logbook
+
+Select the contest type from the Contest combo:
+
+\image html config-ui-contest-select.png "UI Contest"
+\image latex config-ui-contest-select.png "UI Contest" width=5.0in
+
+If you select the State QSO parties, you need to make a second selection
+for the specific state, province, area, or region contest in which you will 
+be participating.
+
+\image html config-ui-contest-select-SQSO.png "UI Contest"
+\image latex config-ui-contest-select-SQSO.png "UI Contest" width=5.0in
+
+The serial number out (\#Out) is automatically initialized and updated by
+the built-in serial number generator.   You can enter the
+appropriate exchange information via the keyboard or mouse.  Text
+in the Rx pane can be selected by mouse 
+\ref rx-text-capture "left-click / right-click".  Make your selection and the info is placed
+in the correct text box.  Note that the popup menu changes with
+the QSO logging view and also with a change in "Quick entry".  A
+full description is found in the description of operating the
+ \ref logbook_page "Logbook".  The important thing to note for contest
+operation is that the Call and Serial \# are single word captures.  The Xchg
+capture can be either single word or multiple word (mark / right click).  If
+the Xchg field has text contents then the new capture is appended to
+end of the current text in that field.  That means you can point
+to the word representing the field, right click and select from the menu.
+You do not need to highlight the text for the word capture.  You can very
+rapidly fill in the serial number and the exchange data (even if multi value)
+by simply pointing and right clicking on the desired word.<br>
+
+Set up the Generic contesting on the UI/Contest tab.  The Send Xchg control
+is the text you want the appropriate macro
+tag. ie...if the contest requires RST and name you would fill in the
+Exchange Out box with your name.  The contents of this field are accessed from
+a macro with the \<XOUT\> tag. You will also need to check the RST
+always 599 box as this is the de-facto signal report in contests.<br>
+
+If you are participating in a CW contest you may want to select the "Send CW cut
+numbers", cut numbers is the norm for a CW contest.  The cut
+numbers will send N for 9 and T for zero.
+<br>
+
+The next box contains the needed requirements to use serial numbers for
+a contest. You will always want to use leading zeros, start with 1 and use 3
+digits.  Press reset to initialize the \#Out QSO field to the Start number.<br>
+
+Check the appropriate fields for determining if this is a duplicate call. If
+a duplicate is detected the Call entry will be highlighted as shown in
+the "Dup Color" button.  Pressing this button opens a color selector so
+you may customize the color.  There are many choices to alert you to a
+duplicate contact.  The duplicate is based on the logical AND of all of the
+fields to be checked.  The DUPE is cleared when you press the
+clear QSO log button (the brush icon).<br>
+
+After you have filled in all the required information, make sure you save and
+close.<br>
+
+Remember YOU MUST click the Reset button in the Serial number panel for the
+serial number counter to be initialized.  You should also press
+the QSO clear button (broom) in the QSO entry widget for the other
+changes to take effect.<br>
+
+It would be best to create a new log for each contest.  You create a new
+log by selecting the menu item File/Logs/New logbook.  The default new log
+name will be newlog.adif on Linux and newlog.adi on Windows.   You can rename
+the new log file now or later by using the system file manager or when you
+save the log.  The import/export feature of fldigi will allow you to export
+the log into your everyday logging software or the built-in fldigi logbook.<br>
+
+You can check for duplicates by any combination of the specified named
+fields. You can also specify that the duplicate had to occur within a
+given time interval. Some VHF contests allow a duplicate CALL after
+a given time interval.
+
+\subsection field_day_contest Field Day Contest
+
+The log fields and associated Rx Text popup menu changes to appropriate fields
+when the Field Day check box is enabled on the contest configuration tab:
+
+\image html fd-config.png ""
+\image latex fd-config.png "" width=4.5in
+
+\image html field-day-fields.png ""
+\image latex field-day-fields.png "" width=4.0in
+
+The field day station station callsign is your fldigi user callsign.  Enter the
+operator's call (if different).  Enter the Class and Section for your station.
+These will all be available as macro tags for writing macros appropriate for
+participating in the field day event.<br>
+
+fldigi can connect to external Field Day logging programs such as N3FJP's
+FDlog and/or a TclTk application called "fdserver" that is a part of the family
+of fldigi programs.  fdserver operation is described in a separate document.<br>
+
+Additional instructions on the field day server is available at
+\ref fdserver_page  "Field Day Server setup".
+
+\subsection rx-text-capture Capturing Rx data strings
+
+Capturing exchange text from the Rx text panel has been simplified for contest
+operations.  All text capture is based on a single mouse left click on the
+word of interest, or on the first word in a sequence:
+<ul>
+<li>LEFT click - capture single word</li>
+<li>SHIFT LEFT click - capture two words</li>
+<li>CONTROL LEFT click - capture three words</li>
+<li>SHIFT CONTROL LEFT click - capture four words</li>
+</ul>
+The capture text parser behavior is keyed to the selected contest.  The program
+will attempt to recognize specific phrases such as RST exhcange, States/Provinces
+(both long and abbreviations).  For each contest there is a preferred capture
+order.  The capture order for the specific contest is displayed on the contest
+configuration tab.  Use the capture order to assist the parser.<br>
+
+You can also capture text using a RIGHT mouse click on the target Rx word.  A pop-up
+menu will open with selectable fields that are keyed to the selected contest.  You
+may need to use the right click paradigm when fields may be conflicting.  For
+example a contest may require both RST and a SERIAL number, both of which may
+have similar values.
+
+\section contesting-macros Contest Macros
+
+<center>This section contributed by W3NR, Ed</center>
+
+It is recommended that you make a separate macro file for contesting.  Start
+with the generic set of macros and modify them as described in this section.
+Then save the modified macros with a suitable file name such contest.mdf.
+This will give you 48 macros to use based on the type of contest you are entering.<br>
+
+Take a good look at the following examples and you will notice there are no 
+commas, hyphens or other extraneous items.  Your contest exchange should
+be brief and concise.  These are examples of what <b>not</b> to do:
+<ul>
+<li>w3nr you are 599 in Alabama your serial number is 001-001-001 how copy ??</li>
+<li>hello ed thanks for the call you are 599-599-001-001-001 QTH Alabama back
+to you</li>
+</ul>
+
+Capturing data from that kind of exchange is nearly impossible.  Contest
+macros should be written to expedite the exchange of data.<br>
+
+When you enter a contest you have to decide whether you are going to sit on
+one frequency and call CQ (Run) or are you going to tune the band
+looking for stations to work (S&amp;P).  So lets set up some macros that
+should cover both cases.<br>
+
+Several new macro tags have been created to facilitate contesting, these
+include the following tags.
+
+<table>
+<tr>
+<td>\<LOG\></td>
+<td>add QSO data to the logbook &amp;
+clear the QSO data fields</td>
+</tr>
+<tr>
+<td>\<CNTR\></td>
+<td>insert current contest serial number into the text stream</td>
+</tr>
+<tr>
+<td>\<INCR\></td>
+<td>increment contest serial number</td>
+</tr>
+<tr>
+<td>\<DECR\></td>
+<td>decrement contest serial number</td>
+</tr>
+<tr>
+<td>\<XOUT\></td>
+<td>contest exchange</td>
+</tr>
+<tr>
+<td>\<QSOTIME\></td>
+<td>current log time in Zulu HHMM format</td>
+</tr>
+<tr>
+<td>\<LDT\></td>
+<td>local date time</td>
+</tr>
+<tr>
+<td>\<ILDT\></td>
+<td>LDT in iso-8601 format</td>
+</tr>
+<tr>
+<td>\<ZDT\></td>
+<td>Zulu date time</td>
+</tr>
+<tr>
+<td>\<IZDT\></td>
+<td>ZDT in iso-8601 format</td>
+</tr>
+<tr>
+      <td>\<QSOTIME\><br>
+      </td>
+      <td>actual time of execution of the macro ... useful where exact times are used to match contest log submissions<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<SAVEXCHG\><br>
+      </td>
+      <td>save entire contents of the expanded macro text to the "Exchange Out" field in the logbook<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<XBEG\><br>
+      </td>
+      <td>mark the beginning of a text string that is to be saved to the "Exchange Out" field in the logbook<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<XEND\><br>
+      </td>
+      <td>mark the end of the text string that
+      is to be saved to the "Exchange Out" field in the logbook
+      <br>
+note:  \<SAVEXCHG\> and the \<XBEG\>...\<XEND\> macro tags are
+mutually exclusive<br>
+
+\<XBEG\>...\<XEND\> is given priority if both all three are specified
+in a single macro<br>
+      </td>
+    </tr>
+</table>
+
+See \ref macros_sub_page "Macros" for additional information on editing
+and using the fldigi macro system.
+
+\subsection run_macros RUN Macros
+
+We need just a few, starting with a CQ macro - Put this in the F1 key definition
+
+\verbatim
+<TX>
+cq test de <MYCALL>  <MYCALL>   cq k
+<RX>
+\endverbatim
+
+Notice that I left 2 spaces between my call and 3 spaces at the end before the
+k. This will make it easier for a station to grab my call and the k on
+the end eliminates garbage characters before my macro finishes. The
+tx/rx are on separate lines as I want to be sure my macro is on a line
+by itself and not mixed in with screen garbage.  This does not apply to
+the CW mode as there is no CR/LF function in CW.  fldigi will convert the
+CR/LF to a space in the CW mode.
+<br>
+Now the exchange macro - Put this in the F2 key definition<br>
+
+\verbatim
+<TX>
+<CALL> 599  <CNTR> <CNTR>  <XOUT>  <XOUT> <CALL>  k
+<RX>
+\endverbatim
+
+Why do I have his call at the beginning as well as the end, to make sure I
+have copied his call correctly. You will also see that I have not as
+yet logged the contact,why, well are you sure he does not need to
+correct his call or ask for a repeat.<br>
+
+You are asked to repeat the exchange, you can just re-send the exchange macro,
+this verifies all of the information. Now he sends you his info and if you have
+copied it correctly you need a TU macro. - Put this in the F3 key definition.
+
+\verbatim
+<TX>
+qsl tu qrz test  <MYCALL>  k
+<RX><LOG><INCR>
+\endverbatim
+
+Here we have done all the necessary items to complete the exchange. Notice
+that I did not log the contact until after everything was correct. I
+have fldigi set to clear on save, so when the \<LOG\> part of the
+macro executes the QSO area is cleared.<br>
+
+Thats the end of my RUN macro setup, told you it was rather simplistic and
+generic.
+
+\subsection s_p_macros S \& P Macros
+
+I rarely if ever use S&amp;P, but there are times I
+need to, especially if my QSO rate drops while running.  Again the macros are
+very generic with only the needed info.  If band conditions warrant you may
+want to send your call 3 times.  Put this in the F5 key definition
+
+\verbatim
+<TX>
+<MYCALL>  <MYCALL>  k
+<RX>
+\endverbatim
+Why just my call ?? Well I assume the other guy already knows his call !
+
+The exchange macro is basically the same as the RUN macro.  Put this one in the F6 key definition<br>
+
+\verbatim
+<TX>
+599  <CNTR>  <CNTR>  <XOUT>  <XOUT>    k
+<RX>
+\endverbatim
+
+As you see I have not as yet logged the QSO or incremented the serial
+number.  This is the final S&amp;P macro.  Put this one in the F7 key
+definition.
+
+\verbatim
+<LOG><INCR>
+\endverbatim
+
+Now this is the most important macro you will ever need......trust me. Put it
+where you won't fail to find it.  How about F9 ?
+
+\verbatim
+<TX>
+agn  agn  k
+<RX>
+\endverbatim
+
+You will see that it is used many times during a contest, especially with
+weak stations and heavy QRN/QRM.
+<ul>
+<li>\<QSOTIME\> - time sent in Tx stream
+<ul><li>repeat execution of \<QSOTIME\> before a \<LOG\> macro or a save to
+log button press will resend the original time</li>
+</ul>
+</li>
+<li>\<LOG\> macro or a save-to-log button press appends the QSOTIME to
+the STX_STRING field in the adif log record and clears the QSOTIME.
+</li>
+<li>\<XBEG\> - use at end of a contest exchange to save the entire exchange string in STX_STRING
+</li>
+<ul>
+<li>usurps QSOTIME if both are contained in same macro text, ie:<br>
+"<RST> <CNTR> <QSOTIME> <SAVEXCHG>" will send the exchange as<br>
+599 024 1125<br>
+if RST = 599, Counter = 024 and time of execution is 1125</li>
+<li>
+repeats the same as \<QSOTIME \>
+</li>
+</ul>
+<li>
+\<LOG\> - or a save-to-log button press saves the associated
+macro text (after expansion).
+<ul>
+<li>QSOTIME and the saved exchange text are cleared after the save occurs.
+</li>
+</ul>
+</li>
+</ul>
+
+An example of the SAVEXCHG macro tag<br>
+
+\verbatim
+<RST> <CNTR> <XOUT> <QSOTIME><SAVEXCHG>
+\endverbatim
+
+Where RST = 599, CNTR = 0125, XOUT = AL, QSOTIME = 1433<br>
+<br>
+Will save this string to the <i>Exchange Out</i> field in the
+logbook: "599 0125 AL 1433"
+<br>
+Please note that you should not include any text or macro tags that are
+not to be a part of <i>Exchange Out</i>.  If your macro had this:
+
+\verbatim
+<TX><CALL> UR <RST> <CNTR> <XOUT> <QSOTIME> de <MYCALL> k<RX><SAVEXCHG>
+\endverbatim
+
+Where CALL = W3NR, MYCALL = W1HKJ<br>
+<br>
+the saved <i>Exchange Out</i> field would contain: "W3NR UR 599 0125 AL 1433 de W1HKJ k"
+<br>
+Probably not what you want.  Use separate function keys for the
+"<TX>CALL ..." and the "de <MYCALL> k<RX>" or use the next
+set of macro tags
+
+\verbatim
+<XBEG>...<XEND>
+\endverbatim
+
+These two macro tags are delimiters for capturing the transmitted exchange
+data, for example:
+
+\verbatim
+<TX><CALL> de <MYCALL> QSL <XBEG><RST> <CNTR> <QSOTIME><XEND> K<RX>
+\endverbatim
+
+Will place the expanded \<RST\> \<CNTR\> \<QSOTIME\> into the
+<i>Exchange Out</i> field of the logbook when the contact is saved.  This is
+much better illustrated with a screen shot.  This one shows the macro
+editor contents, the logbook entry in <i>Exchange Out</i>, and the transmit
+text buffer.
+
+\image html xbeg-xend.png "Exchange Begin-End"
+\image latex xbeg-xend.png "Exchange Begin-End" width=6.0in
+
+\section n3fjp_logger Contesting with N3FJP logger connection
+
+Fldigi and the N3FJP logging software have been interfaced to form a 
+very powerful combination that allows the avid contester to perform CW 
+and digital communications in the most popular ARRL, National, International, 
+and State contests. This combination also assists the Handi-ham in communicating 
+in CW. They allow the operator to send and receive contest exchanges as well 
+as control their rig.  The N3FJP logger behaves as a log data base server
+and fldigi the modem client for the purposes of data exchange.  The N3FJP
+logger can reside either on the same host computer (Windows) or on a LAN
+connected Windows host computer.  The fldigi/N3FJP combination has been
+tested on a single Windows 7/8/10 computer, and on a LAN with fldigi running
+on a second Windows computer, a Linux computer, and an Apple OS-X computer.<br>
+
+Although the contests are varied, certain parts of the set up are the same 
+for all. These include the Sound Card (Rig Interface such as Rig Blaster, 
+Signalink, or home brew) and the API (Application Program Interface.), and
+transceiver control.  Both fldigi and the N3FJP program can provide transceiver
+control.  You should use fldigi / flrig for transceiver control as then can
+provide a broader range of control functions.<br>
+
+The N3FJP logger will maintain and provide the SENT serial number to fldigi.
+That serial number will be used in all macros which reference the sent serial number.<br>
+
+The N3FJP logger software is independently sold and distributed by Scott 
+and Kimberly Davis. Download the appropriate logging software from 
+http://www.n3fjp.com. <br>
+
+Either fldigi or the N3FJP logger can be started first.  When so configure
+fldigi will periodically attempt to connect to the logger.  The two programs
+can reside on a single or multiple computers with LAN access.  The N3FJP
+logger will only run on an MS operating system.  fldigi can be on any of the
+supported operating systems.  The connection has been tested between Linux,
+OS X, and MS operating systems.
+
+\subsection n3fjp_setup N3FJP logger setup
+
+<ul>
+<li>Click on Setup and configure your station information.</li>
+<li>Set up API.  This is necessary even if both fldigi and the logger
+are on the same machine.  Select API from the Setup menu.<br>
+Check the box in the upper section for API port 1100.</li>
+</ul>
+
+\subsection fldigi_setup Fldigi setup
+
+<ul>
+<li>Open configuration dialog to the UI/Logs/N3FJP... tab
+<br>
+
+\image html config-ui-log-n3fjp.png "N3FJP connect"
+\image latex config-ui-log-n3fjp.png "N3FJP connect"  width=5.0in
+</li>
+<li>Enter the LAN address, either as the machine name or it's numeric
+uniform resource locator, i.e: LENOVO-DUALBOOT (192.168.1.81)<br>
+If both fldigi and the N3FJP logger are on the same Windows computer, then
+the machine address is 127.0.0.1.
+</li>
+<li>Check the box "Enable data stream" to view the connect and data transfer
+process.
+</li>
+<li>Check the "Connect" box
+</li>
+</ul>
+
+fldigi should connect to the logger with a few seconds.  You will see the
+connect stream processing as above, and the GREEN connect triangle should\
+illuminate.<br>
+
+Disconnecting is as simple as unchecking the "Connect" box.<br>
+
+fldigi's contest selectors will be set by the initial information exchange
+with the N3FJP logger.  Exiting the N3FJP logger and starting a different one
+will be reflected in fldigi's contest configuration almost immediately.   The
+fldigi main dialog title bar and the fldigi logging controls will reflect the change
+in contest usage.  Here is an example for an automatic connection to the
+CQ WW DX contest
+
+\image html contest-cq-wwdx.png "CQ WWDX contest"
+\image latex contest-cq-wwdx.png "CQ WWDX contest"  width=6.0in
+
+fldigi will query the N3FJP logger for duplicate checks.  Both the N3FJP logger
+and the fldigi logging control for CALL should provide a duplicate indication.<br>
+
+For more information on fldigi/N3FJP loggers see \ref n3fjp_logs_page  "N3FJP Log/Contest Setup".
+<br>
+
+\ref contesting_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

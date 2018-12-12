@@ -13,8 +13,8 @@
 # Documents produced by Doxygen are derivative works derived from the
 # input used in their production; they are not affected by this license.
 
-PROJECT_NAME         = "FLDIGI Users Manual"
-PROJECT_NUMBER       = 4.0
+PROJECT_NAME         = "Fldigi Users Manual"
+PROJECT_NUMBER       = 4.1.00
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = NO
@@ -70,9 +70,9 @@ INPUT                = \
 	configRTTY.txt \
 	configThor.txt \
 	ConfigUI-browser.txt \
-	ConfigUI-contest.txt \
 	ConfigUI-general.txt \
 	ConfigUI-logging.txt \
+	contesting.txt \
 	ConfigUI-macros.txt \
 	configUITouch.txt \
 	ConfigUI-WF-controls.txt \
@@ -80,7 +80,6 @@ INPUT                = \
 	configure_scripting.txt \
 	kiss_io_command.txt \
 	SoundCardSetup.txt \
-	Contest-How-To.txt \
 	cabrilloreporter.txt \
 	Logbook.txt \
 	dxcluster.txt \

@@ -18,21 +18,19 @@
 
 /*!
 
-\mainpage FLDIGI Users Manual - Version 4.0.17
+\mainpage
 \anchor main_page
-
 <center>
 \image latex FLDigiWindow.png "" width=4.0in
 \image html FLDigiWindowHtml.png ""
 </center>
-
-\section fldigi_op_ins Fldigi Configuration and Operational Instructions
-
+\section fldigi_op_ins Main Menu
 <ul>
 <li>\ref configuration_page </li>
 <li>\ref modems_page </li>
 <li>\ref operating_page </li>
 <li>\ref logging_page </li>
+<li>\ref contesting_page </li>
 <li>\ref dxcluster_interface_page </li>
 <li>\ref macro_page </li>
 <li>\ref configure_script_page </li>
@@ -40,9 +38,6 @@
 <li>\ref license_page </li>
 <li>\ref recognitions_page </li>
 </ul>
-
-<br>
-
 \ref main_page "Return to Top of Page"
 
 */

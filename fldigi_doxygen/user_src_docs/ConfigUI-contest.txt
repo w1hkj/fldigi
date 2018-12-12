@@ -3,23 +3,55 @@
 
 \tableofcontents
 
-\image html config-ui-tabs.png "UI Tabs"
-\image latex config-ui-tabs.png "UI Tabs" width=4.0in
-<br>
-
-Fldigi supports a generic but robust set of contest functions. In
-addition to serial-in and serial-out you can capture and transmit three
-exchange sequences unique to a specific contest. Enter the
-exchange you want to send for each of the three. You can force
-the RST in/out to always be 599. That seems to be a norm for many
-contests. When operating in a CW contest you can have fldigi send
-cut numbers, T for 0, N for nine.
-<br>
-
 \image html config-ui-contest.png "UI Contest"
 \image latex config-ui-contest.png "UI Contest" width=5.0in
 <br>
 
+Fldigi supports a full range of contests. Each contest's unique data
+exchange is captured either in a generic multi word exchange field, or in
+contest specific fields that are displayed in the main dialog logging group.
+
+<ul>
+<li>Generic contest</li>
+<li>Africa All-Mode International</li>
+<li>ARRL Field Day</li>
+<li>ARRL International DX (cw)</li>
+<li>ARRL Jamboree on the Air</li>
+<li>ARRL Kids Day</li>
+<li>ARRL Rookie Roundup</li>
+<li>ARRL RTTY Roundup</li>
+<li>ARRL School Club Roundup</li>
+<li>ARRL November Sweepstakes</li>
+<li>ARRL Winter FD</li>
+<li>BARTG RTTY contest</li>
+<li>CQ WPX</li>
+<li>CQ WW DX</li>
+<li>CQ WW DX RTTY</li>
+<li>Italian A.R.I. International DX</li>
+<li>North American QSO Party</li>
+<li>North American Sprint</li>
+<li>Ten Ten</li>
+<li>VHF</li>
+<li>State QSO parties</li>
+</ul>
+
+Select the contest type from the Contest combo:
+
+\image html config-ui-contest-select.png "UI Contest"
+\image latex config-ui-contest-select.png "UI Contest" width=5.0in
+<br>
+
+If you select the State QSO parties, you need to make a second selection
+for the specific state, area, region contest in which you be participating.
+
+\image html config-ui-contest-select-SQSO.png "UI Contest"
+\image latex config-ui-contest-select-SQSO.png "UI Contest" width=5.0in
+
+Enter the exchange you want to send. You can force
+the RST in/out to always be 599. That seems to be a norm for many
+contests. When operating in a CW contest you can have fldigi send
+cut numbers, T for 0, N for nine.
+<br>
 The serial number can be set to use leading zeros.  You can specify the
 starting number for the sequence and how many digits are sent, ie:
 0024. Pressing Reset will set the starting number to the QSO logging
@@ -31,6 +63,76 @@ You can check for duplicates by any combination of the specified named
 fields. You can also specify that the duplicate had to occur with a
 given time interval. Some VHF contests allow a duplicate CALL after
 a given time interval.
+<br>
+
+\section n3fjp_logger N3FJP logger connection
+
+Fldigi and the N3FJP logging software have been interfaced to form a 
+very powerful combination that allows the avid contester to perform CW 
+and digital communications in the most popular ARRL, National, International, 
+and State contests. This combination also assists the Handi-ham in communicating 
+in CW. They allow the operator to send and receive contest exchanges as well 
+as control their rig.  The N3FJP logger behaves as a log data base server
+and fldigi the modem client for the purposes of data exchange.
+
+Since the contests differ greatly in their exchanges, these instructions 
+will be rather lengthy and will have many screen shots. These instructions 
+will be broken down by contests that are similar and require similar settings.
+
+Although the contests are varied, certain parts of the set up are the same 
+for all. These include the Sound Card (Rig Interface such as Rig Blaster, 
+Signalink, or home brew) and the API (Application Program Interface.) 
+
+The first thing that you will need to do is to bring up the N3FJP program 
+for the contest that you want to participate in. To do this go to 
+http://www.n3fjp.com and select it from the Contest Logs drop down menu. 
+The N3FJP logger software is independently sold and distributed by Scott 
+and Kimberly Davis. 
+
+Either fldigi or the N3FJP logger can be started first.  When so configure
+fldigi will periodically attempt to connect to the logger.  The two programs
+can reside on a single or multiple computers with LAN access.  The N3FJP
+logger will only run on an MS operating system.  fldigi can be on any of the
+supported operating systems.  The connection has been tested between Linux,
+OS X, and MS operating systems.
+
+\subsection n3fjp_setup N3FJP logger setup
+
+<ul>
+<li>Click on Setup and configure your station information.</li>
+<li>Set up API.  This is necessary even if both fldigi and the logger
+are on the same machine.  Select API from the Setup menu.<br>
+Check the box in the upper section for API port 1100.</li>
+</ul>
+
+\subsection fldigi_setup Fldigi setup
+
+<ul>
+<li>Open configuration dialog to the UI/Logs/N3FJP... tab</li>
+<br>
+\image html config-ui-log-n3fjp.png "N3FJP connect"
+\image latex config-ui-log-n3fjp.png "N3FJP connect"  width=5.0in
+<br>
+<li>Enter the LAN address, either as the machine name or it's numeric
+uniform resource locator, i.e: LENOVO-DUALBOOT (192.168.1.81)</li>
+<li>Check the box "Enable data stream" to view the connect and data transfer
+process.</li>
+<li>Check the "Connect" box</li>
+</ul>
+
+fldigi should connect to the logger with a few seconds.  You will see the
+connect stream processing as above, and the GREEN connect triangle should\
+illuminate.
+
+Disconnect is as simple as unchecking the "Connect" box.
+
+fldigi will follow suite as you stop and start various N3FJP loggers.  The
+fldigi main dialog title bar and it's logging controls will reflect the change
+in contest usage.  Here is an example for an automatic connection to the
+CQ WW DX contest
+<br>
+\image html contest-cq-wwdx.png "CQ WWDX contest"
+\image latex contest-cq-wwdx.png "CQ WWDX contest"  width=6.0in
 <br>
 
 \ref ui_configuration_contest_page "Return to Top of Page"
