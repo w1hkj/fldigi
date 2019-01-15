@@ -147,6 +147,7 @@ string KmlDir = "";
 string PskMailDir = "";
 
 string NBEMS_dir = "";
+string NBEMS_dir_default = "";
 string DATA_dir = "";
 string ARQ_dir = "";
 string ARQ_files_dir = "";
@@ -985,13 +986,13 @@ int main(int argc, char ** argv)
 	if (PskMailDir.empty()) PskMailDir = BaseDir;
 	if (DATA_dir.empty()) DATA_dir.assign(BaseDir).append("DATA.files/");
 	if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append("NBEMS.files/");
-	if (FLMSG_dir.empty()) FLMSG_dir = FLMSG_dir_default = NBEMS_dir;
+	if (FLMSG_dir.empty()) FLMSG_dir = NBEMS_dir;
 #else
 	if (HomeDir.empty()) HomeDir.assign(BaseDir).append(".fldigi/");
 	if (PskMailDir.empty()) PskMailDir = BaseDir;
 	if (DATA_dir.empty()) DATA_dir.assign(BaseDir).append("DATA.files/");
 	if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append(".nbems/");
-	if (FLMSG_dir.empty()) FLMSG_dir = FLMSG_dir_default = NBEMS_dir;
+	if (FLMSG_dir.empty()) FLMSG_dir = NBEMS_dir;
 #endif
 
 	if (!FLMSG_dir_default.empty()) {
@@ -1001,6 +1002,15 @@ int main(int argc, char ** argv)
 		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, FLMSG_dir_default.c_str());
 		FLMSG_dir = dirbuf;
 	}
+
+	if (!NBEMS_dir_default.empty()) {
+		char dirbuf[FL_PATH_MAX + 1];
+		if (NBEMS_dir_default[NBEMS_dir_default.length()-1] != '/')
+			NBEMS_dir_default += '/';
+		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, NBEMS_dir_default.c_str());
+		NBEMS_dir = dirbuf;
+	}
+
 	checkdirectories();
 	check_nbems_dirs();
 	check_data_dir();
@@ -1460,6 +1470,7 @@ int parse_args(int argc, char **argv, int& idx)
 		   OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
 		   OPT_SHOW_CPU_CHECK,
 		   OPT_FLMSG_DIR,
+		   OPT_NBEMS_DIR,
 		   OPT_AUTOSEND_DIR,
 
 		   OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
@@ -1496,6 +1507,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "arq-server-address", 1, 0, OPT_ARQ_ADDRESS },
 		{ "arq-server-port",    1, 0, OPT_ARQ_PORT },
 		{ "flmsg-dir", 1, 0, OPT_FLMSG_DIR },
+		{ "nbems-dir", 1, 0, OPT_NBEMS_DIR },
 		{ "auto-dir", 1, 0, OPT_AUTOSEND_DIR },
 
 		{ "cpu-speed-test", 0, 0, OPT_SHOW_CPU_CHECK },
@@ -1607,6 +1619,10 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_FLMSG_DIR:
 			FLMSG_dir_default = optarg;
+			break;
+
+		case OPT_NBEMS_DIR:
+			NBEMS_dir_default = optarg;
 			break;
 
 		case OPT_AUTOSEND_DIR:
