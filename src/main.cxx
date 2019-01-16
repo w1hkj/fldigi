@@ -1614,7 +1614,7 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 		case OPT_ARQ_PORT:
 			override_arq_port = optarg;
-			arq_address_override_flag = true;
+			arq_port_override_flag = true;
 			break;
 
 		case OPT_FLMSG_DIR:
