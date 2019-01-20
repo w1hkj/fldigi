@@ -70,18 +70,46 @@ static dxcc_map_t* cmap = 0;
 static dxcc_list_t* clist = 0;
 static vector<string>* cnames = 0;
 
+static list<string> lnames;
+string cbolist;
+
 static void add_prefix(string& prefix, dxcc* entry);
 
-bool dxcc_open(const char* filename)
-{
-	if (cmap)
-		return true;
+extern std::string s_ctydat;
 
-	ifstream in(filename);
-	if (!in) {
-		LOG_VERBOSE("Could not read contest country file \"%s\"", filename);
+// comparison, not case sensitive.
+static bool compare_nocase (const std::string& first, const std::string& second)
+{
+	unsigned int i=0;
+	while ( (i<first.length()) && (i<second.length()) )
+	{
+		if (tolower(first[i]) < tolower(second[i])) return true;
+		else if (tolower(first[i]) > tolower(second[i])) return false;
+		++i;
+	}
+	return ( first.length() < second.length() );
+}
+
+bool dxcc_internal_data()
+{
+
+	std::string tempfname = HomeDir;
+	tempfname.append("/temp/ctydat.txt");
+	ofstream out(tempfname.c_str());
+	if (!out) {
+		LOG_INFO("Could not write temp file %s", tempfname.c_str());
 		return false;
 	}
+	out << s_ctydat;
+	out.close();
+
+	ifstream in(tempfname.c_str());
+	if (!in) {
+		LOG_INFO("Could not read temp file %s", tempfname.c_str());
+		return false;
+	}
+
+	LOG_INFO("Using internal cty.dat data");
 
 	cmap = new dxcc_map_t;
 	cnames = new vector<string>;
@@ -92,7 +120,7 @@ bool dxcc_open(const char* filename)
 // string in cnames
 
 	cnames->reserve(500); // approximate number of dxcc entities
-	
+
 	clist = new dxcc_list_t;
 	clist->reserve(500);
 
@@ -110,6 +138,118 @@ bool dxcc_open(const char* filename)
 		clist->push_back(entry);
 		getline(is, cnames->back(), ':');
 		entry->country = cnames->back().c_str();
+
+		lnames.push_back(entry->country);
+
+		// cq zone
+		(is >> entry->cq_zone).ignore();
+		// itu zone
+		(is >> entry->itu_zone).ignore();
+		// continent
+		(is >> ws).get(entry->continent, 3).ignore();
+
+		// latitude
+		(is >> entry->latitude).ignore();
+		// longitude
+		(is >> entry->longitude).ignore();
+		// gmt offset
+		(is >> entry->gmt_offset).ignore(256, '\n');
+
+		// prefixes and exceptions
+		int c;
+		string prefix;
+		while ((c = is.peek()) == ' ' || c == '\n') {
+			is >> ws;
+
+			while (getline(is, prefix, ',')) {
+				add_prefix(prefix, entry);
+				if ((c = is.peek()) == '\n')
+					break;
+			}
+		}
+
+		if (cnames->back() == "United States") {
+			dxcc *usa_entry = new dxcc(
+				"USA",
+				entry->cq_zone,
+				entry->itu_zone,
+				entry->continent,
+				entry->latitude,
+				entry->longitude,
+				entry->gmt_offset );
+			nrec++;
+			cnames->resize(cnames->size() + 1);
+			clist->push_back(usa_entry);
+			lnames.push_back("USA");
+		}
+
+		in >> ws;
+
+	}
+	lnames.sort(compare_nocase);
+
+	cbolist.clear();
+	list<string>::iterator p = lnames.begin();
+	while (p != lnames.end()) {
+		cbolist.append(*p);
+		p++;
+		if (p != lnames.end()) cbolist.append("|");
+	}
+
+	stringstream info;
+	info << "\nLoaded " << cmap->size() << " prefixes for " << nrec
+	     << " countries from internal cty.dat\n"
+		 << "You should download the latest from http://www.country-files.com";
+	LOG_INFO("%s", info.str().c_str());
+
+	remove(tempfname.c_str());
+
+	return true;
+}
+
+bool dxcc_open(const char* filename)
+{
+	if (cmap) {
+		LOG_INFO("cty.dat already loaded");
+		return true;
+	}
+
+	ifstream in(filename);
+	if (!in) {
+		LOG_INFO("Could not read contest country file \"%s\"", filename);
+		return dxcc_internal_data();
+	}
+
+	cmap = new dxcc_map_t;
+	cnames = new vector<string>;
+
+// this MUST be greater than the actual number of dcxx entities or
+// the Windows gcc string library will move all of the strings and
+// destroy the integrity of the cmap c_str() pointer to the country
+// string in cnames
+
+	cnames->reserve(500); // approximate number of dxcc entities
+
+	clist = new dxcc_list_t;
+	clist->reserve(500);
+
+	dxcc* entry;
+	string record;
+
+	unsigned nrec = 0;
+	while (getline(in, record, ';')) {
+		istringstream is(record);
+		entry = new dxcc;
+		nrec++;
+
+		// read country name
+		cnames->resize(cnames->size() + 1);
+		clist->push_back(entry);
+		getline(is, cnames->back(), ':');
+		entry->country = cnames->back().c_str();
+
+		lnames.push_back(entry->country);
+
 		// cq zone
 		(is >> entry->cq_zone).ignore();
 		// itu zone
@@ -137,7 +277,32 @@ bool dxcc_open(const char* filename)
 			}
 		}
 
-		in >> ws; // cr/lf after ';'
+		if (cnames->back() == "United States") {
+			dxcc *usa_entry = new dxcc(
+				"USA",
+				entry->cq_zone,
+				entry->itu_zone,
+				entry->continent,
+				entry->latitude,
+				entry->longitude,
+				entry->gmt_offset );
+			nrec++;
+			cnames->resize(cnames->size() + 1);
+			clist->push_back(usa_entry);
+			lnames.push_back("USA");
+		}
+
+		in >> ws;
+
+	}
+	lnames.sort(compare_nocase);
+
+	cbolist.clear();
+	list<string>::iterator p = lnames.begin();
+	while (p != lnames.end()) {
+		cbolist.append(*p);
+		p++;
+		if (p != lnames.end()) cbolist.append("|");
 	}
 
 	stringstream info;
@@ -290,7 +455,7 @@ bool qsl_open(const char* filename, qsl_t qsl_type)
 	}
 
 	stringstream info;
-	info << "Added " << qsl_calls->size() - n 
+	info << "Added " << qsl_calls->size() - n
 		 << " " << qsl_names[qsl_type]
 		 << " callsigns from \"" << filename << "\"";
 	LOG_VERBOSE("%s", info.str().c_str());

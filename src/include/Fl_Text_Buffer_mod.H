@@ -603,16 +603,21 @@ public:
    */
   int findchar_backward(int startPos, unsigned int searchChar, int* foundPos) const;
   
-  /**
-   Search forwards in buffer for string \p searchString, starting with the
-   character \p startPos, and returning the result in \p foundPos
-   returns 1 if found, 0 if not.
+  /** 
+   Finds the next nth occurrence of the specified character.
+   Search forwards in buffer for character \p searchChar, starting
+   with the character \p startPos, and returning the result in \p foundPos
+   returns 1 if found, 0 if not.  (The difference between this and
+   BufSearchForward is that it's optimized for single characters.  The
+   overall performance of the text widget is dependent on its ability to
+   count lines quickly, hence searching for a single character: newline)
    \param startPos byte offset to start position
-   \param searchString utf8 string that we want to find
-   \param foundPos byte offset where the string was found
-   \param matchCase if set, match character case
+   \param searchChar UCS-4 character that we want to find
+   \param foundPos byte offset where the character was found
    \return 1 if found, 0 if not
    */
+  int findchars_forward(int startPos, const char* searchString, int* foundPos, int n = 1) const;
+  
   int search_forward(int startPos, const char* searchString, int* foundPos,
                      int matchCase = 0) const;
   
@@ -629,7 +634,6 @@ public:
   int search_backward(int startPos, const char* searchString, int* foundPos,
                       int matchCase = 0) const;
 
-  int findchars_forward(int startPos, const char* searchChars, int* foundPos);
   int findchars_backward(int startPos, const char* searchChars, int* foundPos);
 
   /** 

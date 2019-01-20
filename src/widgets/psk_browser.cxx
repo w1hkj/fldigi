@@ -104,16 +104,13 @@ void pskBrowser::evalcwidth()
 	fl_font(fnt, siz);
 	textfont(fnt);
 	textsize(siz);
-	const char *szAF = " 9999";
-	const char *szRF = " 999999.99";
-	const char *szCH = " 99";
-	cwidth = (int)fl_width("W");
+	cwidth = (int)fl_width("8");
 	if (cwidth <= 0) cwidth = 5;
 	cheight = fl_height();
-	labelwidth[VIEWER_LABEL_OFF] = 1;//cwidth;
-	labelwidth[VIEWER_LABEL_AF] = (int)fl_width(szAF);
-	labelwidth[VIEWER_LABEL_RF] = (int)fl_width(szRF);
-	labelwidth[VIEWER_LABEL_CH] = (int)fl_width(szCH);
+	labelwidth[VIEWER_LABEL_OFF] = 1;
+	labelwidth[VIEWER_LABEL_AF] = 5*cwidth;
+	labelwidth[VIEWER_LABEL_RF] = 10*cwidth;
+	labelwidth[VIEWER_LABEL_CH] = 3*cwidth;
 	columns(labelwidth[progdefaults.VIEWERlabeltype]);
 }
 

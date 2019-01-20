@@ -2718,7 +2718,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		*retval = xmlrpc_c::value_string(inpCountry->value());
+		*retval = xmlrpc_c::value_string(cboCountry->value());
 	}
 };
 

@@ -1,7 +1,11 @@
 #ifndef N3FJP_LOGGER_H
 #define N3FJP_LOGGER_H
 
+#include <string>
+
 #include "qso_db.h"
+
+extern std::string n3fjp_serno;
 
 extern void get_n3fjp_udp();
 extern void *n3fjp_loop(void *args);

@@ -28,6 +28,7 @@
 
 #include "textio.h"
 #include "lgbook.h"
+#include "globals.h"
 
 using namespace std;
 
@@ -92,12 +93,15 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%s", ",\"SERIAL_SENT\"");
 	if (btnSelectXchgIn->value())    fprintf (txtFile, "%s", ",\"XCHG1\"");
 	if (btnSelectMyXchg->value())    fprintf (txtFile, "%s", ",\"MYXCHG\"");
-	if (btnSelectClass->value())     fprintf (txtFile, "%s", ",\"FD_CLASS\"");
-	if (btnSelectSection->value())   fprintf (txtFile, "%s", ",\"FD_SECTION\"");
+	if (btnSelectClass->value())     fprintf (txtFile, "%s", ",\"CLASS\"");
+	if (btnSelectSection->value())   fprintf (txtFile, "%s", ",\"ARRl_SECT\"");
 	if (btnSelectOperator->value())  fprintf (txtFile, "%s", ",\"OPER\"");
 	if (btnSelectStaCall->value())   fprintf (txtFile, "%s", ",\"STA_CALL\"");
 	if (btnSelectStaGrid->value())   fprintf (txtFile, "%s", ",\"STA_GRID\"");
 	if (btnSelectStaCity->value())   fprintf (txtFile, "%s", ",\"STA_CITY\"");
+	if (btnSelectCheck->value())     fprintf (txtFile, "%s", ",\"CHECK\"");
+	if (btnSelectAge->value())       fprintf (txtFile, "%s", ",\"AGE\"");
+	if (btnSelect_1010->value())     fprintf (txtFile, "%s", ",\"10-10\"");
 	fprintf (txtFile, "%s", szEOL);
 }
 
@@ -129,7 +133,7 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 				if (btnSelectFreq->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(FREQ));
 				if (btnSelectMode->value())
-					fprintf (txtFile, ",\"%s\"", pRec->getField(MODE));
+					fprintf (txtFile, ",\"%s\"", adif2export(pRec->getField(MODE)).c_str());
 				if (btnSelectTX_pwr->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(TX_PWR));
 				if (btnSelectRSTsent->value())
@@ -182,9 +186,9 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, ",\"%s\"", pRec->getField(MYXCHG));
 
 				if (btnSelectClass->value())
-					fprintf (txtFile, ",\"%s\"", pRec->getField(FDCLASS));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(CLASS));
 				if (btnSelectSection->value())
-					fprintf (txtFile, ",\"%s\"", pRec->getField(FDSECTION));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(ARRL_SECT));
 
 				if (btnSelectOperator->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(OP_CALL));
@@ -194,6 +198,13 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, ",\"%s\"", pRec->getField(MY_GRID));
 				if (btnSelectStaCity->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(MY_CITY));
+
+				if (btnSelectCheck->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(CHECK));
+				if (btnSelectAge->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(AGE));
+				if (btnSelect_1010->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(TEN_TEN));
 
 				fprintf (txtFile, "%s", szEOL);
 				pRec->putField(EXPORT,"");
@@ -243,13 +254,17 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 	if (btnSelectXchgIn->value())    fprintf (txtFile, "%-15s", "XCHG1");
 	if (btnSelectMyXchg->value())    fprintf (txtFile, "%-15s", "MYXCHG");
 
-	if (btnSelectClass->value())     fprintf (txtFile, "%-15s", "FDCLASS");
-	if (btnSelectSection->value())   fprintf (txtFile, "%-15s", "FDSECTION");
+	if (btnSelectClass->value())     fprintf (txtFile, "%-15s", "CLASS");
+	if (btnSelectSection->value())   fprintf (txtFile, "%-15s", "ARRL_SECT");
 
 	if (btnSelectOperator->value())  fprintf (txtFile, "%-15s", "OPER");
 	if (btnSelectStaCall->value())   fprintf (txtFile, "%-15s", "STA_CALL");
 	if (btnSelectStaGrid->value())   fprintf (txtFile, "%-15s", "STA_GRID");
 	if (btnSelectStaCity->value())   fprintf (txtFile, "%-15s", "STA_CITY");
+
+	if (btnSelectCheck->value())     fprintf (txtFile, "%-15s", "CHECK");
+	if (btnSelectAge->value())       fprintf (txtFile, "%-15s", "AGE");
+	if (btnSelect_1010->value())     fprintf (txtFile, "%-15s", "10-10");
 
 	fprintf (txtFile, "%s", szEOL);
 }
@@ -281,7 +296,7 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 				if (btnSelectFreq->value())
 					fprintf (txtFile, "%-12s", pRec->getField(FREQ));
 				if (btnSelectMode->value())
-					fprintf (txtFile, "%-8s", pRec->getField(MODE));
+					fprintf (txtFile, "%-8s", adif2export(pRec->getField(MODE)).c_str());
 				if (btnSelectTX_pwr->value())
 					fprintf (txtFile, "%-8s", pRec->getField(TX_PWR));
 				if (btnSelectRSTsent->value())
@@ -334,9 +349,9 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-15s", pRec->getField(MYXCHG));
 
 				if (btnSelectClass->value())
-					fprintf (txtFile, "%-15s", pRec->getField(FDCLASS));
+					fprintf (txtFile, "%-15s", pRec->getField(CLASS));
 				if (btnSelectSection->value())
-					fprintf (txtFile, "%-15s", pRec->getField(FDSECTION));
+					fprintf (txtFile, "%-15s", pRec->getField(ARRL_SECT));
 
 				if (btnSelectOperator->value())
 					fprintf (txtFile, "%-15s", pRec->getField(OP_CALL));
@@ -347,6 +362,12 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 				if (btnSelectStaCity->value())
 					fprintf (txtFile, "%-15s", pRec->getField(MY_CITY));
 
+				if (btnSelectCheck->value())
+					fprintf (txtFile, "%-15s", pRec->getField(CHECK));
+				if (btnSelectAge->value())
+					fprintf (txtFile, "%-15s", pRec->getField(AGE));
+				if (btnSelect_1010->value())
+					fprintf (txtFile, "%-15s", pRec->getField(TEN_TEN));
 
 				fprintf (txtFile, "%s", szEOL);
 				pRec->putField(EXPORT,"");

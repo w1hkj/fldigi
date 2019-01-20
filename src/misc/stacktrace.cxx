@@ -39,6 +39,7 @@
 
 #ifdef BUILD_FLDIGI
 #  include "main.h"
+#  include "debug.h"
 #else
 #  include "flarq.h"
 #endif
@@ -94,7 +95,8 @@ void diediedie(void)
 
 		string stfname;
 #ifdef BUILD_FLDIGI
-		stfname.assign(HomeDir).append("stacktrace.txt");
+		stfname.assign(DebugDir).append("stacktrace.txt");
+		rotate_log(stfname);
 #else
 		stfname = Logfile;
 #endif

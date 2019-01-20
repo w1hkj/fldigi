@@ -100,13 +100,22 @@ public:
 	~Fl_ComboBox();
 
 	const char *value ();
-	void value (const char *);
+	void value (std::string);
 	void put_value( const char *);
 	void fl_popbrwsr(Fl_Widget *);
 
 	void type (int = 0);
 	void add (const char *s, void *d = 0);
 	void clear ();
+	void clear_entry() { 
+		if (type_ == LISTBOX) {
+			valbox->label("");
+			valbox->redraw_label();
+		} else {
+			val->value("");
+			val->redraw();
+		}
+	}
 	void sort ();
 	int  index ();
 	void index (int i);
@@ -121,6 +130,7 @@ public:
 	void numrows(int n) { numrows_ = n; }
 	int  lsize() { return listsize; }
 	void set_focus() { Fl::focus(btn); };
+	void position(int n);
 	void labelfont(Fl_Font fnt) { Fl_Group::labelfont(fnt); }
 	Fl_Font labelfont() { return Fl_Group::labelfont(); }
 	void labelsize(Fl_Fontsize n) { Fl_Group::labelsize(n); }

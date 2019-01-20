@@ -1,0 +1,68 @@
+State, ST, County/City, CC
+Connecticut,CT,Fairfield,FAICT
+,CT,Hartford,HARCT
+,CT,Litchfield,LITCT
+,CT,Middlesex,MIDCT
+,CT,New Haven,NHVCT
+,CT,New London,NLNCT
+,CT,Tolland,TOLCT
+,CT,Windham,WINCT
+Massechusetts,MA,Barnstable,BARMA
+,MA,Berkshire,BERMA
+,MA,Bristol,BRIMA
+,MA,Dukes,DUKMA
+,MA,Essex,ESSMA
+,MA,Franklin,FRAMA
+,MA,Hampden,HMDMA
+,MA,Hampshire,HMPMA
+,MA,Middlesex,MIDMA
+,MA,Nantucket,NANMA
+,MA,Norfolk,NORMA
+,MA,Plymouth,PLYMA
+,MA,Suffolk,SUFMA
+,MA,Worcester,WORMA
+Maine,ME,Androscoggin,ANDME
+,ME,Aroostook,AROME
+,ME,Cumberland,CUMME
+,ME,Franklin,FRAME
+,ME,Hancock,HANME
+,ME,Kennebec,KENME
+,ME,Knox,KNOME
+,ME,Lincoln,LINME
+,ME,Oxford,OXFME
+,ME,Penobscot,PENME
+,ME,Piscataquis,PISME
+,ME,Sagadahoc,SAGME
+,ME,Somerset,SOMME
+,ME,Waldo,WALME
+,ME,Washington,WASME
+,ME,York,YORME
+New Hampshire,NH,Belknap,BELNH
+,NH,Carroll,CARNH
+,NH,Cheshire,CHENH
+,NH,Coos,COONH
+,NH,Grafton,GRANH
+,NH,Hillsborough,HILNH
+,NH,Merrimack,MERNH
+,NH,Rockingham,ROCNH
+,NH,Strafford,STRNH
+,NH,Sullivan,SULNH
+Rhode Island,RI,Bristol,BRIRI
+,RI,Kent,KENRI
+,RI,Newport,NEWRI
+,RI,Providence,PRORI
+,RI,Washington,WASRI
+Vermont,VT,Addison,ADDVT
+,VT,Bennington,BENVT
+,VT,Caledonia,CALVT
+,VT,Chittenden,CHIVT
+,VT,Essex,ESSVT
+,VT,Franklin,FRAVT
+,VT,Grand Isle,GRAVT
+,VT,Lamoille,LAMVT
+,VT,Orange,ORAVT
+,VT,Orleans,ORLVT
+,VT,Rutland,RUTVT
+,VT,Washington,WASVT
+,VT,Windham,WNHVT
+,VT,Windsor,WNDVT

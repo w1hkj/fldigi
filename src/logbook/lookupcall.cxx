@@ -415,8 +415,7 @@ void QRZ_disp_result()
 	inpLoc->position (0);
 
 	if (!lookup_country.empty()) {
-		inpCountry->value(lookup_country.c_str());
-		inpCountry->position (0);
+		cboCountry->value(lookup_country.c_str());
 	}
 
 	if (!progdefaults.myLocator.empty() && !lookup_grid.empty()) {
@@ -1294,7 +1293,7 @@ void makeEQSL(const char *message)
 	while ((p = msg.find("{NAME}")) != std::string::npos)
 		msg.replace(p, 6, inpName->value());
 	while ((p = msg.find("{MODE}")) != std::string::npos)
-		msg.replace(p, 6, mode_info[active_modem->get_mode()].adif_name);
+		msg.replace(p, 6, mode_info[active_modem->get_mode()].export_name);
 
 
 // eqsl url header
@@ -1328,27 +1327,7 @@ void makeEQSL(const char *message)
 		tempstr.c_str());
 	eQSL_url.append(sztemp);
 // mode
-	tempstr = mode_info[active_modem->get_mode()].adif_name;
-// test for modes not supported by eQSL
-	if ((tempstr.find("MFSK4") != std::string::npos) ||
-		(tempstr.find("MFSK11") != std::string::npos) ||
-		(tempstr.find("MFSK22") != std::string::npos) ||
-		(tempstr.find("MFSK31") != std::string::npos) ||
-		(tempstr.find("MFSK32") != std::string::npos) ||
-		(tempstr.find("MFSK64") != std::string::npos) )
-		tempstr = "MFSK16";
-	if ((tempstr.find("PSK250") != std::string::npos) ||
-		(tempstr.find("PSK500") != std::string::npos) ||
-		(tempstr.find("PSK125R") != std::string::npos) ||
-		(tempstr.find("PSK250R") != std::string::npos) ||
-		(tempstr.find("PSK500R") != std::string::npos))
-		tempstr = "PSK125";
-	if ((tempstr.find("QPSK250") != std::string::npos) ||
-		(tempstr.find("QPSK500") != std::string::npos) ||
-		(tempstr.find("QPSK125R") != std::string::npos) ||
-		(tempstr.find("QPSK250R") != std::string::npos) ||
-		(tempstr.find("QPSK500R") != std::string::npos))
-		tempstr = "QPSK125";
+	tempstr = mode_info[active_modem->get_mode()].export_name;
 
 	snprintf(sztemp, sizeof(sztemp), "<MODE:%d>%s",
 		static_cast<int>(tempstr.length()),

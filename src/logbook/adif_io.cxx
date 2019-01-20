@@ -57,7 +57,7 @@ FIELD fields[] = {
 //  TYPE,          FSIZE,  NAME,              WIDGET
 	{FREQ,         12,    "FREQ",             &btnSelectFreq},      // QSO frequency in Mhz
 	{CALL,         30,    "CALL",             &btnSelectCall},      // contacted stations CALLSIGN
-	{MODE,         10,    "MODE",             &btnSelectMode},      // QSO mode
+	{MODE,         20,    "MODE",             &btnSelectMode},      // QSO mode
 	{NAME,         80,    "NAME",             &btnSelectName},      // contacted operators NAME
 	{QSO_DATE,     8,     "QSO_DATE",         &btnSelectQSOdateOn}, // QSO data
 	{QSO_DATE_OFF, 8,     "QSO_DATE_OFF",     &btnSelectQSOdateOff},// QSO data OFF, according to ADIF 2.2.6
@@ -96,8 +96,8 @@ FIELD fields[] = {
 	{XCHG1,        100,   "SRX_STRING",       &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
 	{MYXCHG,       100,   "STX_STRING",       &btnSelectMyXchg},    // contest exchange sent
 
-	{FDCLASS,      20,    "FD_CLASS",         &btnSelectClass},     // Field Day class received
-	{FDSECTION,    20,    "FD_SECTION",       &btnSelectSection},   // Field Day section received
+	{CLASS,        20,    "CLASS",            &btnSelectClass},     // Field Day / School RR class received
+	{ARRL_SECT,    20,    "ARRL_SECT",        &btnSelectSection},   // ARRL section received
 
 	{TX_PWR,       8,     "TX_PWR",           &btnSelectTX_pwr},    // power transmitted by this station
 
@@ -111,6 +111,18 @@ FIELD fields[] = {
 	{SS_PREC,      20,    "CWSS_PREC",        &btnSelect_cwss_prec},
 	{SS_CHK,       20,    "CWSS_CHK",         &btnSelect_cwss_check},
 
+	{AGE,          2,     "AGE",              &btnSelectAge},       // contacted operators age in years
+	{TEN_TEN,      10,    "TEN_TEN",          &btnSelect_1010},     // ten ten # of other station
+	{CHECK,        10,    "CHECK",            &btnSelectCheck},     // contest identifier
+
+	{FD_CLASS,     20,    "FD_CLASS",         NULL},                // Field Day Rcvd
+	{FD_SECTION,   20,    "FD_SECTION",       NULL},                // FD section received
+
+	{TROOPS,       20,    "TROOPS",           NULL},                // JOTA troop number sent
+	{TROOPR,       20,    "TROOPR",           NULL},                // JOTA troop number received
+	{SCOUTS,       20,    "SCOUTS",           NULL},
+	{SCOUTR,       20,    "SCOUTR",           NULL},
+
 	{NUMFIELDS,    0,     "",             NULL}
 };
 
@@ -123,9 +135,6 @@ FIELD fields[] = {
 /*
 	{COMMENT,      256,   "COMMENT",      NULL},                // comment field for QSO
 	{ADDRESS,      256,   "ADDRESS",      NULL},                // contacted stations mailing address
-	{AGE,          2,     "AGE",          NULL},                // contacted operators age in years
-	{ARRL_SECT,    20,    "ARRL_SECT",    NULL},                // contacted stations ARRL section
-	{CONTEST_ID,   20,    "CONTEST_ID",   NULL},                // QSO contest identifier
 	{PFX,          20,    "PFX",          NULL},                // WPA prefix
 	{PROP_MODE,    100,   "PROP_MODE",    NULL},                // propogation mode
 	{QSL_MSG,      256,   "QSL_MSG",      NULL},                // personal message to appear on qsl card
@@ -135,7 +144,6 @@ FIELD fields[] = {
 	{RX_PWR,       8,     "RX_PWR",       NULL},                // power of other station in watts
 	{SAT_MODE,     20,    "SAT_MODE",     NULL},                // satellite mode
 	{SAT_NAME,     20,    "SAT_NAME",     NULL},                // satellite name
-	{TEN_TEN,      10,    "TEN_TEN",      NULL}                 // ten ten # of other station
 };
 */
 

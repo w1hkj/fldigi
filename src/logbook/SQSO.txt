@@ -1,0 +1,3304 @@
+State/Province, ST/PR, County/City/Disrict, CCD
+Alaska,AK,AK1st (SE),SE
+,AK,AK2nd (NW),NW
+,AK,AK3rd (SC),SC
+,AK,AK4th (C),C
+Alabama,AL,Autauga,AUTA
+,AL,Baldwin,BALD
+,AL,Barbour,BARB
+,AL,Bibb,BIBB
+,AL,Blount,BLOU
+,AL,Bullock,BULL
+,AL,Butler,BUTL
+,AL,Calhoun,CHOU
+,AL,Chambers,CHMB
+,AL,Cherokee,CKEE
+,AL,Chilton,CHIL
+,AL,Choctaw,CHOC
+,AL,Clarke,CLRK
+,AL,Clay,CLAY
+,AL,Cleburne,CLEB
+,AL,Coffee,COFF
+,AL,Colbert,COLB
+,AL,Conecuh,CONE
+,AL,Coosa,COOS
+,AL,Covington,COVI
+,AL,Crenshaw,CREN
+,AL,Cullman,CULM
+,AL,Dale,DALE
+,AL,Dallas,DLLS
+,AL,DeKalb,DKLB
+,AL,Elmore,ELMO
+,AL,Escambia,ESCA
+,AL,Etowah,ETOW
+,AL,Fayette,FAYE
+,AL,Franklin,FRNK
+,AL,Geneva,GENE
+,AL,Greene,GREE
+,AL,Hale,HALE
+,AL,Henry,HNRY
+,AL,Houston,HOUS
+,AL,Jackson,JKSN
+,AL,Jefferson,JEFF
+,AL,Lamar,LAMA
+,AL,Lauderdale,LAUD
+,AL,Lawrence,LAWR
+,AL,Lee,LEE
+,AL,Limestone,LIME
+,AL,Lowndes,LOWN
+,AL,Macon,MACO
+,AL,Madison,MDSN
+,AL,Marengo,MRGO
+,AL,Marion,MARI
+,AL,Marshall,MRSH
+,AL,Mobile,MOBI
+,AL,Monroe,MNRO
+,AL,Montgomery,MGMY
+,AL,Morgan,MORG
+,AL,Perry,PERR
+,AL,Pickens,PICK
+,AL,Pike,PIKE
+,AL,Randolph,RAND
+,AL,Russell,RSSL
+,AL,Shelby,SHEL
+,AL,St. Clair,SCLR
+,AL,Sumter,SUMT
+,AL,Talladega,TDEG
+,AL,Tallapoosa,TPOO
+,AL,Tuscaloosa,TUSC
+,AL,Walker,WLKR
+,AL,Washington,WASH
+,AL,Wilcox,WLCX
+,AL,Winston,WINS
+Arizona,AZ,Apache,APH
+,AZ,Cochise,CHS
+,AZ,Coconino,CNO
+,AZ,Gila,GLA
+,AZ,Graham,GHM
+,AZ,Greenlee,GLE
+,AZ,La Paz,LPZ
+,AZ,Maricopa,MCP
+,AZ,Mohave,MHV
+,AZ,Navajo,NVO
+,AZ,Pima,PMA
+,AZ,Pinal,PNL
+,AZ,Santa Cruz,SCZ
+,AZ,Yavapai,YVP
+,AZ,Yuma,YMA
+Arkansas,AR,Arkansas,ARKA
+,AR,Ashley,ASHL
+,AR,Baxter,BAXT
+,AR,Benton,BENT
+,AR,Boone,BOON
+,AR,Bradley,BRAD
+,AR,Calhoun,CALH
+,AR,Carroll,CARR
+,AR,Chicot,CHIC
+,AR,Clark,CLRK
+,AR,Clay,CLAY
+,AR,Cleburne,CLEB
+,AR,Cleveland,CLEV
+,AR,Columbia,COLU
+,AR,Conway,CONW
+,AR,Craighead,CRAG
+,AR,Crawford,CRAW
+,AR,Crittenden,CRIT
+,AR,Cross,CROS
+,AR,Dallas,DALL
+,AR,Desha,DESH
+,AR,Drew,DREW
+,AR,Faulkner,FAUL
+,AR,Franklin,FRNK
+,AR,Fulton,FULT
+,AR,Garland,GARL
+,AR,Grant,GRNT
+,AR,Greene,GREN
+,AR,Hempstead,HEMP
+,AR,Hot Spring,HSPR
+,AR,Howard,HOWA
+,AR,Independence,INDE
+,AR,Izard,IZRD
+,AR,Jackson,JACK
+,AR,Jefferson,JEFF
+,AR,Johnson,JOHN
+,AR,Lafayette,LAFA
+,AR,Lawrence,LAWR
+,AR,Lee,LEE
+,AR,Lincoln,LINC
+,AR,Little River,LRVR
+,AR,Logan,LOGN
+,AR,Lonoke,LONO
+,AR,Madison,MADI
+,AR,Marion,MARI
+,AR,Miller,MILL
+,AR,Mississippi,MISS
+,AR,Monroe,MONR
+,AR,Montgomery,MTGY
+,AR,Nevada,NEVA
+,AR,Newton,NEWT
+,AR,Ouachita,OUAC
+,AR,Perry,PERR
+,AR,Phillips,PHIL
+,AR,Pike,PIKE
+,AR,Poinsett,POIN
+,AR,Polk,POLK
+,AR,Pope,POPE
+,AR,Prairie,PRAR
+,AR,Pulaski,PULA
+,AR,Randolph,RAND
+,AR,Saline,SALI
+,AR,Scott,SCOT
+,AR,Searcy,SRCY
+,AR,Sebastian,SEBA
+,AR,Sevier,SEVR
+,AR,Sharp,SHRP
+,AR,St. Francis,STFR
+,AR,Stone,STON
+,AR,Union,UNIO
+,AR,Van Buren,VBRN
+,AR,Washington,WASH
+,AR,White,WHIE
+,AR,Woodruff,WOOD
+,AR,Yell,YELL
+British Columbia,BC,Abbotsford,ABF
+,BC,Burnaby North-Seymour,BNS
+,BC,Burnaby South,BUS
+,BC,Cariboo-Prince George,CPG
+,BC,Central Okanagan-Similkameen-Nicola,CSN
+,BC,Chilliwack-Hope,CHP
+,BC,Cloverdale-Langley City,CLC
+,BC,Coquitlam-Port Coquitlam,CPC
+,BC,Courtenay-Alberni,COA
+,BC,Cowichan-Malahat-Langford,CML
+,BC,Delta,DEL
+,BC,Esquimalt-Saanich-Sooke,ESQ
+,BC,Fleetwood-Port Kells,FPK
+,BC,Kamloops-Thompson-Cariboo,KTC
+,BC,Kelowna-Lake Country,KEL
+,BC,Kootenay-Columbia,KOC
+,BC,Langley-Aldergrove,LAA
+,BC,Mission-Matsqui-Fraser Canyon,MMF
+,BC,Nanaimo-Ladysmith,NAL
+,BC,New Westminster-Burnaby,NWB
+,BC,North Island-Powell River,NPR
+,BC,North Okanagan-Shuswap,NOS
+,BC,North Vancouver,NVA
+,BC,Pitt Meadows-Maple Ridge,PMM
+,BC,Port Moody-Coquitlam,PMC
+,BC,Prince George-Peace River-Northern Rockies,PPN
+,BC,Richmond Center,RIC
+,BC,Saanich-Gulf Islands,SGI
+,BC,Skeena-Bulkley Valley,SBV
+,BC,South Okanagan-West Kootenay,SWK
+,BC,South Surrey-White Rock,SWR
+,BC,Steveston-Richmond East,STR
+,BC,Surrey Centre,SUC
+,BC,Surrey-Newton,SUN
+,BC,Vancouver Centre,VAC
+,BC,Vancouver East,VAE
+,BC,Vancouver Kingsway,VAK
+,BC,Vancouver Quadra,VAQ
+,BC,Vancouver South,VAS
+,BC,Vancouver-Granville,VAG
+,BC,Victoria,VIC
+,BC,West Vanc,WVS
+California,CA,Alameda,ALAM
+,CA,Alpine,ALPI
+,CA,Amador,AMAD
+,CA,Butte,BUTT
+,CA,Calaveras,CALA
+,CA,Colusa,COLU
+,CA,Contra Costa,CCOS
+,CA,Del Norte,DELN
+,CA,El Dorado,ELDO
+,CA,Fresno,FRES
+,CA,Glenn,GLEN
+,CA,Humboldt,HUMB
+,CA,Imperial,IMPE
+,CA,Inyo,INYO
+,CA,Kern,KERN
+,CA,Kings,KING
+,CA,Lake,LAKE
+,CA,Lassen,LASS
+,CA,Los Angeles,LANG
+,CA,Madera,MADE
+,CA,Marin,MARN
+,CA,Mariposa,MARP
+,CA,Mendocino,MEND
+,CA,Merced,MERC
+,CA,Modoc,MODO
+,CA,Mono,MONO
+,CA,Monterey,MONT
+,CA,Napa,NAPA
+,CA,Nevada,NEVA
+,CA,Orange,ORAN
+,CA,Placer,PLAC
+,CA,Plumas,PLUM
+,CA,Riverside,RIVE
+,CA,Sacramento,SACR
+,CA,San Benito,SBEN
+,CA,San Bernardino,SBER
+,CA,San Diego,SDIE
+,CA,San Francisco,SFRA
+,CA,San Joaquin,SJOA
+,CA,San Luis Obispo,SLUI
+,CA,San Mateo,SMAT
+,CA,Santa Barbara,SBAR
+,CA,Santa Clara,SCLA
+,CA,Santa Cruz,SCRU
+,CA,Shasta,SHAS
+,CA,Sierra,SIER
+,CA,Siskiyou,SISK
+,CA,Solano,SOLA
+,CA,Sonoma,SONO
+,CA,Stanislaus,STAN
+,CA,Sutter,SUTT
+,CA,Tehama,TEHA
+,CA,Trinity,TRIN
+,CA,Tulare,TULA
+,CA,Tuolumne,TUOL
+,CA,Ventura,VENT
+,CA,Yolo,YOLO
+,CA,Yuba,YUBA
+Colorado,CO,Adams,ADA
+,CO,Alamosa,ALA
+,CO,Arapahoe,ARA
+,CO,Archuleta,ARC
+,CO,Baca,BAC
+,CO,Bent,BEN
+,CO,Boulder,BOU
+,CO,Broomfield,BRO
+,CO,Chaffee,CHA
+,CO,Cheyenne,CHE
+,CO,Clear Creek,CLC
+,CO,Conejos,CON
+,CO,Costilla,COS
+,CO,Crowley,CRO
+,CO,Custer,CUS
+,CO,Delta,DEL
+,CO,Denver,DEN
+,CO,Dolores,DOL
+,CO,Douglas,DOU
+,CO,Eagle,EAG
+,CO,El Paso,ELP
+,CO,Elbert,ELB
+,CO,Fremont,FRE
+,CO,Garfield,GAR
+,CO,Gilpin,GIL
+,CO,Grand,GRA
+,CO,Gunnison,GUN
+,CO,Hinsdale,HIN
+,CO,Huerfano,HUE
+,CO,Jackson,JAC
+,CO,Jefferson,JEF
+,CO,Kiowa,KIO
+,CO,Kit Carson,KIC
+,CO,La Plata,LAP
+,CO,Lake,LAK
+,CO,Larimer,LAR
+,CO,Las Animas,LAA
+,CO,Lincoln,LIN
+,CO,Logan,LOG
+,CO,Mesa,MES
+,CO,Mineral,MIN
+,CO,Moffat,MOF
+,CO,Montezuma,MON
+,CO,Montrose,MOT
+,CO,Morgan,MOR
+,CO,Otero,OTE
+,CO,Ouray,OUR
+,CO,Park,PAR
+,CO,Phillips,PHI
+,CO,Pitkin,PIT
+,CO,Prowers,PRO
+,CO,Pueblo,PUE
+,CO,Rio Blanco,RIB
+,CO,Rio Grande,RIG
+,CO,Routt,ROU
+,CO,Saguache,SAG
+,CO,San Juan,SAJ
+,CO,San Miguel,SAM
+,CO,Sedgwick,SED
+,CO,Summit,SUM
+,CO,Teller,TEL
+,CO,Washington,WAS
+,CO,Weld,WEL
+,CO,Yuma,YUM
+Connecticut,CT,Fairfield,FAI
+,CT,Hartford,HAR
+,CT,Litchfield,LIT
+,CT,Middlesex,MIC
+,CT,New Haven,NHV
+,CT,New London,NLN
+,CT,Tolland,TOL
+,CT,Windham,WIN
+Delaware,DE,Kent,
+,DE,New Castle,
+,DE,Sussex,
+Dist. of Col.,DC,District of Columbia,
+Florida,FL,ALACHUA,ALC
+,FL,BAKER,BAK
+,FL,BAY,BAY
+,FL,BRADFORD,BRA
+,FL,BREVARD,BRE
+,FL,BROWARD,BRO
+,FL,CALHOUN,CAH
+,FL,CHARLOTTE,CHA
+,FL,CITRUS,CIT
+,FL,CLAY,CLA
+,FL,COLLIER,CLR
+,FL,COLUMBIA,CLM
+,FL,MIAMI-DADE,DAD
+,FL,DESOTO,DES
+,FL,DIXIE,DIX
+,FL,DUVAL,DUV
+,FL,ESCAMBIA,ESC
+,FL,FLAGLER,FLG
+,FL,FRANKLIN,FRA
+,FL,GADSDEN,GAD
+,FL,GILCHRIST,GIL
+,FL,GLADES,GLA
+,FL,GULF,GUL
+,FL,HAMILTON,HAM
+,FL,HARDEE,HAR
+,FL,HENDRY,HEN
+,FL,HERNANDO,HER
+,FL,HIGHLANDS,HIG
+,FL,HILLSBOROUGH,HIL
+,FL,HOLMES,HOL
+,FL,INDIAN RIVER,IDR
+,FL,JACKSON,JAC
+,FL,JEFFERSON,JEF
+,FL,LAFAYETTE,LAF
+,FL,LAKE,LAK
+,FL,LEE,LEE
+,FL,LEON,LEO
+,FL,LEVY,LEV
+,FL,LIBERTY,LIB
+,FL,MADISON,MAD
+,FL,MANATEE,MTE
+,FL,MARION,MAO
+,FL,MARTIN,MRT
+,FL,MONROE,MON
+,FL,NASSAU,NAS
+,FL,OKALOOSA,OKA
+,FL,OKEECHOBEE,OKE
+,FL,ORANGE,ORA
+,FL,OSCEOLA,OSC
+,FL,PALM BEACH,PAL
+,FL,PASCO,PAS
+,FL,PINELLAS,PIN
+,FL,POLK,POL
+,FL,PUTNAM,PUT
+,FL,SANTA ROSA,SAN
+,FL,SARASOTA,SAR
+,FL,SEMINOLE,SEM
+,FL,ST. JOHNS,STJ
+,FL,ST. LUCIE,STL
+,FL,SUMTER,SUM
+,FL,SUWANNEE,SUW
+,FL,TAYLOR,TAY
+,FL,UNION,UNI
+,FL,VOLUSIA,VOL
+,FL,WAKULLA,WAK
+,FL,WALTON,WAL
+,FL,WASHINGTON,WAG
+Georgia,GA,Appling,APPL
+,GA,Atkinson,ATKN
+,GA,Bacon,BACN
+,GA,Baker,BAKR
+,GA,Baldwin,BALD
+,GA,Banks,BANK
+,GA,Barrow,BARR
+,GA,Bartow,BART
+,GA,Ben Hill,BENH
+,GA,Berrien,BERR
+,GA,Bibb,BIBB
+,GA,Bleckley,BLEC
+,GA,Brantley,BRAN
+,GA,Brooks,BROK
+,GA,Bryan,BRYN
+,GA,Bulloch,BULL
+,GA,Burke,BURK
+,GA,Butts,BUTT
+,GA,Calhoun,CALH
+,GA,Camden,CMDN
+,GA,Candler,CAND
+,GA,Carroll,CARR
+,GA,Catoosa,CATO
+,GA,Charlton,CHAR
+,GA,Chatham,CHTM
+,GA,Chattahoochee,CHAT
+,GA,Chattooga,CHGA
+,GA,Cherokee,CHER
+,GA,Clarke,CLKE
+,GA,Clay,CLAY
+,GA,Clayton,CLTN
+,GA,Clinch,CLCH
+,GA,Cobb,COBB
+,GA,Coffee,COFF
+,GA,Colquitt,COLQ
+,GA,Columbia,COLU
+,GA,Cook,COOK
+,GA,Coweta,COWE
+,GA,Crawford,CRAW
+,GA,Crisp,CRIS
+,GA,Dade,DADE
+,GA,Dawson,DAWS
+,GA,Decatur,DECA
+,GA,DeKalb,DKLB
+,GA,Dodge,DODG
+,GA,Dooly,DOOL
+,GA,Dougherty,DHTY
+,GA,Douglas,DOUG
+,GA,Early,EARL
+,GA,Echols,ECHO
+,GA,Effingham,EFFI
+,GA,Elbert,ELBE
+,GA,Emanuel,EMAN
+,GA,Evans,EVAN
+,GA,Fannin,FANN
+,GA,Fayette,FAYE
+,GA,Floyd,FLOY
+,GA,Forsyth,FORS
+,GA,Franklin,FRAN
+,GA,Fulton,FULT
+,GA,Gilmer,GILM
+,GA,Glascock,GLAS
+,GA,Glynn,GLYN
+,GA,Gordon,GORD
+,GA,Grady,GRAD
+,GA,Greene,GREE
+,GA,Gwinnett,GWIN
+,GA,Habersham,HABE
+,GA,Hall,HALL
+,GA,Hancock,HANC
+,GA,Haralson,HARA
+,GA,Harris,HARR
+,GA,Hart,HART
+,GA,Heard,HEAR
+,GA,Henry,HNRY
+,GA,Houston,HOUS
+,GA,Irwin,IRWI
+,GA,Jackson,JACK
+,GA,Jasper,JASP
+,GA,Jeff Davis,JFDA
+,GA,Jefferson,JEFF
+,GA,Jenkins,JENK
+,GA,Johnson,JOHN
+,GA,Jones,JONE
+,GA,Lamar,LAMA
+,GA,Lanier,LANI
+,GA,Laurens,LAUR
+,GA,Lee,LEE
+,GA,Liberty,LIBE
+,GA,Lincoln,LINC
+,GA,Long,LONG
+,GA,Lowndes,LOWN
+,GA,Lumpkin,LUMP
+,GA,McDuffie,MCDU
+,GA,McIntosh,MCIN
+,GA,Macon,MACO
+,GA,Madison,MADI
+,GA,Marion,MARI
+,GA,Meriwether,MERI
+,GA,Miller,MILL
+,GA,Mitchell,MITC
+,GA,Monroe,MNRO
+,GA,Montgomery,MONT
+,GA,Morgan,MORG
+,GA,Murray,MURR
+,GA,Muscogee,MUSC
+,GA,Newton,NEWT
+,GA,Oconee,OCON
+,GA,Oglethorpe,OGLE
+,GA,Paulding,PAUL
+,GA,Peach,PEAC
+,GA,Pickens,PICK
+,GA,Pierce,PIER
+,GA,Pike,PIKE
+,GA,Polk,POLK
+,GA,Pulaski,PULA
+,GA,Putnam,PUTN
+,GA,Quitman,QUIT
+,GA,Rabun,RABU
+,GA,Randolph,RAND
+,GA,Richmond,RICH
+,GA,Rockdale,ROCK
+,GA,Schley,SCHL
+,GA,Screven,SCRE
+,GA,Seminole,SEMI
+,GA,Spalding,SPAL
+,GA,Stephens,STEP
+,GA,Stewart,STWT
+,GA,Sumter,SUMT
+,GA,Talbot,TLBT
+,GA,Taliaferro,TALI
+,GA,Tattnall,TATT
+,GA,Taylor,TAYL
+,GA,Telfair,TELF
+,GA,Terrell,TERR
+,GA,Thomas,THOM
+,GA,Tift,TIFT
+,GA,Toombs,TOOM
+,GA,Towns,TOWN
+,GA,Treutlen,TREU
+,GA,Troup,TROU
+,GA,Turner,TURN
+,GA,Twiggs,TWIG
+,GA,Union,UNIO
+,GA,Upson,UPSO
+,GA,Walker,WLKR
+,GA,Walton,WALT
+,GA,Ware,WARE
+,GA,Warren,WARR
+,GA,Washington,WASH
+,GA,Wayne,WAYN
+,GA,Webster,WEBS
+,GA,Wheeler,WHEE
+,GA,White,WHIT
+,GA,Whitfield,WFLD
+,GA,Wilcox,WCOX
+,GA,Wilkes,WILK
+,GA,Wilkinson,WKSN
+,GA,Worth,WORT
+Guam,GU,Guam,
+Hawaii,HI,Hawaii-HIL,HIL
+,HI,Hawaii-KOH,KOH
+,HI,Hawaii-KON,KON
+,HI,Hawaii-VOL,VOL
+,HI,Honolulu-HON,HON
+,HI,Honolulu-LHN,LHN
+,HI,Honolulu-PRL,PRL
+,HI,Honolulu-WHN,WHN
+,HI,Kalawao-KAL,KAL
+,HI,Kauai-KAU,KAU
+,HI,Kauai-NII,NII
+,HI,Maui-LAN,LAN
+,HI,Maui-MAU,MAU
+,HI,Maui-MOL,MOL
+Idaho,ID,Ada,ADA
+,ID,Adams,ADM
+,ID,Bannock,BAN
+,ID,Bear Lake,BEA
+,ID,Benewah,BEN
+,ID,Bingham,BIN
+,ID,Blaine,BLA
+,ID,Boise,BOI
+,ID,Bonner,BNR
+,ID,Bonneville,BNV
+,ID,Boundary,BOU
+,ID,Butte,BUT
+,ID,Camas,CAM
+,ID,Canyon,CAN
+,ID,Caribou,CAR
+,ID,Cassia,CAS
+,ID,Clark,CLA
+,ID,Clearwater,CLE
+,ID,Custer,CUS
+,ID,Elmore,ELM
+,ID,Franklin,FRA
+,ID,Fremont,FRE
+,ID,Gem,GEM
+,ID,Gooding,GOO
+,ID,Idaho,IDA
+,ID,Jefferson,JEF
+,ID,Jerome,JER
+,ID,Kootenai,KOO
+,ID,Latah,LAT
+,ID,Lemhi,LEM
+,ID,Lewis,LEW
+,ID,Lincoln,LIN
+,ID,Madison,MAD
+,ID,Minidoka,MIN
+,ID,Nez Perce,NEZ
+,ID,Oneida,ONE
+,ID,Owyhee,OWY
+,ID,Payette,PAY
+,ID,Power,POW
+,ID,Shoshone,SHO
+,ID,Teton,TET
+,ID,Twin Falls,TWI
+,ID,Valley,VAL
+,ID,Washington,WAS
+Illinois,IL,Adams,ADAM
+,IL,Alexander,ALEX
+,IL,Bond,BOND
+,IL,Boone,BOON
+,IL,Brown,BROW
+,IL,Bureau,BURO
+,IL,Calhoun,CALH
+,IL,Carroll,CARR
+,IL,Cass,CASS
+,IL,Champaign,CHAM
+,IL,Christian,CHRS
+,IL,Clark,CLRK
+,IL,Clay,CLAY
+,IL,Clinton,CLNT
+,IL,Coles,COLE
+,IL,Cook,COOK
+,IL,Crawford,CRAW
+,IL,Cumberland,CUMB
+,IL,DeWitt,DEWT
+,IL,DeKalb,DEKA
+,IL,Douglas,DOUG
+,IL,DuPage,DUPG
+,IL,Edgar,EDGR
+,IL,Edwards,EDWA
+,IL,Effingham,EFFG
+,IL,Fayette,FAYE
+,IL,Ford,FORD
+,IL,Franklin,FRNK
+,IL,Fulton,FULT
+,IL,Gallatin,GALL
+,IL,Greene,GREE
+,IL,Grundy,GRUN
+,IL,Hamilton,HAML
+,IL,Hancock,HANC
+,IL,Hardin,HARD
+,IL,Henderson,HNDR
+,IL,Henry,HENR
+,IL,Iroquois,IROQ
+,IL,Jackson,JACK
+,IL,Jasper,JASP
+,IL,Jefferson,JEFF
+,IL,Jersey,JERS
+,IL,JoDaviess,JODA
+,IL,Johnson,JOHN
+,IL,Kane,KANE
+,IL,Kankakee,KANK
+,IL,Kendall,KEND
+,IL,Knox,KNOX
+,IL,LaSalle,LASA
+,IL,Lake,LAKE
+,IL,Lawrence,LAWR
+,IL,Lee,LEE
+,IL,Livingston,LIVG
+,IL,Logan,LOGN
+,IL,Macon,MACN
+,IL,Macoupin,MCPN
+,IL,Madison,MADN
+,IL,Marion,MARI
+,IL,Marshall,MSHL
+,IL,Mason,MASN
+,IL,Massac,MSSC
+,IL,McDonough,MCDN
+,IL,McHenry,MCHE
+,IL,McLean,MCLN
+,IL,Menard,MNRD
+,IL,Mercer,MRCR
+,IL,Monroe,MNRO
+,IL,Montgomery,MNTG
+,IL,Morgan,MORG
+,IL,Moultrie,MOUL
+,IL,Ogle,OGLE
+,IL,Peoria,PEOR
+,IL,Perry,PERR
+,IL,Piatt,PIAT
+,IL,Pike,PIKE
+,IL,Pope,POPE
+,IL,Pulaski,PULA
+,IL,Putnam,PUTN
+,IL,Randolph,RAND
+,IL,Richland,RICH
+,IL,Rock Island,ROCK
+,IL,Saline,SALI
+,IL,Sangamon,SANG
+,IL,Schuyler,SCHY
+,IL,Scott,SCOT
+,IL,Shelby,SHEL
+,IL,St. Clair,SCLA
+,IL,Stark,STAR
+,IL,Stephenson,STEP
+,IL,Tazewell,TAZW
+,IL,Union,UNIO
+,IL,Vermilion,VERM
+,IL,Wabash,WABA
+,IL,Warren,WARR
+,IL,Washington,WASH
+,IL,Wayne,WAYN
+,IL,White,WHIT
+,IL,Whiteside,WTSD
+,IL,Will,WILL
+,IL,Williamson,WMSN
+,IL,Winnebago,WBGO
+,IL,Woodford,WOOD
+Indiana,IN,Adams,INADA
+,IN,Allen,INALL
+,IN,Bartholomew,INBAR
+,IN,Benton,INBEN
+,IN,Blackford,INBLA
+,IN,Boone,INBOO
+,IN,Brown,INBRO
+,IN,Carroll,INCAR
+,IN,Cass,INCAS
+,IN,Clark,INCLR
+,IN,Clay,INCLY
+,IN,Clinton,INCLI
+,IN,Crawford,INCRA
+,IN,Daviess,INDAV
+,IN,De Kalb,INDEK
+,IN,Dearborn,INDEA
+,IN,Decatur,INDEC
+,IN,Delaware,INDEL
+,IN,Dubois,INDUB
+,IN,Elkhart,INELK
+,IN,Fayette,INFAY
+,IN,Floyd,INFLO
+,IN,Fountain,INFOU
+,IN,Franklin,INFRA
+,IN,Fulton,INFUL
+,IN,Gibson,INGIB
+,IN,Grant,INGRA
+,IN,Greene,INGRE
+,IN,Hamilton,INHAM
+,IN,Hancock,INHAN
+,IN,Harrison,INHAR
+,IN,Hendricks,INHND
+,IN,Henry,INHNR
+,IN,Howard,INHOW
+,IN,Huntington,INHUN
+,IN,Jackson,INJAC
+,IN,Jasper,INJAS
+,IN,Jay,INJAY
+,IN,Jefferson,INJEF
+,IN,Jennings,INJEN
+,IN,Johnson,INJOH
+,IN,Knox,INKNO
+,IN,Kosciusko,INKOS
+,IN,La Porte,INLAP
+,IN,Lagrange,INLAG
+,IN,Lake,INLAK
+,IN,Lawrence,INLAW
+,IN,Madison,INMAD
+,IN,Marion,INMRN
+,IN,Marshall,INMRS
+,IN,Martin,INMRT
+,IN,Miami,INMIA
+,IN,Monroe,INMNR
+,IN,Montgomery,INMNT
+,IN,Morgan,INMOR
+,IN,Newton,INNEW
+,IN,Noble,INNOB
+,IN,Ohio,INOHI
+,IN,Orange,INORA
+,IN,Owen,INOWE
+,IN,Parke,INPAR
+,IN,Perry,INPER
+,IN,Pike,INPIK
+,IN,Porter,INPOR
+,IN,Posey,INPOS
+,IN,Pulaski,INPUL
+,IN,Putnam,INPUT
+,IN,Randolph,INRAN
+,IN,Ripley,INRIP
+,IN,Rush,INRUS
+,IN,Scott,INSCO
+,IN,Shelby,INSHE
+,IN,Spencer,INSPE
+,IN,St. Joseph,INSTJ
+,IN,Starke,INSTA
+,IN,Steuben,INSTE
+,IN,Sullivan,INSUL
+,IN,Switzerland,INSWI
+,IN,Tippecanoe,INTPP
+,IN,Tipton,INTPT
+,IN,Union,INUNI
+,IN,Vanderburgh,INVAN
+,IN,Vermillion,INVER
+,IN,Vigo,INVIG
+,IN,Wabash,INWAB
+,IN,Warren,INWRN
+,IN,Warrick,INWRK
+,IN,Washington,INWAS
+,IN,Wayne,INWAY
+,IN,Wells,INWEL
+,IN,White,INWHT
+,IN,Whitley,INWHL
+Iowa,IA,Adair,ADR
+,IA,Adams,ADM
+,IA,Allamakee,ALL
+,IA,Appanoose,APP
+,IA,Audubon,AUD
+,IA,Benton,BEN
+,IA,Black Hawk,BKH
+,IA,Boone,BOO
+,IA,Bremer,BRE
+,IA,Buchanan,BUC
+,IA,Buena Vista,BNX
+,IA,Butler,BTL
+,IA,Calhoun,CAL
+,IA,Carroll,CAR
+,IA,Cass,CAS
+,IA,Cedar,CED
+,IA,Cerro Gordo,CEG
+,IA,Cherokee,CHE
+,IA,Chickasaw,CHI
+,IA,Clarke,CLR
+,IA,Clay,CLA
+,IA,Clayton,CLT
+,IA,Clinton,CLN
+,IA,Crawford,CRF
+,IA,Dallas,DAL
+,IA,Davis,DAV
+,IA,Decatur,DEC
+,IA,Delaware,DEL
+,IA,Des Moines,DSM
+,IA,Dickinson,DIC
+,IA,Dubuque,DUB
+,IA,Emmet,EMM
+,IA,Fayette,FAY
+,IA,Floyd,FLO
+,IA,Franklin,FRA
+,IA,Fremont,FRE
+,IA,Greene,GRE
+,IA,Grundy,GRU
+,IA,Guthrie,GUT
+,IA,Hamilton,HAM
+,IA,Hancock,HAN
+,IA,Hardin,HDN
+,IA,Harrison,HRS
+,IA,Henry,HEN
+,IA,Howard,HOW
+,IA,Humboldt,HUM
+,IA,Ida,IDA
+,IA,Iowa,IOW
+,IA,Jackson,JAC
+,IA,Jasper,JAS
+,IA,Jefferson,JEF
+,IA,Johnson,JOH
+,IA,Jones,JON
+,IA,Keokuk,KEO
+,IA,Kossuth,KOS
+,IA,Lee,LEE
+,IA,Linn,LIN
+,IA,Louisa,LOU
+,IA,Lucas,LUC
+,IA,Lyon,LYN
+,IA,Madison,MAD
+,IA,Mahaska,MAH
+,IA,Marion,MRN
+,IA,Marshall,MSL
+,IA,Mills,MIL
+,IA,Mitchell,MIT
+,IA,Monona,MNA
+,IA,Monroe,MOE
+,IA,Montgomery,MTG
+,IA,Muscatine,MUS
+,IA,O'Brien,OBR
+,IA,Osceola,OSC
+,IA,Page,PAG
+,IA,Palo Alto,PLA
+,IA,Plymouth,PLY
+,IA,Pocahontas,POC
+,IA,Polk,POL
+,IA,Pottawattamie,POT
+,IA,Poweshiek,POW
+,IA,Ringgold,RIN
+,IA,Sac,SAC
+,IA,Scott,SCO
+,IA,Shelby,SHE
+,IA,Sioux,SIO
+,IA,Story,STR
+,IA,Tama,TAM
+,IA,Taylor,TAY
+,IA,Union,UNI
+,IA,Van Buren,VAN
+,IA,Wapello,WAP
+,IA,Warren,WAR
+,IA,Washington,WAS
+,IA,Wayne,WAY
+,IA,Webster,WEB
+,IA,Winnebago,WNB
+,IA,Winneshiek,WNS
+,IA,Woodbury,WOO
+,IA,Worth,WOR
+,IA,Wright,WRI
+Kansas,KS,Allen,ALL
+,KS,Anderson,AND
+,KS,Atchison,ATC
+,KS,Barber,BAR
+,KS,Barton,BRT
+,KS,Bourbon,BOU
+,KS,Brown,BRO
+,KS,Butler,BUT
+,KS,Chase,CHS
+,KS,Chautauqua,CHT
+,KS,Cherokee,CHE
+,KS,Cheyenne,CHY
+,KS,Clark,CLK
+,KS,Clay,CLY
+,KS,Cloud,CLO
+,KS,Coffey,COF
+,KS,Comanche,COM
+,KS,Cowley,COW
+,KS,Crawford,CRA
+,KS,Decatur,DEC
+,KS,Dickinson,DIC
+,KS,Doniphan,DON
+,KS,Douglas,DOU
+,KS,Edwards,EDW
+,KS,Elk,ELK
+,KS,Ellis,ELL
+,KS,Ellsworth,ELS
+,KS,Finney,FIN
+,KS,Ford,FOR
+,KS,Franklin,FRA
+,KS,Geary,GEA
+,KS,Gove,GOV
+,KS,Graham,GRM
+,KS,Grant,GRT
+,KS,Gray,GRY
+,KS,Greeley,GLY
+,KS,Greenwood,GRE
+,KS,Hamilton,HAM
+,KS,Harper,HPR
+,KS,Harvey,HVY
+,KS,Haskell,HAS
+,KS,Hodgeman,HOG
+,KS,Jackson,JAC
+,KS,Jefferson,JEF
+,KS,Jewell,JEW
+,KS,Johnson,JOH
+,KS,Kearny,KEA
+,KS,Kingman,KIN
+,KS,Kiowa,KIO
+,KS,Labette,LAB
+,KS,Lane,LAN
+,KS,Leavenworth,LEA
+,KS,Lincoln,LCN
+,KS,Linn,LIN
+,KS,Logan,LOG
+,KS,Lyon,LYO
+,KS,Marion,MRN
+,KS,Marshall,MSH
+,KS,McPherson,MCP
+,KS,Meade,MEA
+,KS,Miami,MIA
+,KS,Mitchell,MIT
+,KS,Montgomery,MGY
+,KS,Morris,MOR
+,KS,Morton,MTN
+,KS,Nemaha,NEM
+,KS,Neosho,NEO
+,KS,Ness,NES
+,KS,Norton,NOR
+,KS,Osage,OSA
+,KS,Osborne,OSB
+,KS,Ottawa,OTT
+,KS,Pawnee,PAW
+,KS,Phillips,PHI
+,KS,Pottawatomie,POT
+,KS,Pratt,PRA
+,KS,Rawlins,RAW
+,KS,Reno,REN
+,KS,Republic,REP
+,KS,Rice,RIC
+,KS,Riley,RIL
+,KS,Rooks,ROO
+,KS,Rush,RUS
+,KS,Russell,RSL
+,KS,Saline,SAL
+,KS,Scott,SCO
+,KS,Sedgwick,SED
+,KS,Seward,SEW
+,KS,Shawnee,SHA
+,KS,Sheridan,SHE
+,KS,Sherman,SMN
+,KS,Smith,SMI
+,KS,Stafford,STA
+,KS,Stanton,STN
+,KS,Stevens,STE
+,KS,Sumner,SUM
+,KS,Thomas,THO
+,KS,Trego,TRE
+,KS,Wabaunsee,WAB
+,KS,Wallace,WAL
+,KS,Washington,WAS
+,KS,Wichita,WIC
+,KS,Wilson,WIL
+,KS,Woodson,WOO
+,KS,Wyandotte,WYA
+Kentucky,KY,Adair,ADA
+,KY,Allen,ALL
+,KY,Anderson,AND
+,KY,Ballard,BAL
+,KY,Barren,BAR
+,KY,Bath,BAT
+,KY,Bell,BEL
+,KY,Boone,BOO
+,KY,Bourbon,BOU
+,KY,Boyd,BOY
+,KY,Boyle,BOL
+,KY,Bracken,BRA
+,KY,Breathitt,BRE
+,KY,Breckinridge,BRK
+,KY,Bullitt,BUL
+,KY,Butler,BUT
+,KY,Caldwell,CAL
+,KY,Calloway,CAW
+,KY,Campbell,CAM
+,KY,Carlisle,CAE
+,KY,Carroll,CRL
+,KY,Carter,CTR
+,KY,Casey,CAS
+,KY,Christian,CHR
+,KY,Clark,CLA
+,KY,Clay,CLY
+,KY,Clinton,CLI
+,KY,Crittenden,CRI
+,KY,Cumberland,CUM
+,KY,Daviess,DAV
+,KY,Edmonson,EDM
+,KY,Elliott,ELL
+,KY,Estill,EST
+,KY,Fayette,FAY
+,KY,Fleming,FLE
+,KY,Floyd,FLO
+,KY,Franklin,FRA
+,KY,Fulton,FUL
+,KY,Gallatin,GAL
+,KY,Garrard,GAR
+,KY,Grant,GRT
+,KY,Graves,GRV
+,KY,Grayson,GRY
+,KY,Green,GRE
+,KY,Greenup,GRP
+,KY,Hancock,HAN
+,KY,Hardin,HAR
+,KY,Harlan,HRL
+,KY,Harrison,HSN
+,KY,Hart,HRT
+,KY,Henderson,HEN
+,KY,Henry,HNY
+,KY,Hickman,HIC
+,KY,Hopkins,HOP
+,KY,Jackson,JAC
+,KY,Jefferson,JEF
+,KY,Jessamine,JES
+,KY,Johnson,JOH
+,KY,Kenton,KEN
+,KY,Knott,KNT
+,KY,Knox,KNX
+,KY,Larue,LAR
+,KY,Laurel,LAU
+,KY,Lawrence,LAW
+,KY,LEE,LEE
+,KY,Leslie,LES
+,KY,Letcher,LET
+,KY,Lewis,LEW
+,KY,Lincoln,LIN
+,KY,Livingston,LIV
+,KY,Logan,LOG
+,KY,Lyon,LYO
+,KY,McCracken,MCC
+,KY,McCreary,MCY
+,KY,McLean,MCL
+,KY,Madison,MAD
+,KY,Magoffin,MAG
+,KY,Marion,MAR
+,KY,Marshall,MSL
+,KY,Martin,MAT
+,KY,Mason,MAS
+,KY,Meade,MEA
+,KY,Menifee,MEN
+,KY,Mercer,MER
+,KY,Metcalfe,MET
+,KY,Monroe,MON
+,KY,Montgomery,MOT
+,KY,Morgan,MOR
+,KY,Muhlenberg,MUH
+,KY,Nelson,NEL
+,KY,Nicholas,NIC
+,KY,Ohio,OHI
+,KY,Oldham,OLD
+,KY,Owen,OWE
+,KY,Owsley,OWS
+,KY,Pendleton,PEN
+,KY,Perry,PER
+,KY,Pike,PIK
+,KY,Powell,POW
+,KY,Pulaski,PUL
+,KY,Robertson,ROB
+,KY,Rockcastle,ROC
+,KY,Rowan,ROW
+,KY,Russell,RUS
+,KY,Scott,SCO
+,KY,Shelby,SHE
+,KY,Simpson,SIM
+,KY,Spencer,SPE
+,KY,Taylor,TAY
+,KY,Todd,TOD
+,KY,Trigg,TRI
+,KY,Trimble,TRM
+,KY,Union,UNI
+,KY,Warren,WAR
+,KY,Washington,WAS
+,KY,Wayne,WAY
+,KY,Webster,WEB
+,KY,Whitley,WHI
+,KY,Wolfe,WOL
+,KY,Woodford,WOO
+Louisiana,LA,Acadia,ACAD
+,LA,Allen,ALLE
+,LA,Ascension,ASCE
+,LA,Assumption,ASSU
+,LA,Avoyelles,AVOY
+,LA,Beauregard,BEAU
+,LA,Bienville,BIEN
+,LA,Bossier,BOSS
+,LA,Caddo,CADD
+,LA,Calcasieu,CALC
+,LA,Caldwell,CALD
+,LA,Cameron,CAME
+,LA,Catahoula,CATA
+,LA,Claiborne,CLAI
+,LA,Concordia,CONC
+,LA,De Soto,DESO
+,LA,East Baton Rouge,EBR
+,LA,East Carroll,ECAR
+,LA,East Feliciana,EFEL
+,LA,Evangeline,EVAN
+,LA,Franklin,FRAN
+,LA,Grant,GRAN
+,LA,Iberia,IBER
+,LA,Iberville,IBVL
+,LA,Jackson,JACK
+,LA,Jefferson,JEFF
+,LA,Jefferson Davis,JFDV
+,LA,La Salle,LASA
+,LA,Lafayette,LAFA
+,LA,Lafourche,LAFO
+,LA,Lincoln,LINC
+,LA,Livingston,LIVI
+,LA,Madison,MADI
+,LA,Morehouse,MORE
+,LA,Natchitoches,NATC
+,LA,Orleans,ORLE
+,LA,Ouachita,OUAC
+,LA,Plaquemines,PLAQ
+,LA,Pointe Coupee,PCP
+,LA,Rapides,RAPI
+,LA,Red River,REDR
+,LA,Richland,RICH
+,LA,Sabine,SABI
+,LA,St. Bernard,SBND
+,LA,St. Charles,SCHL
+,LA,St. Helena,SHEL
+,LA,St. James,SJAM
+,LA,St. John the Baptist,SJB
+,LA,St. Landry,SLAN
+,LA,St. Martin,SMT
+,LA,St. Mary,SMAR
+,LA,St. Tammany,STAM
+,LA,Tangipahoa,TANG
+,LA,Tensas,TENS
+,LA,Terrebonne,TERR
+,LA,Union,UNIO
+,LA,Vermilion,VERM
+,LA,Vernon,VERN
+,LA,Washington,WASH
+,LA,Webster,WEBS
+,LA,West Baton Rouge,WBR
+,LA,West Carroll,WCAR
+,LA,West Feliciana,WFEL
+,LA,Winn,WINN
+Massachusetts,MA,Barnstable,BAR
+,MA,Berkshire,BER
+,MA,Bristol,BRM
+,MA,Dukes,DUK
+,MA,Essex,ESM
+,MA,Franklin,FRA
+,MA,Hampden,HMD
+,MA,Hampshire,MA
+,MA,Middlesex,MIM
+,MA,Nantucket,NAN
+,MA,Norfolk,NOR
+,MA,Plymouth,PLY
+,MA,Suffolk,SUF
+,MA,Worcester,WOR
+Maine,ME,Androscoggin,AND
+,ME,Aroostook,ARO
+,ME,Cumberland,CUM
+,ME,Franklin,FRE
+,ME,Hancock,HAN
+,ME,Kennebec,KEN
+,ME,Knox,KNO
+,ME,Lincoln,LIN
+,ME,Oxford,OXF
+,ME,Penobscot,PEN
+,ME,Piscataquis,PIS
+,ME,Sagadahoc,SAG
+,ME,Somerset,SOM
+,ME,Waldo,WAL
+,ME,Washington,WAM
+,ME,York,YOR
+Maryland,MD,Allegany,ALY
+,MD,Anne Arundel,ANA
+,MD,Baltimore City,BAL
+,MD,Baltimore,BCT
+,MD,Calvert,CLV
+,MD,Caroline,CLN
+,MD,Carroll,CRL
+,MD,Cecil,CEC
+,MD,Charles,CHS
+,MD,Dorchester,DRC
+,MD,Frederick,FRD
+,MD,Garrett,GAR
+,MD,Howard,HWD
+,MD,Kent,KEN
+,MD,Montgomery,MON
+,MD,Prince George,PGE
+,MD,Queen Anne,QAN
+,MD,St. Mary,STM
+,MD,Somerset,SMR
+,MD,Talbot,TAL
+,MD,Washington,WAS
+,MD,Washington DC,WRC
+,MD,Wicomico,WIC
+,MD,Worcester,WRC
+,MD,Worcester,
+Michigan,MI,Alcona,ALCO
+,MI,Alger,ALGE
+,MI,Allegan,ALLE
+,MI,Alpena,ALPE
+,MI,Antrim,ANTR
+,MI,Arenac,AREN
+,MI,Baraga,BARA
+,MI,Barry,BARR
+,MI,Bay,BAY
+,MI,Benzie,BENZ
+,MI,Berrien,BERR
+,MI,Branch,BRAN
+,MI,Calhoun,CALH
+,MI,Cass,CASS
+,MI,Charlevoix,CHAR
+,MI,Cheboygan,CHEB
+,MI,Chippewa,CHIP
+,MI,Clare,CLAR
+,MI,Clinton,CLIN
+,MI,Crawford,CRAW
+,MI,Delta,DELT
+,MI,Dickinson,DICK
+,MI,Eaton,EATO
+,MI,Emmet,EMME
+,MI,Genesee,GENE
+,MI,Gladwin,GLAD
+,MI,Gogebic,GOGE
+,MI,Gratiot,GRAT
+,MI,Grand Traverse,GRTR
+,MI,Hillsdale,HILL
+,MI,Houghton,HOUG
+,MI,Huron,HURO
+,MI,Ionia,IONI
+,MI,Iosco,IOSC
+,MI,Ingham,INGH
+,MI,Iron,IRON
+,MI,Isabella,ISAB
+,MI,Jackson,JACK
+,MI,Kalamazoo,KZOO
+,MI,Kalkaska,KALK
+,MI,Keweenaw,KEWE
+,MI,Kent,KENT
+,MI,Lake,LAKE
+,MI,Lapeer,LAPE
+,MI,Leelanau,LEEL
+,MI,Lenawee,LENA
+,MI,Livingston,LIVI
+,MI,Luce,LUCE
+,MI,Mackinac,MACK
+,MI,Macomb,MACO
+,MI,Manistee,MANI
+,MI,Marquette,MARQ
+,MI,Mason,MASO
+,MI,Mecosta,MECO
+,MI,Menominee,MENO
+,MI,Midland,MIDL
+,MI,Missaukee,MISS
+,MI,Monroe,MONR
+,MI,Montcalm,MCLM
+,MI,Montmorency,MTMO
+,MI,Muskegon,MUSK
+,MI,Newaygo,NEWA
+,MI,Oakland,OAKL
+,MI,Oceana,OCEA
+,MI,Ogemaw,OGEM
+,MI,Ontonagon,ONTO
+,MI,Osceola,OSCE
+,MI,Oscoda,OSCO
+,MI,Otsego,OTSE
+,MI,Ottawa,OTTA
+,MI,Presque Isle,PRES
+,MI,Roscommon,ROSC
+,MI,Saginaw,SAGI
+,MI,Sanilac,SANI
+,MI,Schoolcraft,SCHO
+,MI,Shiawassee,SHIA
+,MI,St. Clair,STCL
+,MI,St. Joseph,STJO
+,MI,Tuscola,TUSC
+,MI,Van Buren,VANB
+,MI,Washtenaw,WASH
+,MI,Wayne,WAYN
+,MI,Wexford,WEXF
+Minnesota,MN,Aitkin,AIT
+,MN,Anoka,ANO
+,MN,Becker,BEC
+,MN,Beltrami,BEL
+,MN,Benton,BEN
+,MN,Big Stone,BIG
+,MN,Blue Earth,BLU
+,MN,Brown,BRO
+,MN,Carlton,CRL
+,MN,Carver,CRV
+,MN,Cass,CAS
+,MN,Chippewa,CHP
+,MN,Chisago,CHS
+,MN,Clay,CLA
+,MN,Clearwater,CLE
+,MN,Cook,COO
+,MN,Cottonwood,COT
+,MN,Crow Wing,CRO
+,MN,Dakota,DAK
+,MN,Dodge,DOD
+,MN,Douglas,DOU
+,MN,Fairbault,FAI
+,MN,Fillmore,FIL
+,MN,Freeborn,FRE
+,MN,Goodhue,GOO
+,MN,Grant,GRA
+,MN,Hennepin,HEN
+,MN,Houston,HOU
+,MN,Hubbard,HUB
+,MN,Isanti,ISA
+,MN,Itasca,ITA
+,MN,Jackson,JAC
+,MN,Kanabec,KNB
+,MN,Kandiyohi,KND
+,MN,Kittson,KIT
+,MN,Koochiching,KOO
+,MN,Lac Qui Parle,LAC
+,MN,Lake,LAK
+,MN,Lake of the Woods,LKW
+,MN,Le Sueur,LES
+,MN,Lincoln,LIN
+,MN,Lyon,LYO
+,MN,McLeod,MCL
+,MN,Mahnomen,MAH
+,MN,Marshall,MRS
+,MN,Martin,MRT
+,MN,Meeker,MEE
+,MN,Mille Lacs,MIL
+,MN,Morrison,MOR
+,MN,Mower,MOW
+,MN,Murray,MUR
+,MN,Nicollet,NIC
+,MN,Nobles,NOB
+,MN,Norman,NOR
+,MN,Olmsted,OLM
+,MN,Ottertail,OTT
+,MN,Pennington,PEN
+,MN,Pine,PIN
+,MN,Pipestone,PIP
+,MN,Polk,POL
+,MN,Pope,POP
+,MN,Ramsey,RAM
+,MN,Red Lake,RDL
+,MN,Redwood,RDW
+,MN,Renville,REN
+,MN,Rice,RIC
+,MN,Rock,ROC
+,MN,Roseau,ROS
+,MN,St Louis,STL
+,MN,Scott,SCO
+,MN,Sherburne,SHE
+,MN,Sibley,SIB
+,MN,Stearns,STR
+,MN,Steele,STE
+,MN,Stevens,STV
+,MN,St. Louis,STL
+,MN,Swift,SWI
+,MN,Todd,TOD
+,MN,Traverse,TRA
+,MN,Wabasha,WAB
+,MN,Wadena,WAD
+,MN,Waseca,WSC
+,MN,Washington,WSH
+,MN,Watonwan,WAT
+,MN,Wilkin,WIL
+,MN,Winona,WIN
+,MN,Wright,WRI
+,MN,Yellow Medicine,YEL
+Missouri,MO,Adair,ADR
+,MO,Andrew,AND
+,MO,Atchison,ATC
+,MO,Audrain,AUD
+,MO,Barry,BAR
+,MO,Barton,BTN
+,MO,Bates,BAT
+,MO,Benton,BEN
+,MO,Bollinger,BOL
+,MO,Boone,BOO
+,MO,Buchanan,BUC
+,MO,Butler,BTR
+,MO,Caldwell,CWL
+,MO,Callaway,CAL
+,MO,Camden,CAM
+,MO,Cape Girardeau,CPG
+,MO,Carroll,CRL
+,MO,Carter,CAR
+,MO,Cass,CAS
+,MO,Cedar,CED
+,MO,Chariton,CHN
+,MO,Christian,CHR
+,MO,Clark,CLK
+,MO,Clay,CLA
+,MO,Clinton,CLN
+,MO,Cole,COL
+,MO,Cooper,COP
+,MO,Crawford,CRA
+,MO,Dade,DAD
+,MO,Dallas,DAL
+,MO,Daviess,DVS
+,MO,DeKalb,DEK
+,MO,Dent,DEN
+,MO,Douglas,DGL
+,MO,Dunklin,DUN
+,MO,Franklin,FRA
+,MO,Gasconade,GAS
+,MO,Gentry,GEN
+,MO,Greene,GRN
+,MO,Grundy,GRU
+,MO,Harrison,HAR
+,MO,Henry,HEN
+,MO,Hickory,HIC
+,MO,Holt,HLT
+,MO,Howard,HOW
+,MO,Howell,HWL
+,MO,Iron,IRN
+,MO,Jackson,JAC
+,MO,Jasper,JAS
+,MO,Jefferson,JEF
+,MO,Johnson,JON
+,MO,Knox,KNX
+,MO,Laclede,LAC
+,MO,Lafayette,LAF
+,MO,Lawrence,LAW
+,MO,Lewis,LEW
+,MO,Lincoln,LCN
+,MO,Linn,LIN
+,MO,Livingston,LIV
+,MO,Macon,MAC
+,MO,Madison,MAD
+,MO,Maries,MRE
+,MO,Marion,MAR
+,MO,McDonald,MCD
+,MO,Mercer,MER
+,MO,Miller,MIL
+,MO,Mississippi,MIS
+,MO,Moniteau,MNT
+,MO,Monroe,MON
+,MO,Montgomery,MGM
+,MO,Morgan,MOR
+,MO,New Madrid,NMD
+,MO,Newton,NWT
+,MO,Nodaway,NOD
+,MO,Oregon,ORE
+,MO,Osage,OSA
+,MO,Ozark,OZA
+,MO,Pemiscot,PEM
+,MO,Perry,PER
+,MO,Pettis,PET
+,MO,Phelps,PHE
+,MO,Pike,PIK
+,MO,Platte,PLA
+,MO,Polk,POL
+,MO,Pulaski,PUL
+,MO,Putnam,PUT
+,MO,Ralls,RAL
+,MO,Randolph,RAN
+,MO,Ray,RAY
+,MO,Reynolds,REY
+,MO,Ripley,RIP
+,MO,Saline,SAL
+,MO,Schuyler,SCH
+,MO,Scotland,SCT
+,MO,Scott,SCO
+,MO,Shannon,SHA
+,MO,Shelby,SHL
+,MO,St. Charles,STC
+,MO,St. Clair,SCL
+,MO,St. Francois,STF
+,MO,St. Genevieve,STG
+,MO,St. Louis City,STL
+,MO,St. Louis,SLC
+,MO,Stoddard,STD
+,MO,Stone,STN
+,MO,Sullivan,SUL
+,MO,Taney,TAN
+,MO,Texas,TEX
+,MO,Vernon,VRN
+,MO,Warren,WAR
+,MO,Washington,WAS
+,MO,Wayne,WAY
+,MO,Webster,WEB
+,MO,Worth,WOR
+,MO,Wright,WRT
+Mississippi,MS,Adams,ADA
+,MS,Alcorn,ALC
+,MS,Amite,AMI
+,MS,Attala,ATT
+,MS,Benton,BEN
+,MS,Bolivar,BOL
+,MS,Calhoun,CAL
+,MS,Carroll,CAR
+,MS,Chickasaw,CHI
+,MS,Choctaw,CHO
+,MS,Claiborne,CLB
+,MS,Clarke,CLK
+,MS,Clay,CLA
+,MS,Coahoma,COA
+,MS,Copiah,COP
+,MS,Covington,COV
+,MS,DeSoto,DES
+,MS,Forrest,FOR
+,MS,Franklin,FRA
+,MS,George,GEO
+,MS,Greene,GRN
+,MS,Grenada,GRE
+,MS,Hancock,HAN
+,MS,Harrison,HAR
+,MS,Hinds,HIN
+,MS,Holmes,HOL
+,MS,Humphreys,HUM
+,MS,Issaquena,ISS
+,MS,Itawamba,ITA
+,MS,Jackson,JAC
+,MS,Jasper,JAS
+,MS,Jefferson,JEF
+,MS,Jefferson Davis,JDV
+,MS,Jones,JON
+,MS,Kemper,KEM
+,MS,Lafayette,LAF
+,MS,Lamar,LAM
+,MS,Lauderdale,LAU
+,MS,Lawrence,LAW
+,MS,Leake,LEA
+,MS,Lee,LEE
+,MS,Leflore,LEF
+,MS,Lincoln,LIN
+,MS,Lowndes,LOW
+,MS,Madison,MAD
+,MS,Marion,MRN
+,MS,Marshall,MAR
+,MS,Monroe,MON
+,MS,Montgomery,MGY
+,MS,Neshoba,NES
+,MS,Newton,NEW
+,MS,Noxubee,NOX
+,MS,Oktibbeha,OKT
+,MS,Panola,PAN
+,MS,Pearl River,PEA
+,MS,Perry,PER
+,MS,Pike,PIK
+,MS,Pontotoc,PON
+,MS,Prentiss,PRE
+,MS,Quitman,QUI
+,MS,Rankin,RAN
+,MS,Scott,SCO
+,MS,Sharkey,SHA
+,MS,Simpson,SIM
+,MS,Smith,SMI
+,MS,Stone,STO
+,MS,Sunflower,SUN
+,MS,Tallahatchie,TAL
+,MS,Tate,TAT
+,MS,Tippah,TIP
+,MS,Tishomingo,TIS
+,MS,Tunica,TUN
+,MS,Union,UNI
+,MS,Walthall,WAL
+,MS,Warren,WAR
+,MS,Washington,WAS
+,MS,Wayne,WAY
+,MS,Webster,WEB
+,MS,Wilkinson,WIL
+,MS,Winston,WIN
+,MS,Yalobusha,YAL
+,MS,Yazoo,YAZ
+Montana,MT,Beaverhead,BEA
+,MT,Big Horn,BIG
+,MT,Blaine,BLA
+,MT,Broadwater,BRO
+,MT,Carbon,CRB
+,MT,Carter,CRT
+,MT,Cascade,CAS
+,MT,Chouteau,CHO
+,MT,Custer,CUS
+,MT,Daniels,DAN
+,MT,Dawson,DAW
+,MT,Deer Lodge,DEE
+,MT,Fallon,FAL
+,MT,Fergus,FER
+,MT,Flathead,FLA
+,MT,Gallatin,GAL
+,MT,Garfield,GAR
+,MT,Glacier,GLA
+,MT,Golden Valley,GOL
+,MT,Granite,GRA
+,MT,Hill,HIL
+,MT,Jefferson,JEF
+,MT,Judith Basin,JUD
+,MT,Lake,LAK
+,MT,Lewis & Clark,LEW
+,MT,Liberty,LIB
+,MT,Lincoln,LIN
+,MT,Madison,MAD
+,MT,McCone,MCC
+,MT,Meagher,MEA
+,MT,Mineral,MIN
+,MT,Missoula,MIS
+,MT,Musselshell,MUS
+,MT,Park,PAR
+,MT,Petroleum,PET
+,MT,Phillips,PHI
+,MT,Pondera,PON
+,MT,Powder River,PWD
+,MT,Powell,PWL
+,MT,Prairie,PRA
+,MT,Ravalli,RAV
+,MT,Richland,RIC
+,MT,Roosevelt,ROO
+,MT,Rosebud,ROS
+,MT,Sanders,SAN
+,MT,Sheridan,SHE
+,MT,Silver Bow,SIL
+,MT,Stillwater,STI
+,MT,Sweet Grass,SWE
+,MT,Teton,TET
+,MT,Toole,TOO
+,MT,Treasure,TRE
+,MT,Valley,VAL
+,MT,Wheatland,WHE
+,MT,Wibaux,WIB
+,MT,Yellowstone,YEL
+North Carolina,NC,Alamance,ALA
+,NC,Alexander,ALE
+,NC,Alleghany,ALL
+,NC,Anson,ANS
+,NC,Ashe,ASH
+,NC,Avery,AVE
+,NC,Beaufort,BEA
+,NC,Bertie,BER
+,NC,Bladen,BLA
+,NC,Brunswick,BRU
+,NC,Buncombe,BUN
+,NC,Burke,BUR
+,NC,Cabarrus,CAB
+,NC,Caldwell,CAL
+,NC,Camden,CAM
+,NC,Carteret,CAR
+,NC,Caswell,CAS
+,NC,Catawba,CAT
+,NC,Chatham,CHA
+,NC,Cherokee,CHE
+,NC,Chowan,CHO
+,NC,Clay,CLA
+,NC,Cleveland,CLE
+,NC,Columbus,COL
+,NC,Craven,CRA
+,NC,Cumberland,CUM
+,NC,Currituck,CUR
+,NC,Dare,DAR
+,NC,Davidson,DVD
+,NC,Davie,DAV
+,NC,Duplin,DUP
+,NC,Durham,DUR
+,NC,Edgecombe,EDG
+,NC,Forsyth,FOR
+,NC,Franklin,FRA
+,NC,Gaston,GAS
+,NC,Gates,GAT
+,NC,Graham,GRM
+,NC,Granville,GRA
+,NC,Greene,GRE
+,NC,Guilford,GUI
+,NC,Halifax,HAL
+,NC,Harnett,HAR
+,NC,Haywood,HAY
+,NC,Henderson,HEN
+,NC,Hertford,HER
+,NC,Hoke,HOK
+,NC,Hyde,HYD
+,NC,Iredell,IRE
+,NC,Jackson,JAC
+,NC,Johnston,JOH
+,NC,Jones,JON
+,NC,Lee,LEE
+,NC,Lenoir,LEN
+,NC,Lincoln,LIN
+,NC,Macon,MAC
+,NC,Madison,MAD
+,NC,Martin,MAR
+,NC,McDowell,MCD
+,NC,Mecklenburg,MEC
+,NC,Mitchell,MIT
+,NC,Montgomery,MON
+,NC,Moore,MOO
+,NC,Nash,NAS
+,NC,New Hanover,NEW
+,NC,Northampton,NOR
+,NC,Onslow,ONS
+,NC,Orange,ORA
+,NC,Pamlico,PAM
+,NC,Pasquotank,PAS
+,NC,Pender,PEN
+,NC,Perquimans,PEQ
+,NC,Person,PER
+,NC,Pitt,PIT
+,NC,Polk,POL
+,NC,Randolph,RAN
+,NC,Richmond,RIC
+,NC,Robeson,ROB
+,NC,Rockingham,ROC
+,NC,Rowan,ROW
+,NC,Rutherford,RUT
+,NC,Sampson,SAM
+,NC,Scotland,SCO
+,NC,Stanly,STA
+,NC,Stokes,STO
+,NC,Surry,SUR
+,NC,Swain,SWA
+,NC,Transylvania,TRA
+,NC,Tyrrell,TYR
+,NC,Union,UNI
+,NC,Vance,VAN
+,NC,Wake,WAK
+,NC,Warren,WAR
+,NC,Washington,WAS
+,NC,Watauga,WAT
+,NC,Wayne,WAY
+,NC,Wilkes,WLK
+,NC,Wilson,WIL
+,NC,Yadkin,YAD
+,NC,Yancey,YAN
+North Dakota,ND,Adams,ADM
+,ND,Barnes,BRN
+,ND,Benson,BSN
+,ND,Billings,BLL
+,ND,Bottineau,BOT
+,ND,Bowman,BOW
+,ND,Burke,BRK
+,ND,Burleigh,BUR
+,ND,Cass,CSS
+,ND,Cavalier,CAV
+,ND,Dickey,DIK
+,ND,Divide,DIV
+,ND,Dunn,DUN
+,ND,Eddy,EDY
+,ND,Emmons,EMN
+,ND,Foster,FOS
+,ND,Golden Valley,GNV
+,ND,Grand Forks,GFK
+,ND,Grant,GNT
+,ND,Griggs,GRG
+,ND,Hettinger,HET
+,ND,Kidder,KDR
+,ND,La Moure,LMR
+,ND,Logan,LOG
+,ND,McHenry,MCH
+,ND,McIntosh,MCI
+,ND,McKenzie,MCK
+,ND,McLean,MCL
+,ND,Mercer,MCR
+,ND,Morton,MTN
+,ND,Mountrail,MRL
+,ND,Nelson,NEL
+,ND,Oliver,OLR
+,ND,Pembina,PBA
+,ND,Pierce,PRC
+,ND,Ramsey,RMY
+,ND,Ransom,RSM
+,ND,Renville,REN
+,ND,Richland,RLD
+,ND,Rolette,ROL
+,ND,Sargent,SGT
+,ND,Sheridan,SRN
+,ND,Sioux,SIX
+,ND,Slope,SLP
+,ND,Stark,STK
+,ND,Steele,STL
+,ND,Stutsman,STN
+,ND,Towner,TWR
+,ND,Traill,TRL
+,ND,Walsh,WLH
+,ND,Ward,WRD
+,ND,Wells,WLS
+,ND,Williams,WLM
+Nebraska,NE,Adams,ADMS
+,NE,Antelope,ANTE
+,NE,Arthur,ARTH
+,NE,Banner,BANN
+,NE,Blaine,BLAI
+,NE,Boone,BOON
+,NE,Box Butte,BOXB
+,NE,Boyd,BOYD
+,NE,Brown,BRWN
+,NE,Buffalo,BUFF
+,NE,Burt,BURT
+,NE,Butler,BUTL
+,NE,Cass,CASS
+,NE,Cedar,CEDA
+,NE,Chase,CHAS
+,NE,Cherry,CHER
+,NE,Cheyenne,CHEY
+,NE,Clay,CLAY
+,NE,Colfax,COLF
+,NE,Cuming,CUMI
+,NE,Custer,CUST
+,NE,Dakota,DAKO
+,NE,Dawes,DAWE
+,NE,Dawson,DAWS
+,NE,Deuel,DEUE
+,NE,Dixon,DIXO
+,NE,Dodge,DODG
+,NE,Douglas,DGLS
+,NE,Dundy,DUND
+,NE,Fillmore,FILL
+,NE,Franklin,FRNK
+,NE,Frontier,FRON
+,NE,Furnas,FURN
+,NE,Gage,GAGE
+,NE,Garden,GARD
+,NE,Garfield,GARF
+,NE,Gosper,GOSP
+,NE,Grant,GRAN
+,NE,Greeley,GREE
+,NE,Hall,HALL
+,NE,Hamilton,HAMI
+,NE,Harlan,HRLN
+,NE,Hayes,HAYE
+,NE,Hitchcock,HITC
+,NE,Holt,HOLT
+,NE,Hooker,HOOK
+,NE,Howard,HOWA
+,NE,Jefferson,JEFF
+,NE,Johnson,JOHN
+,NE,Kearney,KEAR
+,NE,Keith,KEIT
+,NE,Keya Paha,KEYA
+,NE,Kimball,KIMB
+,NE,Knox,KNOX
+,NE,Lancaster,LNCS
+,NE,Lincoln,LINC
+,NE,Logan,LOGA
+,NE,Loup,LOUP
+,NE,Madison,MDSN
+,NE,McPherson,MCPH
+,NE,Merrick,MERR
+,NE,Morrill,MORR
+,NE,Nance,NANC
+,NE,Nemaha,NEMA
+,NE,Nuckolls,NUCK
+,NE,Otoe,OTOE
+,NE,Pawnee,PAWN
+,NE,Perkins,PERK
+,NE,Phelps,PHEL
+,NE,Pierce,PIER
+,NE,Platte,PLAT
+,NE,Polk,POLK
+,NE,Red Willow,REDW
+,NE,Richardson,RICH
+,NE,Rock,ROCK
+,NE,Saline,SALI
+,NE,Sarpy,SARP
+,NE,Saunders,SAUN
+,NE,Scotts Bluff,SCOT
+,NE,Seward,SEWA
+,NE,Sheridan,SHRD
+,NE,Sherman,SHRM
+,NE,Sioux,SIOU
+,NE,Stanton,STAN
+,NE,Thayer,THAY
+,NE,Thomas,THOM
+,NE,Thurston,THUR
+,NE,Valley,VLLY
+,NE,Washington,WASH
+,NE,Wayne,WAYN
+,NE,Webster,WEBS
+,NE,Wheeler,WHEE
+,NE,York,YORK
+New Hampshire,NH,Belknap,BEL
+,NH,Carroll,CAR
+,NH,Cheshire,CHE
+,NH,Coos,COO
+,NH,Grafton,GRN
+,NH,Hillsborough,HIL
+,NH,Merrimack,MER
+,NH,Rockingham,ROC
+,NH,Strafford,STR
+,NH,Sullivan,SUL
+New Jersey,NJ,Atlantic,ATLA
+,NJ,Bergen,BERG
+,NJ,Burlington,BURL
+,NJ,Camden,CMDN
+,NJ,Cape May,CAPE
+,NJ,Cumberland,CUMB
+,NJ,Essex,ESSE
+,NJ,Gloucester,GLOU
+,NJ,Hudson,HUDS
+,NJ,Hunterdon,HUNT
+,NJ,Mercer,MERC
+,NJ,Middlesex,MIDD
+,NJ,Monmouth,MONM
+,NJ,Morris,MORR
+,NJ,Ocean,OCEA
+,NJ,Passaic,PASS
+,NJ,Salem,SALE
+,NJ,Somerset,SOME
+,NJ,Sussex,SUSS
+,NJ,Union,UNIO
+,NJ,Warren,WRRN
+New Mexico,NM,Bernalillo,BER
+,NM,Catron,CAT
+,NM,Chaves,CHA
+,NM,Cibola,CIB
+,NM,Colfax,COL
+,NM,Curry,CUR
+,NM,De Baca,DEB
+,NM,Dona Ana,DON
+,NM,Eddy,EDD
+,NM,Grant,GRA
+,NM,Guadalupe,GUA
+,NM,Harding,HAR
+,NM,Hidalgo,HID
+,NM,Lea,LEA
+,NM,Lincoln,LIN
+,NM,Los Alamos,LOS
+,NM,Luna,LUN
+,NM,McKinley,MCK
+,NM,Mora,MOR
+,NM,Otero,OTE
+,NM,Quay,QUA
+,NM,Rio Arriba,RIO
+,NM,Roosevelt,ROO
+,NM,San Juan,SJU
+,NM,San Miguel,SMI
+,NM,Sandoval,SAN
+,NM,Santa Fe,SFE
+,NM,Sierra,SIE
+,NM,Socorro,SOC
+,NM,Taos,TAO
+,NM,Torrance,TOR
+,NM,Union,UNI
+,NM,Valencia,VAL
+Nevada,NV,Carson City,CAR
+,NV,Churchill,CHU
+,NV,Clark,CLA
+,NV,Douglas,DOU
+,NV,Elko,ELK
+,NV,Esmeralda,ESM
+,NV,Eureka,EUR
+,NV,Humboldt,HUM
+,NV,Lander,LAN
+,NV,Lincoln,LIN
+,NV,Lyon,LYO
+,NV,Mineral,MIN
+,NV,Nye,NYE
+,NV,Pershing,PER
+,NV,Storey,STO
+,NV,Washoe,WAS
+,NV,White Pine,WHI
+New York,NY,Albany,ALB
+,NY,Allegany,ALL
+,NY,Bronx,BRX
+,NY,Broome,BRM
+,NY,Cattaraugus,CAT
+,NY,Cayuga,CAY
+,NY,Chautauqua,CHA
+,NY,Chemung,CHE
+,NY,Chenango,CGO
+,NY,Clinton,CLI
+,NY,Columbia,COL
+,NY,Cortland,COR
+,NY,Delaware,DEL
+,NY,Dutchess,DUT
+,NY,Erie,ERI
+,NY,Essex,ESS
+,NY,Franklin,FRA
+,NY,Fulton,FUL
+,NY,Genesee,GEN
+,NY,Greene,GRE
+,NY,Hamilton,HAM
+,NY,Herkimer,HER
+,NY,Jefferson,JEF
+,NY,Kings,KIN
+,NY,Lewis,LEW
+,NY,Livingston,LIV
+,NY,Madison,MAD
+,NY,Monroe,MON
+,NY,Montgomery,MTG
+,NY,Nassau,NAS
+,NY,New York,NEW
+,NY,Niagara,NIA
+,NY,Oneida,ONE
+,NY,Onondaga,ONO
+,NY,Ontario,ONT
+,NY,Orange,ORA
+,NY,Orleans,ORL
+,NY,Oswego,OSW
+,NY,Otsego,OTS
+,NY,Putnam,PUT
+,NY,Queens,QUE
+,NY,Rensselaer,REN
+,NY,Rockland,ROC
+,NY,Richmond,RIC
+,NY,Saratoga,SAR
+,NY,Schenectady,SCH
+,NY,Schoharie,SCO
+,NY,Schuyler,SCU
+,NY,Seneca,SEN
+,NY,St. Lawrence,STL
+,NY,Steuben,STE
+,NY,Suffolk,SUF
+,NY,Sullivan,SUL
+,NY,Tioga,TIO
+,NY,Tompkins,TOM
+,NY,Ulster,ULS
+,NY,Warren,WAR
+,NY,Washington,WAS
+,NY,Wayne,WAY
+,NY,Westchester,WES
+,NY,Wyoming,WYO
+,NY,Yates,YAT
+Ohio,OH,Adams,ADAM
+,OH,Allen,ALLE
+,OH,Ashland,ASHL
+,OH,Ashtabula,ASHT
+,OH,Athens,ATHE
+,OH,Auglaze,AUGL
+,OH,Belmont,BELM
+,OH,Brown,BROW
+,OH,Butler,BUTL
+,OH,Carroll,CARR
+,OH,Champaign,CHAM
+,OH,Clark,CLAR
+,OH,Clermont,CLER
+,OH,Clinton,CLIN
+,OH,Columbiana,COLU
+,OH,Coshocton,COSH
+,OH,Crawford,CRAW
+,OH,Cuyahoga,CUYA
+,OH,Darke,DARK
+,OH,Defiance,DEFI
+,OH,Delaware,DELA
+,OH,Erie,ERIE
+,OH,Fairfield,FAIR
+,OH,Fayette,FAYE
+,OH,Franklin,FRAN
+,OH,Fulton,FULT
+,OH,Gallia,GALL
+,OH,Geauga,GEAU
+,OH,Greene,GREE
+,OH,Guernsey,GUER
+,OH,Hamilton,HAMI
+,OH,Hancock,HANC
+,OH,Hardin,HARD
+,OH,Harrison,HARR
+,OH,Henry,HENR
+,OH,Highland,HIGH
+,OH,Hocking,HOCK
+,OH,Holmes,HOLM
+,OH,Huron,HURO
+,OH,Jackson,JACK
+,OH,Jefferson,JEFF
+,OH,Knox,KNOX
+,OH,Lake,LAKE
+,OH,Lawrence,LAWR
+,OH,Licking,LICK
+,OH,Logan,LOGA
+,OH,Lorain,LORA
+,OH,Lucas,LUCA
+,OH,Madison,MADI
+,OH,Mahoning,MAHO
+,OH,Marion,MARI
+,OH,Medina,MEDI
+,OH,Meigs,MEIG
+,OH,Mercer,MERC
+,OH,Miami,MIAM
+,OH,Monroe,MONR
+,OH,Montgomery,MONT
+,OH,Morgan,MORG
+,OH,Morrow,MORR
+,OH,Muskingum,MUSK
+,OH,Noble,NOBL
+,OH,Ottawa,OTTA
+,OH,Paulding,PAUL
+,OH,Perry,PERR
+,OH,Pickaway,PICK
+,OH,Pike,PIKE
+,OH,Portage,PORT
+,OH,Preble,PREB
+,OH,Putnam,PUTN
+,OH,Richland,RICH
+,OH,Ross,ROSS
+,OH,Sandusky,SAND
+,OH,Scioto,SCIO
+,OH,Seneca,SENE
+,OH,Shelby,SHEL
+,OH,Stark,STAR
+,OH,Summit,SUMM
+,OH,Trumbull,TRUM
+,OH,Tuscarawas,TUSC
+,OH,Union,UNIO
+,OH,VanWert,VANW
+,OH,Vinton,VINT
+,OH,Warren,WARR
+,OH,Washington,WASH
+,OH,Wayne,WAYN
+,OH,Williams,WILL
+,OH,Wood,WOOD
+,OH,Wyandot,WYAN
+Oklahoma,OK,Adair,ADA
+,OK,Alfalfa,ALF
+,OK,Atoka,ATO
+,OK,Beaver,BEA
+,OK,Beckham,BEC
+,OK,Blaine,BLA
+,OK,Bryan,BRY
+,OK,Caddo,CAD
+,OK,Canadian,CAN
+,OK,Carter,CAR
+,OK,Cherokee,CHE
+,OK,Choctaw,CHO
+,OK,Cimarron,CIM
+,OK,Cleveland,CLE
+,OK,Coal,COA
+,OK,Comanche,COM
+,OK,Cotton,COT
+,OK,Craig,CRA
+,OK,Creek,CRE
+,OK,Custer,CUS
+,OK,Delaware,DEL
+,OK,Dewey,DEW
+,OK,Ellis,ELL
+,OK,Garfield,GAR
+,OK,Garvin,GRV
+,OK,Grady,GRA
+,OK,Grant,GNT
+,OK,Greer,GRE
+,OK,Harmon,HAR
+,OK,Harper,HRP
+,OK,Haskell,HAS
+,OK,Hughes,HUG
+,OK,Jackson,JAC
+,OK,Jefferson,JEF
+,OK,Johnston,JOH
+,OK,Kay,KAY
+,OK,Kingfisher,KIN
+,OK,Kiowa,KIO
+,OK,Latimer,LAT
+,OK,Le Flore,LEF
+,OK,Lincoln,LIN
+,OK,Logan,LOG
+,OK,Love,LOV
+,OK,McClain,MCL
+,OK,McCurtain,MCU
+,OK,McIntosh,MCI
+,OK,Major,MAJ
+,OK,Marshall,MAR
+,OK,Mayes,MAY
+,OK,Murray,MUR
+,OK,Muskogee,MUS
+,OK,Noble,NOB
+,OK,Nowata,NOW
+,OK,Okfuskee,OKF
+,OK,Oklahoma,OKL
+,OK,Okmulgee,OKM
+,OK,Osage,OSA
+,OK,Ottawa,OTT
+,OK,Pawnee,PAW
+,OK,Payne,PAY
+,OK,Pittsburg,PIT
+,OK,Pontotoc,PON
+,OK,Pottawatomie,POT
+,OK,Pushmataha,PUS
+,OK,Roger Mills,RGM
+,OK,Rogers,ROG
+,OK,Seminole,SEM
+,OK,Sequoyah,SEQ
+,OK,Stephens,STE
+,OK,Texas,TEX
+,OK,Tillman,TIL
+,OK,Tulsa,TUL
+,OK,Wagoner,WAG
+,OK,Washington,WAS
+,OK,Washita,WAT
+,OK,Woods,WOO
+,OK,Woodward,WDW
+Ontario,ON,Algoma District,ALG
+,ON,City of Brant,BRA
+,ON,City of Brantford,BFD
+,ON,Bruce County,BRU
+,ON,City of Chatham-Kent,CHK
+,ON,Cochrane District,COC
+,ON,Dufferin County,DUF
+,ON,Durham Regional Municipality,DUR
+,ON,Elgin County,ELG
+,ON,Essex County,ESX
+,ON,Frontenac County,FRO
+,ON,Grey County,GRY
+,ON,Town of Haldimand,HAL
+,ON,Haliburton County,HLB
+,ON,Halton Regional Municipality,HTN
+,ON,City of Hamilton,HAM
+,ON,Hastings County,HAS
+,ON,Huron County,HUR
+,ON,City of Kawartha Lakes,KAW
+,ON,Kenora District,KEN
+,ON,Lambton County,LAM
+,ON,Lanark County,LAN
+,ON,Leeds Grenville United Counties,LGR
+,ON,Lennox-Addington County,LXA
+,ON,Manitoulin District,MAN
+,ON,Middlesex County,MSX
+,ON,Muskoka District,MUS
+,ON,Niagara Regional Municipality,NIA
+,ON,Nipissing District,NIP
+,ON,Town of Norfolk,NFK
+,ON,Northumberland County,NOR
+,ON,City of Ottawa,OTT
+,ON,Oxford County,OXF
+,ON,Parry Sound District,PSD
+,ON,Peel Regional Municipality,PEL
+,ON,Perth County,PER
+,ON,Peterborough County,PET
+,ON,United Counties of Prescott Russell,PRU
+,ON,City of Prince Edward,PED
+,ON,Rainy River District,RAI
+,ON,Renfrew County,REN
+,ON,Simcoe County,SIM
+,ON,United Counties of Stormont Dundas Glengarry,SDG
+,ON,Sudbury District,SUD
+,ON,Thunder Bay District,TBY
+,ON,Timiskaming District,TIM
+,ON,City of Toronto,TOR
+,ON,Waterloo Regional Municipality,WAT
+,ON,Wellington County,WEL
+,ON,York Regional Municipality,YRK
+Oregon,OR,Baker,BAK
+,OR,Benton,BEN
+,OR,Clackamas,CLK
+,OR,Clatsop,CLT
+,OR,Columbia,COL
+,OR,Coos,COO
+,OR,Crook,CRO
+,OR,Curry,CUR
+,OR,Deschutes,DES
+,OR,Douglas,DOU
+,OR,Gilliam,GIL
+,OR,Grant,GRA
+,OR,Harney,HAR
+,OR,Hood River,HOO
+,OR,Jackson,JAC
+,OR,Jefferson,JEF
+,OR,Josephine,JOS
+,OR,Klamath,KLA
+,OR,Lake,LAK
+,OR,Lane,LAN
+,OR,Lincoln,LCN
+,OR,Linn,LNN
+,OR,Malheur,MAL
+,OR,Marion,MAR
+,OR,Morrow,MOR
+,OR,Multnomah,MUL
+,OR,Polk,POL
+,OR,Sherman,SHE
+,OR,Tillamook,TIL
+,OR,Umatilla,UMA
+,OR,Union,UNI
+,OR,Wallowa,WAL
+,OR,Wasco,WCO
+,OR,Washington,WSH
+,OR,Wheeler,WHE
+,OR,Yamhill,YAM
+Pennsylvania,PA,Adams,ADA
+,PA,Allegheny,ALL
+,PA,Armstrong,ARM
+,PA,Beaver,BEA
+,PA,Bedford,BED
+,PA,Berks,BER
+,PA,Blair,BLA
+,PA,Bradford,BRA
+,PA,Bucks,BUX
+,PA,Butler,BUTL
+,PA,Cambria,CMB
+,PA,Cameron,CRN
+,PA,Carbon,CAR
+,PA,Centre,CEN
+,PA,Chester,CHE
+,PA,Clarion,CLA
+,PA,Clearfield,CLE
+,PA,Clinton,CLI
+,PA,Columbia,COL
+,PA,Crawford,CRA
+,PA,Cumberland,CUM
+,PA,Dauphin,DAU
+,PA,Delaware,DCO
+,PA,Elk,ELK
+,PA,Erie,ERI
+,PA,Fayette,FAY
+,PA,Forest,FOR
+,PA,Franklin,FRA
+,PA,Fulton,FUL
+,PA,Greene,GRE
+,PA,Huntingdon,HUN
+,PA,Indiana,INN
+,PA,Jefferson,JEF
+,PA,Juniata,JUN
+,PA,Lackawanna,LAC
+,PA,Lancaster,LAN
+,PA,Lawrence,LAW
+,PA,Lebanon,LEB
+,PA,Lehigh,LEH
+,PA,Luzerne,LUZ
+,PA,Lycoming,LYC
+,PA,McKean,MCK
+,PA,Mercer,MER
+,PA,Mifflin,MIF
+,PA,Monroe,MOE
+,PA,Montgomery,MGY
+,PA,Montour,MTR
+,PA,Northampton,NHA
+,PA,Northumberland,NUM
+,PA,Perry,PER
+,PA,Philadelphia,PHI
+,PA,Pike,PIK
+,PA,Potter,POT
+,PA,Schuylkill,SCH
+,PA,Snyder,SNY
+,PA,Somerset,SOM
+,PA,Sullivan,SUL
+,PA,Susquehanna,SUS
+,PA,Tioga,TIO
+,PA,Union,UNI
+,PA,Venango,VEN
+,PA,Warren,WAR
+,PA,Washington,WAS
+,PA,Wayne,WAY
+,PA,Westmoreland,WES
+,PA,Wyoming,WYO
+,PA,York,YOR
+Puerto Rico,PR,Adjuntas Municipio,
+,PR,Aguada Municipio,
+,PR,Aguadilla Municipio,
+,PR,Aguas Buenas Municipio,
+,PR,Aibonito Municipio,
+,PR,Anasco Municipio,
+,PR,Arecibo Municipio,
+,PR,Arroyo Municipio,
+,PR,Barceloneta Municipio,
+,PR,Barranquitas Municipio,
+,PR,Bayamon Municipio,
+,PR,Cabo Rojo Municipio,
+,PR,Caguas Municipio,
+,PR,Camuy Municipio,
+,PR,Canovanas Municipio,
+,PR,Carolina Municipio,
+,PR,Catano Municipio,
+,PR,Cayey Municipio,
+,PR,Ceiba Municipio,
+,PR,Ciales Municipio,
+,PR,Cidra Municipio,
+,PR,Coamo Municipio,
+,PR,Comerio Municipio,
+,PR,Corozal Municipio,
+,PR,Culebra Municipio,
+,PR,Dorado Municipio,
+,PR,Fajardo Municipio,
+,PR,Florida Municipio,
+,PR,Guanica Municipio,
+,PR,Guayama Municipio,
+,PR,Guayanilla Municipio,
+,PR,Guaynabo Municipio,
+,PR,Gurabo Municipio,
+,PR,Hatillo Municipio,
+,PR,Hormigueros Municipio,
+,PR,Humacao Municipio,
+,PR,Isabela Municipio,
+,PR,Jayuya Municipio,
+,PR,Juana Diaz Municipio,
+,PR,Juncos Municipio,
+,PR,Lajas Municipio,
+,PR,Lares Municipio,
+,PR,Las Marias Municipio,
+,PR,Las Piedras Municipio,
+,PR,Loiza Municipio,
+,PR,Luquillo Municipio,
+,PR,Manati Municipio,
+,PR,Maricao Municipio,
+,PR,Maunabo Municipio,
+,PR,Mayaguez Municipio,
+,PR,Moca Municipio,
+,PR,Morovis Municipio,
+,PR,Naguabo Municipio,
+,PR,Naranjito Municipio,
+,PR,Orocovis Municipio,
+,PR,Patillas Municipio,
+,PR,Penuelas Municipio,
+,PR,Ponce Municipio,
+,PR,Quebradillas Municipio,
+,PR,Rincon Municipio,
+,PR,Rio Grande Municipio,
+,PR,Sabana Grande Municipio,
+,PR,Salinas Municipio,
+,PR,San German Municipio,
+,PR,San Juan Municipio,
+,PR,San Lorenzo Municipio,
+,PR,San Sebastian Municipio,
+,PR,Santa Isabel Municipio,
+,PR,Toa Alta Municipio,
+,PR,Toa Baja Municipio,
+,PR,Trujillo Alto Municipio,
+,PR,Utuado Municipio,
+,PR,Vega Alta Municipio,
+,PR,Vega Baja Municipio,
+,PR,Vieques Municipio,
+,PR,Villalba Municipio,
+,PR,Yabucoa Municipio,
+,PR,Yauco Municipio,
+Rhode Island,RI,Bristol,BRI
+,RI,Kent,KNT
+,RI,Newport,NEW
+,RI,Providence,PRO
+,RI,Washington,WAR
+South Carolina,SC,Abbeville,ABBE
+,SC,Aiken,AIKE
+,SC,Allendale,ALLE
+,SC,Anderson,ANDE
+,SC,Bamberg,BAMB
+,SC,Barnwell,BARN
+,SC,Beaufort,BEAU
+,SC,Berkeley,BERK
+,SC,Calhoun,CHOU
+,SC,Charleston,CHAR
+,SC,Chester,CHES
+,SC,Chesterfield,CHFD
+,SC,Cherokee,CKEE
+,SC,Clarendon,CLRN
+,SC,Colleton,COLL
+,SC,Darlington,DARL
+,SC,Dillon,DILL
+,SC,Dorchester,DORC
+,SC,Edgefield,EDGE
+,SC,Fairfield,FAIR
+,SC,Florence,FLOR
+,SC,Georgetown,GEOR
+,SC,Greenwood,GRWD
+,SC,Greenville,GVIL
+,SC,Hampton,HAMP
+,SC,Horry,HORR
+,SC,Jasper,JASP
+,SC,Kershaw,KERS
+,SC,Laurens,LAUR
+,SC,Lee,LEE
+,SC,Lexington,LEXI
+,SC,Lancaster,LNCS
+,SC,Marion,MARI
+,SC,Marlboro,MARL
+,SC,McCormick,MCOR
+,SC,Newberry,NEWB
+,SC,Oconee,OCON
+,SC,Orangeburg,ORNG
+,SC,Pickens,PICK
+,SC,Richland,RICH
+,SC,Saluda,SALU
+,SC,Spartanburg,SPAR
+,SC,Sumter,SUMT
+,SC,Union,UNIO
+,SC,Williamsburg,WILL
+,SC,York,YORK
+South Dakota,SD,Aurora,AURO
+,SD,Hyde,HYDE
+,SD,Beadle,BEAD
+,SD,Jerauld,JERA
+,SD,Bennett,BENN
+,SD,Jackson,JKSN
+,SD,Bon Homme,BONH
+,SD,Jones,JONE
+,SD,Brookings,BROO
+,SD,Kingsbury,KING
+,SD,Brule,BRUL
+,SD,Lake,LAKE
+,SD,Brown,BRWN
+,SD,Lawrence,LAWR
+,SD,Buffalo,BUFF
+,SD,Lincoln,LINC
+,SD,Butte,BUTT
+,SD,Lyman,LYMA
+,SD,Campbell,CAMP
+,SD,McCook,MCOO
+,SD,Charles Mix,CHAR
+,SD,McPherson,MCPH
+,SD,Clay,CLAY
+,SD,Meade,MEAD
+,SD,Clark,CLRK
+,SD,Mellette,MELL
+,SD,Codington,CODI
+,SD,Miner,MINE
+,SD,Corson,CORS
+,SD,Minnehaha,MINN
+,SD,Custer,CUST
+,SD,Moody,MOOD
+,SD,Davison,DAVI
+,SD,Marshall,MRSH
+,SD,Day,DAY
+,SD,Pennington,PENN
+,SD,Deuel,DEUE
+,SD,Perkins,PERK
+,SD,Dewey,DEWY
+,SD,Potter,POTT
+,SD,Douglas,DGLS
+,SD,Roberts,ROBE
+,SD,Edmunds,EDMU
+,SD,Sanborn,SANB
+,SD,Fall River,FALL
+,SD,Oglala Lakota,OGLA
+,SD,Faulk,FAUL
+,SD,Spink,SPIN
+,SD,Grant,GRAN
+,SD,Stanley,STAN
+,SD,Gregory,GREG
+,SD,Sully,SULL
+,SD,Haakon,HAAK
+,SD,Todd,TODD
+,SD,Hamlin,HAML
+,SD,Tripp,TRIP
+,SD,Hand,HAND
+,SD,Turner,TURN
+,SD,Hanson,HNSN
+,SD,Union,UNIO
+,SD,Harding,HRDG
+,SD,Walworth,WALW
+,SD,Hughes,HUGH
+,SD,Yankton,YANK
+,SD,Hutchinson,HUTC
+,SD,Ziebach,ZIEB
+Tennessee,TN,Anderson,ANDE
+,TN,Bedford,BEDF
+,TN,Benton,BENT
+,TN,Bledsoe,BLED
+,TN,Blount,BLOU
+,TN,Bradley,BRAD
+,TN,Campbell,CAMP
+,TN,Cannon,CANN
+,TN,Carroll,CARR
+,TN,Carter,CART
+,TN,Cheatham,CHEA
+,TN,Chester,CHES
+,TN,Claiborne,CLAI
+,TN,Clay,CLAY
+,TN,Cocke,COCK
+,TN,Coffee,COFF
+,TN,Crockett,CROC
+,TN,Cumberland,CUMB
+,TN,Davidson,DAVI
+,TN,Decatur,DECA
+,TN,DeKalb,DEKA
+,TN,Dickson,DICK
+,TN,Dyer,DYER
+,TN,Fayette,FAYE
+,TN,Fentress,FENT
+,TN,Franklin,FRAN
+,TN,Gibson,GIBS
+,TN,Giles,GILE
+,TN,Grainger,GRAI
+,TN,Greene,GREE
+,TN,Grundy,GRUN
+,TN,Hamblen,HAMB
+,TN,Hamilton,HAMI
+,TN,Hancock,HANC
+,TN,Hardeman,HARD
+,TN,Hardin,HARN
+,TN,Hawkins,HAWK
+,TN,Haywood,HAYW
+,TN,Henderson,HEND
+,TN,Henry,HENR
+,TN,Hickman,HICK
+,TN,Houston,HOUS
+,TN,Humphreys,HUMP
+,TN,Jackson,JACK
+,TN,Jefferson,JEFF
+,TN,Johnson,JOHN
+,TN,Knox,KNOX
+,TN,Lake,LAKE
+,TN,Lauderdale,LAUD
+,TN,Lawrence,LAWR
+,TN,Lewis,LEWI
+,TN,Lincoln,LINC
+,TN,Loudon,LOUD
+,TN,Macon,MACO
+,TN,Madison,MADI
+,TN,Marion,MARI
+,TN,Marshall,MARS
+,TN,Maury,MAUR
+,TN,McMinn,MCMI
+,TN,McNairy,MCNA
+,TN,Meigs,MEIG
+,TN,Monroe,MONR
+,TN,Montgomery,MONT
+,TN,Moore,MOOR
+,TN,Morgan,MORG
+,TN,Obion,OBIO
+,TN,Overton,OVER
+,TN,Perry,PERR
+,TN,Pickett,PICK
+,TN,Polk,POLK
+,TN,Putnam,PUTN
+,TN,Rhea,RHEA
+,TN,Roane,ROAN
+,TN,Robertson,ROBE
+,TN,Rutherford,RUTH
+,TN,Scott,SCOT
+,TN,Sequatchie,SEQU
+,TN,Sevier,SEVI
+,TN,Shelby,SHEL
+,TN,Smith,SMIT
+,TN,Stewart,STEW
+,TN,Sullivan,SULL
+,TN,Sumner,SUMN
+,TN,Tipton,TIPT
+,TN,Trousdale,TROU
+,TN,Unicoi,UNIC
+,TN,Union,UNIO
+,TN,Van Buren,VANB
+,TN,Warren,WARR
+,TN,Washington,WASH
+,TN,Wayne,WAYN
+,TN,Weakley,WEAK
+,TN,White,WHIT
+,TN,Williamson,WILL
+,TN,Wilson,WILS
+Texas,TX,Anderson,ANDE
+,TX,Andrews,ANDR
+,TX,Angelina,ANGE
+,TX,Aransas,ARAN
+,TX,Archer,ARCH
+,TX,Armstrong,ARMS
+,TX,Atascosa,ATAS
+,TX,Austin,AUST
+,TX,Bailey,BAIL
+,TX,Bandera,BAND
+,TX,Bastrop,BAST
+,TX,Baylor,BAYL
+,TX,Bee,BEE
+,TX,Bell,BELL
+,TX,Bexar,BEXA
+,TX,Blanco,BLAN
+,TX,Borden,BORD
+,TX,Bosque,BOSQ
+,TX,Bowie,BOWI
+,TX,Brazoria,BZIA
+,TX,Brazos,BZOS
+,TX,Brewster,BREW
+,TX,Briscoe,BRIS
+,TX,Brooks,BROO
+,TX,Brown,BROW
+,TX,Burleson,BURL
+,TX,Burnet,BURN
+,TX,Caldwell,CALD
+,TX,Calhoun,CALH
+,TX,Callahan,CALL
+,TX,Cameron,CMRN
+,TX,Camp,CAMP
+,TX,Carson,CARS
+,TX,Cass,CASS
+,TX,Castro,CAST
+,TX,Chambers,CHAM
+,TX,Cherokee,CHER
+,TX,Childress,CHIL
+,TX,Clay,CLAY
+,TX,Cochran,COCH
+,TX,Coke,COKE
+,TX,Coleman,COLE
+,TX,Collin,COLN
+,TX,Collingsworth,COLW
+,TX,Colorado,COLO
+,TX,Comal,COML
+,TX,Comanche,COMA
+,TX,Concho,CONC
+,TX,Cooke,COOK
+,TX,Coryell,CORY
+,TX,Cottle,COTT
+,TX,Crane,CRAN
+,TX,Crockett,CROC
+,TX,Crosby,CROS
+,TX,Culberson,CULB
+,TX,Dallam,DALM
+,TX,Dallas,DALS
+,TX,Dawson,DAWS
+,TX,Deaf Smith,DSMI
+,TX,Delta,DELT
+,TX,Denton,DENT
+,TX,Dewitt,DEWI
+,TX,Dickens,DICK
+,TX,Dimmit,DIMM
+,TX,Donley,DONL
+,TX,Duval,DUVA
+,TX,Eastland,EAST
+,TX,Ector,ECTO
+,TX,Edwards,EDWA
+,TX,El Paso,EPAS
+,TX,Ellis,ELLI
+,TX,Erath,ERAT
+,TX,Falls,FALL
+,TX,Fannin,FANN
+,TX,Fayette,FAYE
+,TX,Fisher,FISH
+,TX,Floyd,FLOY
+,TX,Foard,FOAR
+,TX,Fort Bend,FBEN
+,TX,Franklin,FRAN
+,TX,Freestone,FREE
+,TX,Frio,FRIO
+,TX,Gaines,GAIN
+,TX,Galveston,GALV
+,TX,Garza,GARZ
+,TX,Gillespie,GILL
+,TX,Glasscock,GLAS
+,TX,Goliad,GOLI
+,TX,Gonzales,GONZ
+,TX,Gray,GRAY
+,TX,Grayson,GRSN
+,TX,Gregg,GREG
+,TX,Grimes,GRIM
+,TX,Guadalupe,GUAD
+,TX,Hale,HALE
+,TX,Hall,HALL
+,TX,Hamilton,HAMI
+,TX,Hansford,HANS
+,TX,Hardeman,HDMN
+,TX,Hardin,HRDN
+,TX,Harris,HARR
+,TX,Harrison,HRSN
+,TX,Hartley,HART
+,TX,Haskell,HASK
+,TX,Hays,HAYS
+,TX,Hemphill,HEMP
+,TX,Henderson,HEND
+,TX,Hidalgo,HIDA
+,TX,Hill,HILL
+,TX,Hockley,HOCK
+,TX,Hood,HOOD
+,TX,Hopkins,HOPK
+,TX,Houston,HOUS
+,TX,Howard,HOWA
+,TX,Hudspeth,HUDS
+,TX,Hunt,HUNT
+,TX,Hutchinson,HUTC
+,TX,Irion,IRIO
+,TX,Jack,JACK
+,TX,Jackson,JKSN
+,TX,Jasper,JASP
+,TX,Jeff Davis,JDAV
+,TX,Jefferson,JEFF
+,TX,Jim Hogg,JHOG
+,TX,Jim Wells,JWEL
+,TX,Johnson,JOHN
+,TX,Jones,JONE
+,TX,Karnes,KARN
+,TX,Kaufman,KAUF
+,TX,Kendall,KEND
+,TX,Kenedy,KENY
+,TX,Kent,KENT
+,TX,Kerr,KERR
+,TX,Kimble,KIMB
+,TX,King,KING
+,TX,Kinney,KINN
+,TX,Kleberg,KLEB
+,TX,Knox,KNOX
+,TX,Lamar,LAMA
+,TX,Lamb,LAMB
+,TX,Lampasas,LAMP
+,TX,La Salle,LSAL
+,TX,Lavaca,LAVA
+,TX,Lee,LEE
+,TX,Leon,LEON
+,TX,Liberty,LIBE
+,TX,Limestone,LIME
+,TX,Lipscomb,LIPS
+,TX,Live Oak,LIVO
+,TX,Llano,LLAN
+,TX,Loving,LOVI
+,TX,Lubbock,LUBB
+,TX,Lynn,LYNN
+,TX,Madison,MADI
+,TX,Marion,MARI
+,TX,Martin,MART
+,TX,Mason,MASO
+,TX,Matagorda,MATA
+,TX,Maverick,MAVE
+,TX,McCulloch,MCUL
+,TX,McLennan,MLEN
+,TX,McMullen,MMUL
+,TX,Medina,MEDI
+,TX,Menard,MENA
+,TX,Midland,MIDL
+,TX,Milam,MILA
+,TX,Mills,MILL
+,TX,Mitchell,MITC
+,TX,Montague,MONT
+,TX,Montgomery,MGMY
+,TX,Moore,MOOR
+,TX,Morris,MORR
+,TX,Motley,MOTL
+,TX,Nacogdoches,NACO
+,TX,Navarro,NAVA
+,TX,Newton,NEWT
+,TX,Nolan,NOLA
+,TX,Nueces,NUEC
+,TX,Ochiltree,OCHI
+,TX,Oldham,OLDH
+,TX,Orange,ORAN
+,TX,Palo Pinto,PPIN
+,TX,Panola,PANO
+,TX,Parker,PARK
+,TX,Parmer,PARM
+,TX,Pecos,PECO
+,TX,Polk,POLK
+,TX,Potter,POTT
+,TX,Presidio,PRES
+,TX,Rains,RAIN
+,TX,Randall,RAND
+,TX,Reagan,REAG
+,TX,Real,REAL
+,TX,Red River,RRIV
+,TX,Reeves,REEV
+,TX,Refugio,REFU
+,TX,Roberts,ROBE
+,TX,Robertson,RBSN
+,TX,Rockwall,ROCK
+,TX,Runnels,RUNN
+,TX,Rusk,RUSK
+,TX,Sabine,SABI
+,TX,San Augustine,SAUG
+,TX,San Jacinto,SJAC
+,TX,San Patricio,SPAT
+,TX,San Saba,SSAB
+,TX,Schleicher,SCHL
+,TX,Scurry,SCUR
+,TX,Shackelford,SHAC
+,TX,Shelby,SHEL
+,TX,Sherman,SHMN
+,TX,Smith,SMIT
+,TX,Somervell,SOME
+,TX,Starr,STAR
+,TX,Stephens,STEP
+,TX,Sterling,STER
+,TX,Stonewall,STON
+,TX,Sutton,SUTT
+,TX,Swisher,SWIS
+,TX,Tarrant,TARR
+,TX,Taylor,TAYL
+,TX,Terrell,TERL
+,TX,Terry,TERY
+,TX,Throckmorton,THRO
+,TX,Titus,TITU
+,TX,Tom Green,TGRE
+,TX,Travis,TRAV
+,TX,Trinity,TRIN
+,TX,Tyler,TYLE
+,TX,Upshur,UPSH
+,TX,Upton,UPTO
+,TX,Uvalde,UVAL
+,TX,Val Verde,VVER
+,TX,Van Zandt,VZAN
+,TX,Victoria,VICT
+,TX,Walker,WALK
+,TX,Waller,WALL
+,TX,Ward,WARD
+,TX,Washington,WASH
+,TX,Webb,WEBB
+,TX,Wharton,WHAR
+,TX,Wheeler,WHEE
+,TX,Wichita,WICH
+,TX,Wilbarger,WILB
+,TX,Willacy,WILY
+,TX,Williamson,WMSN
+,TX,Wilson,WLSN
+,TX,Winkler,WINK
+,TX,Wise,WISE
+,TX,Wood,WOOD
+,TX,Yoakum,YOAK
+,TX,Young,YOUN
+,TX,Zapata,ZAPA
+,TX,Zavala,ZAVA
+Midway,UM,Midway Islands,
+Utah,UT,Beaver,BEA
+,UT,Box Elder,BOX
+,UT,Cache,CAC
+,UT,Carbon,CAR
+,UT,Daggett,DAG
+,UT,Davis,DAV
+,UT,Duchesne,DUC
+,UT,Emery,EME
+,UT,Garfield,GAR
+,UT,Grand,GRA
+,UT,Iron,IRO
+,UT,Juab,JUA
+,UT,Kane,KAN
+,UT,Millard,MIL
+,UT,Morgan,MOR
+,UT,Piute,PIU
+,UT,Rich,RIC
+,UT,Salt Lake,SAL
+,UT,San Juan,SNJ
+,UT,Sanpete,SNP
+,UT,Sevier,SEV
+,UT,Summit,SUM
+,UT,Tooele,TOO
+,UT,Uintah,UIN
+,UT,Utah,UTA
+,UT,Wasatch,WST
+,UT,Washington,WSH
+,UT,Wayne,WAY
+,UT,Weber,WEB
+Vermont,VT,Addison,ADD
+,VT,Bennington,BEN
+,VT,Caledonia,CAL
+,VT,Chittenden,CHI
+,VT,Essex,ESS
+,VT,Franklin,FRA
+,VT,Grand Isle,GRA
+,VT,Lamoille,LAM
+,VT,Orange,ORA
+,VT,Orleans,ORL
+,VT,Rutland,RUT
+,VT,Washington,WAS
+,VT,Windham,WNH
+,VT,Windsor,WNS
+Virginia,VA,Accomack,ACC
+,VA,Albemarle,ALB
+,VA,Alexandria,ALX
+,VA,Alleghany,ALL
+,VA,Amelia,AME
+,VA,Amherst,AMH
+,VA,Appomattox,APP
+,VA,Arlington,ARL
+,VA,Augusta,AUG
+,VA,Bath,BAT
+,VA,Bedford,BED
+,VA,Bland,BLA
+,VA,Botetourt,BOT
+,VA,Bristol,BRX
+,VA,Brunswick,BRU
+,VA,Buchanan,BCH
+,VA,Buckingham,BHM
+,VA,Buena Vista,BVX
+,VA,Campbell,CAM
+,VA,Caroline,CLN
+,VA,Carroll,CRL
+,VA,Charles City,CCY
+,VA,Charlotte,CHA
+,VA,Charlottesville,CHX
+,VA,Chesapeake,CPX
+,VA,Chesterfield,CHE
+,VA,Clarke,CLA
+,VA,Colonial Heights,COX
+,VA,Covington,CVX
+,VA,Craig,CRA
+,VA,Culpeper,CUL
+,VA,Cumberland,CUM
+,VA,Danville,DAX
+,VA,Dickenson,DIC
+,VA,Dinwiddie,DIN
+,VA,Emporia,EMX
+,VA,Essex,ESS
+,VA,Fairfax,FFX
+,VA,Fairfax City,FXX
+,VA,Falls Church,FCX
+,VA,Fauquier,FAU
+,VA,Floyd,FLO
+,VA,Fluvanna,FLU
+,VA,Franklin,FRA
+,VA,Franklin City,FRX
+,VA,Frederick,FRE
+,VA,Fredericksburg,FBX
+,VA,Galax,GAX
+,VA,Giles,GIL
+,VA,Gloucester,GLO
+,VA,Goochland,GOO
+,VA,Grayson,GRA
+,VA,Greene,GRN
+,VA,Greensville,GVL
+,VA,Halifax,HAL
+,VA,Hampton,HAX
+,VA,Hanover,HAN
+,VA,Harrisonburg,HBX
+,VA,Henrico,HCO
+,VA,Henry,HRY
+,VA,Highland,HIG
+,VA,Hopewell,HOX
+,VA,Isle of Wight,IOW
+,VA,James City,JAM
+,VA,King and Queen,KQN
+,VA,King George,KGE
+,VA,King William,KWM
+,VA,Lancaster,LAN
+,VA,Lee,LEE
+,VA,Lexington,LEX
+,VA,Loudoun,LDN
+,VA,Louisa,LSA
+,VA,Lunenburg,LUN
+,VA,Lynchburg,LYX
+,VA,Madison,MAD
+,VA,Manassas,MAX
+,VA,Manassas Park,MPX
+,VA,Martinsville,MVX
+,VA,Mathews,MAT
+,VA,Mecklenburg,MEC
+,VA,Middlesex,MID
+,VA,Montgomery,MON
+,VA,Nelson,NEL
+,VA,New Kent,NEW
+,VA,Newport News,NNX
+,VA,Norfolk,NFX
+,VA,Northampton,NHA
+,VA,Northumberland,NUM
+,VA,Norton,NRX
+,VA,Nottoway,NOT
+,VA,Orange,ORG
+,VA,Page,PAG
+,VA,Patrick,PAT
+,VA,Petersburg,PBX
+,VA,Pittsylvania,PIT
+,VA,Poquoson,PQX
+,VA,Portsmouth,POX
+,VA,Powhatan,POW
+,VA,Prince Edward,PRE
+,VA,Prince George,PRG
+,VA,Prince William,PRW
+,VA,Pulaski,PUL
+,VA,Radford,RAX
+,VA,Rappahannock,RAP
+,VA,Richmond,RIC
+,VA,Richmond City,RIX
+,VA,Roanoke,ROA
+,VA,Roanoke City,ROX
+,VA,Rockbridge,RBR
+,VA,Rockingham,RHM
+,VA,Russell,RUS
+,VA,Salem,SAX
+,VA,Scott,SCO
+,VA,Shenandoah,SHE
+,VA,Smyth,SMY
+,VA,Southampton,SHA
+,VA,Spotsylvania,SPO
+,VA,Stafford,STA
+,VA,Staunton,STX
+,VA,Suffolk,SUX
+,VA,Surry,SUR
+,VA,Sussex,SUS
+,VA,Tazewell,TAZ
+,VA,Virginia Beach,VBX
+,VA,Warren,WAR
+,VA,Washington,WAS
+,VA,Waynesboro,WAX
+,VA,Westmoreland,WES
+,VA,Williamsburg,WMX
+,VA,Winchester,WIX
+,VA,Wise,WIS
+,VA,Wythe,WYT
+,VA,York,YOR
+U.S. Virgin Islands,VI,St. Croix Island,
+,VI,St. John Island,
+,VI,St. Thomas Island,
+Washington,WA,Adams,ADA
+,WA,Asotin,ASO
+,WA,Benton,BEN
+,WA,Chelan,CHE
+,WA,Clallam,CLAL
+,WA,Clark,CLAR
+,WA,Columbia,COL
+,WA,Cowlitz,COW
+,WA,Douglas,DOU
+,WA,Ferry,FER
+,WA,Franklin,FRA
+,WA,Garfield,GAR
+,WA,Grant,GRAN
+,WA,Grays Harbor,GRAY
+,WA,Island,ISL
+,WA,Jefferson,JEFF
+,WA,King,KING
+,WA,Kitsap,KITS
+,WA,Kittitas,KITT
+,WA,Klickitat,KLI
+,WA,Lewis,LEW
+,WA,Lincoln,LIN
+,WA,Mason,MAS
+,WA,Okanogan,OKA
+,WA,Pacific,PAC
+,WA,Pend Oreille,PEND
+,WA,Pierce,PIE
+,WA,San Juan,SAN
+,WA,Skagit,SKAG
+,WA,Skamania,SKAM
+,WA,Snohomish,SNO
+,WA,Spokane,SPO
+,WA,Stevens,STE
+,WA,Thurston,THU
+,WA,Wahkiakum,WAH
+,WA,Walla Walla,WAL
+,WA,Whatcom,WHA
+,WA,Whitman,WHI
+,WA,Yakima,YAK
+Wisconsin,WI,Adams,ADA
+,WI,Ashland,ASH
+,WI,Barron,BAR
+,WI,Bayfield,BAY
+,WI,Brown,BRO
+,WI,Buffalo,BUF
+,WI,Burnett,BUR
+,WI,Calumet,CAL
+,WI,Chippewa,CHI
+,WI,Clark,CLA
+,WI,Columbia,COL
+,WI,Crawford,CRA
+,WI,Dane,DAN
+,WI,Dodge,DOD
+,WI,Door,DOO
+,WI,Douglas,DOU
+,WI,Dunn,DUN
+,WI,Eau Claire,EAU
+,WI,Florence,FLO
+,WI,Fond du Lac,FON
+,WI,Forest,FOR
+,WI,Grant,GRA
+,WI,Green,GRE
+,WI,Green Lake,GRL
+,WI,Iowa,IOW
+,WI,Iron,IRO
+,WI,Jackson,JAC
+,WI,Jefferson,JEF
+,WI,Juneau,JUN
+,WI,Kenosha,KEN
+,WI,Kewaunee,KEW
+,WI,La Crosse,LAC
+,WI,Lafayette,LAF
+,WI,Langlade,LAN
+,WI,Lincoln,LIN
+,WI,Manitowoc,MAN
+,WI,Marathon,MAR
+,WI,Marinette,MRN
+,WI,Marquette,MRQ
+,WI,Menominee,MEN
+,WI,Milwaukee,MIL
+,WI,Monroe,MON
+,WI,Oconto,OCO
+,WI,Oneida,ONE
+,WI,Outagamie,OUT
+,WI,Ozaukee,OZA
+,WI,Pepin,PEP
+,WI,Pierce,PIE
+,WI,Polk,POL
+,WI,Portage,POR
+,WI,Price,PRI
+,WI,Racine,RAC
+,WI,Richland,RIC
+,WI,Rock,ROC
+,WI,Rusk,RUS
+,WI,Sauk,SAU
+,WI,Sawyer,SAW
+,WI,Shawano,SHA
+,WI,Sheboygan,SHE
+,WI,St. Croix,STC
+,WI,Taylor,TAY
+,WI,Trempealeau,TRE
+,WI,Vernon,VER
+,WI,Vilas,VIL
+,WI,Walworth,WAL
+,WI,Washburn,WSB
+,WI,Washington,WAS
+,WI,Waukesha,WAU
+,WI,Waupaca,WAP
+,WI,Waushara,WSR
+,WI,Winnebago,WIN
+,WI,Wood,WOO
+West Virginia,WV,Barbour,BAR
+,WV,Berkeley,BER
+,WV,Boone,BOO
+,WV,Braxton,BRA
+,WV,Brooke,BRO
+,WV,Cabell,CAB
+,WV,Calhoun,CAL
+,WV,Clay,CLA
+,WV,Doddridge,DOD
+,WV,Fayette,FAY
+,WV,Gilmer,GIL
+,WV,Grant,GRA
+,WV,Greenbrier,GRE
+,WV,Hampshire,HAM
+,WV,Hancock,HAN
+,WV,Hardy,HDY
+,WV,Harrison,HAR
+,WV,Jackson,JAC
+,WV,Jefferson,JEF
+,WV,Kanawha,KAN
+,WV,Lewis,LEW
+,WV,Lincoln,LIN
+,WV,Logan,LOG
+,WV,Marion,MRN
+,WV,Marshall,MAR
+,WV,Mason,MAS
+,WV,McDowell,MCD
+,WV,Mercer,MER
+,WV,Mineral,MIN
+,WV,Mingo,MGO
+,WV,Monongalia,MON
+,WV,Monroe,MRO
+,WV,Morgan,MOR
+,WV,Nicholas,NIC
+,WV,Ohio,OHI
+,WV,Pendleton,PEN
+,WV,Pleasants,PLE
+,WV,Pocahontas,POC
+,WV,Preston,PRE
+,WV,Putnam,PUT
+,WV,Raleigh,RAL
+,WV,Randolph,RAN
+,WV,Ritchie,RIT
+,WV,Roane,ROA
+,WV,Summers,SUM
+,WV,Taylor,TAY
+,WV,Tucker,TUC
+,WV,Tyler,TYL
+,WV,Upshur,UPS
+,WV,Wayne,WAY
+,WV,Webster,WEB
+,WV,Wetzel,WET
+,WV,Wirt,WIR
+,WV,Wood,WOO
+,WV,Wyoming,WYO
+Wyoming,WY,Albany,ALB
+,WY,Big Horn,BIG
+,WY,Campbell,CAM
+,WY,Carbon,CAR
+,WY,Converse,CON
+,WY,Crook,CRO
+,WY,Fremont,FRE
+,WY,Goshen,GOS
+,WY,Hot Springs,HOT
+,WY,Johnson,JOH
+,WY,Laramie,LAR
+,WY,Lincoln,LIN
+,WY,Natrona,NAT
+,WY,Niobrara,NIO
+,WY,Park,PAR
+,WY,Platte,PLA
+,WY,Sheridan,SHE
+,WY,Sublette,SUB
+,WY,Sweetwater,SWE
+,WY,Teton,TET
+,WY,Uinta,UIN
+,WY,Washakie,WAS
+,WY,Weston,WES

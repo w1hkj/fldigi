@@ -245,6 +245,7 @@ struct mode_info_t {
 	const char *name;
 	const char *pskmail_name;
 	const char *adif_name;
+	const char *export_name;
 	const char *vid_name;
 	const unsigned int iface_io; // Some modes are not usable for a given interface.
 };
@@ -300,5 +301,7 @@ const char* band_freq(const char* band_name);
 
 // psk_browser enums
 enum { VIEWER_LABEL_OFF, VIEWER_LABEL_AF, VIEWER_LABEL_RF, VIEWER_LABEL_CH, VIEWER_LABEL_NTYPES };
+
+extern std::string adif2export(std::string adif);
 
 #endif

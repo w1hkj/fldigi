@@ -138,6 +138,7 @@ notify_dialog::notify_dialog(int X, int Y, const char* l)
 	: Fl_Window(X, Y, l), icon(10, 10, 50, 50), message(70, 25, 330, 35),
 	  dial(277, 70, 23, 23), button(309, 70, 90, 23, "Close"), resize_box(399, 26, 1, 1)
 {
+	set_modal();
 	end();
 
 	icon.image(new Fl_Pixmap(dialog_information_48_icon));
@@ -159,11 +160,13 @@ notify_dialog::notify_dialog(int X, int Y, const char* l)
 	xclass(PACKAGE_TARNAME);
 	resizable(resize_box);
 }
+
 notify_dialog::~notify_dialog()
 {
 	delete icon.image();
 	Fl::remove_timeout(dial_timer, &dial);
 }
+
 int notify_dialog::handle(int event)
 {
 	if (event == FL_HIDE && delete_on_hide) {

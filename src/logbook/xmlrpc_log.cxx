@@ -122,20 +122,46 @@ bool xml_get_record(const char *callsign)
 	oneArg[0] = callsign;
 	if (log_client->execute("log.get_record", oneArg, result)) {
 		string adifline = std::string(result);
+//std::cout << adifline << std::endl;
+
 		inpName->value(get_field(adifline, NAME).c_str());
 		inpQth->value(get_field(adifline, QTH).c_str());
 		inpState->value(get_field(adifline, STATE).c_str());
 		inpVEprov->value(get_field(adifline, VE_PROV).c_str());
-		inpCountry->value(get_field(adifline, COUNTRY).c_str());
+		cboCountry->value(get_field(adifline, COUNTRY).c_str());
+		inpCounty->value(get_field(adifline, CNTY).c_str());
 		inpLoc->value(get_field(adifline, GRIDSQUARE).c_str());
+
+		inp_SS_SerialNoR->value(get_field(adifline, SS_SERNO).c_str());
+		inp_SS_Precedence->value(get_field(adifline, SS_PREC).c_str());
+		inp_SS_Check->value(get_field(adifline, SS_CHK).c_str());
+		inp_SS_Section->value(get_field(adifline, SS_SEC).c_str());
+
+		inp_KD_age->value(get_field(adifline, AGE).c_str());
+		inp_ARR_check->value(get_field(adifline, CHECK).c_str());
+		inp_1010_nr->value(get_field(adifline, TEN_TEN).c_str());
+
+		inp_JOTA_troop->value(get_field(adifline, TROOPR).c_str());
+		inp_JOTA_scout->value(get_field(adifline, SCOUTR).c_str());
+
 		inpNotes->value(get_field(adifline, NOTES).c_str());
 	} else {
 		inpName->value("");
 		inpQth->value("");
 		inpState->value("");
 		inpVEprov->value("");
-		inpCountry->value("");
+		cboCountry->value("");
+		inpCounty->value("");
 		inpLoc->value("");
+		inp_SS_SerialNoR->value("");
+		inp_SS_Precedence->value("");
+		inp_SS_Check->value("");
+		inp_SS_Section->value("");
+		inp_KD_age->value("");
+		inp_ARR_check->value("");
+		inp_1010_nr->value("");
+		inp_JOTA_troop->value("");
+		inp_JOTA_scout->value("");
 		inpNotes->value("");
 	}
 	if (inpLoc->value()[0]) {
@@ -196,15 +222,16 @@ void xml_add_record()
 	adif_str(QTH, inpQth->value());
 	adif_str(STATE, inpState->value());
 	adif_str(VE_PROV, inpVEprov->value());
-	adif_str(COUNTRY, inpCountry->value());
+	adif_str(COUNTRY, cboCountry->value());
+	adif_str(CNTY, inpCounty->value());
 	adif_str(GRIDSQUARE, inpLoc->value());
 	adif_str(STX, outSerNo->value());
 	adif_str(SRX, inpSerNo->value());
 	adif_str(XCHG1, inpXchgIn->value());
 	adif_str(MYXCHG, progdefaults.myXchg.c_str());
 	adif_str(NOTES, inpNotes->value());
-	adif_str(FDCLASS, progdefaults.my_FD_class.c_str());
-	adif_str(FDSECTION, progdefaults.my_FD_section.c_str());
+	adif_str(CLASS, inpClass->value());
+	adif_str(ARRL_SECT, inpSection->value());
 // these fields will always be blank unless they are added to the main
 // QSO log area.
 // need to add the remaining fields
@@ -213,13 +240,32 @@ void xml_add_record()
 	adif_str(QSL_VIA, "");
 	adif_str(QSLRDATE, "");
 	adif_str(QSLSDATE, "");
+
+// new contest fields
+
+	adif_str(SS_SEC, inp_SS_Section->value());
+	adif_str(SS_SERNO, inp_SS_SerialNoR->value());
+	adif_str(SS_PREC, inp_SS_Precedence->value());
+	adif_str(SS_CHK, inp_SS_Check->value());
+
+	adif_str(AGE, inp_KD_age->value());
+
+	adif_str(TEN_TEN, inp_1010_nr->value());
+	adif_str(CHECK, inp_ARR_check->value());
+
+	adif_str(TROOPS, progdefaults.my_JOTA_troop.c_str());
+	adif_str(TROOPR, inp_JOTA_troop->value());
+	adif_str(SCOUTS,  progdefaults.my_JOTA_scout.c_str());
+	adif_str(SCOUTR, inp_JOTA_scout->value());
+
 	adif.append("<eor>");
+
+std::cout << adif << std::endl;
 
 // send it to the server
 	XmlRpcValue oneArg, result;
 	oneArg[0] = adif.c_str();
-//	log_client->execute("log.add_record", oneArg, result);
-	std::cout << "result: " << log_client->execute("log.add_record", oneArg, result) << std::endl;
+	log_client->execute("log.add_record", oneArg, result);
 
 // submit it foreign log programs
 	cQsoRec rec;
@@ -234,7 +280,8 @@ void xml_add_record()
 	rec.putField(QTH, inpQth->value());
 	rec.putField(STATE, inpState->value());
 	rec.putField(VE_PROV, inpVEprov->value());
-	rec.putField(COUNTRY, inpCountry->value());
+	rec.putField(COUNTRY, cboCountry->value());
+	rec.putField(CNTY, inpCounty->value());
 	rec.putField(GRIDSQUARE, inpLoc->value());
 	rec.putField(NOTES, inpNotes->value());
 	rec.putField(QSLRDATE, "");
@@ -245,8 +292,8 @@ void xml_add_record()
 	rec.putField(STX, outSerNo->value());
 	rec.putField(XCHG1, inpXchgIn->value());
 	rec.putField(MYXCHG, progdefaults.myXchg.c_str());
-	rec.putField(FDCLASS, progdefaults.my_FD_class.c_str());
-	rec.putField(FDSECTION, progdefaults.my_FD_section.c_str());
+	rec.putField(CLASS, inpClass->value());
+	rec.putField(ARRL_SECT, inpSection->value());
 	rec.putField(CNTY, "");
 	rec.putField(IOTA, "");
 	rec.putField(DXCC, "");
@@ -254,6 +301,23 @@ void xml_add_record()
 	rec.putField(CQZ, "");
 	rec.putField(ITUZ, "");
 	rec.putField(TX_PWR, "");
+
+// new contest fields
+
+	rec.putField(SS_SEC, inp_SS_Section->value());
+	rec.putField(SS_SERNO, inp_SS_SerialNoR->value());
+	rec.putField(SS_PREC, inp_SS_Precedence->value());
+	rec.putField(SS_CHK, inp_SS_Check->value());
+
+	rec.putField(AGE, inp_KD_age->value());
+
+	rec.putField(TEN_TEN, inp_1010_nr->value());
+	rec.putField(CHECK, inp_ARR_check->value());
+
+	rec.putField(TROOPS, progdefaults.my_JOTA_troop.c_str());
+	rec.putField(TROOPR, inp_JOTA_troop->value());
+	rec.putField(SCOUTS,  progdefaults.my_JOTA_scout.c_str());
+	rec.putField(SCOUTR, inp_JOTA_scout->value());
 
 	submit_record(rec);
 

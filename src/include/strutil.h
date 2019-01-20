@@ -139,7 +139,7 @@ std::string strformat( const char * fmt, ... );
 // Eliminates spaces and tabs at the beginning and the end.
 void strtrim( std::string & str );
 
-// First letter of each word in uppercase, the rest in lowercase.
+// First letter of each word in ucasestr, the rest in lowercase.
 void strcapitalize( std::string & str );
 
 // Returns the replacement of all occurences of a given string by another.
@@ -148,8 +148,9 @@ std::string strreplace( const std::string & inp, const std::string & from, const
 /// Edit distance: Returns an integer which is the distance between the two strings.
 size_t levenshtein(const std::string & source, const std::string & target);
 
-// Conversion to uppercase.
-std::string uppercase( const std::string & str );
+// Conversion to ucasestr.
+std::string ucasestr( std::string str );
+std::string ucasestr( const char *str);
 
 // ----------------------------------------------------------------------------
 

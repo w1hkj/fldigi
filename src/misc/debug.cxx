@@ -110,7 +110,7 @@ Fl_Menu_Item src_menu[] = {
 
 #include <iostream>
 
-static void rotate_log(std::string filename)
+void rotate_log(std::string filename)
 {
 	const int n = 5; // rename existing log files to keep up to 5 old versions
 	ostringstream oldfn, newfn;

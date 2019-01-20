@@ -1,8 +1,14 @@
+2018-09-14  David Freese  <w1hkj@bellsouth.net>
+
+	58a029b: c-tests
+	ae07503: c
+	43b8422: Contests
+	ed6a7db: Mint-19/Mate
+	e9c0f2d: Signal Browser documentation
+	fbb0654: flrig seg fault
 
 
 =Version 4.0.18=
-
-2018-08-12  David Freese  <w1hkj@bellsouth.net>
 
 	2fef9cb: CPS testing
 	aa757af: ipv6 addressing

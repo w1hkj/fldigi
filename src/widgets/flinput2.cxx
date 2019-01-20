@@ -182,10 +182,6 @@ int Fl_Input2::handle_key_ascii(int key)
 //----------------------------------------------------------------------
 int Fl_Input2::handle(int event)
 {
-	if (event == FL_LEAVE) {
-		do_callback();
-		return 1;
-	}
 	switch (event) {
 		case FL_KEYBOARD: {
 			int b = Fl::event_key();
@@ -261,8 +257,8 @@ int Fl_Input2::handle(int event)
 						break;
 				}
 			}
+			return Fl_Input::handle(event);
 		}
-		return Fl_Input::handle(event);
 
 		case FL_MOUSEWHEEL: {
 			if (!((type() & (FL_MULTILINE_INPUT | FL_MULTILINE_OUTPUT)) && Fl::event_inside(this)))

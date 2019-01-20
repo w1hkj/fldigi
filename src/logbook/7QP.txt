@@ -1,0 +1,260 @@
+State, ST, County/City, CC
+Arizona,AZ,Apache,AZAPH
+,AZ,Cochise,AZCHS
+,AZ,Coconino,AZCNO
+,AZ,Gila,AZGLA
+,AZ,Graham,AZGHM
+,AZ,Greenlee,AZGLE
+,AZ,La Paz,AZLPZ
+,AZ,Maricopa,AZMCP
+,AZ,Mohave,AZMHV
+,AZ,Navajo,AZNVO
+,AZ,Pima,AZPMA
+,AZ,Pinal,AZPNL
+,AZ,Santa Cruz,AZSCZ
+,AZ,Yavapai,AZYVP
+,AZ,Yuma,AZYMA
+Idaho,ID,Ada,IDADA
+,ID,Adams,IDADM
+,ID,Bannock,IDBAN
+,ID,Bear Lake,IDBEA
+,ID,Benewah,IDBEN
+,ID,Bingham,IDBIN
+,ID,Blaine,IDBLA
+,ID,Boise,IDBOI
+,ID,Bonner,IDBNR
+,ID,Bonneville,IDBNV
+,ID,Boundary,IDBOU
+,ID,Butte,IDBUT
+,ID,Camas,IDCAM
+,ID,Canyon,IDCAN
+,ID,Caribou,IDCAR
+,ID,Cassia,IDCAS
+,ID,Clark,IDCLA
+,ID,Clearwater,IDCLE
+,ID,Custer,IDCUS
+,ID,Elmore,IDELM
+,ID,Franklin,IDFRA
+,ID,Fremont,IDFRE
+,ID,Gem,IDGEM
+,ID,Gooding,IDGOO
+,ID,Idaho,IDIDA
+,ID,Jefferson,IDJEF
+,ID,Jerome,IDJER
+,ID,Kootenai,IDKOO
+,ID,Latah,IDLAT
+,ID,Lemhi,IDLEM
+,ID,Lewis,IDLEW
+,ID,Lincoln,IDLIN
+,ID,Madison,IDMAD
+,ID,Minidoka,IDMIN
+,ID,Nez Perce,IDNEZ
+,ID,Oneida,IDONE
+,ID,Owyhee,IDOWY
+,ID,Payette,IDPAY
+,ID,Power,IDPOW
+,ID,Shoshone,IDSHO
+,ID,Teton,IDTET
+,ID,Twin Falls,IDTWI
+,ID,Valley,IDVAL
+,ID,Washington,IDWAS
+Montana,MT,Beaverhead,MTBEA
+,MT,Big Horn,MTBIG
+,MT,Blaine,MTBLA
+,MT,Broadwater,MTBRO
+,MT,Carbon,MTCRB
+,MT,Carter,MTCRT
+,MT,Cascade,MTCAS
+,MT,Chouteau,MTCHO
+,MT,Custer,MTCUS
+,MT,Daniels,MTDAN
+,MT,Dawson,MTDAW
+,MT,Deer Lodge,MTDEE
+,MT,Fallon,MTFAL
+,MT,Fergus,MTFER
+,MT,Flathead,MTFLA
+,MT,Gallatin,MTGAL
+,MT,Garfield,MTGAR
+,MT,Glacier,MTGLA
+,MT,Golden Valley,MTGOL
+,MT,Granite,MTGRA
+,MT,Hill,MTHIL
+,MT,Jefferson,MTJEF
+,MT,Judith Basin,MTJUD
+,MT,Lake,MTLAK
+,MT,Lewis & Clark,MTLEW
+,MT,Liberty,MTLIB
+,MT,Lincoln,MTLIN
+,MT,Madison,MTMAD
+,MT,McCone,MTMCC
+,MT,Meagher,MTMEA
+,MT,Mineral,MTMIN
+,MT,Missoula,MTMIS
+,MT,Musselshell,MTMUS
+,MT,Park,MTPAR
+,MT,Petroleum,MTPET
+,MT,Phillips,MTPHI
+,MT,Pondera,MTPON
+,MT,Powder River,MTPWD
+,MT,Powell,MTPWL
+,MT,Prairie,MTPRA
+,MT,Ravalli,MTRAV
+,MT,Richland,MTRIC
+,MT,Roosevelt,MTROO
+,MT,Rosebud,MTROS
+,MT,Sanders,MTSAN
+,MT,Sheridan,MTSHE
+,MT,Silver Bow,MTSIL
+,MT,Stillwater,MTSTI
+,MT,Sweet Grass,MTSWE
+,MT,Teton,MTTET
+,MT,Toole,MTTOO
+,MT,Treasure,MTTRE
+,MT,Valley,MTVAL
+,MT,Wheatland,MTWHE
+,MT,Wibaux,MTWIB
+,MT,Yellowstone,MTYEL
+Nevada,NV,Carson City,NVCAR
+,NV,Churchill,NVCHU
+,NV,Clark,NVCLA
+,NV,Douglas,NVDOU
+,NV,Elko,NVELK
+,NV,Esmeralda,NVESM
+,NV,Eureka,NVEUR
+,NV,Humboldt,NVHUM
+,NV,Lander,NVLAN
+,NV,Lincoln,NVLIN
+,NV,Lyon,NVLYO
+,NV,Mineral,NVMIN
+,NV,Nye,NVNYE
+,NV,Pershing,NVPER
+,NV,Storey,NVSTO
+,NV,Washoe,NVWAS
+,NV,White Pine,NVWHI
+Oregon,OR,Baker,ORBAK
+,OR,Benton,ORBEN
+,OR,Clackamas,ORCLK
+,OR,Clatsop,ORCLT
+,OR,Columbia,ORCOL
+,OR,Coos,ORCOO
+,OR,Crook,ORCRO
+,OR,Curry,ORCUR
+,OR,Deschutes,ORDES
+,OR,Douglas,ORDOU
+,OR,Gilliam,ORGIL
+,OR,Grant,ORGRA
+,OR,Harney,ORHAR
+,OR,Hood River,ORHOO
+,OR,Jackson,ORJAC
+,OR,Jefferson,ORJEF
+,OR,Josephine,ORJOS
+,OR,Klamath,ORKLA
+,OR,Lake,ORLAK
+,OR,Lane,ORLAN
+,OR,Lincoln,ORLCN
+,OR,Linn,ORLNN
+,OR,Malheur,ORMAL
+,OR,Marion,ORMAR
+,OR,Morrow,ORMOR
+,OR,Multnomah,ORMUL
+,OR,Polk,ORPOL
+,OR,Sherman,ORSHE
+,OR,Tillamook,ORTIL
+,OR,Umatilla,ORUMA
+,OR,Union,ORUNI
+,OR,Wallowa,ORWAL
+,OR,Wasco,ORWCO
+,OR,Washington,ORWSH
+,OR,Wheeler,ORWHE
+,OR,Yamhill,ORYAM
+Utah,UT,Beaver,UTBEA
+,UT,Box Elder,UTBOX
+,UT,Cache,UTCAC
+,UT,Carbon,UTCAR
+,UT,Daggett,UTDAG
+,UT,Davis,UTDAV
+,UT,Duchesne,UTDUC
+,UT,Emery,UTEME
+,UT,Garfield,UTGAR
+,UT,Grand,UTGRA
+,UT,Iron,UTIRO
+,UT,Juab,UTJUA
+,UT,Kane,UTKAN
+,UT,Millard,UTMIL
+,UT,Morgan,UTMOR
+,UT,Piute,UTPIU
+,UT,Rich,UTRIC
+,UT,Salt Lake,UTSAL
+,UT,San Juan,UTSNJ
+,UT,Sanpete,UTSNP
+,UT,Sevier,UTSEV
+,UT,Summit,UTSUM
+,UT,Tooele,UTTOO
+,UT,Uintah,UTUIN
+,UT,Utah,UTUTA
+,UT,Wasatch,UTWST
+,UT,Washington,UTWSH
+,UT,Wayne,UTWAY
+,UT,Weber,UTWEB
+Washington,WA,Adams,WAADA
+,WA,Asotin,WAASO
+,WA,Benton,WABEN
+,WA,Chelan,WACHE
+,WA,Clallam,WACLL
+,WA,Clark,WACLR
+,WA,Columbia,WACOL
+,WA,Cowlitz,WACOW
+,WA,Douglas,WADOU
+,WA,Ferry,WAFER
+,WA,Franklin,WAFRA
+,WA,Garfield,WAGAR
+,WA,Grant,WAGRN
+,WA,Grays Harbor,WAGRY
+,WA,Island,WAISL
+,WA,Jefferson,WAJEF
+,WA,Klickitat,WAKLI
+,WA,King,WAKNG
+,WA,Kitsap,WAKTP
+,WA,Kittitas,WAKTT
+,WA,Lewis,WALEW
+,WA,Lincoln,WALIN
+,WA,Mason,WAMAS
+,WA,Okanogan,WAOKA
+,WA,Pacific,WAPAC
+,WA,Pend Oreille,WAPEN
+,WA,Pierce,WAPIE
+,WA,San Juan,WASAN
+,WA,Skagit,WASKG
+,WA,Skamania,WASKM
+,WA,Snohomish,WASNO
+,WA,Spokane,WASPO
+,WA,Stevens,WASTE
+,WA,Thurston,WATHU
+,WA,Wahkiakum,WAWAH
+,WA,Walla Walla,WAWAL
+,WA,Whatcom,WAWHA
+,WA,Whitman,WAWHI
+,WA,Yakima,WAYAK
+Wyoming,WY,Albany,WYALB
+,WY,Big Horn,WYBIG
+,WY,Campbell,WYCAM
+,WY,Carbon,WYCAR
+,WY,Converse,WYCON
+,WY,Crook,WYCRO
+,WY,Fremont,WYFRE
+,WY,Goshen,WYGOS
+,WY,Hot Springs,WYHOT
+,WY,Johnson,WYJOH
+,WY,Laramie,WYLAR
+,WY,Lincoln,WYLIN
+,WY,Natrona,WYNAT
+,WY,Niobrara,WYNIO
+,WY,Park,WYPAR
+,WY,Platte,WYPLA
+,WY,Sheridan,WYSHE
+,WY,Sublette,WYSUB
+,WY,Sweetwater,WYSWE
+,WY,Teton,WYTET
+,WY,Uinta,WYUIN
+,WY,Washakie,WYWAS
+,WY,Weston,WYWES

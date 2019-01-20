@@ -52,10 +52,10 @@ Fl_Check_Button *btn_fd_connect=(Fl_Check_Button *)0;
 static void cb_btn_fd_connect(Fl_Check_Button* o, void*) {
   progdefaults.connect_to_fdserver=o->value();
 if (progdefaults.connect_to_fdserver) {
-	btn_fd_contest->value(1);
+	listbox_contest->index(LOG_FD);
 	progdefaults.logging = LOG_FD;
 } else {
-	btn_fd_contest->value(0);
+	listbox_contest->index(LOG_QSO);
 	progdefaults.logging = LOG_QSO;
 }
 UI_select();

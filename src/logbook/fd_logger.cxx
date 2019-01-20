@@ -350,8 +350,8 @@ void FD_add_record()
 	guard_lock send_lock(&FD_mutex);
 	string cmd = "ADD ";
 	cmd.append(inpCall->value()).append(" ");
-	cmd.append(inp_FD_section->value()).append(" ");
-	cmd.append(inp_FD_class->value());
+	cmd.append(inpSection->value()).append(" ");
+	cmd.append(inpClass->value());
 	FD_write(cmd);
 }
 

@@ -109,21 +109,18 @@
 #include "rigsupport.h"
 
 #include "log.h"
-
 #include "qrunner.h"
 #include "stacktrace.h"
-
 #include "xmlrpc.h"
+#include "icons.h"
+#include "nullmodem.h"
+#include "spectrum_viewer.h"
+#include "contest.h"
+#include "counties.h"
 
 #if BENCHMARK_MODE
 	#include "benchmark.h"
 #endif
-
-#include "icons.h"
-
-#include "nullmodem.h"
-
-#include "spectrum_viewer.h"
 
 using namespace std;
 
@@ -144,6 +141,7 @@ string MacrosDir = "";
 string WrapDir = "";
 string TalkDir = "";
 string TempDir = "";
+string DebugDir = "";
 string LoTWDir = "";
 string KmlDir = "";
 string PskMailDir = "";
@@ -968,6 +966,8 @@ int main(int argc, char ** argv)
 
 	generate_option_help();
 
+//	FL_NORMAL_SIZE = 14;
+
 	int arg_idx;
 	if (Fl::args(argc, argv, arg_idx, parse_args) != argc)
 		arg_error(argv[0], NULL, false);
@@ -1001,7 +1001,7 @@ int main(int argc, char ** argv)
 	check_data_dir();
 
 	try {
-		debug::start(string(HomeDir).append("status_log.txt").c_str());
+		debug::start(string(DebugDir).append("status_log.txt").c_str());
 		time_t t = time(NULL);
 		LOG(debug::QUIET_LEVEL, debug::LOG_OTHER, _("%s log started on %s"), PACKAGE_STRING, ctime(&t));
 		LOG_THREAD_ID();
@@ -1012,22 +1012,26 @@ int main(int argc, char ** argv)
 	}
 
 	LOG_INFO("appname: %s", appname.c_str());
+
+	LOG_INFO("%s", "Directories");
 	LOG_INFO("HomeDir: %s", HomeDir.c_str());
+	LOG_INFO("DATA_dir: %s", DATA_dir.c_str());
+	LOG_INFO("DebugDir: %s", DebugDir.c_str());
+	LOG_INFO("HelpDir: %s", HelpDir.c_str());
+	LOG_INFO("KmlDir: %s", KmlDir.c_str());
+	LOG_INFO("LogsDir: %s", LogsDir.c_str());
+	LOG_INFO("LoTWDir: %s", LoTWDir.c_str());
+	LOG_INFO("MacrosDir: %s", MacrosDir.c_str());
+	LOG_INFO("PalettesDir: %s", PalettesDir.c_str());
+	LOG_INFO("PicsDir: %s", PicsDir.c_str());
+	LOG_INFO("PskMailDir: %s", PskMailDir.c_str());
 	LOG_INFO("RigsDir: %s", RigsDir.c_str());
 	LOG_INFO("ScriptsDir: %s", ScriptsDir.c_str());
-	LOG_INFO("PalettesDir: %s", PalettesDir.c_str());
-	LOG_INFO("LogsDir: %s", LogsDir.c_str());
-	LOG_INFO("PicsDir: %s", PicsDir.c_str());
-	LOG_INFO("HelpDir: %s", HelpDir.c_str());
-	LOG_INFO("MacrosDir: %s", MacrosDir.c_str());
-	LOG_INFO("WrapDir: %s", WrapDir.c_str());
 	LOG_INFO("TalkDir: %s", TalkDir.c_str());
 	LOG_INFO("TempDir: %s", TempDir.c_str());
-	LOG_INFO("LoTWDir: %s", LoTWDir.c_str());
-	LOG_INFO("KmlDir: %s", KmlDir.c_str());
-	LOG_INFO("PskMailDir: %s", PskMailDir.c_str());
+	LOG_INFO("WrapDir: %s", WrapDir.c_str());
 
-	LOG_INFO("DATA_dir: %s", DATA_dir.c_str());
+	LOG_INFO("%s", "NBEMS directories");
 	LOG_INFO("NBEMS_dir: %s", NBEMS_dir.c_str());
 	LOG_INFO("ARQ_dir: %s", ARQ_dir.c_str());
 	LOG_INFO("ARQ_files_dir: %s", ARQ_files_dir.c_str());
@@ -1041,6 +1045,7 @@ int main(int argc, char ** argv)
 	LOG_INFO("ICS_msg_dir: %s", ICS_msg_dir.c_str());
 	LOG_INFO("ICS_tmp_dir: %s", ICS_tmp_dir.c_str());
 
+	LOG_INFO("%s", "FLMSG directories");
 	LOG_INFO("FLMSG_dir: %s", FLMSG_dir.c_str());
 	LOG_INFO("FLMSG_dir_default: %s", FLMSG_dir_default.c_str());
 	LOG_INFO("FLMSG_WRAP_dir: %s", FLMSG_WRAP_dir.c_str());
@@ -1177,6 +1182,8 @@ int main(int argc, char ** argv)
 	update_main_title();
 
 	mode_browser = new Mode_Browser;
+
+	clearQSO();
 
 	Fl::add_timeout(.25, delayed_startup);
 
@@ -2036,6 +2043,7 @@ static void checkdirectories(void)
 		{ LoTWDir, "LOTW", 0 },
 		{ KmlDir, "kml", 0 },
 		{ DATA_dir, "data", 0 },
+		{ DebugDir, "debug", 0 }
 	};
 
 	int r;

@@ -46,6 +46,7 @@
 #include "status.h"
 #include "icons.h"
 #include "threads.h"
+#include "strutil.h"
 
 #include "fileselect.h"
 
@@ -132,12 +133,6 @@ static string trim(string s)
 	while ( (p = s.find("\x07")) != string::npos) s.erase(p, 1);
 	while ((p = s.find("\r")) != string::npos) s.erase(p,1);
 	while ((p = s.find("\n")) != string::npos) s.erase(p,1);
-	return s;
-}
-
-static string ucasestr(string s)
-{
-	for (size_t n = 0; n < s.length(); n++) s[n] = toupper(s[n]);
 	return s;
 }
 

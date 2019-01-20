@@ -61,6 +61,7 @@
 #include "logsupport.h"
 #include "qso_db.h"
 #include "dx_dialog.h"
+#include "contest.h"
 
 #include "misc.h"
 #include "data_io.h"
@@ -1125,6 +1126,7 @@ void status::initLastState()
 	}
 
 	dlgLogbook->resize(logbook_x, logbook_y, logbook_w, logbook_h);
+
 	wBrowser->columnWidth(0, logbook_col_0);
 	wBrowser->columnWidth(1, logbook_col_1);
 	wBrowser->columnWidth(2, logbook_col_2);

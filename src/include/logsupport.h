@@ -38,7 +38,32 @@
 #endif
 
 enum savetype {ADIF, CSV, TEXT, LOTW, LO};
-enum logtype {LOG_QSO, LOG_CONT, LOG_FD, LOG_CQWW, LOG_BART, LOG_CWSS};
+
+enum logtype {
+  LOG_QSO, 			// No Contest
+  LOG_GENERIC,		// Generic contest
+  LOG_AIDX,			// Africa International DX
+  LOG_FD,			// ARRL Field Day
+  LOG_AICW,			// ARRL International DX (Cw)
+  LOG_JOTA,			// ARRL Jamboree On The Air
+  LOG_KD,			// ARRL Kids Day
+  LOG_ARR,			// ARRL Rookie Roundup
+  LOG_RTTY,			// ARRL RTTY
+  LOG_ASCR,			// ARRL School Club Roundup
+  LOG_CWSS,			// ARRL November Sweepstakes
+  LOG_WFD,			// ARRL Winter Field Day
+  LOG_BART,			// BARTG RTTY contest
+  LOG_CQ_WPX,		// CQ WPX
+  LOG_CQWW_DX,		// CQ WW Dx
+  LOG_CQWW_RTTY,	// CQ WW RTTY
+  LOG_IARI,			// Italian ARI International DX
+  LOG_NAQP,			// North American QSO Party
+  LOG_NAS,			// North American Sprint
+  LOG_1010,			// Ten Ten
+  LOG_VHF,			// VHF
+//  LOG_WAE,			// Worked All Europe
+  LOG_SQSO			// State QSO parties
+};
 
 extern cQsoDb        qsodb;
 extern cAdifIO       adifFile;

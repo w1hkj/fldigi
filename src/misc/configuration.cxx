@@ -38,6 +38,7 @@
 #include "nls.h"
 #include "icons.h"
 #include "rigsupport.h"
+#include "contest.h"
 
 #if USE_HAMLIB
 	#include "hamlib.h"
@@ -429,6 +430,14 @@ void configuration::loadDefaults()
 	chkDominoEX_FEC->value(DOMINOEX_FEC);
 
 	Fl_Tooltip::enable(tooltips);
+
+// contest settings for state qso parties
+	adjust_for_contest(0);
+
+	UI_select();
+	set_log_colors();
+	clear_log_fields();
+	clearQSO();
 }
 
 void configuration::saveDefaults()

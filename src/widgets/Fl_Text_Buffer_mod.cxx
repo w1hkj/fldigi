@@ -920,22 +920,30 @@ int Fl_Text_Buffer_mod::word_end(int pos) const {
 }
 
 /*
-** Search forwards in buffer for characters in "searchChars", starting
+** Search forwards in buffer for nth occurance ofcharacters in "searchChars", starting
 ** with the character "startPos", and returning the result in "foundPos"
 ** returns 1 if found, 0 if not.
 */
-int Fl_Text_Buffer_mod::findchars_forward( int startPos, const char *searchChars,
-                                    int *foundPos ) {
+int Fl_Text_Buffer_mod::findchars_forward(
+        int startPos,
+        const char *searchChars,
+        int *foundPos,
+        int n ) const {
   int pos = startPos;
   const char *c;
   char ch = 0;
 
-  while ( pos < length() ) {
+  while ( pos < length() && n) {
     ch = byte_at(pos);
     for ( c = searchChars; *c != '\0'; c++ ) {
+      if (n != 1 && (*c == '.'  || *c == '-'))
+        continue;
       if ( ch == *c ) {
-        *foundPos = pos;
-        return 1;
+        n--;
+        if (n == 0) {
+          *foundPos = pos;
+          return 1;
+        }
       }
     }
     pos = next_char(pos);

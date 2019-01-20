@@ -30,6 +30,8 @@
 
 #include "util.h"
 
+extern void rotate_log(std::string);
+
 class debug
 {
 public:

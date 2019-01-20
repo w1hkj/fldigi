@@ -229,46 +229,19 @@ void send_to_lotw(void *)
 
 string lotw_rec(cQsoRec &rec)
 {
-  /* does not honor the selection of adif fields selected by the user
-     only sends the required  call, mode, freq, band and qso date.
-     Others are ignored.
-  */
-	static string valid_lotw_modes =
-	"\
-AM AMTORFEC ASCI ATV CHIP64 CHIP128 CLO CONTESTI CW DSTAR DOMINO DOMINOF FAX \
-FM FMHELL FSK31 FSK441 GTOR HELL HELL80 HFSK JT44 JT4A JT4B JT4C JT4D JT4E \
-JT4F JT4G JT65 JT65A JT65B JT65C JT6M JT9 MFSK8 MFSK16 \
-MT63 OLIVIA PAC PAC2 PAC3 PAX PAX2 PCW PKT PSK10 PSK31 PSK63 PSK63F PSK125 \
-PSKAM10 PSKAM31 PSKAM50 PSKFEC31 PSKHELL Q15 QPSK31 QPSK63 QPSK125 \
-ROS RTTY RTTYM SSB SSTV THRB THOR THRBX TOR VOI WINMOR WSPR ";
-	static string mfsk_modes = "\
-MFSK4 MFSK11 MFSK22 MFSK31 MFSK32 MFSK64 MFSK128 MFSK64L MFSK128L";
-
 	string temp;
 	string strrec;
+
 	putadif(CALL, rec.getField(CALL), strrec);
 
-//	temp = mode_info[active_modem->get_mode()].adif_name;
-	temp = rec.getField(MODE);
-
-	if (temp.find("MFSK") != string::npos)
-		if (mfsk_modes.find(temp) != string::npos)
-			temp = "MFSK16";
-
-// LoTW will probably never catch up with the active modes
-// default all others to PSK31
-	if (valid_lotw_modes.find(temp) == string::npos) {
-		temp = "PSK31";
-	}
-
-	putadif(MODE, temp.c_str(), strrec);
+	putadif(MODE, adif2export(rec.getField(MODE)).c_str());
 
 	temp = rec.getField(FREQ);
 	temp.resize(7);
 	putadif(FREQ, temp.c_str(), strrec);
 
 	putadif(QSO_DATE, rec.getField(QSO_DATE), strrec);
-//KB add BAND
+
 	putadif(BAND, rec.getField(BAND), strrec);
 
 	temp = rec.getField(TIME_ON);
@@ -304,7 +277,7 @@ void submit_ADIF(cQsoRec &rec)
 	putadif(TIME_OFF, rec.getField(TIME_OFF));
 	putadif(CALL, rec.getField(CALL));
 	putadif(FREQ, rec.getField(FREQ));
-	putadif(MODE, rec.getField(MODE));
+	putadif(MODE, adif2export(rec.getField(MODE)).c_str());
 	putadif(RST_SENT, rec.getField(RST_SENT));
 	putadif(RST_RCVD, rec.getField(RST_RCVD));
 	putadif(TX_PWR, rec.getField(TX_PWR));
@@ -369,7 +342,7 @@ static void send_IPC_log(cQsoRec &rec)
 	addtomsg("endtime:",            sztime);
 	addtomsg("call:",		rec.getField(CALL));
 	addtomsg("mhz:",		rec.getField(FREQ));
-	addtomsg("mode:",		rec.getField(MODE));
+	addtomsg("mode:",		adif2export(rec.getField(MODE)));
 	addtomsg("tx:",			rec.getField(RST_SENT));
 	addtomsg("rx:",			rec.getField(RST_RCVD));
 	addtomsg("name:",		rec.getField(NAME));
@@ -431,9 +404,10 @@ void submit_log(void)
 	if (progdefaults.eqsl_when_logged)
 		makeEQSL("");
 
-	if (progdefaults.xml_logbook)
+	if (progdefaults.xml_logbook && qsodb.isdirty()) {
 		xml_add_record();
-	else
+		qsodb.isdirty(0);
+	} else
 		AddRecord();
 
 	if (FD_logged_on) FD_add_record();

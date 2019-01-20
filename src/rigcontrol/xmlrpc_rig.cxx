@@ -334,8 +334,8 @@ void set_flrig_mode(const char *md)
 			wait_mode = true;
 			wait_mode_timeout = 10;
 			wait_bws_timeout = 5;
-qso_opBW->hide();
-qso_opGROUP->hide();
+			qso_opBW->hide();
+			qso_opGROUP->hide();
 			LOG_VERBOSE("set mode: %s", md);
 		}
 	} catch (...) {}
@@ -417,8 +417,10 @@ void xmlrpc_rig_post_modes(void *)
 		return;
 	}
 
+	std::string smodes;
 	for (int i = 0; i < nargs; i++)
-		qso_opMODE->add(string(modes_result[i]).c_str());
+		smodes.append(string(modes_result[i])).append("|");
+	qso_opMODE->add(smodes.c_str());
 
 	qso_opMODE->index(0);
 	qso_opMODE->activate();
@@ -485,11 +487,12 @@ void xmlrpc_rig_post_bw(void *)
 	if (!qso_opBW) return;
 
 	if (posted_bw != (std::string)(qso_opBW->value())) {
-		qso_opBW->value(posted_bw.c_str());
+		qso_opBW->value(posted_bw);//.c_str());
 		qso_opBW->redraw();
 		LOG_VERBOSE("Update BW %s", posted_bw.c_str());
+std::cout << "Update BW " << posted_bw << std::endl;
 	}
-qso_opBW->show();
+	qso_opBW->show();
 }
 
 void xmlrpc_rig_post_bw1(void *)
@@ -498,23 +501,24 @@ void xmlrpc_rig_post_bw1(void *)
 	if (!qso_opBW1) return;
 
 	if (posted_bw1 != (std::string)(qso_opBW1->value())) {
-		qso_opBW1->value(posted_bw1.c_str());
+		qso_opBW1->value(posted_bw1);//.c_str());
 		qso_opBW1->redraw();
 		LOG_VERBOSE("Update combo BW1 %s", posted_bw1.c_str());
 	}
-qso_opGROUP->show();
+	qso_opGROUP->show();
 }
 
 void xmlrpc_rig_post_bw2(void *)
 {
 	guard_lock flrig_lock(&mutex_flrig_bw);
 	if (!qso_opBW2) return;
+
 	if (posted_bw2 != (std::string)(qso_opBW2->value())) {
-		qso_opBW2->value(posted_bw2.c_str());
+		qso_opBW2->value(posted_bw2);//.c_str());
 		qso_opBW2->redraw();
 		LOG_VERBOSE("Update combo BW2 %s", posted_bw2.c_str());
 	}
-qso_opGROUP->show();
+	qso_opGROUP->show();
 }
 
 void do_flrig_get_bw()
@@ -584,7 +588,7 @@ void xmlrpc_rig_post_bws(void *)
 		static char tooltip1[20];
 		snprintf(tooltip1,sizeof(tooltip1),"%s",labels1.substr(2).c_str());
 		qso_opBW1->tooltip(tooltip1);
-//		qso_opBW1->index(0);
+		qso_opBW1->index(0);
 		qso_opBW1->redraw();
 
 		{
@@ -616,7 +620,7 @@ void xmlrpc_rig_post_bws(void *)
 			static char tooltip2[20];
 			snprintf(tooltip2,sizeof(tooltip2),"%s",labels2.substr(2).c_str());
 			qso_opBW2->tooltip(tooltip2);
-//			qso_opBW2->index(0);
+			qso_opBW2->index(0);
 			qso_opBW2->redraw();
 
 			{
@@ -634,7 +638,6 @@ void xmlrpc_rig_post_bws(void *)
 			return;
 		}
 		qso_opBW->hide();
-//		qso_opGROUP->show();
 		bws_posted = true;
 		return;
 	} catch (XmlRpcException err) {
@@ -643,13 +646,12 @@ void xmlrpc_rig_post_bws(void *)
 			string bwstr;
 			qso_opBW->clear();
 			for (int i = 1; i < nargs; i++) {
-				bwstr = string(bws_result[0][i]);
-				qso_opBW->add(bwstr.c_str());
+				bwstr.append(string(bws_result[0][i])).append("|");
 			}
-//			qso_opBW->index(0);
+			qso_opBW->add(bwstr.c_str());
+			qso_opBW->index(0);
 			qso_opBW->activate();
 			qso_opBW->tooltip("xcvr bandwidth");
-//			qso_opBW->show();
 			qso_opGROUP->hide();
 
 			{

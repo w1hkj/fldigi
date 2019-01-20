@@ -63,6 +63,8 @@
 
 #include "timeops.h"
 
+#include "strutil.h"
+
 #include <FL/filename.H>
 #include <FL/fl_ask.H>
 #include <FL/Fl_Double_Window.H>
@@ -1138,8 +1140,9 @@ void cb_Export_log() {
 			rec->getField((export_to == LOTW ? TIME_ON : TIME_OFF) ),
 			rec->getField(CALL),
 			szfreq(rec->getField(FREQ)),
-			rec->getField(MODE) );
-        chkExportBrowser->add(line);
+			adif2export(rec->getField(MODE)).c_str()
+		);
+		chkExportBrowser->add(line);
 	}
 	cb_export_date_select();
 	wExport->show();
@@ -1168,6 +1171,10 @@ void cb_mnuExportTEXT_log(Fl_Menu_* m, void *d) {
 
 void cb_mnuShowLogbook(Fl_Menu_* m, void* d)
 {
+	dlgLogbook->resize(
+		progStatus.logbook_x, progStatus.logbook_y,
+		progStatus.logbook_w, progStatus.logbook_h);
+
 	dlgLogbook->show();
 }
 
@@ -1312,47 +1319,33 @@ void cb_SortByFreq (void) {
 void DupCheck()
 {
 	Fl_Color call_clr = progdefaults.LOGGINGcolor;
-
-	if (n3fjp_connected) {
-		if (n3fjp_dupcheck())
-			call_clr = fl_rgb_color(
+	Fl_Color dup_clr = fl_rgb_color(
 				progdefaults.dup_color.R,
 				progdefaults.dup_color.G,
 				progdefaults.dup_color.B);
-	}
 
-	else if ( FD_logged_on && strlen(inpCall->value()) > 2) {
-		if ( FD_dupcheck())
-			call_clr = fl_rgb_color(
-				progdefaults.dup_color.R,
-				progdefaults.dup_color.G,
-				progdefaults.dup_color.B);
-	}
+	bool dup = false;
 
-	else if ( progdefaults.xml_logbook) {
-		if (xml_check_dup())
-			call_clr = fl_rgb_color(
-				progdefaults.dup_color.R,
-				progdefaults.dup_color.G,
-				progdefaults.dup_color.B);
-	}
+	if (n3fjp_connected)
+		dup = n3fjp_dupcheck();
+	else if ( FD_logged_on && strlen(inpCall->value()) > 2)
+		dup = FD_dupcheck();
+	else if ( progdefaults.xml_logbook)
+		dup = xml_check_dup();
 	else if ( !progdefaults.xml_logbook && qsodb.duplicate(
 			inpCall->value(),
 			zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan,
 			inpFreq->value(), progdefaults.dupband,
 			inpState->value(), progdefaults.dupstate,
 			mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,
-			inpXchgIn->value(), progdefaults.dupxchg1 ) ) {
-		call_clr = fl_rgb_color(
-			progdefaults.dup_color.R,
-			progdefaults.dup_color.G,
-			progdefaults.dup_color.B);
-	}
+			inpXchgIn->value(), progdefaults.dupxchg1 ) )
+		dup = true;
 
-	inpCall1->color(call_clr);
-	inpCall2->color(call_clr);
-	inpCall3->color(call_clr);
-	inpCall4->color(call_clr);
+	inpCall1->color(dup ? dup_clr : call_clr);
+	inpCall2->color(dup ? dup_clr : call_clr);
+	inpCall3->color(dup ? dup_clr : call_clr);
+	inpCall4->color(dup ? dup_clr : call_clr);
+
 	inpCall1->redraw();
 	inpCall2->redraw();
 	inpCall3->redraw();
@@ -1395,19 +1388,18 @@ void SearchLastQSO(const char *callsign)
 	if (wBrowser->search(row, col, !cQsoDb::reverse, re)) {
 		wBrowser->GotoRow(row);
 		inpName->value(inpName_log->value());
-		inpQth->value(inpQth_log->value());
+		inpQTH->value(inpQth_log->value());
 		inpLoc1->value(inpLoc_log->value());
 		inpLoc1->position (0);
-		inpLoc2->value(inpLoc_log->value());
-		inpLoc2->position (0);
+//		inpLoc2->value(inpLoc_log->value());
+//		inpLoc2->position (0);
 		inpState->value(inpState_log->value());
 		inpState->position (0);
 		inpVEprov->value(inpVE_Prov_log->value ());
 		inpVEprov->position (0);
-		inpCountry->value(inpCountry_log->value ());
-		inpCountry->position (0);
 		inpCounty->value(inpCNTY_log->value ());
 		inpCounty->position (0);
+		cboCountry->value(inpCountry_log->value ());
 		inpSearchString->value(callsign);
 		if (inpLoc->value()[0]) {
 			double lon1, lat1, lon2, lat2;
@@ -1424,16 +1416,7 @@ void SearchLastQSO(const char *callsign)
 		} else
 			inpAZ->value("");
 	} else {
-		inpName->value("");
-		inpQth->value("");
-		inpLoc1->value("");
-		inpLoc2->value("");
-		inpState->value("");
-		inpVEprov->value("");
-		inpCountry->value("");
-		inpCounty->value("");
-		inpAZ->value("");
-		inpSearchString->value("");
+		clear_log_fields();
 	}
 	delete [] re;
 }
@@ -1507,16 +1490,15 @@ void cb_btnRetrieve(Fl_Button* b, void* d)
 	inpTimeOn->value (inpTimeOff->value());
 	inpState->value (qsoPtr->getField(STATE));
 	inpState->position (0);
-	inpCountry->value (qsoPtr->getField(COUNTRY));
-	inpCountry->position (0);
 	inpCounty->value (qsoPtr->getField(CNTY));
 	inpCounty->position (0);
+	cboCountry->value (qsoPtr->getField(COUNTRY));
 	inpXchgIn->value(qsoPtr->getField(XCHG1));
-	inpQth->value (qsoPtr->getField(QTH));
+	inpQTH->value (qsoPtr->getField(QTH));
 	inpLoc1->value (qsoPtr->getField(GRIDSQUARE));
 	inpLoc1->position (0);
-	inpLoc2->value (qsoPtr->getField(GRIDSQUARE));
-	inpLoc2->position (0);
+//	inpLoc2->value (qsoPtr->getField(GRIDSQUARE));
+//	inpLoc2->position (0);
 	inpNotes->value (qsoPtr->getField(NOTES));
 
 	wBrowser->take_focus();
@@ -1624,9 +1606,19 @@ void saveRecord() {
 	rec.putField(RST_SENT, inpRstS_log->value ());
 	rec.putField(SRX, inpSerNoIn_log->value());
 	rec.putField(STX, inpSerNoOut_log->value());
-	rec.putField(XCHG1, inpXchgIn_log->value());
-	rec.putField(FDCLASS, inp_FD_class_log->value());
-	rec.putField(FDSECTION, inp_FD_section_log->value());
+
+	if (inpSPCnum->value()[0]) {
+		inpXchgIn_log->value(inpSPCnum->value());
+		rec.putField(XCHG1, inpSPCnum->value());
+	} else if (inpSQSO_category->value()[0]) {
+		inpXchgIn_log->value(inpSQSO_category->value());
+		rec.putField(XCHG1, inpSQSO_category->value());
+	} else
+		rec.putField(XCHG1, inpXchgIn_log->value());
+
+	rec.putField(CLASS, inpClass_log->value());
+	rec.putField(ARRL_SECT, inpSection_log->value());
+
 	if (!qso_exchange.empty()) {
 		rec.putField(MYXCHG, qso_exchange.c_str());
 		qso_exchange.clear();
@@ -1657,6 +1649,15 @@ void saveRecord() {
 	rec.putField(SS_PREC, inp_log_cwss_prec->value());
 	rec.putField(SS_CHK, inp_log_cwss_chk->value());
 	rec.putField(SS_SEC, inp_log_cwss_sec->value());
+
+	rec.putField(AGE,  inp_age_log->value());
+	rec.putField(TEN_TEN, inp_1010_log->value());
+	rec.putField(CHECK, inp_check_log->value());
+
+	rec.putField(TROOPS, inp_log_troop_s->value());
+	rec.putField(TROOPR, inp_log_troop_r->value());
+	rec.putField(SCOUTS, inp_log_scout_s->value());
+	rec.putField(SCOUTR, inp_log_scout_r->value());
 
 	qsodb.qsoNewRec (&rec);
 
@@ -1718,8 +1719,10 @@ void updateRecord() {
 	rec.putField(STX, inpSerNoOut_log->value());
 	rec.putField(XCHG1, inpXchgIn_log->value());
 	rec.putField(MYXCHG, inpMyXchg_log->value());
-	rec.putField(FDCLASS, inp_FD_class_log->value());
-	rec.putField(FDSECTION, inp_FD_section_log->value());
+
+	rec.putField(CLASS, inpClass_log->value());
+	rec.putField(ARRL_SECT, inpSection_log->value());
+
 	rec.putField(CNTY, inpCNTY_log->value());
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
@@ -1738,6 +1741,15 @@ void updateRecord() {
 	rec.putField(SS_PREC, inp_log_cwss_prec->value());
 	rec.putField(SS_CHK, inp_log_cwss_chk->value());
 	rec.putField(SS_SEC, inp_log_cwss_sec->value());
+
+	rec.putField(AGE,  inp_age_log->value());
+	rec.putField(TEN_TEN, inp_1010_log->value());
+	rec.putField(CHECK, inp_check_log->value());
+
+	rec.putField(TROOPS, inp_log_troop_s->value());
+	rec.putField(TROOPR, inp_log_troop_r->value());
+	rec.putField(SCOUTS, inp_log_scout_s->value());
+	rec.putField(SCOUTR, inp_log_scout_r->value());
 
 	dxcc_entity_cache_rm(qsodb.getRec(editNbr));
 	qsodb.qsoUpdRec (editNbr, &rec);
@@ -1811,8 +1823,10 @@ void EditRecord( int i )
 	inpSerNoIn_log->value(editQSO->getField(SRX));
 	inpSerNoOut_log->value(editQSO->getField(STX));
 	inpXchgIn_log->value(editQSO->getField(XCHG1));
-	inp_FD_class_log->value(editQSO->getField(FDCLASS));
-	inp_FD_section_log->value(editQSO->getField(FDSECTION));
+
+	inpClass_log->value(editQSO->getField(CLASS));
+	inpSection_log->value(editQSO->getField(ARRL_SECT));
+
 	inpMyXchg_log->value(editQSO->getField(MYXCHG));
 	inpCNTY_log->value(editQSO->getField(CNTY));
 	inpIOTA_log->value(editQSO->getField(IOTA));
@@ -1833,19 +1847,21 @@ void EditRecord( int i )
 	inp_log_cwss_chk->value(editQSO->getField(SS_CHK));
 	inp_log_cwss_sec->value(editQSO->getField(SS_SEC));
 
+	inp_age_log->value(editQSO->getField(AGE));
+	inp_1010_log->value(editQSO->getField(TEN_TEN));
+	inp_check_log->value(editQSO->getField(CHECK));
+
+	inp_log_troop_s->value(editQSO->getField(TROOPS));
+	inp_log_troop_r->value(editQSO->getField(TROOPR));
+	inp_log_scout_s->value(editQSO->getField(SCOUTS));
+	inp_log_scout_r->value(editQSO->getField(SCOUTR));
+
 }
 
 std::string sDate_on = "";
 std::string sTime_on = "";
 std::string sDate_off = "";
 std::string sTime_off = "";
-
-static string ucasestr(string str)
-{
-	string s = str;
-	for (size_t n = 0; n < s.length(); n++) s[n] = toupper(s[n]);
-	return s;
-}
 
 void AddRecord ()
 {
@@ -1873,7 +1889,7 @@ void AddRecord ()
 	inpMode_log->value (logmode);
 	inpState_log->value (ucasestr(inpState->value()).c_str());
 	inpVE_Prov_log->value (ucasestr(inpVEprov->value()).c_str());
-	inpCountry_log->value (inpCountry->value());
+	inpCountry_log->value (cboCountry->value());
 	inpCNTY_log->value (inpCounty->value());
 
 	inpSerNoIn_log->value(inpSerNo->value());
@@ -1881,7 +1897,7 @@ void AddRecord ()
 	inpXchgIn_log->value(inpXchgIn->value());
 	inpMyXchg_log->value(progdefaults.myXchg.c_str());
 
-	inpQth_log->value (inpQth->value());
+	inpQth_log->value (inpQTH->value());
 	inpLoc_log->value (inpLoc->value());
 
 	inpQSLrcvddate_log->value ("");
@@ -1905,8 +1921,8 @@ void AddRecord ()
 	inpCQZ_log->value(inp_CQzone->value());
 	inpITUZ_log->value("");
 
-	inp_FD_class_log->value(ucasestr(inp_FD_class->value()).c_str());
-	inp_FD_section_log->value(ucasestr(inp_FD_section->value()).c_str());
+	inpClass_log->value(ucasestr(inpClass->value()).c_str());
+	inpSection_log->value(ucasestr(inpSection->value()).c_str());
 
 	inp_log_sta_call->value(progdefaults.myCall.c_str());
 	inp_log_op_call->value(progdefaults.operCall.c_str());
@@ -1917,6 +1933,15 @@ void AddRecord ()
 	inp_log_cwss_prec->value(ucasestr(inp_SS_Precedence->value()).c_str());
 	inp_log_cwss_chk->value(ucasestr(inp_SS_Check->value()).c_str());
 	inp_log_cwss_sec->value(ucasestr(inp_SS_Section->value()).c_str());
+
+	inp_age_log->value(ucasestr(inp_KD_age->value()).c_str());
+	inp_check_log->value(ucasestr(inp_ARR_check->value()).c_str());
+	inp_1010_log->value(ucasestr(inp_1010_nr->value()).c_str());
+
+	inp_log_troop_s->value(progdefaults.my_JOTA_troop.c_str());
+	inp_log_troop_r->value(inp_JOTA_troop->value());
+	inp_log_scout_s->value(progdefaults.my_JOTA_scout.c_str());
+	inp_log_scout_r->value(inp_JOTA_scout->value());
 
 	saveRecord();
 
@@ -1981,7 +2006,7 @@ void loadBrowser(bool keep_pos)
 // Cabrillo reporter
 //=============================================================================
 
-const char *contests[] =
+const char *szContests[] =
 {	"AP-SPRINT",
 	"ARRL-10", "ARRL-160", "ARRL-DX-CW", "ARRL-DX-SSB", "ARRL-SS-CW",
 	"ARRL-SS-SSB", "ARRL-UHF-AUG", "ARRL-VHF-JAN", "ARRL-VHF-JUN", "ARRL-VHF-SEP",
@@ -2078,8 +2103,8 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 
 	if (bInitCombo) {
 		bInitCombo = false;
-		while (contests[indx]) 	{
-			cboContest->add(contests[indx]);
+		while (szContests[indx]) 	{
+			cboContest->add(szContests[indx]);
 			indx++;
 		}
 	}

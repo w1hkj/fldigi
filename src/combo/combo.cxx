@@ -17,6 +17,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
+#include <iostream>
 #include <string>
 
 #include <cstring>
@@ -171,31 +172,36 @@ void Fl_PopBrowser::popshow (int x, int y)
 		y = yu;
 		height = hu;
 	}
-
+	wRow = parentCB->w();
 	popbrwsr->size (wRow, height);
+
 	resize (x, y, wRow, height);
+
+	popbrwsr->redraw();
 
 	popbrwsr->topline (i);
 
 	keystrokes.empty();
+
 	popbrwsr->show();
 	show();
 	for (const Fl_Widget* o = popbrwsr; o; o = o->parent())
 		((Fl_Widget *)o)->set_visible();
 
-	parentWindow->damage(FL_DAMAGE_ALL);
-	parentWindow->redraw();
-
+	if (parentWindow) {
+		parentWindow->damage(FL_DAMAGE_ALL);
+		parentWindow->redraw();
+	}
 	Fl::grab(this);
 }
 
 void Fl_PopBrowser::pophide ()
 {
 	hide ();
-
-	parentWindow->damage(FL_DAMAGE_ALL);
-	parentWindow->redraw();
-
+	if (parentWindow) {
+		parentWindow->damage(FL_DAMAGE_ALL);
+		parentWindow->redraw();
+	}
 	Fl::grab(0);
 	Fl::focus(((Fl_ComboBox*)parent())->btn);
 }
@@ -212,8 +218,7 @@ void Fl_PopBrowser::popbrwsr_cb_i (Fl_Widget *v, long d)
 	if (row == 0) return;
 	SB->deselect();
 
-	CB->value(SB->text(row));
-	CB->idx = row - 1;
+	CB->index(row - 1);
 
 	PB->pophide();
 
@@ -262,15 +267,21 @@ Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *lbl, int wtype)
 	width = W; height = H;
 
 	type_ = wtype;
-	if (type_ == LISTBOX) {
-		valbox = new Fl_Box (FL_DOWN_BOX, X, Y, W-H, H, "");
+
+	valbox = new Fl_Box (FL_DOWN_BOX, X, Y, W-H, H, "");
 		valbox->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
 		valbox->color(FL_BACKGROUND2_COLOR);
-	} else {
-		val = new Fl_Input (X, Y, W-H, H, "");
+	val    = new Fl_Input (X, Y, W-H, H, "");
 		val->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
 		val->callback((Fl_Callback *)val_callback, this);
 		val->when(FL_WHEN_RELEASE);
+
+	if (type_ == LISTBOX) {
+		valbox->show();
+		val->hide();
+	} else {
+		val->show();
+		valbox->hide();
 	}
 
 	btn = new Fl_Button (X + W - H + 1, Y, H - 1, H, "@2>");
@@ -342,17 +353,28 @@ const char *Fl_ComboBox::value()
 		return val->value();
 }
 
-void Fl_ComboBox::value( const char *s )
+void Fl_ComboBox::value( std::string s )
 {
+	while (s[0] == ' ') { s.erase(0,1); }
+	if (s.empty()) {
+		if (type_ == LISTBOX) {
+			valbox->label("");
+			valbox->redraw_label();
+		} else {
+			val->value("");
+			val->redraw();
+		}
+		return;
+	}
 	int i;
 	if ((listtype & FL_COMBO_UNIQUE_NOCASE) == FL_COMBO_UNIQUE_NOCASE) {
 		for (i = 0; i < listsize; i++) {
-			if (strcasecmp (s, datalist[i]->s) == 0)
+			if (strcasecmp (s.c_str(), datalist[i]->s) == 0)
 				break;
 		}
 	} else {
 		for (i = 0; i < listsize; i++) {
-			if (strcmp (s, datalist[i]->s) == 0)
+			if (strcmp (s.c_str(), datalist[i]->s) == 0)
 				break;
 		}
 	}
@@ -361,23 +383,29 @@ void Fl_ComboBox::value( const char *s )
 		if (type_ == LISTBOX) {
 			valbox->label(datalist[idx]->s);
 			valbox->redraw_label();
-		} else
+		} else {
 			val->value(datalist[idx]->s);
+			val->redraw();
+		}
 	} else {
-		if (type_ != LISTBOX && !val->readonly()) {
-			insert(s, 0);
+		if (type_ == LISTBOX) {
+			valbox->label("");
+			valbox->redraw_label();
+		}
+		else if (type_ != LISTBOX && !val->readonly()) {
+			insert(s.c_str(), 0);
 			for (i = 0; i < listsize; i++) {
-				if (strcmp (s, datalist[i]->s) == 0) {
+				if (strcmp (s.c_str(), datalist[i]->s) == 0) {
 					idx = i;
 					val->value(datalist[idx]->s);
 					break;
 				}
+				val->redraw();
 			}
-		} else if (type_ == LISTBOX) {
-			valbox->label("");
-			valbox->redraw_label();
-		} else
+		} else {
 			val->value("");
+			val->redraw();
+		}
 	}
 }
 
@@ -393,8 +421,10 @@ void Fl_ComboBox::index(int i)
 		if (type_ == LISTBOX) {
 			valbox->label(datalist[idx]->s);
 			valbox->redraw_label();
-		} else
+		} else {
 			val->value( datalist[idx]->s);
+			val->redraw();
+		}
 	}
 }
 
@@ -519,10 +549,13 @@ void Fl_ComboBox::textcolor( Fl_Color c)
 void Fl_ComboBox::color(Fl_Color c)
 {
 	_color = c;
-	if (type_ == LISTBOX)
+	if (type_ == LISTBOX) {
 		valbox->color(c);
-	else
+		valbox->redraw();
+	} else {
 		val->color(c);
+		val->redraw();
+	}
 	if (Brwsr) Brwsr->color(c);
 }
 
@@ -538,4 +571,10 @@ int Fl_ComboBox::find_index(const char *str)
 	}
 
 	return -1;
+}
+
+void Fl_ComboBox::position(int n)
+{
+	if (type_ != LISTBOX)
+		val->position(n, n);
 }

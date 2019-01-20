@@ -61,8 +61,8 @@ SRX,
 STX,
 XCHG1,
 MYXCHG,
-FDCLASS,
-FDSECTION,
+CLASS,
+ARRL_SECT,
 TX_PWR,
 OP_CALL,
 STA_CALL,
@@ -72,6 +72,15 @@ SS_SERNO,
 SS_PREC,
 SS_CHK,
 SS_SEC,
+AGE,
+TEN_TEN,
+CHECK,
+FD_CLASS,    // for backward compatible logbook reads
+FD_SECTION,  // for backward compatible logbook reads
+TROOPS,      // JOTA scout troop sent
+TROOPR,      // JOTA scout troop received
+SCOUTS,      // JOTA scout name sent
+SCOUTR,      // JOTA scout name received
 // do not add fields below this line; EXPORT must be last field in struc
 EXPORT, // flag used internally in fldigi's logbook
 NUMFIELDS };

@@ -53,6 +53,7 @@
 
 #include "ascii.h"
 #include "configuration.h"
+
 #include "qrunner.h"
 
 #include "mfsk.h"
@@ -67,9 +68,12 @@
 #include "gettext.h"
 #include "arq_io.h"
 #include "fl_digi.h"
+#include "strutil.h"
 
 #include "debug.h"
 
+#include "contest.h"
+#include "counties.h"
 
 using namespace std;
 
@@ -100,57 +104,89 @@ private:
 };
 
 /*
-	RX_MENU_QRZ_THIS
-	RX_MENU_CALL
-	RX_MENU_NAME
-	RX_MENU_QTH,
-	RX_MENU_STATE
-	RX_MENU_COUNTY,
-	RX_MENU_PROVINCE
-	RX_MENU_COUNTRY
-	RX_MENU_LOC,
-	RX_MENU_RST_IN
-	RX_MENU_XCHG
-	RX_MENU_SERIAL
-	RX_MENU_CLASS
-	RX_MENU_SECTION,
-	RX_MENU_SS_SER,
-	RX_MENU_SS_PRE,
-	RX_MENU_SS_CHK,
-	RX_MENU_SS_SEC,
-	RX_MENU_CQZONE,
-	RX_MENU_CQSTATE,
-	RX_MENU_DIV
-	RX_MENU_COPY
-	RX_MENU_CLEAR
-	RX_MENU_SELECT_ALL,
-	RX_MENU_SAVE
-	RX_MENU_WRAP
-	RX_MENU_ALL_ENTRY
-	RX_MENU_SCROLL_HINTS
+		RX_MENU_QRZ_THIS, RX_MENU_CALL, RX_MENU_NAME, RX_MENU_QTH,
+		RX_MENU_STATE, RX_MENU_COUNTY, RX_MENU_PROVINCE,
+		RX_MENU_COUNTRY, RX_MENU_LOC,
+		RX_MENU_RST_IN, RX_MENU_RST_OUT,
+		RX_MENU_XCHG, RX_MENU_SERIAL,
+		RX_MENU_CLASS, RX_MENU_SECTION,
+
+		RX_MENU_SS_SER, RX_MENU_SS_PRE, RX_MENU_SS_CHK, RX_MENU_SS_SEC,
+
+		RX_MENU_CQZONE, RX_MENU_CQSTATE,
+		RX_MENU_1010_NR,
+		RX_MENU_AGE,
+
+		RX_MENU_CHECK,
+		RX_MENU_NAQP,
+		RX_MENU_SCOUT,
+		RX_MENU_TROOP,
+		RX_MENU_POWER,
+
+		RX_MENU_QSOP_STATE,
+		RX_MENU_QSOP_COUNTY,
+		RX_MENU_QSOP_SERNO,
+		RX_MENU_QSOP_NAME,
+		RX_MENU_QSOP_XCHG,
+		RX_MENU_QSOP_CAT,
+
+		RX_MENU_DIV,
+
+		RX_MENU_COPY,
+		RX_MENU_CLEAR,
+		RX_MENU_SELECT_ALL,
+		RX_MENU_SAVE,
+		RX_MENU_WRAP,
+
+		RX_MENU_ALL_ENTRY,
+
+		RX_MENU_SCROLL_HINTS,
+
+		RX_MENU_NUM_ITEMS
 */
 
 Fl_Menu_Item FTextRX::menu[] = {
 	{ icons::make_icon_label(_("Look up call"), net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("Call"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Call"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Name"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("QTH"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("State"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("County"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Province"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Country"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("Locator"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("RST(r)"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("Exchange In"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("FD class"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("FD section"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Locator"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("RST(r)"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("RST(s)"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Exchange In"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Rx Serial #"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Class"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Section"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+
 	{ icons::make_icon_label(_("SS ser #"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("SS prec"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("SS check"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("SS section"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+
 	{ icons::make_icon_label(_("CQ zone"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("CQ STATE"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+
+	{ icons::make_icon_label(_("1010 Nr"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+
+	{ icons::make_icon_label(_("Kid's Age"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+
+	{ icons::make_icon_label(_("Round Up Chk"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("NAQP xchg"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("JOTA scout"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("JOTA troop"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("POWER(r)"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+
+	{ icons::make_icon_label(_("QSOp state"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("QSOp county"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("QSOp serno"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("QSOp name"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("QSOp xchg"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("QSOp category"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+
 	{ icons::make_icon_label(_("Insert marker"), insert_link_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 
 	{ 0 }, // VIEW_MENU_COPY
@@ -160,6 +196,7 @@ Fl_Menu_Item FTextRX::menu[] = {
 	{ 0 }, // VIEW_MENU_WRAP
 
 	{ _("All entries"),      0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
+
 	{ _("Scroll hints"),      0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ 0 }
 };
@@ -191,6 +228,7 @@ FTextRX::FTextRX(int x, int y, int w, int h, const char *l)
 	delete mVScrollBar;
 	Fl_Group::add(mVScrollBar = mvsb);
 	mFastDisplay = 1;
+	num_words = 1;
 }
 
 FTextRX::~FTextRX()
@@ -221,7 +259,8 @@ int FTextRX::handle(int event)
 			break;
 		switch (Fl::event_button()) {
 		case FL_LEFT_MOUSE:
-			if (Fl::event_shift() || progdefaults.rxtext_clicks_qso_data) {
+//			if (Fl::event_shift() || progdefaults.rxtext_clicks_qso_data) {
+			if (progdefaults.rxtext_clicks_qso_data) {
 				if (handle_clickable(Fl::event_x() - x(), Fl::event_y() - y()))
 					return 1;
 				if (handle_qso_data(Fl::event_x() - x(), Fl::event_y() - y()))
@@ -270,6 +309,7 @@ int FTextRX::handle(int event)
 		Fl::add_timeout(tooltips.delay / 2.0, dxcc_tooltip, this);
 		break;
 	case FL_LEAVE:
+		window()->cursor(FL_CURSOR_DEFAULT);
 		if (!progdefaults.rxtext_tooltips || Fl_Tooltip::delay() != 0.0f)
 			break;
 		Fl_Tooltip::enable(tooltips.enabled);
@@ -470,82 +510,759 @@ void FTextRX::handle_qsy(int start, int end)
 	free(text);
 }
 
-static fre_t rst("^[1-5][1-9]{2}$", REG_EXTENDED | REG_NOSUB);
+static fre_t rst("^[1-5][123456789nN]{2}$", REG_EXTENDED | REG_NOSUB);
 static fre_t loc("[a-r]{2}[[:digit:]]{2}([a-x]{2})?", REG_EXTENDED | REG_ICASE);
 static fre_t call("([[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+)", REG_EXTENDED);
 
+void set_cbo_county(string str)
+{
+	inpCounty->value(str.c_str());
+	inpSQSO_county1->value(str.c_str());
+	inpSQSO_county2->value(str.c_str());
+
+	Cstates st;
+	if (inpState->value()[0])
+		cboCountyQSO->value(
+			string(st.state_short(inpState->value())).append(" ").
+			append(st.county(inpState->value(), inpCounty->value())).c_str());
+	else
+		cboCountyQSO->clear_entry();
+	cboCountyQSO->redraw();
+}
+
+void set_QSO_call(const char *s)
+{
+	if (progdefaults.clear_fields)
+		clearQSO();
+	std::string call = ucasestr(s);
+
+	inpCall1->value(call.c_str());
+	inpCall2->value(call.c_str());
+	inpCall3->value(call.c_str());
+	inpCall4->value(call.c_str());
+
+	if (progStatus.timer && (Fl::event() != FL_HIDE))
+		stopMacroTimer();
+
+	sDate_on = sDate_off = zdate();
+	sTime_on = sTime_off = ztime();
+
+	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
+	inpTimeOn1->value(inpTimeOff->value(), inpTimeOff->size());
+	inpTimeOn2->value(inpTimeOff->value(), inpTimeOff->size());
+	inpTimeOn3->value(inpTimeOff->value(), inpTimeOff->size());
+	inpTimeOn4->value(inpTimeOff->value(), inpTimeOff->size());
+	inpTimeOn5->value(inpTimeOff->value(), inpTimeOff->size());
+
+	updateOutSerNo();
+}
+
+void set_cbo_Country(std::string c)
+{
+	cboCountryQSO->value(c.c_str());
+	cboCountryAICW2->value(c.c_str());
+	cboCountryAIDX2->value(c.c_str());
+	cboCountryCQDX2->value(c.c_str());
+	cboCountryCQ2->value(c.c_str());
+	cboCountryIARI2->value(c.c_str());
+	cboCountryRTU2->value(c.c_str());
+//	cboCountryWAE2->value(c.c_str());
+
+	if (progdefaults.logging == LOG_JOTA)
+		inp_JOTA_spc->value(c.c_str());
+	if (progdefaults.logging == LOG_ARR)
+		inpXchgIn->value(c.c_str());
+
+}
+
+void set_zone(std::string z)
+{
+	inp_CQDXzone1->value(z.c_str());
+	inp_CQDXzone2->value(z.c_str());
+	inp_CQzone1->value(z.c_str());
+	inp_CQzone2->value(z.c_str());
+}
+
+void set_name(std::string nm)
+{
+	inpName->value(nm.c_str());
+	inpName1->value(nm.c_str());
+	inpName2->value(nm.c_str());
+	inp_1010_name2->value(nm.c_str());
+	inp_ARR_Name2->value(nm.c_str());
+	inpNAQPname2->value(nm.c_str());
+	inp_ASCR_name2->value(nm.c_str());
+}
+
+void set_rst_in(std::string rst)
+{
+	for (size_t n = 0; n < rst.length(); n++)
+		if (rst[n] == 'N') rst[n] = '9';
+	inpRstIn->value(rst.c_str());
+	inpRTU_RSTin2->value(rst.c_str());
+	inpRstIn1->value(rst.c_str());
+	inpRstIn2->value(rst.c_str());
+	inpRstIn3->value(rst.c_str());
+	inpRstIn4->value(rst.c_str());
+	inpRstIn_AICW2->value(rst.c_str());
+	inpRstIn_SQSO2->value(rst.c_str());
+	inpRstIn_WPX2->value(rst.c_str());
+	inp_IARI_RSTin2->value(rst.c_str());
+//	inpRstIn_WAE2->value(rst.c_str());
+}
+
+void set_rst_out(std::string rst)
+{
+	for (size_t n = 0; n < rst.length(); n++)
+		if (rst[n] == 'N') rst[n] = '9';
+	inpRstOut->value(rst.c_str());
+	inpRstOut1->value(rst.c_str());
+	inpRstOut2->value(rst.c_str());
+	inpRstOut3->value(rst.c_str());
+	inpRstOut4->value(rst.c_str());
+	inpRstOut_AICW2->value(rst.c_str());
+	inpRstOut_SQSO2->value(rst.c_str());
+	inpRstOut_WPX2->value(rst.c_str());
+	inp_IARI_RSTout2->value(rst.c_str());
+//	inpRstOut_WAE2->value(rst.c_str());
+}
+
+void set_rst(std::string rst)
+{
+	if (inpRstIn->value()[0] == 0)
+		set_rst_in(rst);
+	else
+		set_rst_out(rst);
+}
+
+void set_state(std::string s)
+{
+	s = ucasestr(s);
+	inpState->value(s.c_str());
+	inpState1->value(s.c_str());
+	inp_CQstate1->value(s.c_str());
+	inp_CQstate2->value(s.c_str());
+	inp_KD_state1->value(s.c_str());
+	inp_KD_state2->value(s.c_str());
+	inpSQSO_state1->value(s.c_str());
+	inpSQSO_state2->value(s.c_str());
+}
+
+void set_province(std::string pr)
+{
+	pr = ucasestr(pr);
+	inpVEprov->value(pr.c_str());
+	inp_KD_VEprov1->value(pr.c_str());
+	inp_KD_VEprov2->value(pr.c_str());
+}
+
+void set_serno_in(std::string s)
+{
+	inpSerNo->value(s.c_str());
+	inpSerNo1->value(s.c_str());
+	inpSerNo2->value(s.c_str());
+	inpSerNo3->value(s.c_str());
+	inpSerNo4->value(s.c_str());
+	inpSerNo_WPX1->value(s.c_str());
+	inpSerNo_WPX2->value(s.c_str());
+	inpRTU_serno1->value(s.c_str());
+	inpRTU_serno2->value(s.c_str());
+	inpSQSO_serno1->value(s.c_str());
+	inpSQSO_serno2->value(s.c_str());
+	inp_IARI_SerNo1->value(s.c_str());
+	inp_IARI_SerNo2->value(s.c_str());
+//	inpSerNo_WAE1->value(s.c_str());
+//	inpSerNo_WAE2->value(s.c_str());
+}
+
+void parseSQSO(std::string str)
+{
+	if (std::string(QSOparties.qso_parties[progdefaults.SQSOcontest].state) == "7QP" &&
+		str.length() == 5 && !inpState->value()[0]) {
+		set_state(str.substr(0,2).c_str());
+		set_cbo_county(str);
+		return;
+	}
+
+	if (std::string(QSOparties.qso_parties[progdefaults.SQSOcontest].state) == "6NE" &&
+		str.length() == 5 && !inpState->value()[0]) {
+		set_state(str.substr(str.length() - 2, 2).c_str());
+		set_cbo_county(str);
+		return;
+	}
+
+	if (progdefaults.SQSOinstate) {
+		if (state_test(str)) {
+			set_state(str);
+			return;
+		}
+	}
+
+	std::string st = inpState->value();
+	std::string inState = QSOparties.qso_parties[progdefaults.SQSOcontest].state;
+
+	if (st == "6NE" || st == "7QP") {
+		st.clear();
+	} else if (st.empty())
+		st = inState;
+
+	bool chkC = check_field(str, cCNTY, st);
+	bool chkP = check_field(str, cDIST, st);
+	bool chkCin = check_field(str, cCNTY, inState);
+	bool chkPin = check_field(str, cDIST, inState);
+
+	if (	QSOparties.qso_parties[progdefaults.SQSOcontest].st &&
+			!st.empty() &&
+			progdefaults.SQSOlogcounty && 
+			(chkC || chkP) ) {
+		if (progdefaults.SQSOinstate && !inpState->value()[0])
+			set_state(st);
+		set_cbo_county(states.cnty_short(st, str));
+		return;
+	}
+
+	if ((chkCin || chkPin) && inpCounty->value()[0] == 0) {
+		set_state(st.c_str());
+		set_cbo_county(states.cnty_short(st, str));
+		return;
+	}
+
+	if (progdefaults.SQSOlogstate && 
+		check_field(str, cSTATE) && !inpState->value()[0]) {
+		set_state(str);
+		return;
+	}
+
+	if (progdefaults.SQSOlogstate &&
+		check_field(str, cVE_PROV) && !inpState->value()[0]) {
+		set_state(str);
+		return;
+	}
+
+	if (section_test(str) && !inpState->value()[0]) {
+		set_state(str);
+		return;
+	}
+
+	if (check_field(str, cCOUNTRY)) {
+		cboCountry->value(country_match.c_str());
+		return;
+	}
+
+	if (progdefaults.SQSOlogserno && check_field(str, cNUMERIC) && !inpSerNo->value()[0]) {
+		set_serno_in(str);
+		return;
+	}
+
+	{
+		bool bCAT = (QSOparties.qso_parties[progdefaults.SQSOcontest].cat[0]);
+		string category = ucasestr(str);
+		if (bCAT &&
+			(category == "CLB" || category == "MOB" || category == "QRP" || category == "STD")) {
+			inpSQSO_category->value(category.c_str());
+			return;
+		}
+	}
+
+	if (!inpName->value()[0] && !isdigit(str[0])
+		&& !chkC  && !chkP && !chkCin && !chkPin) {
+		set_name(str);
+		return;
+	}
+
+	if (check_field(str, cRST) ) {
+		set_rst(str);
+	}
+
+}
+
+// capture 1, 2, or 3 sequential words from RX text
+// 1 - left click on word
+// 2 - shift-left click on first word
+// 3 - ctrl-left click on first word
+// 4 - shift-ctrl-left click on first word
+
 int FTextRX::handle_qso_data(int start, int end)
 {
-	char* s = get_word(start, end, progdefaults.nonwordchars.c_str());
-	if (!s)
-		return 0;
-	char* p = s;
+	num_words = 1;
 
-	Fl_Input2* target = 0;
+	if (Fl::event_state() & FL_SHIFT) {
+		num_words = 2;
+	}
+	if (Fl::event_state() & FL_CTRL) {
+		num_words = 3;
+		if (Fl::event_state() & FL_SHIFT) {
+			num_words = 4;
+		}
+	}
+
+	char *sz = get_word(start, end, "", num_words);
+
+	if (!sz)
+		return 0;
+
+	std::string sz_str = sz;
+	free(sz);
+
+	if (sz_str.empty())
+		return 0;
+
+	while (sz_str[sz_str.length() -1] <= ' ') sz_str.erase(sz_str.length() - 1);
+
+// remove leading substrings such as 'loc:' 'qth:' 'op:' etc
+	size_t sp = std::string::npos;
+	if ((sp = sz_str.find(":")) != std::string::npos)
+		sz_str.erase(0, sp+1);
+
+	if (sz_str.empty())
+		return 0;
+
+	char* s = (char *)sz_str.c_str();
+	char* p = (char *)sz_str.c_str();
 
 	if (progdefaults.logging != LOG_QSO) {
 		if (loc.match(s)) { // force maidenhead match to exchange
 							// or it will overwrite the call
 			inpXchgIn->position(inpXchgIn->size());
 			if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
-			inpXchgIn->insert(s);
-			log_callback(inpXchgIn);
+			if (progdefaults.logging == LOG_VHF)
+			inpLoc->value(s);
+			else {
+				inpXchgIn->insert(s);
+				log_callback(inpXchgIn);
+			}
 		} else if (call.match(s)) { // point p to substring
 			const regmatch_t& offsets = call.suboff()[1];
 			p = s + offsets.rm_so;
 			*(s + offsets.rm_eo) = '\0';
-			inpCall->value(p);
-			if (progdefaults.clear_fields) {
-				inpXchgIn->value("");
-				inpName->value("");
-				inp_FD_class->value("");
-				inp_FD_section->value("");
-				inp_CQzone->value("");
-				inp_CQstate->value("");
-				log_callback(inpCall);
-			}
+
+			set_QSO_call(p);
+
 			Fl::copy(p, strlen(p), 1);  // copy to clipboard
-		} else if (progdefaults.logging == LOG_FD) { 
-			if (inp_FD_class->value()[0] == 0)
-				inp_FD_class->value(s);
-			else if (inp_FD_section->value()[0] == 0)
-				inp_FD_section->value(s);
-		} else if (progdefaults.logging == LOG_CQWW) {
-			if (inp_CQzone->value()[0] == 0)
-				inp_CQzone->value(s);
-			else if (inp_CQstate->value()[0] == 0)
-				inp_CQstate->value(s);
+
+			if (std::string(QSOparties.qso_parties[progdefaults.SQSOcontest].state) == "6NE") {
+				set_state("");
+			}
+
+			const dxcc *e = dxcc_lookup(p);
+			std::ostringstream zone;
+			zone << e->cq_zone;
+			if (e) {
+				set_cbo_Country(e->country);
+				set_zone(zone.str());
+			}
+			DupCheck();
+
 		} else {
-			inpXchgIn->position(inpXchgIn->size());
-			if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
-			inpXchgIn->insert(s);
-			log_callback(inpXchgIn);
+			std::string str = ucasestr(s);
+			switch (progdefaults.logging) {
+			case LOG_FD:
+				if (check_field(str, cFD_SECTION) && !inpSection->value()[0]) {
+					inpSection->value(str.c_str());
+					break;
+				}
+				if (check_field(str, cFD_CLASS) && !inpClass->value()[0]) {
+					inpClass->value(str.c_str());
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				break;
+			case LOG_WFD:
+				if (check_field(str, cFD_SECTION) && !inpSection->value()[0]) {
+					inpSection->value(str.c_str());
+					break;
+				}
+				if (check_field(str, cWFD_CLASS) && !inpClass->value()[0]) {
+					inpClass->value(str.c_str());
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				break;
+			case LOG_CQWW_DX:
+				if (check_field(str, cCOUNTRY)) {
+					set_cbo_Country(country_match);
+					break;
+				}
+				if (check_field(str, cNUMERIC) && !inp_CQzone->value()[0]) {
+					set_zone(s);
+					break;
+				}
+				if (check_field(s, cRST)) {
+					if (!inpRstIn->value()[0])
+						set_rst_in(s);
+					else if (!inpRstOut->value()[0])
+						set_rst_out(s);
+				}
+				break;
+			case LOG_CQWW_RTTY :
+				if ( (check_field(str, cSTATE) || check_field(str, cVE_PROV)) &&
+					!inp_CQstate->value()[0] ) {
+					inp_CQstate->value(s);
+					break;
+				}
+				if (check_field(str, cCOUNTRY)) {
+					set_cbo_Country(country_match);
+					break;
+				}
+				if (check_field(str, cNUMERIC) && !inp_CQzone->value()[0]) {
+					set_zone(s);
+					break;
+				}
+				if (check_field(str, cRST)) {
+					set_rst(str);
+					break;
+				}
+				break;
+			case LOG_KD:
+				if (inpName->value()[0] == 0) {
+					set_name(s);
+					break;
+				}
+				if (!check_field(s, cRST) &&
+					check_field(s, cNUMERIC) &&
+					inp_KD_age->value()[0] == 0) {
+					inp_KD_age->value(s);
+					break;
+				}
+				if (check_field(s, cSTATE) && !inpState->value()[0]) {
+					set_state(s);
+					break;
+				}
+				if (check_field(s, cVE_PROV) && !inpVEprov->value()[0]) {
+					set_province(s);
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				if (!inpXchgIn->value()[0]) {
+					inpXchgIn->position(inpXchgIn->size());
+					if (inpXchgIn->size())
+						inpXchgIn->insert(" ", 1);
+					inpXchgIn->insert(s);
+				}
+				break;
+			case LOG_ASCR:
+				if (check_field(s, cASCR_CLASS) && !inpClass->value()[0]) {
+					inpClass->value(s);
+					break;
+				}
+				if (check_field(ucasestr(s), cSTATE) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(ucasestr(s).c_str());
+					break;
+				}
+				if (check_field(ucasestr(s), cVE_PROV) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(ucasestr(s).c_str());
+					break;
+				}
+				if (!inpName->value()[0]) {
+					set_name(s);
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				inpXchgIn->value(s);
+				break;
+			case LOG_ARR:						// rookie roundup
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				if (check_field(s, cROOKIE) && !inp_ARR_check->value()[0]) {
+					if (strlen(s) > 2)
+						inp_ARR_check->value(s + 2);
+					else
+						inp_ARR_check->value(s);
+					break;
+				}
+				if (!inpName->value()[0]) {
+					set_name(s);
+					break;
+				}
+				if (check_field(ucasestr(s), cCHECK) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(ucasestr(s).c_str());
+					break;
+				}
+				if (!inpXchgIn->value()[0]) {
+					inpXchgIn->value(s);
+					break;
+				}
+				break;
+			case LOG_AICW:
+				if (check_field(s, cCOUNTRY)) {
+					set_cbo_Country(country_match);
+					break;
+				}
+				if (check_field(s, cNUMERIC) && !inpSPCnum->value()[0]) {
+					inpSPCnum->value(s);
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				break;
+			case LOG_1010:
+				if (check_field(s, c1010) && !inp_1010_nr->value()[0]) {
+					inp_1010_nr->value(s);
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				if (check_field(ucasestr(s), cSTATE) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(s);
+					break;
+				}
+				if (check_field(ucasestr(s), cVE_PROV) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(ucasestr(s).c_str());
+					break;
+				}
+				if (!inpName->value()[0]) {
+					set_name(s);
+					break;
+				}
+				inpXchgIn->value(s);
+				break;
+			case LOG_NAQP:
+				if (!inpName->value()[0]) {
+					set_name(s);
+					break;
+				} else if (!inpSPCnum->value()[0]) {
+					inpSPCnum_NAQP1->value(s);
+					inpSPCnum_NAQP2->value(s);
+					inpXchgIn1->value(s);
+					inpXchgIn2->value(s);
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				break;
+			case LOG_CWSS:
+				if (check_field(str, cSS_SEC) && !inp_SS_Section->value()[0]) {
+					inp_SS_Section->value(str.c_str());
+					break;
+				}
+				if (check_field(str, cSS_SERNO) && !inpSerNo->value()[0]) {
+					set_serno_in(str);
+					break;
+				}
+				if (check_field(str, cSS_PREC) && !inp_SS_Precedence->value()[0]) {
+					inp_SS_Precedence->value(s);
+					break;
+				}
+				if (check_field(str, cSS_CHK) && !inp_SS_Check->value()[0]) {
+					inp_SS_Check->value(str.c_str());
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				break;
+			case LOG_CQ_WPX:
+				if (check_field(str, cNUMERIC) && !inpSerNo->value()[0]) {
+					set_serno_in(str);
+					break;
+				}
+				if (check_field(s, cCOUNTRY)) {
+					set_cbo_Country(country_match);
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				break;
+			case LOG_RTTY: // ARRL RTTY Round Up
+				if (check_field(str, cSTATE) || check_field(str, cVE_PROV)) {
+					set_state(str);
+					break;
+				}
+				if (check_field(str, cCOUNTRY)) {
+					set_cbo_Country(country_match);
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				if (check_field(s, cNUMERIC) && !inpSerNo->value()[0]) {
+					set_serno_in(str);
+					break;
+				}
+				break;
+			case LOG_IARI:
+				if (check_field(ucasestr(str), cITALIAN)) {
+					inp_IARI_PR1->value(ucasestr(str).c_str());
+					inp_IARI_PR2->value(ucasestr(str).c_str());
+					break;
+				}
+				if (check_field(str, cCOUNTRY)) {
+					set_cbo_Country(country_match);
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				if (check_field(str, cNUMERIC)) {
+					set_serno_in(str);
+					break;
+				}
+				break;
+			case LOG_NAS:
+				if (check_field(str, cNUMERIC) && !inpSerNo->value()[0]) {
+					set_serno_in(str);
+					break;
+				}
+				if (check_field(str, cSTATE) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(str.c_str());
+					break;
+				}
+				if (check_field(str, cVE_PROV) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(str.c_str());
+					break;
+				}
+				if (check_field(str, cCOUNTRY) && !inpXchgIn->value()[0]) {
+					set_cbo_Country(str);
+					inpXchgIn->value(str.c_str());
+					break;
+				}
+				if (inpName->value()[0] == 0 && !inpName->value()[0]) {
+					set_name(str);
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				break;
+			case LOG_AIDX:
+				if (check_field(str, cNUMERIC) && !inpSerNo->value()[0]) {
+					set_serno_in(str);
+					break;
+				}
+				if (check_field(str, cCOUNTRY) && !inpXchgIn->value()[0]) {
+					set_cbo_Country(str);
+					inpXchgIn->value(str.c_str());
+					break;
+				}
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				break;
+			case LOG_JOTA:
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				if (check_field(str, cNUMERIC) && !inp_JOTA_troop->value()[0]) {
+					inp_JOTA_troop->value(str.c_str());
+					break;
+				}
+				if (check_field(str, cSTATE)) {
+					set_state(str);
+					break;
+				}
+				if (check_field(str, cVE_PROV)) {
+					set_province(str);
+					break;
+				}
+				if (check_field(str, cCOUNTRY)) {
+					set_cbo_Country(str);
+					inpXchgIn->value(str.c_str());
+					break;
+				}
+				inp_JOTA_scout->value(str.c_str());
+				break;
+//			case LOG_WAE:
+//				if (!inpSerNo->value()[0] && check_field(str, cNUMERIC)) {
+//					set_serno_in(str);
+//					break;
+//				}
+//				if (check_field(str, cCOUNTRY)) {
+//					cboCountryCQ1->value(country_match.c_str());
+//					cboCountryCQ2->value(country_match.c_str());
+//					cboCountry->value(country_match.c_str());
+//				}
+//				if (check_field(s, cRST)) {
+//					set_rst(s);
+//					break;
+//				}
+//				break;
+			case LOG_VHF:
+				if (check_field(s, cRST))
+					set_rst(s);
+				break;
+			case LOG_SQSO:
+				parseSQSO(str);
+				break;
+			default:
+				if (check_field(s, cRST)) {
+					set_rst(s);
+					break;
+				}
+				inpXchgIn->position(inpXchgIn->size());
+				if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
+				inpXchgIn->insert(s);
+				log_callback(inpXchgIn);
+			}
 		}
+		DupCheck();
+
+		restoreFocus(91);
+		return 1;
 	} else {
-		if (rst.match(s))
-			target = inpRstIn;
-		else if (loc.match(s))
-			target = inpLoc;
-		else if (call.match(s)) { // point p to substring
+		if (loc.match(s) && inpCall->value()[0]) {
+			inpLoc->value(p);
+			log_callback(inpLoc);
+			restoreFocus();
+			DupCheck();
+			return 1;
+		} else if (call.match(s)) { // point p to substring
 			const regmatch_t& offsets = call.suboff()[1];
 			p = s + offsets.rm_so;
 			*(s + offsets.rm_eo) = '\0';
-			target = inpCall;
 			Fl::copy(p, strlen(p), 1);  // copy to clipboard
-		}
-		else if (count_if(s, s + strlen(s), static_cast<int(*)(int)>(isdigit)))
-			target = inpQth;
-		else
-			target = *inpName->value() ? inpQth : inpName;
-		if (target) {
-			target->value(p);
-			log_callback(target);
-			free(s);
-			restoreFocus(91);
+			set_QSO_call(p);
+			log_callback(inpCall);
+			restoreFocus();
+			return 1;
+		} else if (rst.match(s)) {
+			set_rst(s);
+			restoreFocus();
+			return 1;
+		} else if (!inpName->value()[0]) {
+			set_name(p);
+			restoreFocus();
+			return 1;
+		} else if (!inpQTH->value()[0]) {
+			inpQTH->value(p);
+			log_callback(inpQTH);
+			restoreFocus();
+			return 1;
+		} else if (!inpState->value()[0]) {
+			set_state(p);
+			log_callback(inpState);
+			restoreFocus();
+			DupCheck();
 			return 1;
 		}
 	}
-	free(s);
 	return 0;
 }
 
@@ -553,36 +1270,166 @@ void FTextRX::handle_context_menu(void)
 {
 	bool contest_ui = (progdefaults.logging != LOG_QSO);
 
-	unsigned shown = 0; // all hidden
+	num_words = 1;
 
-#define show_item(x_) (shown |=  (1 << x_))
-#define hide_item(x_) (shown &= ~(1 << x_))
-#define test_item(x_) (shown &   (1 << x_))
+	if (Fl::event_state() & FL_SHIFT) {
+		num_words = 2;
+	}
+	if (Fl::event_state() & FL_CTRL) {
+		num_words = 3;
+		if (Fl::event_state() & FL_SHIFT) {
+			num_words = 4;
+		}
+	}
+
+	unsigned shown[RX_MENU_NUM_ITEMS]; 
+	for (int i = 0; i < RX_MENU_NUM_ITEMS; shown[i++] = 0); // all hidden
+
+#define show_item(x_) (shown[x_] = 1)
+#define hide_item(x_) (shown[x_] = 0)
+#define test_item(x_) (shown[x_] == 1)
 
 	show_item(RX_MENU_CALL);
 
-	if (contest_ui) {// || progStatus.contest) && !progStatus.NO_RIGLOG && !progStatus.Rig_Log_UI) {
-		if (progdefaults.logging == LOG_FD) {
+	if (contest_ui) {
+		switch (progdefaults.logging) {
+		case LOG_FD:
+		case LOG_WFD:
 			show_item(RX_MENU_CLASS);
 			show_item(RX_MENU_SECTION);
-		} else if (progdefaults.logging == LOG_CQWW) {
+			break;
+		case LOG_CQ_WPX:
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
+			show_item(RX_MENU_CQZONE);
+			show_item(RX_MENU_COUNTRY);
+			show_item(RX_MENU_SERIAL);
+			break;
+		case LOG_CQWW_DX:
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
+			show_item(RX_MENU_CQZONE);
+			show_item(RX_MENU_COUNTRY);
+			break;
+		case LOG_CQWW_RTTY:
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
 			show_item(RX_MENU_CQZONE);
 			show_item(RX_MENU_CQSTATE);
-		} else if ( progdefaults.logging == LOG_CONT || 
-					progdefaults.logging == LOG_BART) {
-			show_item(RX_MENU_SERIAL);
+			show_item(RX_MENU_COUNTRY);
+			break;
+		case LOG_ASCR:
+			show_item(RX_MENU_NAME);
+			show_item(RX_MENU_CLASS);
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
 			show_item(RX_MENU_XCHG);
-		} else if ( progdefaults.logging == LOG_CWSS) {
+			break;
+		case LOG_VHF:
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
+			show_item(RX_MENU_LOC);
+			break;
+		case LOG_CWSS:
 			show_item(RX_MENU_SS_SER);
 			show_item(RX_MENU_SS_PRE);
 			show_item(RX_MENU_SS_CHK);
 			show_item(RX_MENU_SS_SEC);
+			break;
+		case LOG_1010:
+			show_item(RX_MENU_NAME);
+			show_item(RX_MENU_1010_NR);
+			show_item(RX_MENU_XCHG);
+			break;
+		case LOG_ARR:
+			show_item(RX_MENU_NAME);
+			show_item(RX_MENU_CHECK);
+			show_item(RX_MENU_XCHG);
+			break;
+		case LOG_AICW:
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
+			show_item(RX_MENU_POWER);
+			show_item(RX_MENU_COUNTRY);
+			break;
+		case LOG_KD:
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
+			show_item(RX_MENU_NAME);
+			show_item(RX_MENU_AGE);
+			show_item(RX_MENU_STATE);
+			show_item(RX_MENU_PROVINCE);
+			show_item(RX_MENU_XCHG);
+			break;
+		case LOG_NAS:
+			show_item(RX_MENU_NAME);
+			show_item(RX_MENU_SERIAL);
+			show_item(RX_MENU_STATE);
+			show_item(RX_MENU_PROVINCE);
+			show_item(RX_MENU_COUNTRY);
+			break;
+		case LOG_AIDX:
+			show_item(RX_MENU_SERIAL);
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
+			show_item(RX_MENU_COUNTRY);
+			break;
+		case LOG_NAQP:
+			show_item(RX_MENU_NAME);
+			show_item(RX_MENU_NAQP);
+			break;
+		case LOG_RTTY:
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
+			show_item(RX_MENU_STATE);
+			show_item(RX_MENU_COUNTRY);
+			show_item(RX_MENU_SERIAL);
+			break;
+		case LOG_IARI:
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
+			show_item(RX_MENU_COUNTRY);
+			show_item(RX_MENU_PROVINCE);
+			show_item(RX_MENU_SERIAL);
+			break;
+		case LOG_JOTA:
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
+			show_item(RX_MENU_SCOUT);
+			show_item(RX_MENU_TROOP);
+			show_item(RX_MENU_STATE);
+			show_item(RX_MENU_PROVINCE);
+			show_item(RX_MENU_COUNTRY);
+			break;
+		case LOG_SQSO:
+			show_item(RX_MENU_RST_IN);
+			show_item(RX_MENU_RST_OUT);
+			show_item(RX_MENU_QSOP_STATE);
+			show_item(RX_MENU_QSOP_COUNTY);
+			show_item(RX_MENU_QSOP_SERNO);
+			show_item(RX_MENU_QSOP_NAME);
+			show_item(RX_MENU_QSOP_CAT);
+			break;
+//		case LOG_WAE:
+//			show_item(RX_MENU_RST_IN);
+//			show_item(RX_MENU_RST_OUT);
+//			show_item(RX_MENU_SERIAL);
+//			show_item(RX_MENU_COUNTRY);
+//			break;
+		case LOG_GENERIC:
+		case LOG_BART:
+		default:
+			show_item(RX_MENU_NAME);
+			show_item(RX_MENU_SERIAL);
+			show_item(RX_MENU_XCHG);
+			break;
 		}
 	}
 	else {
 		show_item(RX_MENU_NAME);
 		show_item(RX_MENU_QTH);
 		show_item(RX_MENU_RST_IN);
+		show_item(RX_MENU_RST_OUT);
 // "Look up call" shown only in non-contest mode
 		if (progdefaults.QRZWEB != QRZWEBNONE || progdefaults.QRZXML != QRZXMLNONE)
 			show_item(RX_MENU_QRZ_THIS);
@@ -590,7 +1437,7 @@ void FTextRX::handle_context_menu(void)
 	}
 
 	if (menu[RX_MENU_ALL_ENTRY].value()) {
-		for (size_t i = RX_MENU_NAME; i <= RX_MENU_RST_IN; i++)
+		for (size_t i = RX_MENU_NAME; i <= RX_MENU_RST_OUT; i++)
 			show_item(i);
 		menu[RX_MENU_CALL].flags &= ~FL_MENU_DIVIDER;
 	}
@@ -633,120 +1480,242 @@ void FTextRX::handle_context_menu(void)
 void FTextRX::menu_cb(size_t item)
 {
 	Fl_Input2* input = 0;
+
+	std::string s;
+	char* str = get_word(popx, popy, "", 1, false);
+
+	if (str) {
+		s = str;
+		free(str);
+	}
+
+// remove leading substrings such as 'loc:' 'qth:' 'op:' etc
+	size_t sp = std::string::npos;
+	if ((sp = s.find(":")) != std::string::npos)
+		s.erase(0, sp+1);
+
+	if (!s.empty())
+		while (s[s.length() -1] <= ' ') s.erase(s.length() - 1);
+
+	if (s.empty()) {
+		switch (item) {
+			case RX_MENU_CLEAR:
+				clear();
+				break;
+			case RX_MENU_SELECT_ALL:
+				tbuf->select(0, tbuf->length());
+				break;
+			case RX_MENU_SAVE:
+				saveFile();
+				break;
+			case RX_MENU_ALL_ENTRY:
+				menu[item].flags ^= FL_MENU_VALUE;
+				if (menu[item].value())
+					handle_context_menu();
+				break;
+			case RX_MENU_WRAP:
+				set_word_wrap(!wrap, true);
+				break;
+			case RX_MENU_DIV:
+				note_qrg(false, "\n", "\n");
+				break;
+			case RX_MENU_SCROLL_HINTS:
+				menu[item].flags ^= FL_MENU_VALUE;
+				static_cast<MVScrollbar*>(mVScrollBar)->show_marks(menu[item].value());
+				break;
+			default: ;
+		}
+		return;
+	}
+
 	switch (item) {
-	case RX_MENU_QRZ_THIS:
-		menu_cb(RX_MENU_CALL);
-		extern void CALLSIGNquery();
-		CALLSIGNquery();
-		break;
-	case RX_MENU_CALL:
-		input = inpCall;
-		break;
-	case RX_MENU_NAME:
-		input = inpName;
-		break;
-	case RX_MENU_QTH:
-		input = inpQth;
-		break;
-	case RX_MENU_STATE:
-		input = inpState;
-		break;
-	case RX_MENU_PROVINCE:
-		input = inpVEprov;
-		break;
-	case RX_MENU_COUNTRY:
-		input = inpCountry;
-		break;
-	case RX_MENU_LOC:
-		input = inpLoc;
-		break;
-	case RX_MENU_COUNTY:
-		input = inpCounty;
-		break;
-	case RX_MENU_RST_IN:
-		input = inpRstIn;
-		break;
-	case RX_MENU_SERIAL:
-		input = inpSerNo;
-		break;
-	case RX_MENU_XCHG:
-		input = inpXchgIn;
-		break;
-	case RX_MENU_CLASS:
-		input = inp_FD_class;
-		break;
-	case RX_MENU_SECTION:
-		input = inp_FD_section;
-		break;
-	case RX_MENU_SS_SER:
-		input = inp_SS_SerialNoR;
-		break;
-	case RX_MENU_SS_PRE:
-		input = inp_SS_Precedence;
-		break;
-	case RX_MENU_SS_CHK:
-		input = inp_SS_Check;
-		break;
-	case RX_MENU_SS_SEC:
-		input = inp_SS_Section;
-		break;
-	case RX_MENU_CQZONE:
-		input = inp_CQzone;
-		break;
-	case RX_MENU_CQSTATE:
-		input = inp_CQstate;
-		break;
-	case RX_MENU_DIV:
-		note_qrg(false, "\n", "\n");
-		break;
-	case RX_MENU_COPY:
-		kf_copy(Fl::event_key(), this);
-		break;
-	case RX_MENU_CLEAR:
-		clear();
-		break;
-	case RX_MENU_SELECT_ALL:
-		tbuf->select(0, tbuf->length());
-		break;
-
-	case RX_MENU_SAVE:
-		saveFile();
-		break;
-
-	case RX_MENU_ALL_ENTRY:
-		menu[item].flags ^= FL_MENU_VALUE;
-		if (menu[item].value())
-			handle_context_menu();
-		break;
-
-	case RX_MENU_WRAP:
-		set_word_wrap(!wrap, true);
-		break;
-
-	case RX_MENU_SCROLL_HINTS:
-		menu[item].flags ^= FL_MENU_VALUE;
-		static_cast<MVScrollbar*>(mVScrollBar)->show_marks(menu[item].value());
-		break;
+		case RX_MENU_QRZ_THIS:
+			menu_cb(RX_MENU_CALL);
+			extern void CALLSIGNquery();
+			CALLSIGNquery();
+			break;
+		case RX_MENU_CALL:
+			input = inpCall;
+			break;
+		case RX_MENU_NAME:
+			input = inpName;
+			break;
+		case RX_MENU_QTH:
+			input = inpQTH;
+			break;
+		case RX_MENU_STATE:
+			if (progdefaults.logging == LOG_NAS)
+				input = inpXchgIn;
+			else if (progdefaults.logging == LOG_JOTA)
+				input = inp_JOTA_spc;
+			else
+				input = inpState;
+			break;
+		case RX_MENU_LOC:
+			input = inpLoc;
+			break;
+		case RX_MENU_RST_IN:
+			input = inpRstIn;
+			break;
+		case RX_MENU_RST_OUT:
+			input = inpRstOut;
+			break;
+		case RX_MENU_SERIAL:
+			if (progdefaults.logging == LOG_IARI)
+				input = inpXchgIn;
+			else
+				input = inpSerNo;
+			break;
+		case RX_MENU_XCHG:
+			input = inpXchgIn;
+			break;
+		case RX_MENU_POWER:
+			input = inpSPCnum;
+			break;
+		case RX_MENU_CLASS:
+			input = inpClass;
+			break;
+		case RX_MENU_SECTION:
+			input = inpSection;
+			break;
+		case RX_MENU_SS_SER:
+			input = inp_SS_SerialNoR;
+			break;
+		case RX_MENU_SS_PRE:
+			input = inp_SS_Precedence;
+			break;
+		case RX_MENU_SS_CHK:
+			input = inp_SS_Check;
+			break;
+		case RX_MENU_SS_SEC:
+			input = inp_SS_Section;
+			break;
+		case RX_MENU_CQZONE:
+			input = inp_CQzone;
+			break;
+		case RX_MENU_CQSTATE:
+			input = inp_CQstate;
+			break;
+		case RX_MENU_1010_NR:
+			input = inp_1010_nr;
+			break;
+		case RX_MENU_AGE:
+			input = inp_KD_age;
+			break;
+		case RX_MENU_CHECK:
+			input = inp_ARR_check;
+			break;
+		case RX_MENU_NAQP:
+			input = inpSPCnum;
+			break;
+		case RX_MENU_SCOUT:
+			input = inp_JOTA_scout;
+			break;
+		case RX_MENU_TROOP:
+			input = inp_JOTA_troop;
+			break;
+		case RX_MENU_QSOP_STATE:
+			input = inpState;
+			break;
+		case RX_MENU_QSOP_COUNTY:
+			input = inpCounty;
+			break;
+		case RX_MENU_QSOP_SERNO:
+			input = inpSerNo;
+			break;
+		case RX_MENU_QSOP_NAME:
+			input = inpName;
+			break;
+		case RX_MENU_QSOP_XCHG:
+			input = inpXchgIn;
+			break;
+		case RX_MENU_QSOP_CAT:
+			input = inpXchgIn;
+			break;
+		case RX_MENU_DIV:
+			note_qrg(false, "\n", "\n");
+			break;
+		case RX_MENU_COPY:
+			kf_copy(Fl::event_key(), this);
+			break;
+		case RX_MENU_CLEAR:
+			clear();
+			break;
+		case RX_MENU_SELECT_ALL:
+			tbuf->select(0, tbuf->length());
+			break;
+		case RX_MENU_SAVE:
+			saveFile();
+			break;
+		case RX_MENU_ALL_ENTRY:
+			menu[item].flags ^= FL_MENU_VALUE;
+			if (menu[item].value())
+				handle_context_menu();
+			break;
+		case RX_MENU_WRAP:
+			set_word_wrap(!wrap, true);
+			break;
+		case RX_MENU_SCROLL_HINTS:
+			menu[item].flags ^= FL_MENU_VALUE;
+			static_cast<MVScrollbar*>(mVScrollBar)->show_marks(menu[item].value());
+			break;
+		case RX_MENU_COUNTRY:
+			if (progdefaults.logging == LOG_NAS)
+				inpXchgIn->value(s.c_str());
+			else if (progdefaults.logging == LOG_JOTA)
+				inp_JOTA_spc->value(s.c_str());
+			else
+				cboCountry->value(s.c_str());
+				return;
+		case RX_MENU_PROVINCE:
+			if (progdefaults.logging == LOG_NAS)
+				inpXchgIn->value(s.c_str());
+			else if (progdefaults.logging == LOG_JOTA)
+				inp_JOTA_spc->value(s.c_str());
+			else if (progdefaults.logging == LOG_IARI)
+				inpXchgIn->value(s.c_str());
+			else
+				set_province(s);
+			return;
+		case RX_MENU_COUNTY:
+			set_cbo_county(s.c_str());
+			return;
+		default:
+			return;
 	}
 
 	restoreFocus(92);
 
 	if (!input)
 		return;
-	char* s = get_word(popx, popy, progdefaults.nonwordchars.c_str(), false);
-	if (!s)
-		return;
 
 	if (item == RX_MENU_XCHG) { // append
 		input->position(input->size());
 		if (input->size())
 			input->insert(" ", 1);
-		input->insert(s);
+		input->insert(s.c_str());
 	}
-	else
-		input->value(s);
-	log_callback(input);
-	free(s);
+	else if (item == RX_MENU_SECTION) {
+		if (check_field(ucasestr(s).c_str(), cFD_SECTION))
+			input->value(ucasestr(s).c_str());
+	} else if (item == RX_MENU_CLASS) {
+		if (check_field(ucasestr(s).c_str(), cFD_CLASS))
+			input->value(ucasestr(s).c_str());
+	} else if (item == RX_MENU_RST_IN) {
+		if (check_field(s, cRST)) {
+			set_rst_in(s);
+		}
+	} else if (item == RX_MENU_RST_OUT) {
+		if (check_field(s, cRST))
+			set_rst_out(s);
+	} else {
+		if (input == inpCounty)
+			set_cbo_county(s.c_str());
+		else {
+			input->value(s.c_str());
+			log_callback(input);
+		}
+	}
 }
 
 const char* FTextRX::dxcc_lookup_call(int x, int y)
@@ -1150,7 +2119,7 @@ int FTextTX::handle_key_shortcuts(int key)
 				etag = inpName->value();
 				break;
 			case 'r':
-			        {
+				{
 					std::string s;
 					etag = (s = inpRstIn->value()).length() ? s : std::string("599");
 				}

@@ -207,6 +207,8 @@
 #include "record_loader.h"
 #include "fftfilt.h"
 
+#include "strutil.h"
+
 #include "FL/fl_ask.H"
 
 /// This models a line of the file defining Navtex stations.
@@ -394,7 +396,7 @@ public:
 			strm << itSolKm->second->coordinates();
 			// LOG_INFO("Name=%s Dist=%lf %s", itSolKm->second->name().c_str(), itSolKm->first, strm.str().c_str() );
 			// The message is in uppercase anyway, so no need to convert.
-			double str_dist = DistToStationName( msg, uppercase( itSolKm->second->name() ) );
+			double str_dist = DistToStationName( msg, ucasestr( itSolKm->second->name() ) );
 
 			solStrDist.insert( SolutionType::value_type( str_dist, itSolKm->second ) );
 		}

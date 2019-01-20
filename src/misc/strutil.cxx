@@ -204,11 +204,21 @@ size_t levenshtein(const string & source, const string & target) {
 	return matrix[n][m];
 }
 
-/// Converts a string to uppercase.
-string uppercase( const string & str )
+/// Converts a string to ucasestr.
+std::string ucasestr( string str )
 {
 	string resu ;
 	for( size_t i = 0 ; i < str.size(); ++i )
+	{
+		resu += static_cast<char>( toupper( str[i] ) );
+	}
+	return resu ;
+}
+
+std::string ucasestr(const char *str)
+{
+	string resu ;
+	for( size_t i = 0 ; i < strlen(str); ++i )
 	{
 		resu += static_cast<char>( toupper( str[i] ) );
 	}

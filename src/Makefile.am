@@ -371,6 +371,8 @@ fldigi_SOURCES += \
 	include/htmlstrings.h \
 	include/arq_io.h \
 	include/confdialog.h \
+	include/contest.h \
+	include/counties.h \
 	include/dtmf.h \
 	include/FTextView.h \
 	include/FTextRXTX.h \
@@ -550,6 +552,10 @@ fldigi_SOURCES += \
 	dxcluster/dxcluster.cxx \
 	logbook/adif_io.cxx \
 	logbook/calendar.cxx \
+	logbook/contest.cxx \
+	logbook/counties.cxx \
+	logbook/county_lists.cxx \
+	logbook/cty-dat.cxx \
 	logbook/date.cxx \
 	logbook/fd_logger.cxx \
 	logbook/lgbook.cxx \
@@ -684,6 +690,7 @@ fldigi_SOURCES += \
 EXTRA_fldigi_SOURCES += \
 	blank/blank.cxx \
 	blank/blank.h \
+	dialogs/fl_digi_main.cxx \
 	dxcluster/arc-help.cxx \
 	dxcluster/CCC_Commands.cxx \
 	dxcluster/DXClusterServers.cxx \

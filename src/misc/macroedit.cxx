@@ -77,6 +77,10 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<MYRST>\tmy RST"));
 	w->add(_("<MYCLASS>\tmy FD class"));
 	w->add(_("<MYSECTION>\tmy FD section"));
+	w->add(_("<MYSTATE>\tmy state"));
+	w->add(_("<MYST>\tmy ST"));
+	w->add(_("<MYCOUNTY>\tmy county"));
+	w->add(_("<MYCNTY>\tmy CNTY"));
 	w->add(_("<ANTENNA>\tmy antenna"));
 	w->add(_("<BAND>\toperating band"));
 	w->add(_("<VER>\tFldigi version"));
@@ -148,8 +152,10 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<SAVEXCHG>\tsave contest out"));
 	w->add(_("<SERNO>\tcurrent contest serno"));
 	w->add(_("<LASTNO>\tlast serno sent"));
-	w->add(_("<FDCLASS>\trecvd FD class"));
-	w->add(_("<FDSECT>\trecvd FD section"));
+	w->add(_("<FDCLASS>\tFD class"));
+	w->add(_("<FDSECT>\tFD section"));
+	w->add(_("<CLASS>\tcontest class"));
+	w->add(_("<SECTION>\tARRL section"));
 
 	w->add(LINE_SEP);
 	w->add(_("<RX>\treceive"));

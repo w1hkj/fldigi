@@ -58,6 +58,7 @@ extern Fl_Double_Window *scopeview;
 extern Fl_Double_Window *dlgRecordLoader;
 
 extern bool first_use;
+extern bool bEXITING;
 
 extern bool		bMOREINFO;
 
@@ -99,25 +100,47 @@ extern Fl_Input2		*inpTimeOff1;
 extern Fl_Input2		*inpTimeOff2;
 extern Fl_Input2		*inpTimeOff3;
 extern Fl_Input2		*inpTimeOn;
+extern Fl_Input2		*inpTimeOn1;
+extern Fl_Input2		*inpTimeOn2;
+extern Fl_Input2		*inpTimeOn3;
+extern Fl_Input2		*inpTimeOn4;
+extern Fl_Input2		*inpTimeOn5;
 extern Fl_Input2		*inpCall;
 extern Fl_Input2		*inpName;
 extern Fl_Input2		*inpRstIn;
+extern Fl_Input2		*inpRstIn1;
+extern Fl_Input2		*inpRstIn2;
+extern Fl_Input2		*inpRstIn3;
+extern Fl_Input2		*inpRstIn4;
 extern Fl_Input2		*inpRstOut;
+extern Fl_Input2		*inpRstOut1;
+extern Fl_Input2		*inpRstOut2;
+extern Fl_Input2		*inpRstOut3;
+extern Fl_Input2		*inpRstOut4;
+extern Fl_Input2		*inpQTH;
 extern Fl_Input2		*inpQth;
 extern Fl_Input2		*inpState;
-extern Fl_Input2		*inpCountry;
+extern Fl_Input2		*inpState1;
+extern Fl_ComboBox		*cboCountry;
 extern Fl_Input2		*inpCounty;
+extern Fl_ComboBox		*cboCountryQSO;
+extern Fl_ComboBox		*cboCountyQSO;
 extern Fl_Input2		*inpSerNo;
+extern Fl_Input2		*inpSerNo1;
+extern Fl_Input2		*inpSerNo2;
+extern Fl_Input2		*inpSerNo3;
+extern Fl_Input2		*inpSerNo4;
 extern Fl_Input2		*outSerNo;
 extern Fl_Input2		*outSerNo1;
 extern Fl_Input2		*outSerNo2;
+extern Fl_Input2		*outSerNo3;
+extern Fl_Input2		*outSerNo4;
 extern Fl_Input2		*inpXchgIn;
 extern Fl_Input2		*inpXchgIn1;
 extern Fl_Input2		*inpXchgIn2;
 extern Fl_Input2		*inpVEprov;
 extern Fl_Input2		*inpLoc;
 extern Fl_Input2		*inpLoc1;
-extern Fl_Input2		*inpLoc2;
 extern Fl_Input2		*inpNotes;
 extern Fl_Input2		*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoSave;
@@ -133,30 +156,31 @@ extern Fl_Input2		*inpCall2;
 extern Fl_Input2		*inpCall3;
 extern Fl_Input2		*inpCall4;
 extern Fl_Input2		*inpName1;
+extern Fl_Input2		*inpName2;
 
-extern Fl_Group		*QsoInfoFrame1B;
-extern Fl_Group		*qsoFrameView;
-extern Fl_Group		*QsoInfoFrame;
-extern cFreqControl	*qsoFreqDisp;
-extern Fl_Group		*qso_combos;
-extern Fl_ComboBox		*qso_opMODE;
-extern Fl_Group		*qso_opGROUP;
-extern Fl_ComboBox		*qso_opBW;
+extern Fl_Group			*QsoInfoFrame1B;
+extern Fl_Group			*qsoFrameView;
+extern Fl_Group			*QsoInfoFrame;
+extern cFreqControl		*qsoFreqDisp;
+extern Fl_Group			*qso_combos;
+extern Fl_ListBox		*qso_opMODE;
+extern Fl_Group			*qso_opGROUP;
+extern Fl_ListBox		*qso_opBW;
 extern Fl_Button		*qso_btnBW1;
-extern Fl_ComboBox		*qso_opBW1;
+extern Fl_ListBox		*qso_opBW1;
 extern Fl_Button		*qso_btnBW2;
-extern Fl_ComboBox		*qso_opBW2;
+extern Fl_ListBox		*qso_opBW2;
 extern Fl_Button		*qso_opPICK;
 extern Fl_Browser		*qso_opBrowser;
 
-extern Fl_Group		*fsq_group;
+extern Fl_Group			*fsq_group;
 extern FTextRX			*fsq_rx_text;
 extern FTextTX			*fsq_tx_text;
 extern Fl_Browser		*fsq_heard;
 
 extern Fl_Double_Window	*fsqMonitor;
-extern FTextRX				*fsq_monitor;
-extern FTextRX				*fsq_que;
+extern FTextRX			*fsq_monitor;
+extern FTextRX			*fsq_que;
 extern Fl_Double_Window	*create_fsqMonitor();
 extern void				open_fsqMonitor();
 extern void				close_fsqMonitor();
@@ -203,16 +227,16 @@ extern Fl_Light_Button		*btn_SELCAL;
 extern Fl_Light_Button		*btn_MONITOR;
 extern Fl_Button			*btn_FSQQTH;
 extern Fl_Button			*btn_FSQQTC;
-extern Progress			*ind_fsq_speed;
-extern Progress			*ind_fsq_s2n;
+extern Progress				*ind_fsq_speed;
+extern Progress				*ind_fsq_s2n;
 
 extern Fl_Double_Window	*fsqpicRxWin;
 extern Fl_Double_Window	*fsqpicTxWin;
 
-extern std::string		fsq_selected_call;
+extern std::string	fsq_selected_call;
 extern bool			in_heard(std::string);
 extern void			cb_fsq_heard(Fl_Browser*, void*);
-extern std::string		heard_list();
+extern std::string	heard_list();
 extern void			clear_heard_list();
 extern void			age_heard_list();
 extern void			add_to_heard_list(std::string, std::string);
@@ -221,8 +245,10 @@ extern void			fsq_xmt_mt(void *s);
 extern void			fsq_xmt(std::string s);
 extern void			fsq_repeat_last_heard();
 extern void			fsq_repeat_last_command();
-extern void 			display_fsq_rx_text(std::string text, int style = FTextBase::SKIP);
+extern void 		display_fsq_rx_text(std::string text, int style = FTextBase::SKIP);
 extern void			display_fsq_mon_text(std::string text, int style = FTextBase::SKIP);
+
+extern void combo_color_font(Fl_ComboBox *cbo);
 
 extern Fl_Group		*ifkp_group;
 extern Fl_Group		*ifkp_upper;
@@ -454,6 +480,8 @@ extern void resetSoundCard();
 extern void restoreFocus(int n = 0);
 extern void setReverse(int);
 extern void clearQSO();
+extern void clear_log_fields();
+extern void set_log_colors();
 extern void closeRigDialog();
 extern void CloseQsoView();
 
@@ -571,7 +599,7 @@ extern void set_freq_control_lsd();
 
 extern void set_smeter_colors();
 
-extern void log_callback(Fl_Input2 *);
+extern void log_callback(Fl_Widget *);
 
 extern void set599();
 
@@ -591,22 +619,128 @@ extern void			thor_load_scaled_image(std::string fname, bool gray = false);
 extern void			thor_load_raw_video();
 
 // field day
-extern Fl_Input2	*inp_FD_class;
-extern Fl_Input2	*inp_FD_section;
+extern Fl_Input2	*inpClass;
+extern Fl_Input2	*inpSection;
 extern Fl_Input2	*inp_FD_class1;
 extern Fl_Input2	*inp_FD_section1;
 extern Fl_Input2	*inp_FD_class2;
 extern Fl_Input2	*inp_FD_section2;
-
+// CQWW DX
+extern Fl_Input2	*inp_CQDX_RSTin2;
+extern Fl_Input2	*inp_CQDX_RSTout2;
+extern Fl_ComboBox	*cboCountryCQDX2;
+extern Fl_Input2	*inp_CQDXzone1;
+extern Fl_Input2	*inp_CQDXzone2;
 // CQWW RTTY
 extern Fl_Input2	*inp_CQzone;
+extern Fl_Input2	*inp_CQzone1;
+extern Fl_Input2	*inp_CQzone2;
 extern Fl_Input2	*inp_CQstate;
-
+extern Fl_Input2	*inp_CQstate1;
+extern Fl_Input2	*inp_CQstate2;
+extern Fl_ComboBox	*cboCountryCQ2;
+extern Fl_Input2	*inp_CQ_RSTin2;
+extern Fl_Input2	*inp_CQ_RSTout2;
 // CW Sweepstakes
 extern Fl_Input2	*inp_SS_SerialNoR;
 extern Fl_Input2	*inp_SS_Precedence;
 extern Fl_Input2	*inp_SS_Check;
 extern Fl_Input2	*inp_SS_Section;
+// LOG_ARR
+extern Fl_Input2	*inp_ARR_check;
+extern Fl_Input2	*inp_ARR_check1;
+extern Fl_Input2	*inp_ARR_check2;
+extern Fl_Input2	*inp_ARR_XchgIn1;
+extern Fl_Input2	*inp_ARR_XchgIn2;
+extern Fl_Input2	*inp_ARR_Name2;
+// LOG_KD
+extern Fl_Input2	*inp_KD_age;
+extern Fl_Input2	*inp_KD_XchgIn1;
+extern Fl_Input2	*inp_KD_XchgIn2;
+extern Fl_Input2	*inp_KD_state1;
+extern Fl_Input2	*inp_KD_state2;
+extern Fl_Input2	*inp_KD_VEprov1;
+extern Fl_Input2	*inp_KD_VEprov2;
+// LOG_1010
+extern Fl_Input2	*inp_1010_nr;
+extern Fl_Input2	*inp_1010_name2;
+extern Fl_Input2	*inp_1010_XchgIn1;
+extern Fl_Input2	*inp_1010_XchgIn2;
+// LOG_ASCR
+extern Fl_Input2	*inp_ASCR_class1;
+extern Fl_Input2	*inp_ASCR_XchgIn1;
+extern Fl_Input2	*inp_ASCR_name2;
+extern Fl_Input2	*inp_ASCR_class2;
+extern Fl_Input2	*inp_ASCR_XchgIn2;
+extern Fl_Input2	*inp_ASCR_RSTin2;
+extern Fl_Input2	*inp_ASCR_RSTout2;
+// LOG_NAQP
+extern Fl_Input2	*inpSPCnum;
+extern Fl_Input2	*inpSPCnum_NAQP1;
+extern Fl_Input2	*inpSPCnum_NAQP2;
+extern Fl_Input2	*inpNAQPname2;
+// LOG_RTTY
+extern Fl_Input2	*inpRTU_stpr1;
+extern Fl_Input2	*inpRTU_stpr2;
+extern Fl_ComboBox	*cboCountryRTU2;
+extern Fl_Input2	*inpRTU_RSTin2;
+extern Fl_Input2	*inpRTU_RSTout2;
+extern Fl_Input2	*inpRTU_serno1;
+extern Fl_Input2	*inpRTU_serno2;
+
+// LOG_JOTA
+extern Fl_Input2	*inpRstIn4;
+extern Fl_Input2	*inpRstOut4;
+extern Fl_Input2	*inp_JOTA_scout;
+extern Fl_Input2	*inp_JOTA_scout1;
+extern Fl_Input2	*inp_JOTA_scout2;
+extern Fl_Input2	*inp_JOTA_troop;
+extern Fl_Input2	*inp_JOTA_troop1;
+extern Fl_Input2	*inp_JOTA_troop2;
+extern Fl_Input2	*inp_JOTA_spc;
+extern Fl_Input2	*inp_JOTA_spc1;
+extern Fl_Input2	*inp_JOTA_spc2;
+// LOG_AICW
+extern Fl_Input2	*inpSPCnum_AICW1;
+extern Fl_Input2	*inpSPCnum_AICW2;
+extern Fl_Input2	*inpRstIn_AICW2;
+extern Fl_Input2	*inpRstOut_AICW2;
+extern Fl_ComboBox	*cboCountryAICW2;
+//LOG_AIDX
+extern Fl_ComboBox	*cboCountryAIDX;
+extern Fl_ComboBox	*cboCountryAIDX2;
+// LOG_IARI - Italian International DX
+extern Fl_Input2	*inp_IARI_PR1;
+extern Fl_Input2	*inp_IARI_RSTin2;
+extern Fl_Input2	*inp_IARI_RSTout2;
+extern Fl_Input2	*out_IARI_SerNo1;
+extern Fl_Input2	*inp_IARI_SerNo1;
+extern Fl_Input2	*out_IARI_SerNo2;
+extern Fl_Input2	*inp_IARI_SerNo2;
+extern Fl_Input2	*inp_IARI_PR2;
+extern Fl_ComboBox	*cboCountryIARI2;
+// LOG_WPX
+extern Fl_Input2	*inpSerNo_WPX1;
+extern Fl_Input2	*inpSerNo_WPX2;
+extern Fl_Input2	*outSerNo_WPX1;
+extern Fl_Input2	*outSerNo_WPX2;
+extern Fl_Input2	*inpRstIn_WPX2;
+extern Fl_Input2	*inpRstOut_WPX2;
+// LOG_SQSO
+extern Fl_Input2	*inpSQSO_state1;
+extern Fl_Input2	*inpSQSO_state2;
+extern Fl_Input2	*inpSQSO_county1;
+extern Fl_Input2	*inpSQSO_county2;
+extern Fl_Input2	*inpSQSO_serno1;
+extern Fl_Input2	*inpSQSO_serno2;
+extern Fl_Input2	*inpSQSO_name2;
+extern Fl_Input2	*outSQSO_serno1;
+extern Fl_Input2	*outSQSO_serno2;
+extern Fl_Input2	*inpRstIn_SQSO2;
+extern Fl_Input2	*inpRstOut_SQSO2;
+extern Fl_Input2	*inpSQSO_category;
+extern Fl_Input2	*inpSQSO_category1;
+extern Fl_Input2	*inpSQSO_category2;
 
 extern Fl_Double_Window	*dxcluster_viewer;
 

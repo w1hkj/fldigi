@@ -1577,17 +1577,37 @@ static void pMYRST(std::string &s, size_t &i, size_t endbracket)
 
 static void pANTENNA(std::string &s, size_t &i, size_t endbracket)
 {
-        s.replace( i, 9, progdefaults.myAntenna.c_str() );
+	s.replace( i, 9, progdefaults.myAntenna.c_str() );
 }
 
 static void pMYCLASS(std::string &s, size_t &i, size_t endbracket)
 {
-        s.replace( i, 9, progdefaults.my_FD_class.c_str() );
+	s.replace( i, 9, progdefaults.my_FD_class.c_str() );
 }
 
 static void pMYSECTION(std::string &s, size_t &i, size_t endbracket)
 {
-        s.replace( i, 11, progdefaults.my_FD_section.c_str() );
+	s.replace( i, 11, progdefaults.my_FD_section.c_str() );
+}
+
+static void pMYSTATE(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 9, listbox_states->value() );
+}
+
+static void pMYST(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 6,  inp_QP_state_short->value() );
+}
+
+static void pMYCOUNTY(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 10, listbox_counties->value() );
+}
+
+static void pMYCNTY(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 8, inp_QP_short_county->value() );
 }
 
 static void pLDT(std::string &s, size_t &i, size_t endbracket)
@@ -2218,12 +2238,22 @@ static void pSAVEXCHG(std::string &s, size_t &i, size_t endbracket)
 
 static void pFD_CLASS(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace( i, 9, inp_FD_class->value() );
+	s.replace( i, 9, inpClass->value() );
 }
 
 static void pFD_SECTION(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace( i, 8, inp_FD_section->value() );
+	s.replace( i, 8, inpSection->value() );
+}
+
+static void pCLASS(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 7, inpClass->value() );
+}
+
+static void pSECTION(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 9, inpSection->value() );
 }
 
 static void pLOG(std::string &s, size_t &i, size_t endbracket)
@@ -3398,8 +3428,8 @@ void set_macro_env(void)
 		FLDIGI_LOG_SERNO_OUT,
 		FLDIGI_XCHG_IN,
 		FLDIGI_XCGH_OUT,
-		FLDIGI_FD_CLASS,
-		FLDIGI_FD_SECTION,
+		FLDIGI_CLASS_IN,
+		FLDIGI_ARRL_SECTION_IN,
 		FLDIGI_VE_PROV,
 		FLDIGI_AZ,
 
@@ -3420,8 +3450,8 @@ void set_macro_env(void)
 		FLDIGI_LOGBOOK_SERNO_OUT,
 		FLDIGI_LOGBOOK_XCHG_IN,
 		FLDIGI_LOGBOOK_XCHG_OUT,
-		FLDIGI_FD_CLASS_OUT,
-		FLDIGI_FD_SECTION_OUT,
+		FLDIGI_LOGBOOK_CLASS_IN,
+		FLDIGI_LOGBOOK_SECTION_IN,
 		FLDIGI_LOGBOOK_QTH,
 		FLDIGI_LOGBOOK_LOCATOR,
 		FLDIGI_LOGBOOK_QSL_R,
@@ -3491,14 +3521,14 @@ void set_macro_env(void)
 		{ "FLDIGI_LOG_LOCATOR", inpLoc->value() },
 		{ "FLDIGI_LOG_NOTES", inpNotes->value() },
 		{ "FLDIGI_LOG_STATE", inpState->value() },
-		{ "FLDIGI_LOG_COUNTRY", inpCountry->value() },
+		{ "FLDIGI_LOG_COUNTRY", cboCountry->value() },
 		{ "FLDIGI_LOG_COUNTY", inpCounty->value() },
 		{ "FLDIGI_LOG_SERNO_IN", inpSerNo->value() },
 		{ "FLDIGI_LOG_SERNO_OUT", outSerNo->value() },
 		{ "FLDIGI_XCHG_IN", inpXchgIn->value() },
 		{ "FLDIGI_XCHG_OUT", inpSend1->value() },
-		{ "FLDIGI_FD_CLASS", inp_FD_class->value() },
-		{ "FLDIGI_FD_SECTION", inp_FD_section->value() },
+		{ "FLDIGI_CLASS_IN", inpClass->value() },
+		{ "FLDIGI_ARRL_SECTION_IN", inpSection->value() },
 		{ "FLDIGI_VE_PROV", inpVEprov->value() },
 		{ "FLDIGI_AZ", inpAZ->value() },
 
@@ -3520,8 +3550,8 @@ void set_macro_env(void)
 		{ "FLDIGI_LOGBOOK_SERNO_OUT", inpSerNoOut_log->value() },
 		{ "FLDIGI_LOGBOOK_XCHG_IN", inpXchgIn_log->value() },
 		{ "FLDIGI_LOGBOOK_XCHG_OUT", inpMyXchg_log->value() },
-		{ "FLDIGI_FD_CLASS_OUT", inp_FD_class_log->value() },
-		{ "FLDIGI_FD_SECTION_OUT", inp_FD_section_log->value() },
+		{ "FLDIGI_LOGBOOK_CLASS_IN", inpClass_log->value() },
+		{ "FLDIGI_LOGBOOK_ARRL_SECT_IN", inpSection_log->value() },
 		{ "FLDIGI_LOGBOOK_QTH", inpQth_log->value() },
 		{ "FLDIGI_LOGBOOK_LOCATOR", inpLoc_log->value() },
 		{ "FLDIGI_LOGBOOK_QSL_R", inpQSLrcvddate_log->value() },
@@ -3984,6 +4014,10 @@ static const MTAGS mtags[] = {
 {"<MYRST>",		pMYRST},
 {"<MYCLASS>",	pMYCLASS},
 {"<MYSECTION>",	pMYSECTION},
+{"<MYSTATE>",	pMYSTATE},
+{"<MYST>",		pMYST},
+{"<MYCOUNTY>",	pMYCOUNTY},
+{"<MYCNTY>",	pMYCNTY},
 {"<ANTENNA>",	pANTENNA},
 {"<QSOTIME>",	pQSOTIME},
 {"<QSONBR>",	pQSONBR},
@@ -4020,6 +4054,8 @@ static const MTAGS mtags[] = {
 {"<XOUT>",		pXOUT},
 {"<FDCLASS>",	pFD_CLASS},
 {"<FDSECT>",	pFD_SECTION},
+{"<CLASS>",		pCLASS},
+{"<SECTION>",	pSECTION},
 {"<XBEG>",		pXBEG},
 {"<XEND>",		pXEND},
 {"<SAVEXCHG>",	pSAVEXCHG},

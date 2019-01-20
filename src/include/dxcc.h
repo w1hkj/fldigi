@@ -57,6 +57,8 @@ void dxcc_close(void);
 const dxcc* dxcc_lookup(const char* callsign);
 const std::vector<dxcc*>* dxcc_entity_list(void);
 
+extern std::string cbolist;
+
 bool qsl_open(const char* filename, qsl_t qsl_type);
 unsigned char qsl_is_open(void);
 void qsl_close(void);

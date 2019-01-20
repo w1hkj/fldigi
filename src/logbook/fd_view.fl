@@ -1,12 +1,12 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-i18n_type 1 
-i18n_include "gettext.h" 
-i18n_function _ 
-header_name {.h} 
+version 1.0304
+i18n_type 1
+i18n_include "gettext.h"
+i18n_function _
+header_name {.h}
 code_name {.cxx}
 decl {\#include "configuration.h"} {private local
-} 
+}
 
 Function {make_fd_view()} {open
 } {
@@ -341,13 +341,13 @@ progdefaults.changed = true;}
         label Connect
         callback {progdefaults.connect_to_fdserver=o->value();
 if (progdefaults.connect_to_fdserver) {
-	btn_fd_contest->value(1);
+	listbox_contest->index(LOG_FD);
 	progdefaults.logging = LOG_FD;
 } else {
-	btn_fd_contest->value(0);
+	listbox_contest->index(LOG_QSO);
 	progdefaults.logging = LOG_QSO;
 }
-UI_select();} selected
+UI_select();}
         tooltip {Connect / Disconnect^jAddr/Port/OP required} xywh {608 236 70 20} down_box DOWN_BOX
         code0 {o->value(progdefaults.connect_to_fdserver);}
         code1 {\#include "confdialog.h"}
@@ -355,9 +355,9 @@ UI_select();} selected
         code3 {\#include "logsupport.h"}
       }
       Fl_Box box_fdserver_connected {
-        label Connected
+        label Connected selected
         xywh {722 237 18 18} box ROUND_DOWN_BOX color 31 align 1
       }
     }
   }
-} 
+}

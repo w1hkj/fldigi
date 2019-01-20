@@ -226,7 +226,7 @@ public:
 	void NextPage ();
 	void GotoRow (int);
 
-	int  vScrollWidth() { return (vScroll ? vScroll->w() : 0);}
+	int  vScrollWidth() { return (vScroll->visible() ? vScroll->w() : 0);}
 
 	bool search(int& row, int& col, bool rev, const char* re);
 };

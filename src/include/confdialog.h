@@ -24,11 +24,16 @@ extern Fl_Tabs *tabsConfigure;
 #include <FL/Fl_Group.H>
 extern Fl_Group *tabOperator;
 extern Fl_Input2 *inpMyCallsign;
-extern Fl_Input2 *inpMyQth;
-extern Fl_Input2 *inpMyLocator;
 extern Fl_Input2 *inpOperCallsign;
 extern Fl_Input2 *inpMyName;
 extern Fl_Input2 *inpMyAntenna;
+extern Fl_Input2 *inpMyQth;
+extern Fl_Input2 *inpMyLocator;
+#include "counties.h"
+extern Fl_ListBox *listbox_states;
+extern Fl_Input2 *inp_QP_state_short;
+extern Fl_ListBox *listbox_counties;
+extern Fl_Input2 *inp_QP_short_county;
 extern Fl_Group *tabUI;
 extern Fl_Tabs *tabsUI;
 extern Fl_Group *tabBrowser;
@@ -89,6 +94,7 @@ extern Fl_Check_Button *btnRXClicks;
 extern Fl_Check_Button *btnRXTooltips;
 extern Fl_Input2 *inpNonword;
 extern Fl_Check_Button *btnUSunits;
+extern Fl_Check_Button *btn_clear_fields;
 extern Fl_Group *grpMacLogger;
 #include "maclogger.h"
 extern Fl_Check_Button *btnConnectToMaclogger;
@@ -114,7 +120,13 @@ extern Fl_Box *box_n3fjp_connected;
 extern Fl_Check_Button *btn_N3FJP_sweet_spot;
 extern Fl_Check_Button *btn_N3FJP_modem_carrier;
 extern Fl_Check_Button *btn_enable_N3FJP_RIGTX;
-extern Fl_Group *tabContest;
+extern Fl_Group *tabLogContests;
+extern Fl_Tabs *tabs_contests;
+extern Fl_Group *grpGeneral_contest;
+#include "contest.h"
+extern Fl_ListBox *listbox_contest;
+extern Fl_ListBox *listbox_QP_contests;
+extern Fl_Input2 *inp_contest_notes;
 #include <FL/Fl_Light_Button.H>
 extern Fl_Light_Button *btnDupCheckOn;
 extern Fl_Check_Button *btnDupBand;
@@ -128,20 +140,18 @@ extern Fl_Value_Input2 *nbrTimeSpan;
 extern Fl_Input2 *inpSend1;
 extern Fl_Check_Button *btn599;
 extern Fl_Check_Button *btnCutNbrs;
-extern Fl_Check_Button *btnUseLeadingZeros;
 extern Fl_Value_Input2 *nbrContestStart;
 extern Fl_Value_Input2 *nbrContestDigits;
+extern Fl_Check_Button *btnUseLeadingZeros;
 extern Fl_Button *btnResetSerNbr;
+extern Fl_Group *grpFD_contest;
 extern Fl_Input2 *inp_my_FD_call;
 extern Fl_Input2 *inp_my_FD_section;
 extern Fl_Input2 *inp_my_FD_class;
-extern Fl_Check_Button *btn_generic_contest;
-extern Fl_Check_Button *btn_fd_contest;
-extern Fl_Check_Button *btn_cqww_contest;
-extern Fl_Check_Button *btn_bart_contest;
-extern Fl_Check_Button *btn_cwss_contest;
-extern Fl_Check_Button *btnRXClicks2;
-extern Fl_Check_Button *btn_clear_fields;
+extern Fl_Group *grpJOTA_contest;
+extern Fl_Input2 *inp_my_SCR_class;
+extern Fl_Input2 *inp_my_JOTA_troop;
+extern Fl_Input2 *inp_my_JOTA_scout;
 extern Fl_Group *tabMBars;
 extern Fl_Check_Button *btnMacroMouseWheel;
 #include <FL/Fl_Counter.H>

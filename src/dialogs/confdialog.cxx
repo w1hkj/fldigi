@@ -355,20 +355,6 @@ notify_change_callsign();
 progdefaults.changed = true;
 }
 
-Fl_Input2 *inpMyQth=(Fl_Input2 *)0;
-
-static void cb_inpMyQth(Fl_Input2* o, void*) {
-  progdefaults.myQth = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Input2 *inpMyLocator=(Fl_Input2 *)0;
-
-static void cb_inpMyLocator(Fl_Input2* o, void*) {
-  progdefaults.myLocator = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Input2 *inpOperCallsign=(Fl_Input2 *)0;
 
 static void cb_inpOperCallsign(Fl_Input2* o, void*) {
@@ -389,6 +375,44 @@ static void cb_inpMyAntenna(Fl_Input2* o, void*) {
   progdefaults.myAntenna = o->value();
 progdefaults.changed = true;
 }
+
+Fl_Input2 *inpMyQth=(Fl_Input2 *)0;
+
+static void cb_inpMyQth(Fl_Input2* o, void*) {
+  progdefaults.myQth = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *inpMyLocator=(Fl_Input2 *)0;
+
+static void cb_inpMyLocator(Fl_Input2* o, void*) {
+  progdefaults.myLocator = o->value();
+progdefaults.changed = true;
+}
+
+Fl_ListBox *listbox_states=(Fl_ListBox *)0;
+
+static void cb_listbox_states(Fl_ListBox* o, void*) {
+  listbox_counties->clear();
+listbox_counties->add(states.counties(o->value()).c_str());
+listbox_counties->index(0);
+inp_QP_short_county->value(states.cnty_short(listbox_states->value(),listbox_counties->value()).c_str());
+inp_QP_state_short->value(states.state_short(o->value()).c_str());
+progdefaults.SQSOstate = o->index();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *inp_QP_state_short=(Fl_Input2 *)0;
+
+Fl_ListBox *listbox_counties=(Fl_ListBox *)0;
+
+static void cb_listbox_counties(Fl_ListBox* o, void*) {
+  inp_QP_short_county->value(states.cnty_short(listbox_states->value(),o->value()).c_str());
+progdefaults.SQSOcounty = o->index();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *inp_QP_short_county=(Fl_Input2 *)0;
 
 Fl_Group *tabUI=(Fl_Group *)0;
 
@@ -769,7 +793,6 @@ Fl_Check_Button *btnRXClicks=(Fl_Check_Button *)0;
 
 static void cb_btnRXClicks(Fl_Check_Button* o, void*) {
   progdefaults.rxtext_clicks_qso_data = o->value();
-btnRXClicks2->value(progdefaults.rxtext_clicks_qso_data);
 progdefaults.changed = true;
 }
 
@@ -791,6 +814,13 @@ Fl_Check_Button *btnUSunits=(Fl_Check_Button *)0;
 
 static void cb_btnUSunits(Fl_Check_Button* o, void*) {
   progdefaults.us_units = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_clear_fields=(Fl_Check_Button *)0;
+
+static void cb_btn_clear_fields(Fl_Check_Button* o, void*) {
+  progdefaults.clear_fields=o->value();
 progdefaults.changed = true;
 }
 
@@ -926,7 +956,49 @@ static void cb_btn_enable_N3FJP_RIGTX(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabContest=(Fl_Group *)0;
+Fl_Group *tabLogContests=(Fl_Group *)0;
+
+Fl_Tabs *tabs_contests=(Fl_Tabs *)0;
+
+Fl_Group *grpGeneral_contest=(Fl_Group *)0;
+
+Fl_ListBox *listbox_contest=(Fl_ListBox *)0;
+
+static void cb_listbox_contest(Fl_ListBox* o, void*) {
+  progdefaults.logging = o->index();
+if (contests[progdefaults.logging].name == "State QSO parties") {
+  progdefaults.CONTESTnotes = QSOparties.qso_parties[progdefaults.SQSOcontest].notes;
+  progdefaults.SQSOinstate = (QSOparties.qso_parties[progdefaults.SQSOcontest].instate[0] == 'T');
+} else {
+  listbox_QP_contests->index(0);
+  progdefaults.CONTESTnotes = contests[progdefaults.logging].notes;
+}
+inp_contest_notes->value(progdefaults.CONTESTnotes.c_str());
+UI_select();
+clear_log_fields();
+clearQSO();
+progdefaults.changed = true;
+}
+
+Fl_ListBox *listbox_QP_contests=(Fl_ListBox *)0;
+
+static void cb_listbox_QP_contests(Fl_ListBox* o, void*) {
+  int n = o->index();
+progdefaults.SQSOcontest = n;
+progdefaults.SQSOinstate = (QSOparties.qso_parties[n].instate[0] == 'T');
+if (contests[progdefaults.logging].name == "State QSO parties") {
+  progdefaults.CONTESTnotes = QSOparties.qso_parties[n].notes;
+  inp_contest_notes->value(progdefaults.CONTESTnotes.c_str());
+} else
+  inp_contest_notes->value("");
+adjust_for_contest(0);
+UI_select();
+clear_log_fields();
+clearQSO();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *inp_contest_notes=(Fl_Input2 *)0;
 
 Fl_Light_Button *btnDupCheckOn=(Fl_Light_Button *)0;
 
@@ -1014,13 +1086,6 @@ static void cb_btnCutNbrs(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnUseLeadingZeros=(Fl_Check_Button *)0;
-
-static void cb_btnUseLeadingZeros(Fl_Check_Button* o, void*) {
-  progdefaults.UseLeadingZeros = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Value_Input2 *nbrContestStart=(Fl_Value_Input2 *)0;
 
 static void cb_nbrContestStart(Fl_Value_Input2* o, void*) {
@@ -1035,11 +1100,20 @@ static void cb_nbrContestDigits(Fl_Value_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnUseLeadingZeros=(Fl_Check_Button *)0;
+
+static void cb_btnUseLeadingZeros(Fl_Check_Button* o, void*) {
+  progdefaults.UseLeadingZeros = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Button *btnResetSerNbr=(Fl_Button *)0;
 
 static void cb_btnResetSerNbr(Fl_Button*, void*) {
   cb_ResetSerNbr();
 }
+
+Fl_Group *grpFD_contest=(Fl_Group *)0;
 
 Fl_Input2 *inp_my_FD_call=(Fl_Input2 *)0;
 
@@ -1062,84 +1136,27 @@ static void cb_inp_my_FD_class(Fl_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btn_generic_contest=(Fl_Check_Button *)0;
+Fl_Group *grpJOTA_contest=(Fl_Group *)0;
 
-static void cb_btn_generic_contest(Fl_Check_Button* o, void*) {
-  if (o->value()) progdefaults.logging = LOG_CONT;
-else progdefaults.logging = LOG_QSO;
-btn_fd_contest->value(0);
-btn_cqww_contest->value(0);
-btn_bart_contest->value(0);
-btn_cwss_contest->value(0);
-UI_select();
+Fl_Input2 *inp_my_SCR_class=(Fl_Input2 *)0;
+
+static void cb_inp_my_SCR_class(Fl_Input2* o, void*) {
+  progdefaults.my_SCR_class=o->value();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btn_fd_contest=(Fl_Check_Button *)0;
+Fl_Input2 *inp_my_JOTA_troop=(Fl_Input2 *)0;
 
-static void cb_btn_fd_contest(Fl_Check_Button* o, void*) {
-  if (o->value()) progdefaults.logging = LOG_FD;
-else progdefaults.logging = LOG_QSO;
-btn_cqww_contest->value(0);
-btn_bart_contest->value(0);
-btn_generic_contest->value(0);
-btn_cwss_contest->value(0);
-UI_select();
+static void cb_inp_my_JOTA_troop(Fl_Input2* o, void*) {
+  progdefaults.my_JOTA_troop=o->value();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btn_cqww_contest=(Fl_Check_Button *)0;
+Fl_Input2 *inp_my_JOTA_scout=(Fl_Input2 *)0;
 
-static void cb_btn_cqww_contest(Fl_Check_Button* o, void*) {
-  if (o->value()) progdefaults.logging = LOG_CQWW;
-else progdefaults.logging = LOG_QSO;
-btn_fd_contest->value(0);
-btn_bart_contest->value(0);
-btn_generic_contest->value(0);
-btn_cwss_contest->value(0);
-UI_select();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_bart_contest=(Fl_Check_Button *)0;
-
-static void cb_btn_bart_contest(Fl_Check_Button* o, void*) {
-  if (o->value()) progdefaults.logging = LOG_BART;
-else progdefaults.logging = LOG_QSO;
-btn_fd_contest->value(0);
-btn_cqww_contest->value(0);
-btn_generic_contest->value(0);
-btn_cwss_contest->value(0);
-UI_select();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_cwss_contest=(Fl_Check_Button *)0;
-
-static void cb_btn_cwss_contest(Fl_Check_Button* o, void*) {
-  if (o->value()) progdefaults.logging = LOG_CWSS;
-else progdefaults.logging = LOG_QSO;
-btn_generic_contest->value(0);
-btn_fd_contest->value(0);
-btn_cqww_contest->value(0);
-btn_bart_contest->value(0);
-UI_select();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnRXClicks2=(Fl_Check_Button *)0;
-
-static void cb_btnRXClicks2(Fl_Check_Button* o, void*) {
-  progdefaults.rxtext_clicks_qso_data = o->value();
-btnRXClicks->value(progdefaults.rxtext_clicks_qso_data);
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_clear_fields=(Fl_Check_Button *)0;
-
-static void cb_btn_clear_fields(Fl_Check_Button* o, void*) {
-  progdefaults.clear_fields=o->value();
-progdefaults.changed = true;
+static void cb_inp_my_JOTA_scout(Fl_Input2* o, void*) {
+  progdefaults.my_JOTA_scout = o->value();
+progdefaults.changed=true;
 }
 
 Fl_Group *tabMBars=(Fl_Group *)0;
@@ -8069,14 +8086,14 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(-5, 0, 610, 390);
+    { tabsConfigure = new Fl_Tabs(0, 0, 600, 390);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
         tabOperator->hide();
-        { Fl_Group* o = new Fl_Group(35, 35, 529, 245, _("Station / Operator"));
+        { Fl_Group* o = new Fl_Group(5, 35, 590, 285, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
           { inpMyCallsign = new Fl_Input2(195, 64, 110, 24, _("Station Callsign:"));
@@ -8093,35 +8110,7 @@ Fl_Double_Window* ConfigureDialog() {
             inpMyCallsign->when(FL_WHEN_CHANGED);
             inpMyCallsign->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyCallsign
-          { inpMyQth = new Fl_Input2(195, 98, 320, 24, _("Station QTH:"));
-            inpMyQth->tooltip(_("Operators QTH"));
-            inpMyQth->box(FL_DOWN_BOX);
-            inpMyQth->color(FL_BACKGROUND2_COLOR);
-            inpMyQth->selection_color(FL_SELECTION_COLOR);
-            inpMyQth->labeltype(FL_NORMAL_LABEL);
-            inpMyQth->labelfont(0);
-            inpMyQth->labelsize(14);
-            inpMyQth->labelcolor(FL_FOREGROUND_COLOR);
-            inpMyQth->callback((Fl_Callback*)cb_inpMyQth);
-            inpMyQth->align(Fl_Align(FL_ALIGN_LEFT));
-            inpMyQth->when(FL_WHEN_RELEASE);
-            inpMyQth->labelsize(FL_NORMAL_SIZE);
-          } // Fl_Input2* inpMyQth
-          { inpMyLocator = new Fl_Input2(195, 133, 85, 24, _("Station Locator:"));
-            inpMyLocator->tooltip(_("Maidenhead locator as in EM64qv"));
-            inpMyLocator->box(FL_DOWN_BOX);
-            inpMyLocator->color(FL_BACKGROUND2_COLOR);
-            inpMyLocator->selection_color(FL_SELECTION_COLOR);
-            inpMyLocator->labeltype(FL_NORMAL_LABEL);
-            inpMyLocator->labelfont(0);
-            inpMyLocator->labelsize(14);
-            inpMyLocator->labelcolor(FL_FOREGROUND_COLOR);
-            inpMyLocator->callback((Fl_Callback*)cb_inpMyLocator);
-            inpMyLocator->align(Fl_Align(FL_ALIGN_LEFT));
-            inpMyLocator->when(FL_WHEN_RELEASE);
-            inpMyLocator->labelsize(FL_NORMAL_SIZE);
-          } // Fl_Input2* inpMyLocator
-          { Fl_Input2* o = inpOperCallsign = new Fl_Input2(196, 166, 110, 24, _("Operator Callsign:"));
+          { Fl_Input2* o = inpOperCallsign = new Fl_Input2(195, 94, 110, 24, _("Operator Callsign:"));
             inpOperCallsign->tooltip(_("Operator callsign (if different than station callsign)"));
             inpOperCallsign->box(FL_DOWN_BOX);
             inpOperCallsign->color(FL_BACKGROUND2_COLOR);
@@ -8136,7 +8125,7 @@ Fl_Double_Window* ConfigureDialog() {
             o->labelsize(FL_NORMAL_SIZE);
             o->value(progdefaults.operCall.c_str());
           } // Fl_Input2* inpOperCallsign
-          { inpMyName = new Fl_Input2(195, 197, 140, 24, _("Operator Name:"));
+          { inpMyName = new Fl_Input2(195, 125, 140, 24, _("Operator Name:"));
             inpMyName->tooltip(_("Operators name"));
             inpMyName->box(FL_DOWN_BOX);
             inpMyName->color(FL_BACKGROUND2_COLOR);
@@ -8150,27 +8139,112 @@ Fl_Double_Window* ConfigureDialog() {
             inpMyName->when(FL_WHEN_RELEASE);
             inpMyName->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyName
+          { inpMyAntenna = new Fl_Input2(195, 155, 320, 24, _("Antenna:"));
+            inpMyAntenna->tooltip(_("Short description of antenna"));
+            inpMyAntenna->box(FL_DOWN_BOX);
+            inpMyAntenna->color(FL_BACKGROUND2_COLOR);
+            inpMyAntenna->selection_color(FL_SELECTION_COLOR);
+            inpMyAntenna->labeltype(FL_NORMAL_LABEL);
+            inpMyAntenna->labelfont(0);
+            inpMyAntenna->labelsize(14);
+            inpMyAntenna->labelcolor(FL_FOREGROUND_COLOR);
+            inpMyAntenna->callback((Fl_Callback*)cb_inpMyAntenna);
+            inpMyAntenna->align(Fl_Align(FL_ALIGN_LEFT));
+            inpMyAntenna->when(FL_WHEN_RELEASE);
+            inpMyAntenna->labelsize(FL_NORMAL_SIZE);
+          } // Fl_Input2* inpMyAntenna
+          { inpMyQth = new Fl_Input2(195, 186, 320, 24, _("Station QTH:"));
+            inpMyQth->tooltip(_("Operators QTH"));
+            inpMyQth->box(FL_DOWN_BOX);
+            inpMyQth->color(FL_BACKGROUND2_COLOR);
+            inpMyQth->selection_color(FL_SELECTION_COLOR);
+            inpMyQth->labeltype(FL_NORMAL_LABEL);
+            inpMyQth->labelfont(0);
+            inpMyQth->labelsize(14);
+            inpMyQth->labelcolor(FL_FOREGROUND_COLOR);
+            inpMyQth->callback((Fl_Callback*)cb_inpMyQth);
+            inpMyQth->align(Fl_Align(FL_ALIGN_LEFT));
+            inpMyQth->when(FL_WHEN_RELEASE);
+            inpMyQth->labelsize(FL_NORMAL_SIZE);
+          } // Fl_Input2* inpMyQth
+          { inpMyLocator = new Fl_Input2(195, 216, 85, 24, _("Station Locator:"));
+            inpMyLocator->tooltip(_("Maidenhead locator as in EM64qv"));
+            inpMyLocator->box(FL_DOWN_BOX);
+            inpMyLocator->color(FL_BACKGROUND2_COLOR);
+            inpMyLocator->selection_color(FL_SELECTION_COLOR);
+            inpMyLocator->labeltype(FL_NORMAL_LABEL);
+            inpMyLocator->labelfont(0);
+            inpMyLocator->labelsize(14);
+            inpMyLocator->labelcolor(FL_FOREGROUND_COLOR);
+            inpMyLocator->callback((Fl_Callback*)cb_inpMyLocator);
+            inpMyLocator->align(Fl_Align(FL_ALIGN_LEFT));
+            inpMyLocator->when(FL_WHEN_RELEASE);
+            inpMyLocator->labelsize(FL_NORMAL_SIZE);
+          } // Fl_Input2* inpMyLocator
+          { Fl_ListBox* o = listbox_states = new Fl_ListBox(195, 247, 160, 24, _("State"));
+            listbox_states->box(FL_DOWN_BOX);
+            listbox_states->color(FL_BACKGROUND2_COLOR);
+            listbox_states->selection_color(FL_BACKGROUND_COLOR);
+            listbox_states->labeltype(FL_NORMAL_LABEL);
+            listbox_states->labelfont(0);
+            listbox_states->labelsize(14);
+            listbox_states->labelcolor(FL_FOREGROUND_COLOR);
+            listbox_states->callback((Fl_Callback*)cb_listbox_states);
+            listbox_states->align(Fl_Align(FL_ALIGN_LEFT));
+            listbox_states->when(FL_WHEN_RELEASE);
+            o->labelsize(FL_NORMAL_SIZE);
+            o->add(states.names().c_str());
+            o->index(progdefaults.SQSOstate);
+            listbox_states->end();
+          } // Fl_ListBox* listbox_states
+          { Fl_Input2* o = inp_QP_state_short = new Fl_Input2(362, 247, 43, 24);
+            inp_QP_state_short->tooltip(_("Abbreviation for state"));
+            inp_QP_state_short->box(FL_DOWN_BOX);
+            inp_QP_state_short->color(FL_BACKGROUND2_COLOR);
+            inp_QP_state_short->selection_color(FL_SELECTION_COLOR);
+            inp_QP_state_short->labeltype(FL_NORMAL_LABEL);
+            inp_QP_state_short->labelfont(0);
+            inp_QP_state_short->labelsize(14);
+            inp_QP_state_short->labelcolor(FL_FOREGROUND_COLOR);
+            inp_QP_state_short->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+            inp_QP_state_short->when(FL_WHEN_RELEASE);
+            o->value(states.state_short(listbox_states->value()).c_str());
+          } // Fl_Input2* inp_QP_state_short
+          { Fl_ListBox* o = listbox_counties = new Fl_ListBox(195, 278, 284, 24, _("County"));
+            listbox_counties->box(FL_DOWN_BOX);
+            listbox_counties->color(FL_BACKGROUND2_COLOR);
+            listbox_counties->selection_color(FL_BACKGROUND_COLOR);
+            listbox_counties->labeltype(FL_NORMAL_LABEL);
+            listbox_counties->labelfont(0);
+            listbox_counties->labelsize(14);
+            listbox_counties->labelcolor(FL_FOREGROUND_COLOR);
+            listbox_counties->callback((Fl_Callback*)cb_listbox_counties);
+            listbox_counties->align(Fl_Align(FL_ALIGN_LEFT));
+            listbox_counties->when(FL_WHEN_RELEASE);
+            o->clear(); o->add(states.counties(listbox_states->value()).c_str());
+            o->index(progdefaults.SQSOcounty);
+            o->labelsize(FL_NORMAL_SIZE);
+            listbox_counties->end();
+          } // Fl_ListBox* listbox_counties
+          { inp_QP_short_county = new Fl_Input2(487, 278, 60, 24);
+            inp_QP_short_county->tooltip(_("Abbreviation for county"));
+            inp_QP_short_county->box(FL_DOWN_BOX);
+            inp_QP_short_county->color(FL_BACKGROUND2_COLOR);
+            inp_QP_short_county->selection_color(FL_SELECTION_COLOR);
+            inp_QP_short_county->labeltype(FL_NORMAL_LABEL);
+            inp_QP_short_county->labelfont(0);
+            inp_QP_short_county->labelsize(14);
+            inp_QP_short_county->labelcolor(FL_FOREGROUND_COLOR);
+            inp_QP_short_county->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+            inp_QP_short_county->when(FL_WHEN_RELEASE);
+            inp_QP_short_county->value(states.cnty_short(listbox_states->value(),listbox_counties->value()).c_str());
+          } // Fl_Input2* inp_QP_short_county
           o->end();
         } // Fl_Group* o
-        { inpMyAntenna = new Fl_Input2(195, 233, 320, 24, _("Antenna:"));
-          inpMyAntenna->tooltip(_("Short description of antenna"));
-          inpMyAntenna->box(FL_DOWN_BOX);
-          inpMyAntenna->color(FL_BACKGROUND2_COLOR);
-          inpMyAntenna->selection_color(FL_SELECTION_COLOR);
-          inpMyAntenna->labeltype(FL_NORMAL_LABEL);
-          inpMyAntenna->labelfont(0);
-          inpMyAntenna->labelsize(14);
-          inpMyAntenna->labelcolor(FL_FOREGROUND_COLOR);
-          inpMyAntenna->callback((Fl_Callback*)cb_inpMyAntenna);
-          inpMyAntenna->align(Fl_Align(FL_ALIGN_LEFT));
-          inpMyAntenna->when(FL_WHEN_RELEASE);
-          inpMyAntenna->labelsize(FL_NORMAL_SIZE);
-        } // Fl_Input2* inpMyAntenna
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
-        tabUI->hide();
-        { tabsUI = new Fl_Tabs(0, 25, 600, 365);
+      { tabUI = new Fl_Group(0, 25, 604, 365, _("UI"));
+        { tabsUI = new Fl_Tabs(0, 25, 604, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
             tabBrowser->hide();
@@ -8555,16 +8629,16 @@ Fl_Double_Window* ConfigureDialog() {
               } // Fl_Group* grp_Log_QSO
               { grpRX_Text = new Fl_Group(0, 75, 600, 315, _("Rx Text"));
                 grpRX_Text->hide();
-                { Fl_Group* o = new Fl_Group(62, 96, 496, 113, _("Rx Text"));
+                { Fl_Group* o = new Fl_Group(2, 96, 596, 131, _("Rx Text"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(85, 155, 191, 20, _("Single-click to capture"));
+                { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(62, 159, 191, 20, _("Single-click to capture"));
                 btnRXClicks->tooltip(_("Enable for single click capure of text in Rx panel"));
                 btnRXClicks->down_box(FL_DOWN_BOX);
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
                 } // Fl_Check_Button* btnRXClicks
-                { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(287, 155, 254, 20, _("callsign tooltips in received text"));
+                { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(304, 159, 254, 20, _("callsign tooltips in received text"));
                 btnRXTooltips->tooltip(_("Popup info after a 2 second hover on a callsign"));
                 btnRXTooltips->down_box(FL_DOWN_BOX);
                 btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
@@ -8587,12 +8661,17 @@ ab and newline are automatically included."));
                 o->value(progdefaults.nonwordchars.c_str());
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Input2* inpNonword
-                { Fl_Check_Button* o = btnUSunits = new Fl_Check_Button(287, 180, 220, 20, _("US units of distance (QRB)"));
+                { Fl_Check_Button* o = btnUSunits = new Fl_Check_Button(304, 188, 220, 20, _("US units of distance (QRB)"));
                 btnUSunits->tooltip(_("Enable for single click capure of text in Rx panel"));
                 btnUSunits->down_box(FL_DOWN_BOX);
                 btnUSunits->callback((Fl_Callback*)cb_btnUSunits);
                 o->value(progdefaults.us_units);
                 } // Fl_Check_Button* btnUSunits
+                { Fl_Check_Button* o = btn_clear_fields = new Fl_Check_Button(62, 188, 198, 20, _("Clear log fields - new CALL"));
+                btn_clear_fields->down_box(FL_DOWN_BOX);
+                btn_clear_fields->callback((Fl_Callback*)cb_btn_clear_fields);
+                o->value(progdefaults.clear_fields);
+                } // Fl_Check_Button* btn_clear_fields
                 o->end();
                 } // Fl_Group* o
                 grpRX_Text->end();
@@ -8731,36 +8810,82 @@ ab and newline are automatically included."));
             } // Fl_Tabs* tabsLog
             tabLogServer->end();
           } // Fl_Group* tabLogServer
-          { tabContest = new Fl_Group(0, 50, 600, 340, _("Contest"));
-            tabContest->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 590, 89, _("Duplicate check, CALL plus"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Light_Button* o = btnDupCheckOn = new Fl_Light_Button(70, 81, 74, 20, _("On/Off"));
+          { tabLogContests = new Fl_Group(0, 50, 604, 340, _("Contests"));
+            { tabs_contests = new Fl_Tabs(0, 50, 604, 340);
+              { grpGeneral_contest = new Fl_Group(0, 75, 600, 315, _("General"));
+                { Fl_ListBox* o = listbox_contest = new Fl_ListBox(86, 84, 500, 24, _("Contest"));
+                listbox_contest->tooltip(_("Select Logging as QSO or Contest"));
+                listbox_contest->box(FL_DOWN_BOX);
+                listbox_contest->color(FL_BACKGROUND2_COLOR);
+                listbox_contest->selection_color(FL_BACKGROUND_COLOR);
+                listbox_contest->labeltype(FL_NORMAL_LABEL);
+                listbox_contest->labelfont(0);
+                listbox_contest->labelsize(14);
+                listbox_contest->labelcolor(FL_FOREGROUND_COLOR);
+                listbox_contest->callback((Fl_Callback*)cb_listbox_contest);
+                listbox_contest->align(Fl_Align(FL_ALIGN_LEFT));
+                listbox_contest->when(FL_WHEN_RELEASE);
+                o->add(contest_names().c_str());
+                o->index(progdefaults.logging);
+                listbox_contest->end();
+                } // Fl_ListBox* listbox_contest
+                { Fl_ListBox* o = listbox_QP_contests = new Fl_ListBox(166, 118, 420, 24, _("State QSO Party"));
+                listbox_QP_contests->box(FL_DOWN_BOX);
+                listbox_QP_contests->color(FL_BACKGROUND2_COLOR);
+                listbox_QP_contests->selection_color(FL_BACKGROUND_COLOR);
+                listbox_QP_contests->labeltype(FL_NORMAL_LABEL);
+                listbox_QP_contests->labelfont(0);
+                listbox_QP_contests->labelsize(14);
+                listbox_QP_contests->labelcolor(FL_FOREGROUND_COLOR);
+                listbox_QP_contests->callback((Fl_Callback*)cb_listbox_QP_contests);
+                listbox_QP_contests->align(Fl_Align(FL_ALIGN_LEFT));
+                listbox_QP_contests->when(FL_WHEN_RELEASE);
+                o->labelsize(FL_NORMAL_SIZE);
+                o->add(QSOparties.names().c_str());
+                o->index(progdefaults.SQSOcontest);
+                listbox_QP_contests->end();
+                } // Fl_ListBox* listbox_QP_contests
+                { Fl_Input2* o = inp_contest_notes = new Fl_Input2(166, 153, 420, 24, _("Text capture order"));
+                inp_contest_notes->tooltip(_("Context Notes"));
+                inp_contest_notes->box(FL_DOWN_BOX);
+                inp_contest_notes->color(FL_BACKGROUND2_COLOR);
+                inp_contest_notes->selection_color(FL_SELECTION_COLOR);
+                inp_contest_notes->labeltype(FL_NORMAL_LABEL);
+                inp_contest_notes->labelfont(0);
+                inp_contest_notes->labelsize(14);
+                inp_contest_notes->labelcolor(FL_FOREGROUND_COLOR);
+                inp_contest_notes->align(Fl_Align(FL_ALIGN_LEFT));
+                inp_contest_notes->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.CONTESTnotes.c_str());
+                } // Fl_Input2* inp_contest_notes
+                { Fl_Group* o = new Fl_Group(3, 192, 590, 83, _("Duplicate check, CALL plus"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Light_Button* o = btnDupCheckOn = new Fl_Light_Button(68, 217, 74, 20, _("On/Off"));
                 btnDupCheckOn->tooltip(_("Check for duplicates"));
                 btnDupCheckOn->selection_color((Fl_Color)2);
                 btnDupCheckOn->callback((Fl_Callback*)cb_btnDupCheckOn);
                 o->value(progdefaults.EnableDupCheck);
-              } // Fl_Light_Button* btnDupCheckOn
-              { Fl_Check_Button* o = btnDupBand = new Fl_Check_Button(175, 81, 70, 20, _("Band"));
+                } // Fl_Light_Button* btnDupCheckOn
+                { Fl_Check_Button* o = btnDupBand = new Fl_Check_Button(173, 217, 70, 20, _("Band"));
                 btnDupBand->tooltip(_("Bands must match"));
                 btnDupBand->down_box(FL_DOWN_BOX);
                 btnDupBand->callback((Fl_Callback*)cb_btnDupBand);
                 o->value(progdefaults.dupband);
-              } // Fl_Check_Button* btnDupBand
-              { Fl_Check_Button* o = btnDupMode = new Fl_Check_Button(295, 81, 70, 20, _("Mode"));
+                } // Fl_Check_Button* btnDupBand
+                { Fl_Check_Button* o = btnDupMode = new Fl_Check_Button(293, 217, 70, 20, _("Mode"));
                 btnDupMode->tooltip(_("Mode must match"));
                 btnDupMode->down_box(FL_DOWN_BOX);
                 btnDupMode->callback((Fl_Callback*)cb_btnDupMode);
                 o->value(progdefaults.dupmode);
-              } // Fl_Check_Button* btnDupMode
-              { Fl_Check_Button* o = btnDupTimeSpan = new Fl_Check_Button(410, 81, 129, 20, _("Time span over"));
+                } // Fl_Check_Button* btnDupMode
+                { Fl_Check_Button* o = btnDupTimeSpan = new Fl_Check_Button(408, 217, 129, 20, _("Time span over"));
                 btnDupTimeSpan->tooltip(_("QSO must not occur within a time period of"));
                 btnDupTimeSpan->down_box(FL_DOWN_BOX);
                 btnDupTimeSpan->callback((Fl_Callback*)cb_btnDupTimeSpan);
                 o->value(progdefaults.duptimespan);
-              } // Fl_Check_Button* btnDupTimeSpan
-              { Fl_Button* o = btnDupColor = new Fl_Button(70, 108, 90, 24, _("Dup Color"));
+                } // Fl_Check_Button* btnDupTimeSpan
+                { Fl_Button* o = btnDupColor = new Fl_Button(68, 244, 90, 24, _("Dup Color"));
                 btnDupColor->tooltip(_("Left click to select dup color"));
                 btnDupColor->box(FL_DOWN_BOX);
                 btnDupColor->down_box(FL_DOWN_BOX);
@@ -8768,20 +8893,20 @@ ab and newline are automatically included."));
                 btnDupColor->selection_color(FL_BACKGROUND2_COLOR);
                 btnDupColor->callback((Fl_Callback*)cb_btnDupColor);
                 o->color(fl_rgb_color(progdefaults.dup_color.R, progdefaults.dup_color.G, progdefaults.dup_color.B));
-              } // Fl_Button* btnDupColor
-              { Fl_Check_Button* o = btnDupXchg1 = new Fl_Check_Button(175, 110, 105, 20, _("Exchange In"));
+                } // Fl_Button* btnDupColor
+                { Fl_Check_Button* o = btnDupXchg1 = new Fl_Check_Button(173, 246, 105, 20, _("Exchange In"));
                 btnDupXchg1->tooltip(_("free form 1 must match"));
                 btnDupXchg1->down_box(FL_DOWN_BOX);
                 btnDupXchg1->callback((Fl_Callback*)cb_btnDupXchg1);
                 o->value(progdefaults.dupxchg1);
-              } // Fl_Check_Button* btnDupXchg1
-              { Fl_Check_Button* o = btnDupState = new Fl_Check_Button(295, 110, 70, 20, _("State"));
+                } // Fl_Check_Button* btnDupXchg1
+                { Fl_Check_Button* o = btnDupState = new Fl_Check_Button(293, 246, 70, 20, _("State"));
                 btnDupState->tooltip(_("State must match"));
                 btnDupState->down_box(FL_DOWN_BOX);
                 btnDupState->callback((Fl_Callback*)cb_btnDupState);
                 o->value(progdefaults.dupstate);
-              } // Fl_Check_Button* btnDupState
-              { Fl_Value_Input2* o = nbrTimeSpan = new Fl_Value_Input2(410, 108, 53, 24, _("minutes"));
+                } // Fl_Check_Button* btnDupState
+                { Fl_Value_Input2* o = nbrTimeSpan = new Fl_Value_Input2(408, 244, 53, 24, _("minutes"));
                 nbrTimeSpan->tooltip(_("Enter time span in minutes"));
                 nbrTimeSpan->box(FL_DOWN_BOX);
                 nbrTimeSpan->color(FL_BACKGROUND2_COLOR);
@@ -8797,13 +8922,13 @@ ab and newline are automatically included."));
                 nbrTimeSpan->align(Fl_Align(FL_ALIGN_RIGHT));
                 nbrTimeSpan->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.timespan);
-              } // Fl_Value_Input2* nbrTimeSpan
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 150, 590, 113, _("Contest Exchanges"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Input2* o = inpSend1 = new Fl_Input2(91, 175, 140, 24, _("Send Xchg"));
+                } // Fl_Value_Input2* nbrTimeSpan
+                o->end();
+                } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(3, 276, 590, 100, _("Contest Exchange / Serial #"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Input2* o = inpSend1 = new Fl_Input2(68, 300, 200, 24, _("Send"));
                 inpSend1->tooltip(_("free form exchange"));
                 inpSend1->box(FL_DOWN_BOX);
                 inpSend1->color(FL_BACKGROUND2_COLOR);
@@ -8817,29 +8942,22 @@ ab and newline are automatically included."));
                 inpSend1->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.myXchg.c_str());
                 inpSend1->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Input2* inpSend1
-              { Fl_Check_Button* o = btn599 = new Fl_Check_Button(242, 177, 130, 20, _("RST always 599/59"));
+                } // Fl_Input2* inpSend1
+                { Fl_Check_Button* o = btn599 = new Fl_Check_Button(283, 302, 130, 20, _("RST always 599/59"));
                 btn599->tooltip(_("Force RST in/out to 599/59"));
                 btn599->down_box(FL_DOWN_BOX);
                 btn599->callback((Fl_Callback*)cb_btn599);
                 o->value(progdefaults.fixed599);
-              } // Fl_Check_Button* btn599
-              { Fl_Check_Button* o = btnCutNbrs = new Fl_Check_Button(445, 177, 139, 20, _("Send CW cut #\'s"));
+                } // Fl_Check_Button* btn599
+                { Fl_Check_Button* o = btnCutNbrs = new Fl_Check_Button(443, 302, 139, 20, _("Send CW cut #\'s"));
                 btnCutNbrs->tooltip(_("0 = T; 9 = N"));
                 btnCutNbrs->down_box(FL_DOWN_BOX);
                 btnCutNbrs->callback((Fl_Callback*)cb_btnCutNbrs);
                 o->value(progdefaults.cutnbrs);
-              } // Fl_Check_Button* btnCutNbrs
-              { Fl_Group* o = new Fl_Group(10, 204, 580, 55, _("Serial number"));
+                } // Fl_Check_Button* btnCutNbrs
+                { Fl_Group* o = new Fl_Group(10, 329, 576, 42);
                 o->box(FL_ENGRAVED_FRAME);
-                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { btnUseLeadingZeros = new Fl_Check_Button(80, 230, 154, 20, _("Use leading zeros"));
-                btnUseLeadingZeros->tooltip(_("Insert leading zeros into Xmtd serial number"));
-                btnUseLeadingZeros->down_box(FL_DOWN_BOX);
-                btnUseLeadingZeros->value(1);
-                btnUseLeadingZeros->callback((Fl_Callback*)cb_btnUseLeadingZeros);
-                } // Fl_Check_Button* btnUseLeadingZeros
-                { Fl_Value_Input2* o = nbrContestStart = new Fl_Value_Input2(275, 230, 45, 20, _("Start"));
+                { Fl_Value_Input2* o = nbrContestStart = new Fl_Value_Input2(97, 338, 45, 24, _("Start Nbr"));
                 nbrContestStart->tooltip(_("Starting number"));
                 nbrContestStart->box(FL_DOWN_BOX);
                 nbrContestStart->color(FL_BACKGROUND2_COLOR);
@@ -8851,11 +8969,11 @@ ab and newline are automatically included."));
                 nbrContestStart->maximum(10000);
                 nbrContestStart->step(1);
                 nbrContestStart->callback((Fl_Callback*)cb_nbrContestStart);
-                nbrContestStart->align(Fl_Align(FL_ALIGN_TOP));
+                nbrContestStart->align(Fl_Align(FL_ALIGN_LEFT));
                 nbrContestStart->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.ContestStart);
                 } // Fl_Value_Input2* nbrContestStart
-                { nbrContestDigits = new Fl_Value_Input2(357, 230, 45, 20, _("Digits"));
+                { nbrContestDigits = new Fl_Value_Input2(219, 338, 46, 24, _("Digits"));
                 nbrContestDigits->tooltip(_("Number of digits in serial number"));
                 nbrContestDigits->box(FL_DOWN_BOX);
                 nbrContestDigits->color(FL_BACKGROUND2_COLOR);
@@ -8869,21 +8987,31 @@ ab and newline are automatically included."));
                 nbrContestDigits->step(1);
                 nbrContestDigits->value(3);
                 nbrContestDigits->callback((Fl_Callback*)cb_nbrContestDigits);
-                nbrContestDigits->align(Fl_Align(FL_ALIGN_TOP));
+                nbrContestDigits->align(Fl_Align(FL_ALIGN_LEFT));
                 nbrContestDigits->when(FL_WHEN_CHANGED);
                 } // Fl_Value_Input2* nbrContestDigits
-                { btnResetSerNbr = new Fl_Button(449, 230, 70, 20, _("Reset"));
+                { btnUseLeadingZeros = new Fl_Check_Button(284, 340, 157, 20, _("Use leading zeros"));
+                btnUseLeadingZeros->tooltip(_("Insert leading zeros into Xmtd serial number"));
+                btnUseLeadingZeros->down_box(FL_DOWN_BOX);
+                btnUseLeadingZeros->value(1);
+                btnUseLeadingZeros->callback((Fl_Callback*)cb_btnUseLeadingZeros);
+                } // Fl_Check_Button* btnUseLeadingZeros
+                { btnResetSerNbr = new Fl_Button(481, 338, 71, 24, _("Reset"));
                 btnResetSerNbr->tooltip(_("Initialize the QSO logging fields"));
                 btnResetSerNbr->callback((Fl_Callback*)cb_btnResetSerNbr);
                 } // Fl_Button* btnResetSerNbr
                 o->end();
-              } // Fl_Group* o
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 265, 590, 40, _("Field Day"));
-              o->box(FL_ENGRAVED_BOX);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Input2* o = inp_my_FD_call = new Fl_Input2(215, 273, 80, 24, _("FD Oper\' Call"));
+                } // Fl_Group* o
+                o->end();
+                } // Fl_Group* o
+                grpGeneral_contest->end();
+              } // Fl_Group* grpGeneral_contest
+              { grpFD_contest = new Fl_Group(0, 75, 600, 315, _("Field Day"));
+                grpFD_contest->hide();
+                { Fl_Group* o = new Fl_Group(5, 88, 590, 53, _("Field Day"));
+                o->box(FL_ENGRAVED_BOX);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Input2* o = inp_my_FD_call = new Fl_Input2(176, 104, 80, 24, _("Operator Call"));
                 inp_my_FD_call->tooltip(_("Field Day Callsign\nMay be same as OP callsign"));
                 inp_my_FD_call->box(FL_DOWN_BOX);
                 inp_my_FD_call->color(FL_BACKGROUND2_COLOR);
@@ -8897,8 +9025,8 @@ ab and newline are automatically included."));
                 inp_my_FD_call->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.fd_op_call.c_str());
                 inpSend1->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Input2* inp_my_FD_call
-              { Fl_Input2* o = inp_my_FD_section = new Fl_Input2(463, 273, 45, 22, _("Section"));
+                } // Fl_Input2* inp_my_FD_call
+                { Fl_Input2* o = inp_my_FD_section = new Fl_Input2(484, 104, 45, 24, _("My Section"));
                 inp_my_FD_section->tooltip(_("Field Day Section"));
                 inp_my_FD_section->box(FL_DOWN_BOX);
                 inp_my_FD_section->color(FL_BACKGROUND2_COLOR);
@@ -8912,8 +9040,8 @@ ab and newline are automatically included."));
                 inp_my_FD_section->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.my_FD_section.c_str());
                 inpSend1->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Input2* inp_my_FD_section
-              { Fl_Input2* o = inp_my_FD_class = new Fl_Input2(345, 273, 50, 22, _("Class"));
+                } // Fl_Input2* inp_my_FD_section
+                { Fl_Input2* o = inp_my_FD_class = new Fl_Input2(337, 104, 50, 24, _("My Class"));
                 inp_my_FD_class->tooltip(_("Field Day Class"));
                 inp_my_FD_class->box(FL_DOWN_BOX);
                 inp_my_FD_class->color(FL_BACKGROUND2_COLOR);
@@ -8927,57 +9055,74 @@ ab and newline are automatically included."));
                 inp_my_FD_class->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.my_FD_class.c_str());
                 inpSend1->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Input2* inp_my_FD_class
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 307, 590, 78, _("Contest Logging"));
-              o->box(FL_ENGRAVED_BOX);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_generic_contest = new Fl_Check_Button(30, 329, 70, 20, _("Generic"));
-                btn_generic_contest->tooltip(_("Use generic contest fields"));
-                btn_generic_contest->down_box(FL_DOWN_BOX);
-                btn_generic_contest->callback((Fl_Callback*)cb_btn_generic_contest);
-                o->value(progdefaults.logging == LOG_CONT);
-              } // Fl_Check_Button* btn_generic_contest
-              { Fl_Check_Button* o = btn_fd_contest = new Fl_Check_Button(126, 329, 70, 20, _("Field Day"));
-                btn_fd_contest->tooltip(_("Use Field Day Contest Fields"));
-                btn_fd_contest->down_box(FL_DOWN_BOX);
-                btn_fd_contest->callback((Fl_Callback*)cb_btn_fd_contest);
-                o->value(progdefaults.logging == LOG_FD);
-              } // Fl_Check_Button* btn_fd_contest
-              { Fl_Check_Button* o = btn_cqww_contest = new Fl_Check_Button(237, 329, 70, 20, _("CQWW RTTY"));
-                btn_cqww_contest->tooltip(_("Use CQWW Fields"));
-                btn_cqww_contest->down_box(FL_DOWN_BOX);
-                btn_cqww_contest->callback((Fl_Callback*)cb_btn_cqww_contest);
-                o->value(progdefaults.logging == LOG_CQWW);
-              } // Fl_Check_Button* btn_cqww_contest
-              { Fl_Check_Button* o = btn_bart_contest = new Fl_Check_Button(364, 329, 70, 20, _("BARTG RTTY"));
-                btn_bart_contest->tooltip(_("Use generic contest fields"));
-                btn_bart_contest->down_box(FL_DOWN_BOX);
-                btn_bart_contest->callback((Fl_Callback*)cb_btn_bart_contest);
-                o->value(progdefaults.logging == LOG_BART);
-              } // Fl_Check_Button* btn_bart_contest
-              { Fl_Check_Button* o = btn_cwss_contest = new Fl_Check_Button(495, 329, 70, 20, _("CW SS"));
-                btn_cwss_contest->tooltip(_("CW Sweepstakes"));
-                btn_cwss_contest->down_box(FL_DOWN_BOX);
-                btn_cwss_contest->callback((Fl_Callback*)cb_btn_cwss_contest);
-                o->value(progdefaults.logging == LOG_CWSS);
-              } // Fl_Check_Button* btn_cwss_contest
-              { Fl_Check_Button* o = btnRXClicks2 = new Fl_Check_Button(30, 356, 243, 20, _("Single-click to capture Rx word"));
-                btnRXClicks2->tooltip(_("Enable for single click capure of text in Rx panel"));
-                btnRXClicks2->down_box(FL_DOWN_BOX);
-                btnRXClicks2->callback((Fl_Callback*)cb_btnRXClicks2);
-                o->value(progdefaults.rxtext_clicks_qso_data);
-              } // Fl_Check_Button* btnRXClicks2
-              { Fl_Check_Button* o = btn_clear_fields = new Fl_Check_Button(320, 358, 238, 15, _("Clear fields with CALL capture"));
-                btn_clear_fields->down_box(FL_DOWN_BOX);
-                btn_clear_fields->callback((Fl_Callback*)cb_btn_clear_fields);
-                o->value(progdefaults.clear_fields);
-              } // Fl_Check_Button* btn_clear_fields
-              o->end();
-            } // Fl_Group* o
-            tabContest->end();
-          } // Fl_Group* tabContest
+                } // Fl_Input2* inp_my_FD_class
+                o->end();
+                } // Fl_Group* o
+                grpFD_contest->end();
+              } // Fl_Group* grpFD_contest
+              { grpJOTA_contest = new Fl_Group(0, 75, 600, 315, _("JOTA/School"));
+                grpJOTA_contest->hide();
+                { Fl_Group* o = new Fl_Group(10, 179, 580, 53, _("School Round Up"));
+                o->box(FL_ENGRAVED_BOX);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Input2* o = inp_my_SCR_class = new Fl_Input2(196, 201, 69, 24, _("My Class"));
+                inp_my_SCR_class->tooltip(_("School Round Up - allowable I, H, O - see rules"));
+                inp_my_SCR_class->box(FL_DOWN_BOX);
+                inp_my_SCR_class->color(FL_BACKGROUND2_COLOR);
+                inp_my_SCR_class->selection_color(FL_SELECTION_COLOR);
+                inp_my_SCR_class->labeltype(FL_NORMAL_LABEL);
+                inp_my_SCR_class->labelfont(0);
+                inp_my_SCR_class->labelsize(14);
+                inp_my_SCR_class->labelcolor(FL_FOREGROUND_COLOR);
+                inp_my_SCR_class->callback((Fl_Callback*)cb_inp_my_SCR_class);
+                inp_my_SCR_class->align(Fl_Align(FL_ALIGN_LEFT));
+                inp_my_SCR_class->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.my_SCR_class.c_str());
+                inpSend1->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Input2* inp_my_SCR_class
+                o->end();
+                } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(10, 86, 580, 89, _("Jamboree OTA"));
+                o->box(FL_ENGRAVED_BOX);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Input2* o = inp_my_JOTA_troop = new Fl_Input2(195, 109, 200, 24, _("My Troop"));
+                inp_my_JOTA_troop->tooltip(_("My JOTA Troop"));
+                inp_my_JOTA_troop->box(FL_DOWN_BOX);
+                inp_my_JOTA_troop->color(FL_BACKGROUND2_COLOR);
+                inp_my_JOTA_troop->selection_color(FL_SELECTION_COLOR);
+                inp_my_JOTA_troop->labeltype(FL_NORMAL_LABEL);
+                inp_my_JOTA_troop->labelfont(0);
+                inp_my_JOTA_troop->labelsize(14);
+                inp_my_JOTA_troop->labelcolor(FL_FOREGROUND_COLOR);
+                inp_my_JOTA_troop->callback((Fl_Callback*)cb_inp_my_JOTA_troop);
+                inp_my_JOTA_troop->align(Fl_Align(FL_ALIGN_LEFT));
+                inp_my_JOTA_troop->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.my_JOTA_troop.c_str());
+                inpSend1->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Input2* inp_my_JOTA_troop
+                { Fl_Input2* o = inp_my_JOTA_scout = new Fl_Input2(195, 140, 200, 24, _("Scout Op\'"));
+                inp_my_JOTA_scout->tooltip(_("Scout Operator Name"));
+                inp_my_JOTA_scout->box(FL_DOWN_BOX);
+                inp_my_JOTA_scout->color(FL_BACKGROUND2_COLOR);
+                inp_my_JOTA_scout->selection_color(FL_SELECTION_COLOR);
+                inp_my_JOTA_scout->labeltype(FL_NORMAL_LABEL);
+                inp_my_JOTA_scout->labelfont(0);
+                inp_my_JOTA_scout->labelsize(14);
+                inp_my_JOTA_scout->labelcolor(FL_FOREGROUND_COLOR);
+                inp_my_JOTA_scout->callback((Fl_Callback*)cb_inp_my_JOTA_scout);
+                inp_my_JOTA_scout->align(Fl_Align(FL_ALIGN_LEFT));
+                inp_my_JOTA_scout->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.my_JOTA_scout.c_str());
+                inpSend1->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Input2* inp_my_JOTA_scout
+                o->end();
+                } // Fl_Group* o
+                grpJOTA_contest->end();
+              } // Fl_Group* grpJOTA_contest
+              tabs_contests->end();
+            } // Fl_Tabs* tabs_contests
+            tabLogContests->end();
+          } // Fl_Group* tabLogContests
           { tabMBars = new Fl_Group(0, 50, 600, 340, _("Macros"));
             tabMBars->hide();
             { Fl_Group* o = new Fl_Group(5, 240, 590, 35);
@@ -9201,6 +9346,7 @@ ab and newline are automatically included."));
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 340, _("Clrs/Fnts"));
+            tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 50, 600, 340);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Rx/Tx"));
                 o->hide();
@@ -10113,13 +10259,13 @@ i on a\ntouch screen device such as a tablet."));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(-5, 25, 610, 365, _("Modems"));
-        { tabsModems = new Fl_Tabs(-5, 25, 610, 365);
+      { tabModems = new Fl_Group(0, 25, 600, 365, _("Modems"));
+        tabModems->hide();
+        { tabsModems = new Fl_Tabs(0, 25, 600, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
-          { tabCW = new Fl_Group(0, 50, 605, 340, _("CW"));
-            tabCW->hide();
-            { tabsCW = new Fl_Tabs(0, 50, 605, 340);
+          { tabCW = new Fl_Group(0, 50, 600, 340, _("CW"));
+            { tabsCW = new Fl_Tabs(0, 50, 600, 340);
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
@@ -11715,6 +11861,7 @@ ded Morse characters."));
             tabIFKP->end();
           } // Fl_Group* tabIFKP
           { tabMT63 = new Fl_Group(0, 50, 600, 340, _("MT-63"));
+            tabMT63->hide();
             { Fl_Group* o = new Fl_Group(55, 73, 490, 84);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11783,7 +11930,6 @@ ded Morse characters."));
             tabMT63->end();
           } // Fl_Group* tabMT63
           { tabOlivia = new Fl_Group(0, 50, 600, 340, _("Oliv"));
-            tabOlivia->hide();
             { Fl_Group* o = new Fl_Group(55, 76, 490, 280);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_ListBox* o = i_listbox_olivia_bandwidth = new Fl_ListBox(110, 96, 85, 22, _("Bandwidth"));
@@ -12132,9 +12278,9 @@ ded Morse characters."));
             } // Fl_Tabs* tabsPSK
             tabPSK->end();
           } // Fl_Group* tabPSK
-          { tabRTTY = new Fl_Group(-5, 50, 605, 340, _("TTY"));
+          { tabRTTY = new Fl_Group(0, 50, 600, 340, _("TTY"));
             tabRTTY->hide();
-            { tabsRTTY = new Fl_Tabs(-5, 50, 605, 340);
+            { tabsRTTY = new Fl_Tabs(0, 50, 600, 340);
               tabsRTTY->selection_color(FL_LIGHT1);
               { tab_Rx_TTY = new Fl_Group(0, 75, 600, 315, _("Rx"));
                 tab_Rx_TTY->align(Fl_Align(FL_ALIGN_TOP_LEFT));

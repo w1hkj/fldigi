@@ -37,6 +37,8 @@
 #include "FreqControl.h"
 #include "gettext.h"
 
+#include "configuration.h"
+
 const char *cFreqControl::Label[10] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
@@ -79,7 +81,7 @@ void cbSelectDigit (Fl_Widget *btn, void * nbr)
 
 cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 			  Fl_Group(x,y,w,h,"") {
-	font_number = FL_HELVETICA;
+	font_number = progdefaults.FreqControlFontnbr;
 	ONCOLOR = FL_YELLOW;
 	OFFCOLOR = FL_BLACK;
 	SELCOLOR = fl_rgb_color(100, 100, 100);
@@ -93,13 +95,13 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 	if (nD > MAX_DIGITS) nD = MAX_DIGITS;
 	if (nD < MIN_DIGITS) nD = MIN_DIGITS;
 
-	bdr = 2;
+	bdr = 1;
 	fcHeight = h - 2 * bdr;
 
 	int fw, fh, ht = fcHeight;
 
 	fl_font(font_number, ++ht);
-	fh = fl_height() + 1;
+	fh = fl_height();// + 1;
 	while (fh > fcHeight) {
 		ht--;
 		fl_font(font_number, ht);
@@ -107,12 +109,12 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 	}
 
 	fl_font(font_number, ht);
-	fw = fl_width("0") + 4;
+	fw = fl_width("9") + 2;
 	pw = fw / 2;
 	while( (nD * fw + pw) >= (W - 2*bdr)) {
 		ht--;
 		fl_font(font_number, ht);
-		fw = fl_width("0") + 4;
+		fw = fl_width("9") + 2;
 		pw = fw / 2;
 	}
 	fh = fl_height();
@@ -587,8 +589,10 @@ void cFreqControl::set_ndigits(int nbr)
 
 	int fw, fh, ht = h() - 2*bdr;
 
+	font_number = progdefaults.FreqControlFontnbr;
+
 	fl_font(font_number, ht);
-	fh = fl_height() + 1;
+	fh = fl_height();// + 1;
 	while (fh > fcHeight) {
 		ht--;
 		fl_font(font_number, ht);
@@ -596,12 +600,12 @@ void cFreqControl::set_ndigits(int nbr)
 	}
 
 	fl_font(font_number, ht);
-	fw = fl_width("0") + 4;
+	fw = fl_width("9") + 2;
 	pw = fw / 2;
 	while( (nD * fw + pw) >= (W - 2*bdr)) {
 		ht--;
 		fl_font(font_number, ht);
-		fw = fl_width("0") + 4;
+		fw = fl_width("9") + 2;
 		pw = fw / 2;
 	}
 	fh = fl_height();
