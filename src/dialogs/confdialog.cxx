@@ -3308,12 +3308,13 @@ Fl_ComboBox *select_WK_CommPort=(Fl_ComboBox *)0;
 
 static void cb_select_WK_CommPort(Fl_ComboBox* o, void*) {
   progStatus.WK_serial_port_name = o->value();
+select_WKFSK_CommPort->value(progStatus.WK_serial_port_name.c_str());
 }
 
-Fl_Light_Button *btn_WK_connect=(Fl_Light_Button *)0;
+Fl_Light_Button *btn_WKCW_connect=(Fl_Light_Button *)0;
 
-static void cb_btn_WK_connect(Fl_Light_Button* o, void*) {
-  WK_connect(o->value());
+static void cb_btn_WKCW_connect(Fl_Light_Button* o, void*) {
+  WKCW_connect(o->value());
 }
 
 Fl_Check_Button *btn_WK_swap=(Fl_Check_Button *)0;
@@ -4814,6 +4815,91 @@ Fl_Check_Button *btnSynopInterleaved=(Fl_Check_Button *)0;
 static void cb_btnSynopInterleaved(Fl_Check_Button* o, void*) {
   progdefaults.SynopInterleaved=o->value();
 progdefaults.changed = true;
+}
+
+Fl_Group *tab_WKFSK=(Fl_Group *)0;
+
+Fl_ComboBox *select_WKFSK_CommPort=(Fl_ComboBox *)0;
+
+static void cb_select_WKFSK_CommPort(Fl_ComboBox* o, void*) {
+  progStatus.WK_serial_port_name = o->value();
+select_WK_CommPort->value(progStatus.WK_serial_port_name.c_str());
+}
+
+Fl_Light_Button *btn_WKFSK_connect=(Fl_Light_Button *)0;
+
+static void cb_btn_WKFSK_connect(Fl_Light_Button* o, void*) {
+  WKFSK_connect(o->value());
+}
+
+Fl_ListBox *sel_WKFSK_baud=(Fl_ListBox *)0;
+
+static void cb_sel_WKFSK_baud(Fl_ListBox* o, void*) {
+  progStatus.WKFSK_baud = o->index();
+WKFSK_init();
+}
+
+Fl_ListBox *sel_WKFSK_stopbits=(Fl_ListBox *)0;
+
+static void cb_sel_WKFSK_stopbits(Fl_ListBox* o, void*) {
+  progStatus.WKFSK_stopbits = o->index();
+WKFSK_init();
+}
+
+Fl_ListBox *sel_WKFSK_ptt=(Fl_ListBox *)0;
+
+static void cb_sel_WKFSK_ptt(Fl_ListBox* o, void*) {
+  progStatus.WKFSK_ptt = o->index();
+WKFSK_init();
+}
+
+Fl_ListBox *sel_WKFSK_polarity=(Fl_ListBox *)0;
+
+static void cb_sel_WKFSK_polarity(Fl_ListBox* o, void*) {
+  progStatus.WKFSK_polarity = o->index();
+WKFSK_init();
+}
+
+Fl_ListBox *sel_WKFSK_sidetone=(Fl_ListBox *)0;
+
+static void cb_sel_WKFSK_sidetone(Fl_ListBox* o, void*) {
+  progStatus.WKFSK_sidetone = o->index();
+WKFSK_init();
+}
+
+Fl_ListBox *sel_WKFSK_auto_crlf=(Fl_ListBox *)0;
+
+static void cb_sel_WKFSK_auto_crlf(Fl_ListBox* o, void*) {
+  progStatus.WKFSK_auto_crlf = o->index();
+WKFSK_init();
+}
+
+Fl_ListBox *sel_WKFSK_diddle=(Fl_ListBox *)0;
+
+static void cb_sel_WKFSK_diddle(Fl_ListBox* o, void*) {
+  progStatus.WKFSK_diddle = o->index();
+WKFSK_init();
+}
+
+Fl_ListBox *sel_WKFSK_diddle_char=(Fl_ListBox *)0;
+
+static void cb_sel_WKFSK_diddle_char(Fl_ListBox* o, void*) {
+  progStatus.WKFSK_diddle_char = o->index();
+WKFSK_init();
+}
+
+Fl_ListBox *sel_WKFSK_usos=(Fl_ListBox *)0;
+
+static void cb_sel_WKFSK_usos(Fl_ListBox* o, void*) {
+  progStatus.WKFSK_usos = o->index();
+WKFSK_init();
+}
+
+Fl_ListBox *sel_WKFSK_monitor=(Fl_ListBox *)0;
+
+static void cb_sel_WKFSK_monitor(Fl_ListBox* o, void*) {
+  progStatus.WKFSK_monitor = o->index();
+WKFSK_init();
 }
 
 Fl_Group *tabTHOR=(Fl_Group *)0;
@@ -8086,7 +8172,7 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(0, 0, 600, 390);
+    { tabsConfigure = new Fl_Tabs(0, 0, 609, 390);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
@@ -10259,12 +10345,12 @@ i on a\ntouch screen device such as a tablet."));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(0, 25, 600, 365, _("Modems"));
-        tabModems->hide();
-        { tabsModems = new Fl_Tabs(0, 25, 600, 365);
+      { tabModems = new Fl_Group(0, 25, 609, 365, _("Modems"));
+        { tabsModems = new Fl_Tabs(0, 25, 609, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 600, 340, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 600, 340);
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
@@ -10900,7 +10986,7 @@ i on a\ntouch screen device such as a tablet."));
               { tabsCW_winkeyer = new Fl_Group(0, 75, 600, 315, _("WinKeyer"));
                 tabsCW_winkeyer->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 tabsCW_winkeyer->hide();
-                { select_WK_CommPort = new Fl_ComboBox(69, 85, 405, 23, _("Ser. Port"));
+                { Fl_ComboBox* o = select_WK_CommPort = new Fl_ComboBox(69, 85, 405, 23, _("Ser. Port"));
                 select_WK_CommPort->tooltip(_("Xcvr serial port"));
                 select_WK_CommPort->box(FL_DOWN_BOX);
                 select_WK_CommPort->color((Fl_Color)55);
@@ -10912,13 +10998,14 @@ i on a\ntouch screen device such as a tablet."));
                 select_WK_CommPort->callback((Fl_Callback*)cb_select_WK_CommPort);
                 select_WK_CommPort->align(Fl_Align(FL_ALIGN_LEFT));
                 select_WK_CommPort->when(FL_WHEN_RELEASE);
+                o->value(progStatus.WK_serial_port_name.c_str());
                 select_WK_CommPort->end();
                 } // Fl_ComboBox* select_WK_CommPort
-                { Fl_Light_Button* o = btn_WK_connect = new Fl_Light_Button(500, 85, 80, 23, _("Connect"));
-                btn_WK_connect->tooltip(_("Connect / Disconnect from WinKeyer"));
-                btn_WK_connect->callback((Fl_Callback*)cb_btn_WK_connect);
+                { Fl_Light_Button* o = btn_WKCW_connect = new Fl_Light_Button(500, 85, 80, 23, _("Connect"));
+                btn_WKCW_connect->tooltip(_("Connect / Disconnect from WinKeyer"));
+                btn_WKCW_connect->callback((Fl_Callback*)cb_btn_WKCW_connect);
                 o->value(progStatus.WK_online);
-                } // Fl_Light_Button* btn_WK_connect
+                } // Fl_Light_Button* btn_WKCW_connect
                 { Fl_Group* o = new Fl_Group(10, 191, 134, 192, _("ModeReg"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
@@ -11930,6 +12017,7 @@ ded Morse characters."));
             tabMT63->end();
           } // Fl_Group* tabMT63
           { tabOlivia = new Fl_Group(0, 50, 600, 340, _("Oliv"));
+            tabOlivia->hide();
             { Fl_Group* o = new Fl_Group(55, 76, 490, 280);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_ListBox* o = i_listbox_olivia_bandwidth = new Fl_ListBox(110, 96, 85, 22, _("Bandwidth"));
@@ -12278,12 +12366,12 @@ ded Morse characters."));
             } // Fl_Tabs* tabsPSK
             tabPSK->end();
           } // Fl_Group* tabPSK
-          { tabRTTY = new Fl_Group(0, 50, 600, 340, _("TTY"));
-            tabRTTY->hide();
-            { tabsRTTY = new Fl_Tabs(0, 50, 600, 340);
+          { tabRTTY = new Fl_Group(0, 50, 609, 340, _("TTY"));
+            { tabsRTTY = new Fl_Tabs(0, 50, 609, 340);
               tabsRTTY->selection_color(FL_LIGHT1);
               { tab_Rx_TTY = new Fl_Group(0, 75, 600, 315, _("Rx"));
                 tab_Rx_TTY->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tab_Rx_TTY->hide();
                 { Fl_Group* o = new Fl_Group(32, 101, 535, 69, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -12901,6 +12989,200 @@ le Earth)"));
                 } // Fl_Check_Button* btnSynopInterleaved
                 tab_Synop->end();
               } // Fl_Group* tab_Synop
+              { tab_WKFSK = new Fl_Group(0, 75, 609, 315, _("Winkeyer 3"));
+                tab_WKFSK->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                { Fl_Group* o = new Fl_Group(5, 82, 590, 55, _("Serial Interface"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_ComboBox* o = select_WKFSK_CommPort = new Fl_ComboBox(73, 105, 405, 23, _("Port"));
+                select_WKFSK_CommPort->tooltip(_("Xcvr serial port"));
+                select_WKFSK_CommPort->box(FL_DOWN_BOX);
+                select_WKFSK_CommPort->color((Fl_Color)55);
+                select_WKFSK_CommPort->selection_color(FL_BACKGROUND_COLOR);
+                select_WKFSK_CommPort->labeltype(FL_NORMAL_LABEL);
+                select_WKFSK_CommPort->labelfont(0);
+                select_WKFSK_CommPort->labelsize(14);
+                select_WKFSK_CommPort->labelcolor(FL_FOREGROUND_COLOR);
+                select_WKFSK_CommPort->callback((Fl_Callback*)cb_select_WKFSK_CommPort);
+                select_WKFSK_CommPort->align(Fl_Align(FL_ALIGN_LEFT));
+                select_WKFSK_CommPort->when(FL_WHEN_RELEASE);
+                o->value(progStatus.WK_serial_port_name.c_str());
+                select_WKFSK_CommPort->end();
+                } // Fl_ComboBox* select_WKFSK_CommPort
+                { Fl_Light_Button* o = btn_WKFSK_connect = new Fl_Light_Button(504, 105, 80, 23, _("Connect"));
+                btn_WKFSK_connect->tooltip(_("Connect / Disconnect from WinKeyer"));
+                btn_WKFSK_connect->callback((Fl_Callback*)cb_btn_WKFSK_connect);
+                o->value(progStatus.WK_online);
+                } // Fl_Light_Button* btn_WKFSK_connect
+                o->end();
+                } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(5, 140, 590, 245, _("Configuration Interface"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_ListBox* o = sel_WKFSK_baud = new Fl_ListBox(190, 178, 78, 23, _("Baud rate"));
+                sel_WKFSK_baud->tooltip(_("Nav FSK baud rate"));
+                sel_WKFSK_baud->box(FL_DOWN_BOX);
+                sel_WKFSK_baud->color(FL_BACKGROUND2_COLOR);
+                sel_WKFSK_baud->selection_color(FL_BACKGROUND_COLOR);
+                sel_WKFSK_baud->labeltype(FL_NORMAL_LABEL);
+                sel_WKFSK_baud->labelfont(0);
+                sel_WKFSK_baud->labelsize(14);
+                sel_WKFSK_baud->labelcolor(FL_FOREGROUND_COLOR);
+                sel_WKFSK_baud->callback((Fl_Callback*)cb_sel_WKFSK_baud);
+                sel_WKFSK_baud->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_WKFSK_baud->when(FL_WHEN_CHANGED);
+                o->add("45.45|50|75|100");
+                o->index(progStatus.WKFSK_baud);
+                sel_WKFSK_baud->end();
+                } // Fl_ListBox* sel_WKFSK_baud
+                { Fl_ListBox* o = sel_WKFSK_stopbits = new Fl_ListBox(190, 207, 78, 23, _("Stop bits"));
+                sel_WKFSK_stopbits->tooltip(_("Nav FSK Stop bits"));
+                sel_WKFSK_stopbits->box(FL_DOWN_BOX);
+                sel_WKFSK_stopbits->color(FL_BACKGROUND2_COLOR);
+                sel_WKFSK_stopbits->selection_color(FL_BACKGROUND_COLOR);
+                sel_WKFSK_stopbits->labeltype(FL_NORMAL_LABEL);
+                sel_WKFSK_stopbits->labelfont(0);
+                sel_WKFSK_stopbits->labelsize(14);
+                sel_WKFSK_stopbits->labelcolor(FL_FOREGROUND_COLOR);
+                sel_WKFSK_stopbits->callback((Fl_Callback*)cb_sel_WKFSK_stopbits);
+                sel_WKFSK_stopbits->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_WKFSK_stopbits->when(FL_WHEN_CHANGED);
+                o->add("2|1.5");
+                o->index(progStatus.WKFSK_stopbits);
+                sel_WKFSK_stopbits->end();
+                } // Fl_ListBox* sel_WKFSK_stopbits
+                { Fl_ListBox* o = sel_WKFSK_ptt = new Fl_ListBox(190, 236, 78, 23, _("FSK port"));
+                sel_WKFSK_ptt->tooltip(_("NavWinkey PTT"));
+                sel_WKFSK_ptt->box(FL_DOWN_BOX);
+                sel_WKFSK_ptt->color(FL_BACKGROUND2_COLOR);
+                sel_WKFSK_ptt->selection_color(FL_BACKGROUND_COLOR);
+                sel_WKFSK_ptt->labeltype(FL_NORMAL_LABEL);
+                sel_WKFSK_ptt->labelfont(0);
+                sel_WKFSK_ptt->labelsize(14);
+                sel_WKFSK_ptt->labelcolor(FL_FOREGROUND_COLOR);
+                sel_WKFSK_ptt->callback((Fl_Callback*)cb_sel_WKFSK_ptt);
+                sel_WKFSK_ptt->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_WKFSK_ptt->when(FL_WHEN_CHANGED);
+                o->add("On PTT|On KEY");
+                o->index(progStatus.WKFSK_ptt);
+                sel_WKFSK_ptt->end();
+                } // Fl_ListBox* sel_WKFSK_ptt
+                { Fl_ListBox* o = sel_WKFSK_polarity = new Fl_ListBox(190, 266, 78, 23, _("Mark Polarity"));
+                sel_WKFSK_polarity->tooltip(_("Nav FSK MARK Polarity"));
+                sel_WKFSK_polarity->box(FL_DOWN_BOX);
+                sel_WKFSK_polarity->color(FL_BACKGROUND2_COLOR);
+                sel_WKFSK_polarity->selection_color(FL_BACKGROUND_COLOR);
+                sel_WKFSK_polarity->labeltype(FL_NORMAL_LABEL);
+                sel_WKFSK_polarity->labelfont(0);
+                sel_WKFSK_polarity->labelsize(14);
+                sel_WKFSK_polarity->labelcolor(FL_FOREGROUND_COLOR);
+                sel_WKFSK_polarity->callback((Fl_Callback*)cb_sel_WKFSK_polarity);
+                sel_WKFSK_polarity->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_WKFSK_polarity->when(FL_WHEN_CHANGED);
+                o->add("Normal|Reverse");
+                o->index(progStatus.WKFSK_polarity);
+                sel_WKFSK_polarity->end();
+                } // Fl_ListBox* sel_WKFSK_polarity
+                { Fl_ListBox* o = sel_WKFSK_sidetone = new Fl_ListBox(190, 295, 78, 23, _("Sidetone"));
+                sel_WKFSK_sidetone->tooltip(_("Nav FSK side tone"));
+                sel_WKFSK_sidetone->box(FL_DOWN_BOX);
+                sel_WKFSK_sidetone->color(FL_BACKGROUND2_COLOR);
+                sel_WKFSK_sidetone->selection_color(FL_BACKGROUND_COLOR);
+                sel_WKFSK_sidetone->labeltype(FL_NORMAL_LABEL);
+                sel_WKFSK_sidetone->labelfont(0);
+                sel_WKFSK_sidetone->labelsize(14);
+                sel_WKFSK_sidetone->labelcolor(FL_FOREGROUND_COLOR);
+                sel_WKFSK_sidetone->callback((Fl_Callback*)cb_sel_WKFSK_sidetone);
+                sel_WKFSK_sidetone->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_WKFSK_sidetone->when(FL_WHEN_CHANGED);
+                o->add("Off|On");
+                o->index(progStatus.WKFSK_sidetone);
+                sel_WKFSK_sidetone->end();
+                } // Fl_ListBox* sel_WKFSK_sidetone
+                { Fl_ListBox* o = sel_WKFSK_auto_crlf = new Fl_ListBox(190, 325, 78, 23, _("Auto CRLF"));
+                sel_WKFSK_auto_crlf->tooltip(_("Nav FSK side tone"));
+                sel_WKFSK_auto_crlf->box(FL_DOWN_BOX);
+                sel_WKFSK_auto_crlf->color(FL_BACKGROUND2_COLOR);
+                sel_WKFSK_auto_crlf->selection_color(FL_BACKGROUND_COLOR);
+                sel_WKFSK_auto_crlf->labeltype(FL_NORMAL_LABEL);
+                sel_WKFSK_auto_crlf->labelfont(0);
+                sel_WKFSK_auto_crlf->labelsize(14);
+                sel_WKFSK_auto_crlf->labelcolor(FL_FOREGROUND_COLOR);
+                sel_WKFSK_auto_crlf->callback((Fl_Callback*)cb_sel_WKFSK_auto_crlf);
+                sel_WKFSK_auto_crlf->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_WKFSK_auto_crlf->when(FL_WHEN_CHANGED);
+                o->add("Off|On");
+                o->index(progStatus.WKFSK_auto_crlf);
+                sel_WKFSK_auto_crlf->end();
+                } // Fl_ListBox* sel_WKFSK_auto_crlf
+                { Fl_ListBox* o = sel_WKFSK_diddle = new Fl_ListBox(380, 178, 78, 23, _("Diddle"));
+                sel_WKFSK_diddle->tooltip(_("Diddle On/OFF"));
+                sel_WKFSK_diddle->box(FL_DOWN_BOX);
+                sel_WKFSK_diddle->color(FL_BACKGROUND2_COLOR);
+                sel_WKFSK_diddle->selection_color(FL_BACKGROUND_COLOR);
+                sel_WKFSK_diddle->labeltype(FL_NORMAL_LABEL);
+                sel_WKFSK_diddle->labelfont(0);
+                sel_WKFSK_diddle->labelsize(14);
+                sel_WKFSK_diddle->labelcolor(FL_FOREGROUND_COLOR);
+                sel_WKFSK_diddle->callback((Fl_Callback*)cb_sel_WKFSK_diddle);
+                sel_WKFSK_diddle->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_WKFSK_diddle->when(FL_WHEN_CHANGED);
+                o->add("Off|On");
+                o->index(progStatus.WKFSK_diddle);
+                sel_WKFSK_diddle->end();
+                } // Fl_ListBox* sel_WKFSK_diddle
+                { Fl_ListBox* o = sel_WKFSK_diddle_char = new Fl_ListBox(380, 207, 78, 23, _("Diddle char"));
+                sel_WKFSK_diddle_char->tooltip(_("Diddle character"));
+                sel_WKFSK_diddle_char->box(FL_DOWN_BOX);
+                sel_WKFSK_diddle_char->color(FL_BACKGROUND2_COLOR);
+                sel_WKFSK_diddle_char->selection_color(FL_BACKGROUND_COLOR);
+                sel_WKFSK_diddle_char->labeltype(FL_NORMAL_LABEL);
+                sel_WKFSK_diddle_char->labelfont(0);
+                sel_WKFSK_diddle_char->labelsize(14);
+                sel_WKFSK_diddle_char->labelcolor(FL_FOREGROUND_COLOR);
+                sel_WKFSK_diddle_char->callback((Fl_Callback*)cb_sel_WKFSK_diddle_char);
+                sel_WKFSK_diddle_char->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_WKFSK_diddle_char->when(FL_WHEN_CHANGED);
+                o->add("BLANK|LTRS");
+                o->index(progStatus.WKFSK_diddle_char);
+                sel_WKFSK_diddle_char->end();
+                } // Fl_ListBox* sel_WKFSK_diddle_char
+                { Fl_ListBox* o = sel_WKFSK_usos = new Fl_ListBox(380, 236, 78, 23, _("USOS"));
+                sel_WKFSK_usos->tooltip(_("Unshift on space"));
+                sel_WKFSK_usos->box(FL_DOWN_BOX);
+                sel_WKFSK_usos->color(FL_BACKGROUND2_COLOR);
+                sel_WKFSK_usos->selection_color(FL_BACKGROUND_COLOR);
+                sel_WKFSK_usos->labeltype(FL_NORMAL_LABEL);
+                sel_WKFSK_usos->labelfont(0);
+                sel_WKFSK_usos->labelsize(14);
+                sel_WKFSK_usos->labelcolor(FL_FOREGROUND_COLOR);
+                sel_WKFSK_usos->callback((Fl_Callback*)cb_sel_WKFSK_usos);
+                sel_WKFSK_usos->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_WKFSK_usos->when(FL_WHEN_CHANGED);
+                o->add("Off|On");
+                o->index(progStatus.WKFSK_usos);
+                sel_WKFSK_usos->end();
+                } // Fl_ListBox* sel_WKFSK_usos
+                { Fl_ListBox* o = sel_WKFSK_monitor = new Fl_ListBox(380, 266, 78, 23, _("Echo"));
+                sel_WKFSK_monitor->tooltip(_("Unshift on space"));
+                sel_WKFSK_monitor->box(FL_DOWN_BOX);
+                sel_WKFSK_monitor->color(FL_BACKGROUND2_COLOR);
+                sel_WKFSK_monitor->selection_color(FL_BACKGROUND_COLOR);
+                sel_WKFSK_monitor->labeltype(FL_NORMAL_LABEL);
+                sel_WKFSK_monitor->labelfont(0);
+                sel_WKFSK_monitor->labelsize(14);
+                sel_WKFSK_monitor->labelcolor(FL_FOREGROUND_COLOR);
+                sel_WKFSK_monitor->callback((Fl_Callback*)cb_sel_WKFSK_monitor);
+                sel_WKFSK_monitor->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_WKFSK_monitor->when(FL_WHEN_CHANGED);
+                o->add("Off|On");
+                o->index(progStatus.WKFSK_monitor);
+                sel_WKFSK_monitor->end();
+                } // Fl_ListBox* sel_WKFSK_monitor
+                o->end();
+                } // Fl_Group* o
+                tab_WKFSK->end();
+              } // Fl_Group* tab_WKFSK
               tabsRTTY->end();
             } // Fl_Tabs* tabsRTTY
             tabRTTY->end();

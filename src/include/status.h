@@ -235,6 +235,19 @@ struct status {
 	unsigned char WK_cmd_wpm;
 	bool	WK_use_pot;
 	bool	WK_online;
+	int		WK_version;
+
+	int		WKFSK_mode;  // 0 = cw, 1 = fsk/cw
+	int		WKFSK_baud;
+	int		WKFSK_stopbits;
+	int		WKFSK_ptt;
+	int		WKFSK_polarity;
+	int		WKFSK_sidetone;
+	int		WKFSK_auto_crlf;
+	int		WKFSK_diddle;
+	int		WKFSK_diddle_char;
+	int		WKFSK_usos;
+	int		WKFSK_monitor;
 
 	bool	Nav_online;
 	bool	Nav_config_online;

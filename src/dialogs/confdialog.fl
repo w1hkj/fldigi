@@ -432,10 +432,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {5 27 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {84 40 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 600 390} color 50 selection_color 50
+      xywh {0 0 609 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
@@ -3560,20 +3560,20 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 365} hide
+        xywh {0 25 609 365}
       } {
         Fl_Tabs tabsModems {open
-          xywh {0 25 600 365} selection_color 50 align 9
+          xywh {0 25 609 365} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 340} selection_color 50
             } {
               Fl_Group tabsCW_general {
-                label General open
+                label General
                 xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {
@@ -3863,7 +3863,7 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group tabsCW_prosigns {
-                label Prosigns open
+                label Prosigns
                 xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {open
@@ -4099,20 +4099,22 @@ progdefaults.changed = true;} open
                 } {}
               }
               Fl_Group tabsCW_winkeyer {
-                label WinKeyer
+                label WinKeyer open
                 xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group select_WK_CommPort {
                   label {Ser. Port}
-                  callback {progStatus.WK_serial_port_name = o->value();} open
+                  callback {progStatus.WK_serial_port_name = o->value();
+select_WKFSK_CommPort->value(progStatus.WK_serial_port_name.c_str());} open
                   tooltip {Xcvr serial port} xywh {69 85 405 23} box DOWN_BOX color 55 align 4
                   code0 {\#include "combo.h"}
                   code1 {\#include "winkeyer.h"}
+                  code2 {o->value(progStatus.WK_serial_port_name.c_str());}
                   class Fl_ComboBox
                 } {}
-                Fl_Light_Button btn_WK_connect {
+                Fl_Light_Button btn_WKCW_connect {
                   label Connect
-                  callback {WK_connect(o->value());}
+                  callback {WKCW_connect(o->value());}
                   tooltip {Connect / Disconnect from WinKeyer} xywh {500 85 80 23}
                   code0 {o->value(progStatus.WK_online);}
                 }
@@ -4319,7 +4321,7 @@ default = 0} xywh {513 300 64 22} type Simple
                 }
               }
               Fl_Group tabsCW_ext_chars {
-                label {Ext. Chars.} open
+                label {Ext. Chars.}
                 xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
@@ -4488,7 +4490,7 @@ for information regarding extended Morse characters.} open
                 }
               }
               Fl_Group tab_nanoCW {
-                label nanoCW open
+                label nanoCW
                 xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group select_nanoCW_CommPort {
@@ -4644,7 +4646,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabFeld {
-            label Feld open
+            label Feld
             xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
@@ -4738,7 +4740,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabFSQ {
-            label FSQ open
+            label FSQ
             xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
@@ -5151,7 +5153,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabMT63 {
-            label {MT-63} open
+            label {MT-63}
             xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
@@ -5243,7 +5245,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabOlivia {
             label Oliv
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {55 76 490 280} box ENGRAVED_FRAME
@@ -5390,7 +5392,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabPSK {
-            label PSK open
+            label PSK
             xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsPSK {open
@@ -5496,14 +5498,14 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label TTY open
-            xywh {0 50 600 340} hide
+            xywh {0 50 609 340}
           } {
             Fl_Tabs tabsRTTY {open
-              xywh {0 50 600 340} selection_color 50
+              xywh {0 50 609 340} selection_color 50
             } {
               Fl_Group tab_Rx_TTY {
-                label Rx open
-                xywh {0 75 600 315} align 5
+                label Rx
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -5622,11 +5624,11 @@ progdefaults.changed = true;
                 }
               }
               Fl_Group tab_SndCrd_FSK {
-                label Tx open
+                label Tx
                 xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
-                  label {Sound Card FSK} open
+                  label {Sound Card FSK}
                   xywh {5 85 590 225} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Group selShift {
@@ -5750,7 +5752,7 @@ if (o->value()) {
                   }
                 }
                 Fl_Group {} {
-                  label {Transceiver FSK} open
+                  label {Transceiver FSK}
                   xywh {5 312 590 72} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Counter cntr_xcvr_FSK_MARK {
@@ -5781,7 +5783,7 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group tab_nanoIO {
-                label {nanoIO Tx} open
+                label {nanoIO Tx}
                 xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group select_nanoIO_CommPort {
@@ -5833,7 +5835,7 @@ Read from nanoIO} xywh {84 112 63 22} down_box DOWN_BOX
                 }
               }
               Fl_Group tab_Nav {
-                label Navigator open
+                label Navigator
                 xywh {0 75 600 315} align 5 hide
                 code0 {\#include "Nav.h"}
               } {
@@ -5995,7 +5997,7 @@ progdefaults.changed = true;} open
                 }
               }
               Fl_Group tab_Synop {
-                label Synop open
+                label Synop
                 xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Check_Button btnSynopAdifDecoding {
@@ -6018,6 +6020,127 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                   tooltip {Interleave text with decoded SYNOP messages, or replacement.} xywh {190 168 210 22} down_box DOWN_BOX align 148
                   code0 {o->value(progdefaults.SynopInterleaved);}
+                }
+              }
+              Fl_Group tab_WKFSK {
+                label {Winkeyer 3} open
+                xywh {0 75 609 315} align 5
+                code0 {\#include "winkeyer.h"}
+              } {
+                Fl_Group {} {
+                  label {Serial Interface} open
+                  xywh {5 82 590 55} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Group select_WKFSK_CommPort {
+                    label Port
+                    callback {progStatus.WK_serial_port_name = o->value();
+select_WK_CommPort->value(progStatus.WK_serial_port_name.c_str());} open
+                    tooltip {Xcvr serial port} xywh {73 105 405 23} box DOWN_BOX color 55 align 4
+                    code0 {\#include "combo.h"}
+                    code1 {o->value(progStatus.WK_serial_port_name.c_str());}
+                    class Fl_ComboBox
+                  } {}
+                  Fl_Light_Button btn_WKFSK_connect {
+                    label Connect
+                    callback {WKFSK_connect(o->value());}
+                    tooltip {Connect / Disconnect from WinKeyer} xywh {504 105 80 23}
+                    code0 {o->value(progStatus.WK_online);}
+                  }
+                }
+                Fl_Group {} {
+                  label {Configuration Interface} open
+                  xywh {5 140 590 245} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Group sel_WKFSK_baud {
+                    label {Baud rate}
+                    callback {progStatus.WKFSK_baud = o->index();
+WKFSK_init();} open
+                    tooltip {Nav FSK baud rate} xywh {190 178 78 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("45.45|50|75|100");}
+                    code1 {o->index(progStatus.WKFSK_baud);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_WKFSK_stopbits {
+                    label {Stop bits}
+                    callback {progStatus.WKFSK_stopbits = o->index();
+WKFSK_init();} open
+                    tooltip {Nav FSK Stop bits} xywh {190 207 78 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("2|1.5");}
+                    code1 {o->index(progStatus.WKFSK_stopbits);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_WKFSK_ptt {
+                    label {FSK port}
+                    callback {progStatus.WKFSK_ptt = o->index();
+WKFSK_init();} open
+                    tooltip {NavWinkey PTT} xywh {190 236 78 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("On PTT|On KEY");}
+                    code1 {o->index(progStatus.WKFSK_ptt);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_WKFSK_polarity {
+                    label {Mark Polarity}
+                    callback {progStatus.WKFSK_polarity = o->index();
+WKFSK_init();} open
+                    tooltip {Nav FSK MARK Polarity} xywh {190 266 78 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("Normal|Reverse");}
+                    code1 {o->index(progStatus.WKFSK_polarity);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_WKFSK_sidetone {
+                    label Sidetone
+                    callback {progStatus.WKFSK_sidetone = o->index();
+WKFSK_init();} open
+                    tooltip {Nav FSK side tone} xywh {190 295 78 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("Off|On");}
+                    code1 {o->index(progStatus.WKFSK_sidetone);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_WKFSK_auto_crlf {
+                    label {Auto CRLF}
+                    callback {progStatus.WKFSK_auto_crlf = o->index();
+WKFSK_init();} open
+                    tooltip {Nav FSK side tone} xywh {190 325 78 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("Off|On");}
+                    code1 {o->index(progStatus.WKFSK_auto_crlf);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_WKFSK_diddle {
+                    label Diddle
+                    callback {progStatus.WKFSK_diddle = o->index();
+WKFSK_init();} open
+                    tooltip {Diddle On/OFF} xywh {380 178 78 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("Off|On");}
+                    code1 {o->index(progStatus.WKFSK_diddle);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_WKFSK_diddle_char {
+                    label {Diddle char}
+                    callback {progStatus.WKFSK_diddle_char = o->index();
+WKFSK_init();} open
+                    tooltip {Diddle character} xywh {380 207 78 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("BLANK|LTRS");}
+                    code1 {o->index(progStatus.WKFSK_diddle_char);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_WKFSK_usos {
+                    label USOS
+                    callback {progStatus.WKFSK_usos = o->index();
+WKFSK_init();} open
+                    tooltip {Unshift on space} xywh {380 236 78 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("Off|On");}
+                    code1 {o->index(progStatus.WKFSK_usos);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_WKFSK_monitor {
+                    label Echo
+                    callback {progStatus.WKFSK_monitor = o->index();
+WKFSK_init();} open selected
+                    tooltip {Unshift on space} xywh {380 266 78 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("Off|On");}
+                    code1 {o->index(progStatus.WKFSK_monitor);}
+                    class Fl_ListBox
+                  } {}
                 }
               }
             }

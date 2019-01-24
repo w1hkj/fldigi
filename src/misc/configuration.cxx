@@ -944,6 +944,7 @@ void configuration::testCommPorts()
 		select_nanoCW_CommPort->add(gbuf.gl_pathv[j]);
 
 		select_WK_CommPort->add(gbuf.gl_pathv[j]);
+		select_WKFSK_CommPort->add(gbuf.gl_pathv[j]);
 	}
 	globfree(&gbuf);
 #endif
@@ -977,6 +978,7 @@ void configuration::testCommPorts()
 			select_nanoCW_CommPort->add(ttyname);
 
 			select_WK_CommPort->add(ttyname);
+			select_WKFSK_CommPort->add(ttyname);
 		}
 #else // __APPLE__
 		glob_t gbuf;
@@ -1007,6 +1009,7 @@ void configuration::testCommPorts()
 			select_Nav_config_port->add(gbuf.gl_pathv[j]);
 
 			select_WK_CommPort->add(gbuf.gl_pathv[j]);
+			select_WKFSK_CommPort->add(gbuf.gl_pathv[j]);
 		}
 		globfree(&gbuf);
 #endif // __APPLE__

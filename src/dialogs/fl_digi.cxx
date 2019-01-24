@@ -9418,7 +9418,7 @@ void set_default_btn_color()
 {
 	Fl_Light_Button *buttons[] = {
 		btn_FSQCALL, btn_SELCAL, btn_MONITOR, btnPSQL,
-		btnDupCheckOn, btn_WK_connect, btn_WKFSK_connect,
+		btnDupCheckOn, btn_WKCW_connect, btn_WKFSK_connect,
 		btn_nanoCW_connect, btn_nanoIO_connect,
 		btn_enable_auditlog, btn_enable_fsq_heard_log,
 		btn_enable_ifkp_audit_log, btn_enable_ifkp_audit_log,

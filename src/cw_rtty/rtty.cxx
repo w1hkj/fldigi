@@ -1062,6 +1062,9 @@ void rtty::send_idle()
 }
 
 static int line_char_count = 0;
+// 1 start, 5 data, 1.5/2.0 stopbits
+#define wait_one_byte(baud, stopbits) \
+MilliSleep( (int)((6 + (stopbits))*1000.0 / (baud)));
 
 int rtty::tx_process()
 {
@@ -1073,7 +1076,7 @@ int rtty::tx_process()
 		if (preamble) {
 			start_deadman();
 			for (int i = 0; i < progdefaults.TTY_LTRS; i++)
-				Nav_send_char(-1);
+				nano_send_char(-1);
 			preamble = false;
 			nano_send_char(-1);
 			nano_send_char(-1);
@@ -1088,10 +1091,9 @@ int rtty::tx_process()
 // nanoIO does not return an idle character in it's buffer so fldigi
 // must insert a suitable time delay to account for the idle
 		if (c == GET_TX_CHAR_NODATA) {
-			double baudrate = 45.45;
-			if (progdefaults.nanoIO_baud == 50.0) baudrate = 50.0;
-			if (progdefaults.nanoIO_baud == 75.0) baudrate = 75.0;
-			MilliSleep(7500.0 / baudrate); // start + 5 data = 1.5 stop bits
+			wait_one_byte(
+				progdefaults.nanoIO_baud,
+				1.5);
 			return 0;
 		}
 		nano_send_char(c);
@@ -1112,14 +1114,48 @@ int rtty::tx_process()
 			stop_deadman();
 			return -1;
 		}
-// send idle character if c == -1
-// must insert a suitable time delay to account for the idle
 		if (c == GET_TX_CHAR_NODATA) {
 			Nav_send_char(-1);
 			return 0;
 		}
 		Nav_send_char(c);
 		put_echo_char(c);
+		return 0;
+	}
+
+	if (progStatus.WK_online && progStatus.WKFSK_mode) {
+		if (preamble) {
+			start_deadman();
+			WKFSK_send_char('[');
+			preamble = false;
+		}
+
+		if (c == GET_TX_CHAR_ETX || stopflag) {
+			if (stopflag) WKFSK_send_char('\\');
+			WKFSK_send_char(']');
+			stop_deadman();
+			stopflag = false;
+			return -1;
+		}
+// send idle character if c == -1
+// must insert a suitable time delay to account for the idle
+		if (c == GET_TX_CHAR_NODATA) {
+			wait_one_byte(
+				(progStatus.WKFSK_baud == 0 ? 45.45 :
+				 progStatus.WKFSK_baud == 1 ? 50.0 :
+				 progStatus.WKFSK_baud == 2 ? 75.0 : 100.0),
+				 (progStatus.WKFSK_stopbits == 0 ? 2.0 : 1.5));
+			return 0;
+		}
+		else {
+		WKFSK_send_char(c);
+		put_echo_char(c);
+		wait_one_byte(
+			(progStatus.WKFSK_baud == 0 ? 45.45 :
+			 progStatus.WKFSK_baud == 1 ? 50.0 :
+			 progStatus.WKFSK_baud == 2 ? 75.0 : 100.0),
+			 (progStatus.WKFSK_stopbits == 0 ? 2.0 : 1.5));
+		}
 		return 0;
 	}
 

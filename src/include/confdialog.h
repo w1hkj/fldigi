@@ -366,7 +366,7 @@ extern Fl_Group *tabsCW_winkeyer;
 #include "combo.h"
 #include "winkeyer.h"
 extern Fl_ComboBox *select_WK_CommPort;
-extern Fl_Light_Button *btn_WK_connect;
+extern Fl_Light_Button *btn_WKCW_connect;
 extern Fl_Check_Button *btn_WK_swap;
 extern Fl_Check_Button *btn_WK_auto_space;
 extern Fl_Check_Button *btn_WK_ct_space;
@@ -570,6 +570,19 @@ extern Fl_Group *tab_Synop;
 extern Fl_Check_Button *btnSynopAdifDecoding;
 extern Fl_Check_Button *btnSynopKmlDecoding;
 extern Fl_Check_Button *btnSynopInterleaved;
+extern Fl_Group *tab_WKFSK;
+extern Fl_ComboBox *select_WKFSK_CommPort;
+extern Fl_Light_Button *btn_WKFSK_connect;
+extern Fl_ListBox *sel_WKFSK_baud;
+extern Fl_ListBox *sel_WKFSK_stopbits;
+extern Fl_ListBox *sel_WKFSK_ptt;
+extern Fl_ListBox *sel_WKFSK_polarity;
+extern Fl_ListBox *sel_WKFSK_sidetone;
+extern Fl_ListBox *sel_WKFSK_auto_crlf;
+extern Fl_ListBox *sel_WKFSK_diddle;
+extern Fl_ListBox *sel_WKFSK_diddle_char;
+extern Fl_ListBox *sel_WKFSK_usos;
+extern Fl_ListBox *sel_WKFSK_monitor;
 extern Fl_Group *tabTHOR;
 extern Fl_Input2 *txtTHORSecondary;
 extern Fl_Check_Button *valTHOR_FILTER;

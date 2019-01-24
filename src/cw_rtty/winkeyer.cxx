@@ -46,7 +46,9 @@
 #include "modem.h"
 #include "morse.h"
 
-#define LOG_WKEY  LOG_DEBUG //LOG_INFO
+#include "icons.h"
+
+#define LOG_WKEY  LOG_INFO
 
 using namespace std;
 
@@ -78,6 +80,7 @@ static const char ECHO_TEST			= '\x04';
 static const char WK2_MODE			= '\x0B';
 //static const char DUMP_EEPROM		= '\x0C';
 //static const char LOAD_EEPROM		= '\x0D';
+static const char FSK_MODE			= '\x13';
 
 //static const char *SEND_MSG_NBR		= "\x0E";
 
@@ -187,7 +190,7 @@ static void WK_send_command(string &cmd, int what = NOTHING)
 	if (!WK_str_out.empty())
 		return;
 
-	guard_lock lock(&WK_mutex_serial);
+	guard_lock wklock(&WK_mutex_serial);
 
 	upcase(cmd);
 	cnt = 101;
@@ -226,10 +229,9 @@ int WK_send_char(int c)
 	if (c == '0' && progStatus.WK_cut_zeronine) c = 'T';
 	if (c == '9' && progStatus.WK_cut_zeronine) c = 'N';
 	{
-		pthread_mutex_lock(&WK_buffer_mutex);
+		guard_lock wklock(&WK_buffer_mutex);
 		WK_str_out += c;
 		WK_wait_for_char = true;
-		pthread_mutex_unlock(&WK_buffer_mutex);
 	}
 
 	int n = 0;
@@ -272,32 +274,32 @@ unsigned char byte;
 
 // process outgoing
 		{
-			pthread_mutex_lock(&WK_buffer_mutex);
+			guard_lock wklock(&WK_buffer_mutex);
 			if (!WK_str_out.empty()) {
 				WK_sendString(WK_str_out);
 				WK_str_out.clear();
 			}
-			pthread_mutex_unlock(&WK_buffer_mutex);
 		}
 
 // receive WinKeyer response
-		pthread_mutex_lock(&WK_mutex_serial);
-		if (WK_serial.ReadBuffer(&byte, 1) == 1) {
+		{
+			guard_lock wklock(&WK_mutex_serial);
+			if (WK_serial.ReadBuffer(&byte, 1) == 1) {
 
-			if ((byte == 0xA5 || read_EEPROM))
-				WK_eeprom_(byte);
-			else if ((byte & 0xC0) == 0xC0)
-				WK_status_(byte);
-			else if ((byte & 0xC0) == 0x80)
-				WK_speed_(byte);
-			else if (WK_test_echo)
-				WK_echo_test(byte);
-			else if (WK_get_version)
-				WK_version_(byte);
-			else if (WK_wait_for_char)
-				WK_echo_(byte);
+				if ((byte == 0xA5 || read_EEPROM))
+					WK_eeprom_(byte);
+				else if ((byte & 0xC0) == 0xC0)
+					WK_status_(byte);
+				else if ((byte & 0xC0) == 0x80)
+					WK_speed_(byte);
+				else if (WK_test_echo)
+					WK_echo_test(byte);
+				else if (WK_get_version)
+					WK_version_(byte);
+				else if (WK_wait_for_char)
+					WK_echo_(byte);
+			}
 		}
-		pthread_mutex_unlock(&WK_mutex_serial);
 
 WK_serial_bypass_loop: ;
 	}
@@ -308,7 +310,8 @@ void WK_display_byte(void *d)
 {
 	long lch = (long)d;
 	char ch = (char)lch;
-	ReceiveText->add(ch, FTextBase::XMIT);
+LOG_WKEY("echo: %02x", ch);
+//	ReceiveText->add(ch, FTextBase::XMIT);
 }
 
 void WK_display_chars(void *d)
@@ -343,7 +346,7 @@ void WK_version_(int byte)
 	WK_host_is_up = true;
 	WK_get_version = false;
 	Fl::awake(WK_display_chars, ver);
-	if (byte >= 20) wk2_version = true;
+	progStatus.WK_version = byte;
 }
 
 void WK_show_status_change(void *d)
@@ -482,56 +485,102 @@ void load_defaults()
 	cmd += progStatus.WK_pin_configuration;
 	cmd += progStatus.WK_dont_care;
 
-LOG_WKEY("load defaults:\n\
-mode register .... %0x\n\
-CW speed ......... %d\n\
-side tone ........ %d\n\
-weight ........... %d\n\
-lead in time ..... %d\n\
-tail time ........ %d\n\
-min wpm .......... %d\n\
-rng wpm .......... %d\n\
-first ext ........ %d\n\
-key comp ......... %d\n\
-farnsworth wpm ... %d\n\
-paddle setpoint .. %d\n\
-dit dah ratio .... %d\n\
-pin config ....... %d\n\
-don't care ....... %d\n\
-hex string ....... %s",
-progStatus.WK_mode_register,
-progdefaults.CWspeed,
-progStatus.WK_sidetone,
-progStatus.WK_weight,
-progStatus.WK_lead_in_time,
-progStatus.WK_tail_time,
-progStatus.WK_min_wpm,
-progStatus.WK_rng_wpm,
-progStatus.WK_first_extension,
-progStatus.WK_key_compensation,
-progStatus.WK_farnsworth_wpm,
-progStatus.WK_paddle_setpoint,
-progStatus.WK_dit_dah_ratio,
-progStatus.WK_pin_configuration,
-progStatus.WK_dont_care,
-hexstr(cmd).c_str());
+LOG_WKEY("\n\
+      mode register .... %0x\n\
+      CW speed ......... %d\n\
+      side tone ........ %d\n\
+      weight ........... %d\n\
+      lead in time ..... %d\n\
+      tail time ........ %d\n\
+      min wpm .......... %d\n\
+      rng wpm .......... %d\n\
+      first ext ........ %d\n\
+      key comp ......... %d\n\
+      farnsworth wpm ... %d\n\
+      paddle setpoint .. %d\n\
+      dit dah ratio .... %d\n\
+      pin config ....... %d\n\
+      don't care ....... %d\n\
+      hex string ....... %s",
+	progStatus.WK_mode_register,
+	progdefaults.CWspeed,
+	progStatus.WK_sidetone,
+	progStatus.WK_weight,
+	progStatus.WK_lead_in_time,
+	progStatus.WK_tail_time,
+	progStatus.WK_min_wpm,
+	progStatus.WK_rng_wpm,
+	progStatus.WK_first_extension,
+	progStatus.WK_key_compensation,
+	progStatus.WK_farnsworth_wpm,
+	progStatus.WK_paddle_setpoint,
+	progStatus.WK_dit_dah_ratio,
+	progStatus.WK_pin_configuration,
+	progStatus.WK_dont_care,
+	hexstr(cmd).c_str());
 
+	WK_send_command(cmd);
+
+	cmd = SET_SPEED_POT;
+	cmd += progStatus.WK_min_wpm;
+	cmd += progStatus.WK_rng_wpm;
+	cmd += 0xFF;
+LOG_WKEY("SET_SPEED_POT : %s", hexstr(cmd).c_str());
 	WK_send_command(cmd);
 
 	if (progStatus.WK_use_pot) {
 		string cmd = GET_SPEED_POT;
-
 LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
-
 		WK_send_command(cmd);
+
 	} else {
 		string cmd = SET_WPM;
 		cmd += progdefaults.CWspeed;
-
 LOG_WKEY("SETWPM %d : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+		WK_send_command(cmd);
 
+	}
+}
+
+void WKCW_init()
+{
+	string cmd;
+
+	if (wk2_version) {
+		cmd = "  ";
+		cmd[0] = ADMIN;
+		cmd[1] = WK2_MODE;
+LOG_WKEY("WK2_MODE %s", hexstr(cmd).c_str());
 		WK_send_command(cmd);
 	}
+
+	btn_WK_use_pot->value(progStatus.WK_use_pot);
+
+	load_defaults();
+
+	btn_WK_use_pot->value(progStatus.WK_use_pot);
+
+	load_defaults();
+
+	cmd = GET_SPEED_POT;
+LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
+	WK_send_command(cmd);
+
+	cmd = SET_WPM;
+	cmd += progdefaults.CWspeed;
+LOG_WKEY("SET_WPM %d : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+	WK_send_command(cmd);
+
+	cmd = SET_SPEED_POT;
+	cmd += progStatus.WK_min_wpm;
+	cmd += progStatus.WK_rng_wpm;
+	cmd += 0xFF;
+LOG_WKEY("SET_SPEED_POT : %s", hexstr(cmd).c_str());
+	WK_send_command(cmd);
+
+	cmd = GET_SPEED_POT;
+LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
+	WK_send_command(cmd);
 }
 
 void open_wkeyer()
@@ -554,9 +603,9 @@ LOG_WKEY("ECHO_TEST : %s", hexstr(cmd).c_str());
 
 	WK_send_command(cmd, WAIT_ECHO);
 
-	cnt = 200;
+	cnt = 5000;
 	while (WK_test_echo == true && cnt) {
-		MilliSleep(10);
+		MilliSleep(1);
 		cnt--;
 	}
 
@@ -572,6 +621,8 @@ LOG_WKEY("ECHO_TEST : %s", hexstr(cmd).c_str());
 		select_WK_CommPort->value(progStatus.WK_serial_port_name.c_str());
 		return;
 	}
+
+LOG_WKEY("Echo response in %d msec", 5000 - cnt);
 
 /*
 	cmd = "  ";
@@ -591,7 +642,6 @@ LOG_WKEY("ECHO_TEST : %s", hexstr(cmd).c_str());
 	cmd = "  ";
 	cmd[0] = ADMIN;
 	cmd[1] = HOST_OPEN;
-
 LOG_WKEY("HOST_OPEN : %s", hexstr(cmd).c_str());
 
 	WK_send_command(cmd, WAIT_VERSION);
@@ -602,47 +652,7 @@ LOG_WKEY("HOST_OPEN : %s", hexstr(cmd).c_str());
 		cnt--;
 	}
 
-	if (wk2_version) {
-		cmd = "  ";
-		cmd[0] = ADMIN;
-		cmd[1] = WK2_MODE;
 
-LOG_WKEY("WK2_MODE %s", hexstr(cmd).c_str());
-
-		WK_send_command(cmd);
-	}
-
-	btn_WK_use_pot->value(progStatus.WK_use_pot);
-
-	load_defaults();
-
-	cmd = GET_SPEED_POT;
-
-LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
-
-	WK_send_command(cmd);
-
-	cmd = SET_WPM;
-	cmd += progdefaults.CWspeed;
-
-LOG_WKEY("SET_WPM %d : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
-
-	WK_send_command(cmd);
-
-	cmd = SET_SPEED_POT;
-	cmd += progStatus.WK_min_wpm;
-	cmd += progStatus.WK_rng_wpm;
-	cmd += 0xFF;
-
-LOG_WKEY("SET_SPEED_POT : %s", hexstr(cmd).c_str());
-
-	WK_send_command(cmd);
-
-	cmd = GET_SPEED_POT;
-
-LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
-
-	WK_send_command(cmd);
 }
 
 void close_wkeyer()
@@ -982,7 +992,10 @@ int WK_sendString (string &s)
 
 	WK_serial.WriteBuffer((unsigned char *)s.c_str(), numwrite);
 
-	LOG_WKEY("Sent %d: %s", numwrite, str2hex(s.data(), s.length()));
+	if (isprint(s[0]))
+		LOG_WKEY("Sent %d: '%s' %s", numwrite, s.c_str(), str2hex(s.data(), s.length()));
+	else
+		LOG_WKEY("Sent %d: %s", numwrite, str2hex(s.data(), s.length()));
 	return numwrite;
 }
 
@@ -994,44 +1007,12 @@ void WK_clearSerialPort()
 
 static bool WK_thread_activated = false;
 
-void WK_connect(bool start)
-{
-	if (!WK_thread_activated) {
-		if (pthread_create(&WK_serial_thread, NULL, WK_serial_thread_loop, NULL)) {
-			perror("pthread_create");
-			exit(EXIT_FAILURE);
-		}
-		WK_thread_activated = true;
-	}
-
-	if (start) {
-		if (WK_start_wkey_serial()) {
-			WK_bypass_serial_thread_loop = false;
-			open_wkeyer();
-			if (!WK_serial.IsOpen()) {
-				progStatus.WK_online = false;
-				btn_WK_connect->value(0);
-			} else {
-				progStatus.WK_online = true;
-			}
-		}
-	} else {
-		close_wkeyer();
-		MilliSleep(100);
-		WK_bypass_serial_thread_loop = true;
-		MilliSleep(50);
-		WK_serial.ClosePort();
-		ReceiveText->add("\nWinKeyer disconnected\n");
-		progStatus.WK_online = false;
-	}
-}
-
 void WK_exit()
 {
 	if (!WK_thread_activated) return;
 
 	if (progStatus.WK_online)
-		WK_connect(false);
+		WKCW_connect(false);
 
 	pthread_mutex_lock(&WK_mutex_serial);
 		WK_run_serial_thread = false;
@@ -1040,3 +1021,219 @@ void WK_exit()
 
 }
 
+// =====================================================================
+// Winkeyer 3.0 FSK interface support
+// =====================================================================
+
+// progStatus configuration parameters:
+//
+//	WKFSK_baud
+//	WKFSK_stopbits
+//	WKFSK_ptt
+//	WKFSK_polarity
+//	WKFSK_sidetone
+//	WKFSK_auto_crlf
+//	WKFSK_diddle
+//	WKFSK_diddle_char
+//	WKFSK_usos
+//	WKFSK_monitor
+
+#define wait_one_char(baud, stopbits) (int)((6 + (stopbits))*1000.0 / (baud))
+
+void WKFSK_send_char(int ch)
+{
+	unsigned char c = toupper(ch);
+	int n = (int)(5 * wait_one_char(45.45, 2));
+
+	if (c == 0 || c == '\n') {
+		MilliSleep(10);
+		Fl::awake();
+		return;
+	}
+	if (c == '\r') c = '}';
+
+	{
+		guard_lock wklock(&WK_buffer_mutex);
+		if (c == '[' || c == ']' || c == '}' || c == '{' || c < ' ') {
+			LOG_WKEY("%s", 
+				(c == '[' ? "[ - ptt ON" :
+				 c == ']' ? "] - ptt OFF" :
+				 c == '}' ? "} - CR/LF" : 
+				 c == '{' ? "{ - left brace" : "Control code"));
+		} else
+			LOG_WKEY("Sending %c, %x", c, c);
+		if (progStatus.WKFSK_monitor)
+			WK_wait_for_char = true;
+		WK_str_out += c;
+	}
+
+	while (WK_wait_for_char) {
+		MilliSleep(10);
+		Fl::awake();
+		n -= 10;
+		if (n <= 0 || active_modem->get_stopflag()) {
+			WK_wait_for_char = false;
+			LOG_WKEY("%s",
+				(n <= 0 ? "echo: NIL" : "xmt aborted") );
+			return;
+		}
+	}
+	return;
+}
+
+void WKFSK_init()
+{
+	std::string cmd = "    ";
+
+LOG_WKEY("mode        %d", progStatus.WKFSK_mode);
+LOG_WKEY("diddle      %d", progStatus.WKFSK_diddle);
+LOG_WKEY("ptt         %d", progStatus.WKFSK_ptt);
+LOG_WKEY("auto crlf   %d", progStatus.WKFSK_auto_crlf);
+LOG_WKEY("monitor     %d", progStatus.WKFSK_monitor);
+LOG_WKEY("polarity    %d", progStatus.WKFSK_polarity);
+LOG_WKEY("baud        %d", progStatus.WKFSK_baud);
+LOG_WKEY("stopbits    %d", progStatus.WKFSK_stopbits);
+LOG_WKEY("sidetone    %d", progStatus.WKFSK_sidetone);
+LOG_WKEY("diddle_char %d", progStatus.WKFSK_diddle_char);
+LOG_WKEY("usos        %d", progStatus.WKFSK_usos);
+
+	cmd[0] = ADMIN;
+	cmd[1] = FSK_MODE;
+	cmd[2] = (progStatus.WKFSK_mode ? 0x80 : 0x00);
+	cmd[2] |= (progStatus.WKFSK_diddle ? 0x40 : 0x00);
+	cmd[2] |= (progStatus.WKFSK_ptt ? 0x20 : 0x00);
+	cmd[2] |= (progStatus.WKFSK_auto_crlf ? 0x10 : 0x00);
+	cmd[2] |= (progStatus.WKFSK_monitor ? 0x08 : 0x00);
+	cmd[2] |= (progStatus.WKFSK_polarity ? 0x04 : 0x00);
+	cmd[2] |= progStatus.WKFSK_baud;
+
+	cmd[3] = (progStatus.WKFSK_sidetone ? 0x10 : 0x00);
+	cmd[3] |= (progStatus.WKFSK_stopbits ? 0x08 : 0x00);
+	cmd[3] |= (progStatus.WKFSK_diddle_char ? 0x04 : 0x00);
+	cmd[3] |= progStatus.WKFSK_usos;
+
+	WK_send_command(cmd);
+
+}
+
+void WKCW_connect(bool start)
+{
+	LOG_WKEY("WKCW_connect(%s)", (start ? "ON" : "OFF"));
+
+	progStatus.WKFSK_mode = false;
+	btn_WKFSK_connect->value(0);
+	btn_WKCW_connect->value(0);
+
+	if (!WK_thread_activated) {
+		if (pthread_create(&WK_serial_thread, NULL, WK_serial_thread_loop, NULL)) {
+			perror("pthread_create");
+			exit(EXIT_FAILURE);
+		}
+		WK_thread_activated = true;
+	}
+
+	if (!start) {
+		close_wkeyer();
+		MilliSleep(100);
+		WK_bypass_serial_thread_loop = true;
+		MilliSleep(50);
+		WK_serial.ClosePort();
+		ReceiveText->add("\nWinKeyer disconnected\n");
+		progStatus.WK_online = false;
+		return;
+	}
+
+// shutdown and then reconnect if currently in FSK mode
+	if (progStatus.WK_online) {
+		close_wkeyer();
+		MilliSleep(100);
+		WK_bypass_serial_thread_loop = true;
+		MilliSleep(50);
+		WK_serial.ClosePort();
+	}
+
+	if (WK_start_wkey_serial()) {
+		WK_bypass_serial_thread_loop = false;
+		open_wkeyer();
+		if (!WK_serial.IsOpen()) {
+			progStatus.WK_online = false;
+			return;
+		} else {
+			progStatus.WK_online = true;
+			btn_WKCW_connect->value(1);
+		}
+	}
+
+	WKCW_init();
+}
+
+void WKFSK_connect(bool start)
+{
+	LOG_WKEY("WKFSK_connect(%s)", (start ? "ON" : "OFF"));
+
+	progStatus.WKFSK_mode = false;
+	btn_WKFSK_connect->value(0);
+	btn_WKCW_connect->value(0);
+
+	if (!WK_thread_activated) {
+		if (pthread_create(&WK_serial_thread, NULL, WK_serial_thread_loop, NULL)) {
+			perror("pthread_create");
+			exit(EXIT_FAILURE);
+		}
+		WK_thread_activated = true;
+	}
+
+	if (!start) {
+		close_wkeyer();
+		MilliSleep(100);
+		WK_bypass_serial_thread_loop = true;
+		MilliSleep(50);
+		WK_serial.ClosePort();
+		ReceiveText->add("\nWinKeyer disconnected\n");
+		progStatus.WK_online = false;
+		return;
+	}
+
+// shutdown and then reconnect if currently in CW mode
+	if (progStatus.WK_online) {
+		close_wkeyer();
+		MilliSleep(100);
+		WK_bypass_serial_thread_loop = true;
+		MilliSleep(50);
+		WK_serial.ClosePort();
+	}
+
+	if (WK_start_wkey_serial()) {
+		WK_bypass_serial_thread_loop = false;
+		open_wkeyer();
+		if (!WK_serial.IsOpen()) {
+			progStatus.WK_online = false;
+			return;
+		} else {
+			progStatus.WK_online = true;
+		}
+	}
+
+	if (progStatus.WK_version < 31) {
+		fl_alert2("Winkeyer version must be 31 or greater");
+
+		close_wkeyer();
+		MilliSleep(100);
+		WK_bypass_serial_thread_loop = true;
+		MilliSleep(50);
+		WK_serial.ClosePort();
+
+		ReceiveText->add("\nWinKeyer disconnected\n");
+
+		progStatus.WK_online = false;
+		progStatus.WKFSK_mode = false;
+		return;
+	}
+
+	progStatus.WKFSK_mode = true;
+
+	WKFSK_init();
+
+	btn_WKFSK_connect->value(1);
+
+}

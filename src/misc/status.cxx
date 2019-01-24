@@ -277,6 +277,19 @@ status progStatus = {
 	18,				// unsigned char WK_cmd_wpm;
 	false,			// bool WK_use_pot
 	false,			// bool WK_online;
+	2,				// int WK_version;
+
+	0,				// int		WKFSK_mode;
+	0,				// int		WKFSK_baud;
+	0,				// int		WKFSK_stopbits;
+	0,				// int		WKFSK_ptt;
+	0,				// int		WKFSK_polarity;
+	0,				// int		WKFSK_sidetone;
+	0,				// int		WKFSK_auto_crlf;
+	0,				// int		WKFSK_diddle;
+	0,				// int		WKFSK_diddle_char;
+	0,				// int		WKFSK_usos;
+	1,				// int		WKFSK_monitor;
 
 	false,			// 	bool	Nav_online;
 	false,			//	bool	Nav_config_online;
@@ -640,6 +653,19 @@ if (!bWF_only) {
 	spref.set("WK_use_pot", WK_use_pot);
 
 	spref.set("WK_online", WK_online);
+	spref.set("WK_version", WK_version);
+
+	spref.set("WKFSK_mode", WKFSK_mode);
+	spref.set("WKFSK_baud", WKFSK_baud);
+	spref.set("WKFSK_stopbits", WKFSK_stopbits);
+	spref.set("WKFSK_ptt", WKFSK_ptt);
+	spref.set("WKFSK_polarity", WKFSK_polarity);
+	spref.set("WKFSK_sidetone", WKFSK_sidetone);
+	spref.set("WKFSK_auto_crlf", WKFSK_auto_crlf);
+	spref.set("WKFSK_diddle", WKFSK_diddle);
+	spref.set("WKFSK_diddle_char", WKFSK_diddle_char);
+	spref.set("WKFSK_usos", WKFSK_usos);
+	spref.set("WKFSK_monitor", WKFSK_monitor);
 
 	spref.set("Nav_online", Nav_online);
 	spref.set("Nav_config_online", Nav_config_online);
@@ -941,6 +967,19 @@ void status::loadLastState()
 		spref.get("WK_use_pot", i, WK_use_pot); WK_use_pot = i;
 
 		spref.get("WK_online", i, WK_online); WK_online = i;
+		spref.get("WK_version", WK_version, WK_version);
+
+		spref.get("WKFSK_mode", WKFSK_mode, WKFSK_mode);
+		spref.get("WKFSK_baud", WKFSK_baud, WKFSK_baud);
+		spref.get("WKFSK_stopbits", WKFSK_stopbits, WKFSK_stopbits);
+		spref.get("WKFSK_ptt", WKFSK_ptt, WKFSK_ptt);
+		spref.get("WKFSK_polarity", WKFSK_polarity, WKFSK_polarity);
+		spref.get("WKFSK_sidetone", WKFSK_sidetone, WKFSK_sidetone);
+		spref.get("WKFSK_auto_crlf", WKFSK_auto_crlf, WKFSK_auto_crlf);
+		spref.get("WKFSK_diddle", WKFSK_diddle, WKFSK_diddle);
+		spref.get("WKFSK_diddle_char", WKFSK_diddle_char, WKFSK_diddle_char);
+		spref.get("WKFSK_diddle_char", WKFSK_diddle_char, WKFSK_diddle_char);
+		spref.get("WKFSK_monitor", WKFSK_monitor, WKFSK_monitor);
 
 		spref.get("Nav_online", i, Nav_online); Nav_online = i;
 		spref.get("Nav_config_online", i, Nav_config_online); Nav_config_online = i;

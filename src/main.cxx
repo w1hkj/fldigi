@@ -725,8 +725,13 @@ void delayed_startup(void *)
 	auto_start();
 
 	if (progStatus.WK_online) {
-		btn_WK_connect->value(1);
-		WK_connect(1);
+		if (progStatus.WKFSK_mode) {
+			btn_WKFSK_connect->value(1);
+			WKFSK_connect(1);
+		} else {
+			btn_WKCW_connect->value(1);
+			WKCW_connect(1);
+		}
 	}
 
 	if (progStatus.Nav_online) {

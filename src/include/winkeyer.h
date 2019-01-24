@@ -49,12 +49,16 @@ extern void WK_change_choice_hang();
 extern void WK_change_choice_sidetone();
 extern void WK_change_choice_output_pins();
 extern void WK_use_pot_changed();
-extern void WK_connect(bool start);
+extern void WKCW_connect(bool start);
 
 extern int  WK_send_char(int c);
 extern void WK_set_wpm();
 extern void WK_tune(bool on);
 
 extern void WK_exit();
+
+extern void  WKFSK_init();
+extern void WKFSK_connect(bool start);
+extern void WKFSK_send_char(int ch);
 
 #endif
