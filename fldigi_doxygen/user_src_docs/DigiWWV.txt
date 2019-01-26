@@ -3,57 +3,59 @@
 
 \tableofcontents
 
+Some analog transmissions such as FAX, MFSK images, and Thor images will
+exhibit a slant in the received image if the sound card clock (sample rate)
+is not identical at both the transmitter and receiver.  The best way to
+insure that they are identical is to calibrate both to an external frequency
+and time standard.  Operators in the North American region can use the WWV and/or
+WWVH standard time transmissions for this purpose.  European and Asian users
+should be able to use the German DCF-77 or Russian RMW time transmissions.<br>
+
 The WWV mode is used to measure the offset of the sound card oscillator.
-It does this by comparing the timing loop for the sound card measurements
-against the clock tick signal that is transmitted by WWV and WWVH.  The
-sampling rate for the sound card should be set to "native".  The sound card
-samples the signal and returns the values in 512 blocks.  This block
+It does this by comparing the sound card sample rate with 
+the clock tick signal that is transmitted by WWV and WWVH.<br>
+
+The sampling rate for the sound card should be set to "native".  The sound card
+samples the signal and returns a block of samples in blocks of 512.  This block
 sampling is what sets the basic timing mechanism for the thread that
-reads the sound card, sends data to the waterfall, and sends data to
-the modem signal processing functions.  A process of filtering is
-used that simultaneously reduces the sampling rate.  Most modern
-soundcards will use 44100 or 48000 as the native smampling rate.
-That sample rate in down converted to 1000 using a decimation in time
-type FIR.  The resulting signal is then power detected and
-further filtered with a filter called a moving average filter. The moving
+reads the sound card.  Most modern soundcards will use 44100 or 48000 as the native smampling rate.
+The sampled signal is filtered and reduced to a sample
+rate of 1000 by a process called decimiation in time.  The resulting signal is then power detected and
+low pass filtered with a filter called a moving average filter. The moving
 average is very good at detecting the edge of a pulse such as the 1 second
-tick transmitted by WWV.  This output is then displayed in a manner very
+tick transmitted by WWV.<br>
+
+This decoded/filtered signal is then displayed in a manner very
 similar to a FAX signal.  Each scan line represents the received signal
 over a 1 second interval.  The bright white line is the time tick.  You can
 see a very slight slope from left to right as the signal goes from top to
-bottom of the display.
-<br>
+bottom of the display.<br>
 
 Open the configure dialog box to the "SndCrd" tab.  You are going
 to be adjusting the "Rx corr Rate" while you observe the effect of this
-control on the slope of the time tick line.
-<br>
+control on the slope of the time tick line.<br>
 
 Tune in WWV or WWVH on 2.5, 5.0, 10.0 or 15.0 MHz in the AM mode. This
-seems to give the best signal view.  Select the WWV modem and allow the data
-to begin to accumulate in the digiscope display.  When you can clearly see
-the bright tick line, move the cursor to the bottom of the line and left
-click at that position.  That will resync the digiscope display and put the
-ensuing tick marks at the center line red graticule.
-<br>
+seems to give the best signal view.  Select the WWV modem.  Open the scope dialog
+from the menu "View / Floating scope".  Adjust the scope dialogs width and height
+to a 1:3 or greater ratio.  Signal data will begin to accumulate in the digiscope display.<br>
 
-Then right click anywhere in the digiscope display.  That changes
-the zoom level to show more detail regarding the slope of the time tick
-line.  The zoom level increases by a factor of 5.  Right
-clicking again restores the original zoom level.  I recommend
-making the adjustments to the Rx corr Rate control in the x5 zoom level.
-<br>
+When you can clearly see the bright tick line, move the cursor to the bottom of the line and left
+click at that position.  That will resync the digiscope display and put the
+ensuing tick marks at the center line red graticule. Then right click anywhere 
+in the digiscope display.  That changes the zoom level to show more signal
+detail and the slope of the time tick line will be more discernable. The zoom level 
+increases by a factor of 5.  Right clicking again restores the original zoom level.
+I recommend making the adjustments to the Rx corr Rate control in the x5 zoom level.<br>
 
 If the slope of the time tick line is positive you will need to apply a
 negative value to the Rx corr Rate.  If it is negative then a
-positive correction is needed.
-<br>
+positive correction is needed.<br>
 
 Start with a correction of 0 ppm and observe the slope.  Try a
 value of 1000 ppm and observe the slope.  Again, try a -1000 ppm
 correction and observe the slope.  The following are some observations
-made on 10 MHz WWV, DCF-77 and RWM under less than ideal conditions.
-<br>
+made on 10 MHz WWV, DCF-77 and RWM under less than ideal conditions.<br>
 
 \image html wwv3.png "WWV corrected 20 minute trace 5x scale"
 \image latex wwv3.png "WWV corrected 20 minute trace 5x scale" width=1.25in
