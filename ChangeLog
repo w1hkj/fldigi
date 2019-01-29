@@ -1,8 +1,27 @@
-2018-09-14  David Freese  <w1hkj@bellsouth.net>
 
-	58a029b: c-tests
-	ae07503: c
-	43b8422: Contests
+
+=Version 4.1.0=
+
+2019-01-29  David Freese  <w1hkj@bellsouth.net>
+
+	39a76e8: po update
+	79c67d3: WWV doc
+	04e53b5: Winkeyer FSK
+	b8ca88e: Contests
+	b197c75: arq-override
+	8572f35: flmsg-dir
+	02c66eb: contest-docs
+	9d85169: fldigi_def.xml
+	20e2c02: socket_mods
+	e1c2d80: Fltk 1.4 mod
+	5ffd6f5: wefax
+	fb1fd67: nanoIO
+	7d604b8: CW SOM table
+	4eec8f2: flrig: macro
+	99b0a01: Audio adjust docs
+	146bd7e: feldhell
+	6b5c93a: C-11 fixes
+	ccbd52f: nano FSK
 	ed6a7db: Mint-19/Mate
 	e9c0f2d: Signal Browser documentation
 	fbb0654: flrig seg fault
