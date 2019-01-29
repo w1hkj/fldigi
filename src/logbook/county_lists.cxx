@@ -29,6 +29,7 @@
 //std::string strSQSO 
 const char *szSQSO = "\
 State/Province, ST/PR, County/City/District, CCD\n\
+NONE,--,---------------\n\
 Alaska,AK,AK1st (SE),SE\n\
 ,AK,AK2nd (NW),NW\n\
 ,AK,AK3rd (SC),SC\n\
