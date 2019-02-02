@@ -39,16 +39,23 @@
 #include "gettext.h"
 #include "debug.h"
 
+#define LOG_QRZ_DEBUG 1
+
 using namespace std;
 
-bool request_reply(const string& node, const string& service, const string& request, string& reply, double timeout)
+bool network_query(const string& node, const string& service, const string& request, string& reply, double timeout)
 {
+
+if (LOG_QRZ_DEBUG)
+	LOG_INFO("\n\
+   node: %s\n\
+   service: %s",
+	node.c_str(), service.c_str() );
+
 	LOG_VERBOSE("\n\
-========================================================================\n\
-node: %s\n\
-service: %s\n\
-========================================================================",
-node.c_str(), service.c_str() );
+   node: %s\n\
+   service: %s",
+	node.c_str(), service.c_str() );
 
 	try {
 		Socket s(Address(node.c_str(), service.c_str()));
@@ -57,29 +64,28 @@ node.c_str(), service.c_str() );
 		s.set_timeout(timeout);
 
 		if (s.send(request) != request.length()) {
-			LOG_ERROR("\n\
-======================== SEND TIMED OUT ================================\n\
-%s\n\
-========================================================================",
+			LOG_ERROR("************ SEND TIMED OUT ************\n\
+%s",
 				request.c_str());
 			reply = "Send timed out";
 			return false;
 		}
-		LOG_VERBOSE("\n\
-=============================== SENT ===================================\n\
-%s\n\
-========================================================================",
-			request.c_str());
+
+
+if (LOG_QRZ_DEBUG)
+	LOG_INFO("sent:\n'%s'", request.c_str());
+
+		LOG_VERBOSE("sent:\n'%s'", request.c_str());
 		if (s.recv(reply) == 0) {
 			LOG_ERROR("Reply time out");
 			reply = "Reply timed out";
 			return false;
 		}
-		LOG_VERBOSE("\n\
-============================== REPLY ===================================\n\
-%s\n\
-========================================================================",
-			reply.c_str());
+
+if (LOG_QRZ_DEBUG)
+	LOG_INFO("reply:\n%s", reply.c_str());
+
+		LOG_VERBOSE("reply:\n%s", reply.c_str());
 	}
 	catch (const SocketException& e) {
 		reply = e.what();
@@ -109,7 +115,7 @@ bool fetch_http(const string& url, string& reply, double timeout)
            .append("Host: ").append(http_host).append("\r\n")
            .append("Connection: close\r\n\r\n");
 
-	return request_reply( http_host, "http", request, reply, timeout);
+	return network_query( http_host, "http", request, reply, timeout);
 }
 
 struct fetch_data_t {

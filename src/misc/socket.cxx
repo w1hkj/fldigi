@@ -24,6 +24,10 @@
 
 #include <sys/types.h>
 
+#include <FL/Fl.H>
+
+#define LOG_QRZ_DEBUG 1
+
 #ifndef __MINGW32__
 #  include <sys/socket.h>
 #  include <netdb.h>
@@ -403,6 +407,8 @@ const addr_info_t* Address::get(size_t n) const
 	for (size_t i = 0; i < n; i++)
 		p = p->ai_next;
 #  ifndef NDEBUG
+	if (LOG_QRZ_DEBUG)
+		LOG_INFO("Found address %s", get_str(p).c_str());
 	LOG_DEBUG("Found address %s", get_str(p).c_str());
 #  endif
 	return p;
@@ -425,6 +431,8 @@ const addr_info_t* Address::get(size_t n) const
 	addr.ai_addrlen = sizeof(saddr);
 	addr.ai_addr = (struct sockaddr*)&saddr;
 #  ifndef NDEBUG
+	if (LOG_QRZ_DEBUG)
+		LOG_INFO("Found address %s", get_str(&addr).c_str());
 	LOG_DEBUG("Found address %s", get_str(&addr).c_str());
 #  endif
 	return &addr;
@@ -622,16 +630,30 @@ void Socket::open(const Address& addr)
 
 	for (anum = 0; anum < n; anum++) {
 		info = address.get(anum);
-LOG_DEBUG("\n\
-Address    %s\n\
-Family     %s\n\
-Sock type  %d\n\
-Protocol   %d",
+if (LOG_QRZ_DEBUG)
+	LOG_INFO("\n\
+   Address    %s\n\
+   Family     %s\n\
+   Sock type  %s\n\
+   Protocol   %s",
 address.get_str(info).c_str(),
 (info->ai_family == AF_INET6 ? "AF_INET6" :\
 (info->ai_family == AF_INET ? "AF_INET" : "unknown")),
-info->ai_socktype,
-info->ai_protocol);
+(info->ai_socktype == SOCK_STREAM ? "stream" : "dgram"),
+(info->ai_protocol == IPPROTO_TCP ? "tcp" :
+(info->ai_protocol == IPPROTO_UDP ? "udp" : "unknown protocol")));
+
+LOG_DEBUG("\n\
+   Address    %s\n\
+   Family     %s\n\
+   Sock type  %s\n\
+   Protocol   %s",
+address.get_str(info).c_str(),
+(info->ai_family == AF_INET6 ? "AF_INET6" :\
+(info->ai_family == AF_INET ? "AF_INET" : "unknown")),
+(info->ai_socktype == SOCK_STREAM ? "stream" : "dgram"),
+(info->ai_protocol == IPPROTO_TCP ? "tcp" :
+(info->ai_protocol == IPPROTO_UDP ? "udp" : "unknown protocol")));
 		if (info->ai_family == AF_INET) ainfo = info;
 	}
 
@@ -928,13 +950,13 @@ int Socket::connect(void)
 			connected_flag = true;
 			return errno;
 		}
-		if (errno == EWOULDBLOCK || errno == EINPROGRESS || errno == EALREADY) { 
-			LOG_INFO("Connect attempt to %s : %d, %s", 
+		if (errno == EWOULDBLOCK || errno == EINPROGRESS || errno == EALREADY) {
+			LOG_INFO("Connect attempt to %s : %d, %s",
 				address.get_str(ainfo).c_str(),
 				errno, strerror(errno));
 			return errno;
 		}
-		LOG_ERROR("Connect to %s failed: %d, %s", 
+		LOG_ERROR("Connect to %s failed: %d, %s",
 			address.get_str(ainfo).c_str(),
 			errno, strerror(errno));
 		throw SocketException(errno, "connect");
@@ -952,6 +974,8 @@ bool Socket::connect1(void)
 {
     connected_flag = false;
 #ifndef NDEBUG
+	if (LOG_QRZ_DEBUG)
+		LOG_INFO("Connecting to %s", address.get_str(ainfo).c_str());
 	LOG_DEBUG("Connecting to %s", address.get_str(ainfo).c_str());
 #endif
 	if (::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1) {
@@ -1099,16 +1123,32 @@ size_t Socket::recv(string& buf)
 {
 	size_t n = 0;
 	ssize_t r;
+	int tout = timeout.tv_sec * 1000 + (timeout.tv_usec / 1000);
+	int msec = tout;
 	try {
-		while ((r = recv(buffer, BUFSIZ)) > 0) {
-			buf.reserve(buf.length() + r);
+		r = ::recv(sockfd, buffer, BUFSIZ, 0);
+		while (r <= 0 && tout > 0) {
+			MilliSleep(10);
+			tout -= 10;
+			r = ::recv(sockfd, buffer, BUFSIZ, 0);
+		}
+		if (r == 0) {
+			LOG_VERBOSE("%s", "REQ TIMED OUT: shutdown socket");
+			shutdown(sockfd, SHUT_RD);
+			return 0;
+		}
+		buf.clear();
+		while (r  > 0 && tout > 0) {
 			buf.append(buffer, r);
 			n += r;
+			r = ::recv(sockfd, buffer, BUFSIZ, 0);
+			tout -= 10;
+			MilliSleep(10);
 		}
 	} catch (SocketException &e) {
 		throw e;
 	}
-
+	LOG_VERBOSE("Response took %d msec", msec - tout);
 	return n;
 }
 

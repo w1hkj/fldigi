@@ -61,7 +61,7 @@
 using namespace std;
 
 
-string qrzhost = "xml.qrz.com"; //"online.qrz.com";
+string qrzhost = "xmldata.qrz.com";
 string qrzSessionKey;
 string qrzalert;
 string qrzerror;
@@ -124,11 +124,11 @@ QRZ *qCall = 0;
 
 void print_query(const string &name, const string &s)
 {
-	LOG_VERBOSE("%s query:\n%s\n", name.c_str(), s.c_str());
+	LOG_VERBOSE("%s query:\n%s", name.c_str(), s.c_str());
 }
 
 void print_data(const string &name, const string &s) {
-	LOG_VERBOSE("%s data:\n%s\n", name.c_str(), s.c_str());
+	LOG_VERBOSE("%s data:\n%s", name.c_str(), s.c_str());
 }
 
 void clear_Lookup()
@@ -155,6 +155,10 @@ void clear_Lookup()
 
 bool parseSessionKey(const string& sessionpage)
 {
+	if (sessionpage.find("Bad Request") != string::npos) {
+		return false;
+	}
+
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(sessionpage));
 	TAG tag=QRZ_IGNORE;
 	while(xml && xml->read()) {
@@ -205,7 +209,7 @@ bool parseSessionKey(const string& sessionpage)
 
 bool parse_xml(const string& xmlpage)
 {
-	print_data("QTH.com", xmlpage);
+	print_data("xmldata.qrz.com", xmlpage);
 
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlpage));
 
@@ -321,24 +325,17 @@ bool getSessionKey(string& sessionpage)
 {
 
 	string detail;
-	detail =  "GET /bin/xml?username=";
+	detail = "GET /xml/current/?username=";
 	detail += progdefaults.QRZusername;
 	detail += ";password=";
 	detail += progdefaults.QRZuserpassword;
-	detail += ";version=";
+	detail += ";agent=";
 	detail += PACKAGE_NAME;
-	detail += "/";
+	detail += "-";
 	detail += PACKAGE_VERSION;
-	detail += " HTTP/1.0\n";
-	detail += "Host: ";
-	detail += qrzhost;
-	detail += "\n";
-	detail += "Connection: close\n";
-	detail += "\n";
+	detail += "\r\n";
 
-	print_query("QRZ session key", detail);
-
-	return request_reply(qrzhost, "http", detail, sessionpage, 5.0);
+	return network_query(qrzhost, "http", detail, sessionpage, 5.0);
 }
 
 bool QRZGetXML(string& xmlpage)
@@ -348,17 +345,11 @@ bool QRZGetXML(string& xmlpage)
 	detail += qrzSessionKey;
 	detail += ";callsign=";
 	detail += callsign;
-	detail += " HTTP/1.0\n";
-	detail += "Host: ";
-	detail += qrzhost;
-	detail += "\n";
-	detail += "Connection: close\n";
-	detail += "\n";
+	detail += "\r\n";
 
-//	return request_reply(qrzhost, "http", detail, xmlpage, 5.0);
 	print_query("QRZ data", detail);
 
-	bool res = request_reply(qrzhost, "http", detail, xmlpage, 5.0);
+	bool res = network_query(qrzhost, "http", detail, xmlpage, 5.0);
 	LOG_VERBOSE("result = %d", res);
 	return res;
 }
@@ -528,22 +519,25 @@ void QRZAlert()
 
 	string qrznote;
 	if (!qrzalert.empty()) {
-		qrznote.append("QRZ alert notice:\n");
+		qrznote.append("QRZ alert:\n");
 		qrznote.append(qrzalert);
 		qrznote.append("\n");
 		qrzalert.clear();
 	}
 	if (!qrzerror.empty()) {
-		qrznote.append("QRZ error notice:\n");
-		qrznote.append(qrzalert);
+		qrznote.append("QRZ error:\n");
+		qrznote.append(qrzerror);
 		qrzerror.clear();
 	}
 	string notes;
 	if (!progdefaults.clear_notes) notes.assign(inpNotes->value());
 	else notes.clear();
 
-	if (!qrznote.empty()) notes.append("\n").append(qrznote);
-	inpNotes->value(notes.c_str());
+	if (!qrznote.empty()) {
+		if (!notes.empty()) notes.append("\n");
+		notes.append(qrznote);
+		inpNotes->value(notes.c_str());
+	}
 }
 
 bool QRZLogin(string& sessionpage)
@@ -573,12 +567,12 @@ void QRZquery()
 		ok = QRZLogin(qrzpage);
 	if (ok)
 		ok = QRZGetXML(qrzpage);
-	if (!ok) { // change to negative for MS not getting on first try
-		if (qrzSessionKey.empty())
-			ok = QRZLogin(qrzpage);
-		if (ok)
-			ok = QRZGetXML(qrzpage);
-	}
+//	if (!ok) { // change to negative for MS not getting on first try
+//		if (qrzSessionKey.empty())
+//			ok = QRZLogin(qrzpage);
+//		if (ok)
+//			ok = QRZGetXML(qrzpage);
+//	}
 	if (ok) {
 		parse_xml(qrzpage);
 		if (!qrzalert.empty() || !qrzerror.empty())
@@ -783,8 +777,8 @@ bool HAMCALLget(string& htmlpage)
 	url.erase(0, p+2);
 	size_t len = url.length();
 	if (url[len-1]=='/') url.erase(len-1, 1);
-	return request_reply(url, service, url_detail, htmlpage, 5.0);
-//	return request_reply("www.hamcall.net", "http", url_detail, htmlpage, 5.0);
+	return network_query(url, service, url_detail, htmlpage, 5.0);
+//	return network_query("www.hamcall.net", "http", url_detail, htmlpage, 5.0);
 }
 
 void HAMCALLquery()
@@ -823,10 +817,11 @@ bool HAMQTH_get_session_id()
 
 	HAMQTH_session_id.clear();
 	if (!fetch_http(url, retstr, 5.0)) {
-printf("fetch_http( %s, retstr, 5.0) failed\n", url.c_str());
+		LOG_ERROR("fetch_http( %s, retstr, 5.0) failed\n", url.c_str());
 		return false;
 	}
-printf("%s\n", retstr.c_str());
+	LOG_VERBOSE("url: %s", url.c_str());
+	LOG_VERBOSE("reply: %s\n", retstr.c_str());
 	p1 = retstr.find("<error>");
 	if (p1 != string::npos) {
 		p2 = retstr.find("</error>");
@@ -1139,10 +1134,10 @@ void CALLSIGNquery()
 
 	switch (DB_XML_query = static_cast<qrz_xmlquery_t>(progdefaults.QRZXML)) {
 	case QRZNET:
-		LOG_INFO("%s","Request sent to\nqrz.com...");
+		LOG_INFO("%s","Request sent to qrz.com...");
 		break;
 	case HAMCALLNET:
-		LOG_INFO("%s","Request sent to\nwww.hamcall.net...");
+		LOG_INFO("%s","Request sent to www.hamcall.net...");
 		break;
 	case QRZCD:
 		if (!qCall)
