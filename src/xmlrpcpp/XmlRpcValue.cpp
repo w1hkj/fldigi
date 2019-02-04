@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 //
 // flxmlrpc Copyright (c) 2015 by W1HKJ, Dave Freese <iam_w1hkj@w1hkj.com>
-//    
+//
 // XmlRpc++ Copyright (c) 2002-2008 by Chris Morley
 //
 // This file is part of fldigi
@@ -48,7 +48,7 @@ namespace XmlRpc {
   static const char MEMBER_TAG[]    = "member";
   static const char NAME_TAG[]      = "name";
 
-      
+
   // Format strings
   std::string XmlRpcValue::_doubleFormat("%f");
 
@@ -69,7 +69,7 @@ namespace XmlRpc {
     _value.asBinary = 0;
   }
 
-  
+
   // Type checking
   void XmlRpcValue::assertType(Type t) const
   {
@@ -180,7 +180,7 @@ namespace XmlRpc {
         {
           if (_value.asStruct->size() != other._value.asStruct->size())
             return false;
-          
+
           ValueStruct::const_iterator it1=_value.asStruct->begin();
           ValueStruct::const_iterator it2=other._value.asStruct->begin();
           while (it1 != _value.asStruct->end()) {
@@ -225,7 +225,7 @@ namespace XmlRpc {
   }
 
 
-  // Set the value from xml. The chars at *offset into valueXml 
+  // Set the value from xml. The chars at *offset into valueXml
   // should be the start of a <value> tag. Destroys any existing value.
   bool XmlRpcValue::fromXml(std::string const& valueXml, int* offset)
   {
@@ -265,7 +265,7 @@ namespace XmlRpc {
         *this = false;
         result = true;
       } else
-        result = boolFromXml(valueXml, offset) && 
+        result = boolFromXml(valueXml, offset) &&
                  XmlRpcUtil::nextTagIsEnd(BOOLEAN_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(I4_TAG, valueXml, offset, &emptyTag))
@@ -274,7 +274,7 @@ namespace XmlRpc {
         *this = 0;
         result = true;
       } else
-        result = intFromXml(valueXml, offset) && 
+        result = intFromXml(valueXml, offset) &&
                  XmlRpcUtil::nextTagIsEnd(I4_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(INT_TAG, valueXml, offset, &emptyTag))
@@ -283,7 +283,7 @@ namespace XmlRpc {
         *this = 0;
         result = true;
       } else
-        result = intFromXml(valueXml, offset) && 
+        result = intFromXml(valueXml, offset) &&
                  XmlRpcUtil::nextTagIsEnd(INT_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(DOUBLE_TAG, valueXml, offset, &emptyTag))
@@ -292,7 +292,7 @@ namespace XmlRpc {
         *this = 0.0;
         result = true;
       } else
-        result = doubleFromXml(valueXml, offset) && 
+        result = doubleFromXml(valueXml, offset) &&
                  XmlRpcUtil::nextTagIsEnd(DOUBLE_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(STRING_TAG, valueXml, offset, &emptyTag))
@@ -301,7 +301,7 @@ namespace XmlRpc {
         *this = "";
         result = true;
       } else
-        result = stringFromXml(valueXml, offset) && 
+        result = stringFromXml(valueXml, offset) &&
                  XmlRpcUtil::nextTagIsEnd(STRING_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(DATETIME_TAG, valueXml, offset, &emptyTag))
@@ -309,7 +309,7 @@ namespace XmlRpc {
       if (emptyTag)
         result = false;
       else
-        result = timeFromXml(valueXml, offset) && 
+        result = timeFromXml(valueXml, offset) &&
                  XmlRpcUtil::nextTagIsEnd(DATETIME_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(BASE64_TAG, valueXml, offset, &emptyTag))
@@ -317,7 +317,7 @@ namespace XmlRpc {
       if (emptyTag)
         result = binaryFromXml("", 0);
       else
-        result = binaryFromXml(valueXml, offset) && 
+        result = binaryFromXml(valueXml, offset) &&
                  XmlRpcUtil::nextTagIsEnd(BASE64_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(ARRAY_TAG, valueXml, offset, &emptyTag))
@@ -325,7 +325,7 @@ namespace XmlRpc {
       if (emptyTag)
         result = false;
       else
-        result = arrayFromXml(valueXml, offset) && 
+        result = arrayFromXml(valueXml, offset) &&
                  XmlRpcUtil::nextTagIsEnd(ARRAY_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(STRUCT_TAG, valueXml, offset, &emptyTag))
@@ -333,7 +333,7 @@ namespace XmlRpc {
       if (emptyTag)
         result = false;
       else
-        result = structFromXml(valueXml, offset) && 
+        result = structFromXml(valueXml, offset) &&
                  XmlRpcUtil::nextTagIsEnd(STRUCT_TAG, valueXml, offset);
     }
 
@@ -486,8 +486,13 @@ namespace XmlRpc {
   {
     struct tm* t = _value.asTime;
     char buf[20];
-    snprintf(buf, sizeof(buf)-1, "%04d%02d%02dT%02d:%02d:%02d", 
-      1900+t->tm_year,1+t->tm_mon,t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec);
+    snprintf(buf, sizeof(buf)-1, "%04d%02d%02dT%02d:%02d:%02d",
+      (1900 + t->tm_year),
+      (1 + t->tm_mon) & 0xFF,
+      (t->tm_mday & 0xFF),
+      (t->tm_hour & 0xFF),
+      (t->tm_min & 0xFF),
+      (t->tm_sec & 0xFF) );
     buf[sizeof(buf)-1] = 0;
 
     return std::string("<value><dateTime.iso8601>") + buf + std::string("</dateTime.iso8601></value>");
@@ -638,7 +643,7 @@ namespace XmlRpc {
         {
           struct tm* t = _value.asTime;
           char buf[20];
-          snprintf(buf, sizeof(buf)-1, "%4d%02d%02dT%02d:%02d:%02d", 
+          snprintf(buf, sizeof(buf)-1, "%4d%02d%02dT%02d:%02d:%02d",
             t->tm_year,t->tm_mon,t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec);
           buf[sizeof(buf)-1] = 0;
           os << buf;
@@ -677,9 +682,9 @@ namespace XmlRpc {
           os << ']';
           break;
         }
-      
+
     }
-    
+
     return os;
   }
 
@@ -687,10 +692,10 @@ namespace XmlRpc {
 
 
 // ostream
-std::ostream& operator<<(std::ostream& os, XmlRpc::XmlRpcValue& v) 
-{ 
+std::ostream& operator<<(std::ostream& os, XmlRpc::XmlRpcValue& v)
+{
   // If you want to output in xml format:
-  //return os << v.toXml(); 
+  //return os << v.toXml();
   return v.write(os);
 }
 
