@@ -236,8 +236,8 @@ string lotw_rec(cQsoRec &rec)
 
 	putadif(CALL, rec.getField(CALL), strrec);
 
-	putadif(MODE, adif2export(rec.getField(MODE)).c_str());
-	putadif(SUBMODE, adif2submode(rec.getField(MODE)).c_str());
+	putadif(MODE, adif2export(rec.getField(MODE)).c_str(), strrec);
+	putadif(SUBMODE, adif2submode(rec.getField(MODE)).c_str(), strrec);
 
 	temp = rec.getField(FREQ);
 	temp.resize(7);
