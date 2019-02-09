@@ -3266,6 +3266,9 @@ static string new_call;
 
 void set599()
 {
+	if (bWF_only)
+		return;
+
 	Fl_Input2* rstin[] = {
 		inpRstIn1, inpRstIn2, inpRstIn3, inpRstIn4, inpRstIn_AICW2,
 		inpRstIn_SQSO2,
@@ -3383,64 +3386,67 @@ Fl_Input2* qso_fields[] = {
 	inpRstIn_WAE2, inpRstOut_WAE2,
 	inpNotes };
 
-	Fl_ComboBox *country_fields[] = {
-		cboCountyQSO, cboCountryQSO,
-		cboCountryAICW2,
-		cboCountryAIDX2,
-		cboCountryCQ2,
-		cboCountryCQDX2,
-		cboCountryIARI2,
-		cboCountryRTU2 //,
-//		cboCountryWAE2
-	};
-	for (size_t i = 0; i < sizeof(country_fields)/sizeof(*country_fields); i++) {
-		country_fields[i]->redraw();
-		combo_color_font(country_fields[i]);
+	if (!bWF_only) {
+		Fl_ComboBox *country_fields[] = {
+			cboCountyQSO, cboCountryQSO,
+			cboCountryAICW2,
+			cboCountryAIDX2,
+			cboCountryCQ2,
+			cboCountryCQDX2,
+			cboCountryIARI2,
+			cboCountryRTU2 //,
+//			cboCountryWAE2
+		};
+		for (size_t i = 0; i < sizeof(country_fields)/sizeof(*country_fields); i++) {
+			country_fields[i]->redraw();
+			combo_color_font(country_fields[i]);
+		}
+
+		size_t num_fields = sizeof(qso_fields)/sizeof(*qso_fields);
+		for (size_t i = 0; i < num_fields; i++) {
+			qso_fields[i]->textsize(progdefaults.LOGGINGtextsize);
+			qso_fields[i]->textfont(progdefaults.LOGGINGtextfont);
+			qso_fields[i]->textcolor(progdefaults.LOGGINGtextcolor);
+			qso_fields[i]->color(progdefaults.LOGGINGcolor);
+			qso_fields[i]->labelfont(progdefaults.LOGGINGtextfont);
+			qso_fields[i]->redraw_label();
+		}
+
+		if (!progdefaults.SQSOlogstate) {
+			inpSQSO_state1->hide();
+			inpSQSO_state2->hide();
+		}
+
+		if (!progdefaults.SQSOlogcounty) {
+			inpSQSO_county1->hide();
+			inpSQSO_county2->hide();
+		}
+
+		if (!progdefaults.SQSOlogserno) {
+			inpSQSO_serno1->hide();
+			inpSQSO_serno2->hide();
+			outSQSO_serno1->hide();
+			outSQSO_serno2->hide();
+		}
+
+		if (!progdefaults.SQSOlogrst) {
+			inpRstIn_SQSO2->hide();
+			inpRstOut_SQSO2->hide();
+		}
+
+		if (!progdefaults.SQSOlogname) {
+			inpSQSO_name2->hide();
+		}
+
+		if (!progdefaults.SQSOlogcat) {
+			inpSQSO_category1->hide();
+			inpSQSO_category2->hide();
+		}
+		for (size_t i = 0; i < num_fields; i++) {
+			qso_fields[i]->redraw();
+		}
 	}
 
-size_t num_fields = sizeof(qso_fields)/sizeof(*qso_fields);
-	for (size_t i = 0; i < num_fields; i++) {
-		qso_fields[i]->textsize(progdefaults.LOGGINGtextsize);
-		qso_fields[i]->textfont(progdefaults.LOGGINGtextfont);
-		qso_fields[i]->textcolor(progdefaults.LOGGINGtextcolor);
-		qso_fields[i]->color(progdefaults.LOGGINGcolor);
-		qso_fields[i]->labelfont(progdefaults.LOGGINGtextfont);
-		qso_fields[i]->redraw_label();
-	}
-
-	if (!progdefaults.SQSOlogstate) {
-		inpSQSO_state1->hide();
-		inpSQSO_state2->hide();
-	}
-
-	if (!progdefaults.SQSOlogcounty) {
-		inpSQSO_county1->hide();
-		inpSQSO_county2->hide();
-	}
-
-	if (!progdefaults.SQSOlogserno) {
-		inpSQSO_serno1->hide();
-		inpSQSO_serno2->hide();
-		outSQSO_serno1->hide();
-		outSQSO_serno2->hide();
-	}
-
-	if (!progdefaults.SQSOlogrst) {
-		inpRstIn_SQSO2->hide();
-		inpRstOut_SQSO2->hide();
-	}
-
-	if (!progdefaults.SQSOlogname) {
-		inpSQSO_name2->hide();
-	}
-
-	if (!progdefaults.SQSOlogcat) {
-		inpSQSO_category1->hide();
-		inpSQSO_category2->hide();
-	}
-	for (size_t i = 0; i < num_fields; i++) {
-		qso_fields[i]->redraw();
-	}
 }
 
 void clear_time_on()
@@ -8235,6 +8241,7 @@ void create_fl_digi_main_WF_only() {
 	progdefaults.WF_UIqsy = false;
 	wf->UI_select(true);
 
+	load_counties();
 	createConfig();
 	createRecordLoader();
 	altTabs();
