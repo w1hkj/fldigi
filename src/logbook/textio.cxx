@@ -132,8 +132,11 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, ",\"%s\"", pRec->getField(BAND));
 				if (btnSelectFreq->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(FREQ));
-				if (btnSelectMode->value())
+				if (btnSelectMode->value()) {
 					fprintf (txtFile, ",\"%s\"", adif2export(pRec->getField(MODE)).c_str());
+					if (!adif2submode(pRec->getField(MODE)).empty())
+						fprintf (txtFile, ",\%s\"", adif2submode(pRec->getField(MODE)).c_str());
+				}
 				if (btnSelectTX_pwr->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(TX_PWR));
 				if (btnSelectRSTsent->value())
@@ -295,8 +298,11 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-7s", pRec->getField(BAND));
 				if (btnSelectFreq->value())
 					fprintf (txtFile, "%-12s", pRec->getField(FREQ));
-				if (btnSelectMode->value())
-					fprintf (txtFile, "%-8s", adif2export(pRec->getField(MODE)).c_str());
+				if (btnSelectMode->value()) {
+					fprintf (txtFile, "%-12s", adif2export(pRec->getField(MODE)).c_str());
+					if (!adif2submode(pRec->getField(MODE)).empty())
+						fprintf (txtFile, "%-12s", adif2submode(pRec->getField(MODE)).c_str());
+				}
 				if (btnSelectTX_pwr->value())
 					fprintf (txtFile, "%-8s", pRec->getField(TX_PWR));
 				if (btnSelectRSTsent->value())

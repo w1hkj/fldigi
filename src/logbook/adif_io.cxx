@@ -58,6 +58,7 @@ FIELD fields[] = {
 	{FREQ,         12,    "FREQ",             &btnSelectFreq},      // QSO frequency in Mhz
 	{CALL,         30,    "CALL",             &btnSelectCall},      // contacted stations CALLSIGN
 	{MODE,         20,    "MODE",             &btnSelectMode},      // QSO mode
+	{SUBMODE,      20,    "SUBMODE",          NULL},                // QSO submode
 	{NAME,         80,    "NAME",             &btnSelectName},      // contacted operators NAME
 	{QSO_DATE,     8,     "QSO_DATE",         &btnSelectQSOdateOn}, // QSO data
 	{QSO_DATE_OFF, 8,     "QSO_DATE_OFF",     &btnSelectQSOdateOff},// QSO data OFF, according to ADIF 2.2.6
@@ -427,6 +428,8 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 			 strlen(PACKAGE_NAME), PACKAGE_NAME,
 			 strlen(PACKAGE_VERSION), PACKAGE_VERSION);
 
+	string sName;
+	int field_type;
 	for (int i = 0; i < db->nbrRecs(); i++) {
 		rec = db->getRec(i);
 		if (rec->getField(EXPORT)[0] == 'E') {
@@ -434,15 +437,31 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 			while (fields[j].type != NUMFIELDS) {
 				if (strcmp(fields[j].name,"MYXCHG") == 0) { j++; continue; }
 				if (strcmp(fields[j].name,"XCHG1") == 0) { j++; continue; }
-				if (fields[j].btn != NULL)
+				if (fields[j].btn != NULL) {
 					if ((*fields[j].btn)->value()) {
-						sFld = rec->getField(fields[j].type);
-						if (!sFld.empty()) {
+						field_type = fields[j].type;
+						sFld = rec->getField(field_type);
+						sName = fields[j].name;
+						if (field_type == MODE  && !sFld.empty()) {
 							fprintf(adiFile, adifmt,
-								fields[j].name,//->c_str(),
-								sFld.length());
-							fprintf(adiFile, "%s", sFld.c_str());
+								"MODE",
+								adif2export(sFld).length());
+							fprintf(adiFile, "%s", adif2export(sFld).c_str());
+							if (!adif2submode(sFld).empty()) {
+								fprintf(adiFile, adifmt,
+									"SUBMODE",
+									adif2submode(sFld).length());
+								fprintf(adiFile, "%s", adif2submode(sFld).c_str());
+							}
+						} else {
+							if (!sFld.empty()) {
+								fprintf(adiFile, adifmt,
+									sName.c_str(),
+									sFld.length());
+								fprintf(adiFile, "%s", sFld.c_str());
+							}
 						}
+					}
 				}
 				j++;
 			}

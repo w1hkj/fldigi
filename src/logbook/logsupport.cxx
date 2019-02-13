@@ -1135,12 +1135,13 @@ void cb_Export_log() {
 #endif
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
-		snprintf(line,sizeof(line),"%8s %4s %-10s %-10s %-s",
+		snprintf(line,sizeof(line),"%8s %4s %-10s %-10s %-s %-s",
 			rec->getField(QSO_DATE),
 			rec->getField((export_to == LOTW ? TIME_ON : TIME_OFF) ),
 			rec->getField(CALL),
 			szfreq(rec->getField(FREQ)),
-			adif2export(rec->getField(MODE)).c_str()
+			adif2export(rec->getField(MODE)).c_str(),
+			adif2submode(rec->getField(MODE)).c_str()
 		);
 		chkExportBrowser->add(line);
 	}
