@@ -301,7 +301,6 @@ static string n3fjp_freq();
 static void send_control(const string ctl, string val);
 static void send_action(const string action);
 static void send_command(const string command, string val="");
-bool n3fjp_dupcheck();
 static void send_data();
 static void send_data_norig();
 void get_n3fjp_frequency();
@@ -2022,7 +2021,7 @@ static void check_log_data()
 	} catch (...) { throw; }
 }
 
-bool n3fjp_dupcheck()
+int n3fjp_dupcheck()
 {
 	guard_lock rx_lock(&n3fjp_mutex);
 
@@ -2032,7 +2031,6 @@ bool n3fjp_dupcheck()
 	if ((chkcall.length() == 3) && isdigit(chkcall[2])) return false;
 
 	string cmd;
-	bool isdup = false;
 
 	try {
 		send_call(chkcall);
@@ -2043,24 +2041,8 @@ bool n3fjp_dupcheck()
 		check_log_data();
 
 		send_action("CALLTAB");
-
-		string resp;
-		int count = 200;
-		while (count && resp.empty()) {
-			n3fjp_rcv(resp, progdefaults.enable_N3FJP_log);
-			count -= 10;
-			MilliSleep(10);
-			Fl::awake();
-		}
-
-		if (resp.find("CALLTABDUPEEVENT") != string::npos &&
-			resp.find("Duplicate") != string::npos &&
-			resp.find("Possible") == string::npos)
-			isdup = true;
-
 	} catch (...) { throw; }
-
-	return isdup;
+	return 0;
 }
 
 static void send_log_data()
@@ -2361,6 +2343,14 @@ void n3fjp_parse_response(string tempbuff)
 	}
 	if (tempbuff.find("<NEXTSERIALNUMBERRESPONSE>") != string::npos) {
 		REQ(n3fjp_parse_next_serial, tempbuff);
+	}
+
+	if (tempbuff.find("CALLTABDUPEEVENT") != string::npos &&
+		tempbuff.find("Duplicate") != string::npos) {
+			if (tempbuff.find("Possible") != string::npos)
+				REQ(show_dup, (void*)2);
+			else
+				REQ(show_dup, (void*)1);
 	}
 }
 
@@ -2691,7 +2681,7 @@ void *n3fjp_loop(void *args)
 					if (loopcount == 0)
 						if (!connect_to_n3fjp_server())
 							n3fjp_disconnect(false);
-				} else try {
+				} else try {  // insure connection still up (2.5 second interval)
 					if (loopcount == 0) {
 						guard_lock send_lock(&send_this_mutex);
 						std::string buffer;

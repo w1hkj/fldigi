@@ -1317,40 +1317,59 @@ void cb_SortByFreq (void) {
 	loadBrowser();
 }
 
-void DupCheck()
+void show_dup(void *dup)
 {
+	int cdup = 0;
+	if (dup == (void *)1) cdup = 1;
+	if (dup == (void *)2) cdup = 2;
+
 	Fl_Color call_clr = progdefaults.LOGGINGcolor;
 	Fl_Color dup_clr = fl_rgb_color(
 				progdefaults.dup_color.R,
 				progdefaults.dup_color.G,
 				progdefaults.dup_color.B);
-
-	bool dup = false;
-
-	if (n3fjp_connected)
-		dup = n3fjp_dupcheck();
-	else if ( FD_logged_on && strlen(inpCall->value()) > 2)
-		dup = FD_dupcheck();
-	else if ( progdefaults.xml_logbook)
-		dup = xml_check_dup();
-	else if ( !progdefaults.xml_logbook && qsodb.duplicate(
-			inpCall->value(),
-			zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan,
-			inpFreq->value(), progdefaults.dupband,
-			inpState->value(), progdefaults.dupstate,
-			mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,
-			inpXchgIn->value(), progdefaults.dupxchg1 ) )
-		dup = true;
-
-	inpCall1->color(dup ? dup_clr : call_clr);
-	inpCall2->color(dup ? dup_clr : call_clr);
-	inpCall3->color(dup ? dup_clr : call_clr);
-	inpCall4->color(dup ? dup_clr : call_clr);
+	Fl_Color pdup_clr = fl_rgb_color(
+				progdefaults.possible_dup_color.R,
+				progdefaults.possible_dup_color.G,
+				progdefaults.possible_dup_color.B);
+	inpCall1->color(cdup == 1 ? dup_clr : cdup == 2 ? pdup_clr : call_clr);
+	inpCall2->color(cdup == 1 ? dup_clr : cdup == 2 ? pdup_clr : call_clr);
+	inpCall3->color(cdup == 1 ? dup_clr : cdup == 2 ? pdup_clr : call_clr);
+	inpCall4->color(cdup == 1 ? dup_clr : cdup == 2 ? pdup_clr : call_clr);
 
 	inpCall1->redraw();
 	inpCall2->redraw();
 	inpCall3->redraw();
 	inpCall4->redraw();
+}
+
+void DupCheck()
+{
+	size_t dup = 0;
+
+	if (n3fjp_connected) {
+		show_dup(0);
+		n3fjp_dupcheck();
+		return;
+	}
+
+	if ( FD_logged_on && strlen(inpCall->value()) > 2)
+		dup = FD_dupcheck();
+	else if ( progdefaults.xml_logbook)
+		dup = xml_check_dup();
+	else {
+// check for call only for possible dup returns 2 if possible
+		dup = qsodb.duplicate(inpCall->value());
+		if (dup && qsodb.duplicate(
+				inpCall->value(),
+				zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan,
+				inpFreq->value(), progdefaults.dupband,
+				inpState->value(), progdefaults.dupstate,
+				mode_info[active_modem->get_mode()].adif_name, progdefaults.dupmode,
+				inpXchgIn->value(), progdefaults.dupxchg1 ) )
+			dup = 1;
+	}
+	show_dup((void*)dup);
 }
 
 cQsoRec* SearchLog(const char *callsign)

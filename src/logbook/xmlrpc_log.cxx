@@ -323,8 +323,9 @@ std::cout << adif << std::endl;
 
 }
 
-bool xml_check_dup()
+int xml_check_dup()
 {
+	int dup_test = 0;
 	if (!test_connection()) {
 		LOG_INFO("%s","Logbook server down!");
 		progdefaults.xml_logbook = false;
@@ -332,7 +333,7 @@ bool xml_check_dup()
 		activate_log_menus(true);
 		if (!dlgLogbook) create_logbook_dialogs();
 		start_logbook();
-		return false;
+		return dup_test;
 	}
 	XmlRpcValue six_args, result;
 	six_args[0] = inpCall->value();
@@ -346,9 +347,9 @@ bool xml_check_dup()
 	if (log_client->execute("log.check_dup", six_args, result)) {
 		string res = std::string(result);
 		if (res == "true")
-			return true;
+			dup_test = 1;
 	}
-	return false;
+	return dup_test;
 }
 
 

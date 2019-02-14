@@ -35,7 +35,7 @@ extern void FD_add_record();
 
 extern void FD_mode_check();
 extern void FD_band_check();
-extern bool FD_dupcheck();
+extern int  FD_dupcheck();
 
 extern bool FD_connected;
 extern bool FD_logged_on;

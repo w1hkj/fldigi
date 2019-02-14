@@ -14,7 +14,7 @@ extern void n3fjp_start();
 extern void n3fjp_restart();
 extern void n3fjp_close(void);
 
-extern bool n3fjp_dupcheck();
+extern int  n3fjp_dupcheck();
 extern void n3fjp_add_record(cQsoRec &rec);
 extern void n3fjp_get_record(string rec);
 extern void n3fjp_set_freq(long f);

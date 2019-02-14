@@ -432,15 +432,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {84 40 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {507 54 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 609 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 600 365} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 600 365} when 1
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -566,14 +566,14 @@ progdefaults.changed = true;} open
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 604 365}
+        xywh {0 25 604 365} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 604 365} selection_color 50
         } {
           Fl_Group tabBrowser {
             label Browser open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -1224,7 +1224,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabLogContests {
             label Contests open
-            xywh {0 50 604 340}
+            xywh {0 50 604 340} hide
           } {
             Fl_Tabs tabs_contests {open
               xywh {0 50 604 340}
@@ -1247,7 +1247,7 @@ inp_contest_notes->value(progdefaults.CONTESTnotes.c_str());
 UI_select();
 clear_log_fields();
 clearQSO();
-progdefaults.changed = true;} open selected
+progdefaults.changed = true;} open
                   tooltip {Select Logging as QSO or Contest} xywh {86 84 500 24} box DOWN_BOX color 7 align 4
                   code0 {\#include "contest.h"}
                   code1 {o->add(contest_names().c_str());}
@@ -1284,34 +1284,34 @@ progdefaults.changed = true;} open
                 }
                 Fl_Group {} {
                   label {Duplicate check, CALL plus} open
-                  xywh {3 192 590 83} box ENGRAVED_FRAME align 21
+                  xywh {3 192 590 86} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Light_Button btnDupCheckOn {
                     label {On/Off}
                     callback {progdefaults.EnableDupCheck = o->value();
 progdefaults.changed = true;}
-                    tooltip {Check for duplicates} xywh {68 217 74 20} selection_color 2
+                    tooltip {Check for duplicates} xywh {20 217 74 20} selection_color 2
                     code0 {o->value(progdefaults.EnableDupCheck);}
                   }
                   Fl_Check_Button btnDupBand {
                     label Band
                     callback {progdefaults.dupband = o->value();
 progdefaults.changed = true;}
-                    tooltip {Bands must match} xywh {173 217 70 20} down_box DOWN_BOX
+                    tooltip {Bands must match} xywh {132 217 70 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.dupband);}
                   }
                   Fl_Check_Button btnDupMode {
                     label Mode
                     callback {progdefaults.dupmode = o->value();
 progdefaults.changed = true;}
-                    tooltip {Mode must match} xywh {293 217 70 20} down_box DOWN_BOX
+                    tooltip {Mode must match} xywh {245 217 70 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.dupmode);}
                   }
                   Fl_Check_Button btnDupTimeSpan {
                     label {Time span over}
                     callback {progdefaults.duptimespan=(int)o->value();
 progdefaults.changed = true;}
-                    tooltip {QSO must not occur within a time period of} xywh {408 217 129 20} down_box DOWN_BOX
+                    tooltip {QSO must not occur within a time period of} xywh {370 217 129 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.duptimespan);}
                   }
                   Fl_Button btnDupColor {
@@ -1327,29 +1327,46 @@ o->color(
     progdefaults.dup_color.B));
 o->redraw();
 progdefaults.changed = true;}
-                    tooltip {Left click to select dup color} xywh {68 244 90 24} box DOWN_BOX down_box DOWN_BOX color 7 selection_color 7
+                    tooltip {Left click to select dup color} xywh {20 244 90 24} box DOWN_BOX down_box DOWN_BOX color 7 selection_color 7
                     code0 {o->color(fl_rgb_color(progdefaults.dup_color.R, progdefaults.dup_color.G, progdefaults.dup_color.B));}
+                    code1 {\#include <FL/Fl_Color_Chooser.H>}
+                  }
+                  Fl_Button btnPossibleDupColor {
+                    label {? Dup Color}
+                    callback {fl_color_chooser("Possible_Dup Check",
+  progdefaults.possible_dup_color.R,
+  progdefaults.possible_dup_color.G,
+  progdefaults.possible_dup_color.B);
+o->color(
+  fl_rgb_color(
+    progdefaults.possible_dup_color.R,
+    progdefaults.possible_dup_color.G,
+    progdefaults.possible_dup_color.B));
+o->redraw();
+progdefaults.changed = true;}
+                    tooltip {Left click to select possible dup color} xywh {132 244 90 24} box DOWN_BOX down_box DOWN_BOX color 7 selection_color 7
+                    code0 {o->color(fl_rgb_color(progdefaults.possible_dup_color.R, progdefaults.possible_dup_color.G, progdefaults.possible_dup_color.B));}
                     code1 {\#include <FL/Fl_Color_Chooser.H>}
                   }
                   Fl_Check_Button btnDupXchg1 {
                     label {Exchange In}
                     callback {progdefaults.dupxchg1 = o->value();
 progdefaults.changed = true;}
-                    tooltip {free form 1 must match} xywh {173 246 105 20} down_box DOWN_BOX
+                    tooltip {free form 1 must match} xywh {245 246 105 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.dupxchg1);}
                   }
                   Fl_Check_Button btnDupState {
                     label State
                     callback {progdefaults.dupstate = o->value();
 progdefaults.changed = true;}
-                    tooltip {State must match} xywh {293 246 70 20} down_box DOWN_BOX
+                    tooltip {State must match} xywh {370 246 70 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.dupstate);}
                   }
                   Fl_Value_Input nbrTimeSpan {
                     label minutes
                     callback {progdefaults.timespan = (int)o->value();
 progdefaults.changed = true;}
-                    tooltip {Enter time span in minutes} xywh {408 244 53 24} align 8 maximum 1440 step 1 value 120
+                    tooltip {Enter time span in minutes} xywh {463 244 53 24} align 8 maximum 1440 step 1 value 120
                     code0 {o->value(progdefaults.timespan);}
                     class Fl_Value_Input2
                   }
@@ -3560,7 +3577,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 609 365}
+        xywh {0 25 609 365} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 609 365} selection_color 50 align 9
@@ -6135,7 +6152,7 @@ WKFSK_init();} open
                   Fl_Group sel_WKFSK_monitor {
                     label Echo
                     callback {progStatus.WKFSK_monitor = o->index();
-WKFSK_init();} open selected
+WKFSK_init();} open
                     tooltip {Unshift on space} xywh {380 266 78 23} box DOWN_BOX color 7 align 4 when 1
                     code0 {o->add("Off|On");}
                     code1 {o->index(progStatus.WKFSK_monitor);}

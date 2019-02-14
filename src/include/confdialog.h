@@ -134,6 +134,7 @@ extern Fl_Check_Button *btnDupMode;
 extern Fl_Check_Button *btnDupTimeSpan;
 #include <FL/Fl_Color_Chooser.H>
 extern Fl_Button *btnDupColor;
+extern Fl_Button *btnPossibleDupColor;
 extern Fl_Check_Button *btnDupXchg1;
 extern Fl_Check_Button *btnDupState;
 extern Fl_Value_Input2 *nbrTimeSpan;

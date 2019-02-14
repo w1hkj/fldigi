@@ -403,10 +403,10 @@ static string FD_opband()
 //======================================================================
 //
 //======================================================================
-bool FD_dupcheck()
+int FD_dupcheck()
 {
-	if(!FD_socket) return false;
-	if (!FD_connected) return false;
+	if(!FD_socket) return 0;
+	if (!FD_connected) return 0;
 
 	string response;
 	string cmd = "DUPCHECK ";
@@ -417,17 +417,17 @@ bool FD_dupcheck()
 		MilliSleep(50);
 		FD_socket->recv(response);
 		if (response.empty())
-			return false;
+			return 0;
 		if (response.find("NODUP") != string::npos)
-			return false;
+			return 0;
 		if (response.find("DUP") != string::npos)
-			return true;
-		return false;
+			return 1;
+		return 0;
 	} catch (const SocketException& e) {
 		LOG_ERROR("Error %d, %s", e.error(), e.what());
 		FD_exit = true;
 	}
-	return false;
+	return 0;
 }
 
 //======================================================================

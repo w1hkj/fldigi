@@ -1531,6 +1531,9 @@
         ELEM_(RGB, dup_color, "dupcolor",                                               \
               "Callsign background color when duplicate detected",                      \
               {255, 110, 180})                                                          \
+        ELEM_(RGB, possible_dup_color, "duppossiblecolor",                              \
+              "Callsign background color when possible duplicate detected",             \
+              {255, 255, 150})                                                          \
         ELEM_(bool, EnableDupCheck, "ENABLEDUPCHECK",                                   \
               "Check for duplicates (contest)",                                         \
               true)                                                                     \

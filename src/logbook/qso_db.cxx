@@ -568,7 +568,7 @@ unsigned long cQsoDb::epoch_dt (const char *szdate, const char *sztime)
   return doe*60*60*24 + secs;
 }
 
-bool cQsoDb::duplicate(
+int cQsoDb::duplicate(
 		const char *callsign,
 		const char *szdate, const char *sztime, unsigned int interval, bool chkdatetime,
 		const char *freq, bool chkfreq,
@@ -576,19 +576,33 @@ bool cQsoDb::duplicate(
 		const char *mode, bool chkmode,
 		const char *xchg1, bool chkxchg1 )
 {
-	int f1, f2 = 0;
-	f1 = (int)(atof(freq)/1000.0);
 	bool b_freqDUP = true, b_stateDUP = true, b_modeDUP = true,
 		 b_xchg1DUP = true,
 		 b_dtimeDUP = true;
-	unsigned long datetime = epoch_dt(szdate, sztime);
-	unsigned long qsodatetime;
+	unsigned long datetime = 0L;
+	unsigned long qsodatetime = 0L;
+	int f1 = 0;
+	int f2 = 0;
+	int isdup = 0;
+
+	if (freq) f1 = (int)(atof(freq)/1000.0);
+	if (chkdatetime) datetime = epoch_dt(szdate, sztime);
 
 	for (int i = 0; i < nbrrecs; i++) {
 		if (strcasecmp(qsorec[i].getField(CALL), callsign) == 0) {
 // found callsign duplicate
-			b_freqDUP = b_stateDUP = b_modeDUP =
-				   	   b_xchg1DUP = b_dtimeDUP = false;
+			if (!chkdatetime && !chkfreq && !chkstate &&
+				!chkmode && !chkxchg1)
+				isdup = 2;
+			if (szdate == NULL)
+				return isdup;
+
+			b_freqDUP =
+			b_stateDUP =
+			b_modeDUP =
+			b_xchg1DUP =
+			b_dtimeDUP = false;
+
 			if (chkfreq) {
 				f2 = (int)atof(qsorec[i].getField(FREQ));
 				b_freqDUP = (f1 == f2);
@@ -614,11 +628,11 @@ bool cQsoDb::duplicate(
 			     (!chkmode     || (chkmode     && b_modeDUP)) &&
 			     (!chkxchg1    || (chkxchg1    && b_xchg1DUP)) &&
 			     (!chkdatetime || (chkdatetime && b_dtimeDUP))) {
-			     return true;
+			     isdup = 1;
 			 }
 		}
 	}
-	return false;
+	return isdup;
 }
 
 // set epoch interval test to 15 * 60
