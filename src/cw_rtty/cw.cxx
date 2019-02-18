@@ -1288,8 +1288,6 @@ int cw::tx_process()
 
 	c = get_tx_char();
 
-	if (use_nanoIO) set_nanoCW();
-
 	if (c == GET_TX_CHAR_NODATA) {
 		if (stopflag) {
 			stopflag = false;
