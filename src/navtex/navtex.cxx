@@ -211,6 +211,8 @@
 
 #include "FL/fl_ask.H"
 
+pthread_mutex_t  navtex_filter_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 /// This models a line of the file defining Navtex stations.
 class NavtexRecord
 {
@@ -968,6 +970,9 @@ private:
 	}
 
 	void configure_filters() {
+// do not allow filters to be changed during signal processing!
+		guard_lock filter_guard(&navtex_filter_mutex);
+
 		const int filtlen = 512;
 		if (m_mark_lowpass) delete m_mark_lowpass;
 		m_mark_lowpass = new fftfilt(m_baud_rate/m_sample_rate, filtlen);
@@ -1363,6 +1368,7 @@ private:
 		static const int bw[][2] = {
 			{ -deviation_f - 10, -deviation_f + 5 },
 			{  deviation_f - 5,  deviation_f + 10 } };
+// find mid frequency of power spectra in mark/space frequency interval
 		double max_carrier = wf->powerDensityMaximum( 2, bw );
 
 		/// Do not change the frequency too quickly if an image is received.
@@ -1478,17 +1484,19 @@ private:
 		* an end of emission idle signal alpha for at least 2 seconds.  */
 public:
 	void process_data(const double * data, int nb_samples) {
-		process_afc();
-		process_timeout();
-		for( int i =0; i < nb_samples; ++i ) {
-			int n_out;
 			cmplx z, zmark, zspace, *zp_mark, *zp_space;
 
-			short v = static_cast<short>(32767 * data[i]);
+		process_afc();
+		process_timeout();
+// prevent user waterfall interaction from changing filters!
+		guard_lock g( &navtex_filter_mutex );
+
+		for( int i =0; i < nb_samples; ++i ) {
+			int n_out;
 
 			m_time_sec = m_sample_count / m_sample_rate ;
 
-			double dv = v;
+			double dv = 32767 * data[i];
 			z = cmplx(dv, dv);
 
 			zmark = mixer(m_mark_phase, m_mark_f, z);

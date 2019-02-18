@@ -441,55 +441,60 @@ int WFdisp::peakFreq(int f0, int delta)
 
 double WFdisp::powerDensity(double f0, double bw)
 {
-	guard_lock waterfall_lock(&waterfall_mutex);
-
 	double pwrdensity = 0.0;
 	int flower = (int)((f0 - bw/2)),
 		fupper = (int)((f0 + bw/2));
 	if (flower < 0 || fupper > IMAGE_WIDTH)
 		return 0.0;
-	for (int i = flower; i <= fupper; i++)
-		pwrdensity += pwr[i];
+	{
+		guard_lock waterfall_lock(&waterfall_mutex);
+		for (int i = flower; i <= fupper; i++)
+			pwrdensity += pwr[i];
+	}
 	return pwrdensity/(bw+1);
 }
 
 /// Frequency of the maximum power for a given bandwidth. Used for AFC.
 double WFdisp::powerDensityMaximum(int bw_nb, const int (*bw)[2]) const
 {
-	guard_lock waterfall_lock(&waterfall_mutex);
+	if (bw_nb < 1) return carrierfreq;
 
-	double max_pwr = 0 ;
-	int f_lowest = bw[0][0];
-	int f_highest = bw[bw_nb-1][1];
-	if( f_lowest > f_highest ) abort();
-
-	for( int i = 0 ; i < bw_nb; ++i )
-	{
-		const int * p_bw = bw[i];
-		if( p_bw[0] > p_bw[1] ) abort();
-		for( int j = p_bw[0] ; j <= p_bw[1]; ++j )
-		{
-			max_pwr += pwr[ j - f_lowest ];
-		}
+	int fmax[bw_nb];
+	double pnbw[bw_nb];
+	int f_lowest = carrierfreq;
+	int f_highest = carrierfreq;
+	double max_pwr = 0;
+	for (int i = 0; i < bw_nb; i++) {
+		fmax[i] = carrierfreq;
+		pnbw[i] = 0;
 	}
 
-	double curr_pwr = max_pwr ;
-	int max_idx = -1 ;
-	/// Single pass to compute the maximum on this bandwidth.
-	for( int f = -f_lowest ; f < IMAGE_WIDTH - f_highest; ++f )
 	{
-		/// Difference with previous power.
-		for( int i = 0 ; i < bw_nb; ++i )
-		{
-			const int * p_bw = bw[i];
-			curr_pwr += pwr[ f + p_bw[1] ] - pwr[ f + p_bw[0] ];
-		}
-		if( curr_pwr > max_pwr ) {
-			max_idx = f ;
-			max_pwr = curr_pwr ;
+		guard_lock waterfall_lock(&waterfall_mutex);
+		for (int i = 0; i < bw_nb; i++) {
+			f_lowest = carrierfreq + bw[i][0];
+			if (f_lowest <= 0) f_lowest = 0;
+			f_highest = carrierfreq + bw[i][1];
+			if (f_highest > IMAGE_WIDTH) f_highest = IMAGE_WIDTH;
+			max_pwr = 0;
+			pnbw[i] = 0;
+			for (int n = f_lowest; n < f_highest; n++) {
+				if (pwr[n] > max_pwr) {
+					max_pwr = pwr[n];
+					fmax[i] = n;
+				}
+				pnbw[i] += pwr[n];
+			}
+			if (pnbw[i] == 0) return carrierfreq;
 		}
 	}
-	return max_idx ;
+	int fmid = 0;
+	double total_pwr = 0;
+	for (int i = 0; i < bw_nb; i++) total_pwr += pnbw[i];
+
+	for (int i = 0; i < bw_nb; i++) fmid += fmax[i] * pnbw[i] / total_pwr;
+
+	return fmid;
 }
 
 void WFdisp::setPrefilter(int v)
