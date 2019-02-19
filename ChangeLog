@@ -1,8 +1,23 @@
 
 
-=Version 4.1.0=
+=Version 4.1.01=
 
-2019-01-29  David Freese  <w1hkj@bellsouth.net>
+2019-02-18  David Freese  <w1hkj@bellsouth.net>
+
+	1d4798c: CW h/w ptt
+	ca3e777: nanoIO
+	a943ae3: NAVTEX abort
+	ce586b8: dup-check
+	57cc6ea: ADIF submode
+	96e1f05: WF only bug fix
+	06c56b3: LotW
+	c5af7e0: Pedantic warnings
+	892336b: SD counties
+	044dd29: QRZ.com
+	aeed471: SV1GRB test report
+
+
+=Version 4.1.0=
 
 	39a76e8: po update
 	79c67d3: WWV doc
