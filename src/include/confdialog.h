@@ -427,6 +427,7 @@ extern Fl_Button *btn_cwfsk_save;
 extern Fl_Button *btn_cwfsk_query;
 extern Fl_ListBox *listbox_incr;
 extern Fl_ListBox *listbox_nano_keyer;
+extern Fl_Check_Button *btn_disable_CW_PTT;
 extern Fl_Group *tabDomEX;
 extern Fl_Input2 *txtSecondary;
 extern Fl_Check_Button *valDominoEX_FILTER;

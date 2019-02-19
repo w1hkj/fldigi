@@ -3723,6 +3723,13 @@ set_nanoIO_keyer(o->index());
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_disable_CW_PTT=(Fl_Check_Button *)0;
+
+static void cb_btn_disable_CW_PTT(Fl_Check_Button* o, void*) {
+  progdefaults.disable_CW_PTT=o->value();
+progdefaults.changed=true;
+}
+
 Fl_Group *tabDomEX=(Fl_Group *)0;
 
 Fl_Input2 *txtSecondary=(Fl_Input2 *)0;
@@ -8194,6 +8201,7 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 590, 285, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10371,16 +10379,15 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 609, 365, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 609, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 600, 340, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 600, 340);
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tabsCW_general->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11355,7 +11362,6 @@ ded Morse characters."));
               } // Fl_Group* tabsCW_ext_chars
               { tab_nanoCW = new Fl_Group(0, 75, 600, 315, _("nanoCW"));
                 tab_nanoCW->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tab_nanoCW->hide();
                 { Fl_ComboBox* o = select_nanoCW_CommPort = new Fl_ComboBox(86, 85, 420, 23, _("Ser. Port"));
                 select_nanoCW_CommPort->tooltip(_("nanoIO serial port"));
                 select_nanoCW_CommPort->box(FL_DOWN_BOX);
@@ -11467,6 +11473,12 @@ ded Morse characters."));
                 o->index(progdefaults.nanoIO_CW_keyer);
                 listbox_nano_keyer->end();
                 } // Fl_ListBox* listbox_nano_keyer
+                { Fl_Check_Button* o = btn_disable_CW_PTT = new Fl_Check_Button(387, 145, 70, 15, _("disable PTT"));
+                btn_disable_CW_PTT->tooltip(_("Do not send CAT PTT signal"));
+                btn_disable_CW_PTT->down_box(FL_DOWN_BOX);
+                btn_disable_CW_PTT->callback((Fl_Callback*)cb_btn_disable_CW_PTT);
+                o->value(progdefaults.disable_CW_PTT);
+                } // Fl_Check_Button* btn_disable_CW_PTT
                 tab_nanoCW->end();
               } // Fl_Group* tab_nanoCW
               tabsCW->end();
@@ -12393,6 +12405,7 @@ ded Morse characters."));
             tabPSK->end();
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 609, 340, _("TTY"));
+            tabRTTY->hide();
             { tabsRTTY = new Fl_Tabs(0, 50, 609, 340);
               tabsRTTY->selection_color(FL_LIGHT1);
               { tab_Rx_TTY = new Fl_Group(0, 75, 600, 315, _("Rx"));

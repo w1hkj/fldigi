@@ -179,6 +179,10 @@ void exec_flrig_ptt() {
 }
 
 void set_flrig_ptt(int on) {
+	if (progdefaults.disable_CW_PTT && 
+		active_modem->get_mode() == MODE_CW &&
+		progStatus.nanoCW_online)
+		return;
 	guard_lock flrig_lock(&mutex_flrig);
 	new_ptt = on;
 }

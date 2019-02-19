@@ -1334,6 +1334,9 @@
         ELEM_(int, nanoIO_CW_keyer, "NANOIOCWKEYER",                                    \
               "0 - IambicA, 1 - IambicB, 2 - Straight",                                 \
               0)                                                                        \
+        ELEM_(bool, disable_CW_PTT, "disable_CW_PTT",                                   \
+              "Disable CAT PTT signal during CW ops with expernal h/w",                 \
+              0)                                                                        \
         /* TTY h/w interface */                                                         \
         ELEM_(int, xcvr_FSK_sideband, "XCVRFSKSIDEBAND",                                \
               "0 = LSB | 1 = USB",                                                      \

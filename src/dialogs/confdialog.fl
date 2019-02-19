@@ -439,8 +439,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 600 365} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 600 365} when 1 hide
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -3577,21 +3577,21 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 609 365} hide
+        xywh {0 25 609 365}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 609 365} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 340} selection_color 50
             } {
               Fl_Group tabsCW_general {
                 label General
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -4507,8 +4507,8 @@ for information regarding extended Morse characters.} open
                 }
               }
               Fl_Group tab_nanoCW {
-                label nanoCW
-                xywh {0 75 600 315} align 5 hide
+                label nanoCW selected
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group select_nanoCW_CommPort {
                   label {Ser. Port}
@@ -4598,6 +4598,13 @@ progdefaults.changed = true;} open
                   code1 {o->index(progdefaults.nanoIO_CW_keyer);}
                   class Fl_ListBox
                 } {}
+                Fl_Check_Button btn_disable_CW_PTT {
+                  label {disable PTT}
+                  callback {progdefaults.disable_CW_PTT=o->value();
+progdefaults.changed=true;}
+                  tooltip {Do not send CAT PTT signal} xywh {387 145 70 15} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.disable_CW_PTT);}
+                }
               }
             }
           }
@@ -5515,7 +5522,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label TTY open
-            xywh {0 50 609 340}
+            xywh {0 50 609 340} hide
           } {
             Fl_Tabs tabsRTTY {open
               xywh {0 50 609 340} selection_color 50
