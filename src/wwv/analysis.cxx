@@ -64,6 +64,7 @@ anal::~anal()
 {
 	delete bpfilt;
 	delete ffilt;
+	delete afilt;
 }
 
 void anal::restart()
@@ -78,6 +79,7 @@ void anal::restart()
 	set_bandwidth(ANAL_BW);
 
 	ffilt->reset();
+	afilt->reset();
 
 	elapsed = 0.0;
 	fout = 0.0;
@@ -106,6 +108,7 @@ anal::anal()
 
 	bpfilt = (fftfilt *)0;
 	ffilt = new Cmovavg(FILT_LEN * samplerate);
+	afilt = new Cmovavg(FILT_LEN * samplerate);
 
 	analysisFilename = TempDir;
 	analysisFilename.append("analysis.csv");
@@ -138,7 +141,7 @@ void anal::start_csv()
 		LOG_PERROR("fl_fopen");
 		return;
 	}
-	fprintf(out, "Clock,Elapsed Time,Freq Error,RF\n");
+	fprintf(out, "Clock,Elapsed Time,Freq Error,RF,|amp|,20log(|amp|)\n");
 	fclose(out);
 
 	put_status("Writing csv file");
@@ -166,9 +169,12 @@ void anal::writeFile()
 		LOG_PERROR("fl_fopen");
 		return;
 	}
-	fprintf(out, "%02d:%02d:%02d, %8.3f, %8.3f, %12.3f\n",
-		tm.tm_hour, tm.tm_min, tm.tm_sec, elapsed, fout,
-		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout)));
+	fprintf(out, "%02d:%02d:%02d, %8.3f, %8.3f, %12.3f, %8.3f, %8.2f\n",
+		tm.tm_hour, tm.tm_min, tm.tm_sec, elapsed,
+		fout,
+		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout)),
+		amp,
+		20.0 * log10( (amp == 0 ? 1e-6 : amp) ) );
 	fclose(out);
 
 	put_status("Writing csv file");
@@ -204,6 +210,7 @@ int anal::rx_process(const double *buf, int len)
 			prevsmpl = zp[j];
 // filter using moving average filter
 			fout = ffilt->run(fin);
+			amp  = afilt->run(abs(zp[j]));
 			}
 		} //else prevsmpl = z;
 	}

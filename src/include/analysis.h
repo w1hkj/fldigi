@@ -45,6 +45,7 @@ private:
 
 	fftfilt *bpfilt;
 	Cmovavg *ffilt;
+	Cmovavg *afilt;
 
 	double pipe[PIPE_LEN];
 
@@ -52,6 +53,7 @@ private:
 	cmplx prevsmpl;
 
 	double		fout;
+	double		amp;
 	long int	wf_freq;
 	double      dspcnt;
 	long int	passno;
