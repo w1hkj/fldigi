@@ -46,6 +46,8 @@
 #include <exception>
 #include <cstring>
 
+#define S_BUFSIZ 16384
+
 class SocketException : public std::exception
 {
 public:
@@ -204,7 +206,7 @@ private:
 	unsigned int saddr_size;
 	int *use_kiss_dual_port;
 	unsigned int dual_port_number;
-   bool connected_flag;
+	bool connected_flag;
 };
 
 #endif // SOCKET_H_

@@ -742,6 +742,7 @@ void trx_reset_loop()
 			}
 		}
 		unsigned long tm = zmsec() - tm1;
+		if (tm < 0) tm = 0;
 		if (i == 10) {
 			if (RXscard) delete RXscard;
 			if (TXscard) delete TXscard;

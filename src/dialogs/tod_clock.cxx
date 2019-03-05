@@ -57,16 +57,20 @@
 
 LOG_FILE_SOURCE(debug::LOG_FD);
 
+#define TX_TIMEOUT 60 //*5		// 5 minute timeout
+
 using namespace std;
 
 static pthread_t TOD_thread;
 static pthread_mutex_t TX_mutex     = PTHREAD_MUTEX_INITIALIZER;
-
-static unsigned long  _zmsec = 0;
+static pthread_mutex_t time_mutex   = PTHREAD_MUTEX_INITIALIZER;
 
 static char ztbuf[20] = "20120602 123000";
 
-#define TX_TIMEOUT 60 //*5		// 5 minute timeout
+static struct timeval tx_start_val;
+static struct timeval tx_last_val;
+static struct timeval start_val;
+static struct timeval now_val;
 
 extern void xmtrcv_cb(Fl_Widget *, void *);
 
@@ -103,7 +107,14 @@ void stop_deadman()
 
 const unsigned long zmsec(void)
 {
-	return _zmsec;
+	struct timeval t1;
+	{
+		guard_lock lk(&time_mutex);
+		t1 = now_val;
+	}
+	unsigned long msecs = (t1.tv_sec % 10000) * 1000;
+	msecs += t1.tv_usec * 1000;
+	return msecs;
 }
 
 const char* zdate(void)
@@ -136,7 +147,9 @@ void show_tx_timer()
 {
 	if (!tx_timer) return;
 	if (progdefaults.show_tx_timer && tx_timer_active) {
-		snprintf(tx_time, sizeof(tx_time),"%02d:%02d", tx_mins, tx_secs);
+		snprintf(tx_time, sizeof(tx_time),"%02d:%02d", 
+			(now_val.tv_sec - tx_start_val.tv_sec)/60,
+			(now_val.tv_sec - tx_start_val.tv_sec) % 60 );
 		tx_timer->color(FL_DARK_RED);
 		tx_timer->labelcolor(FL_YELLOW);
 		tx_timer->label(tx_time);
@@ -152,7 +165,7 @@ void show_tx_timer()
 
 void start_tx_timer()
 {
-	tx_mins = 0; tx_secs = 0;
+	tx_last_val = tx_start_val = now_val;
 	tx_timer_active = true;
 	REQ(show_tx_timer);
 }
@@ -165,23 +178,18 @@ void stop_tx_timer()
 
 void update_tx_timer()
 {
-	tx_secs++;
-	if (tx_secs == 60) {
-		tx_secs = 0;
-		tx_mins++;
-	}
+	if (tx_last_val.tv_sec == now_val.tv_sec) return;
+	tx_last_val = now_val;
 	show_tx_timer();
+	service_deadman();
 }
 
 void init_ztime()
 {
 	struct tm tm;
 	time_t t_temp;
-	struct timeval tv;
 
-	gettimeofday(&tv, NULL);
-
-	t_temp=(time_t)tv.tv_sec;
+	t_temp=(time_t)now_val.tv_sec;
 	gmtime_r(&t_temp, &tm);
 	if (!strftime(ztbuf, sizeof(ztbuf), "%Y%m%d %H%M%S", &tm))
 		memset(ztbuf, 0, sizeof(ztbuf));
@@ -193,11 +201,8 @@ void ztimer(void *)
 {
 	struct tm tm;
 	time_t t_temp;
-	struct timeval tv;
 
-	gettimeofday(&tv, NULL);
-
-	t_temp=(time_t)tv.tv_sec;
+	t_temp=(time_t)now_val.tv_sec;
 	gmtime_r(&t_temp, &tm);
 	if (!strftime(ztbuf, sizeof(ztbuf), "%Y%m%d %H%M%S", &tm))
 		memset(ztbuf, 0, sizeof(ztbuf));
@@ -215,7 +220,6 @@ void ztimer(void *)
 	inpTimeOff2->redraw();
 	inpTimeOff3->redraw();
 
-	service_deadman();
 }
 
 //======================================================================
@@ -227,27 +231,22 @@ void *TOD_loop(void *args)
 {
 	SET_THREAD_ID(TOD_TID);
 
-	int count = 20;
 	while(1) {
 
 		if (TOD_exit) break;
 
+		{
+			guard_lock tmlock(&time_mutex);
+			gettimeofday(&now_val, NULL);
+		}
 		if (first_call) {
-			struct timeval tv;
-			gettimeofday(&tv, NULL);
-			double st = 1000.0 - tv.tv_usec / 1e3;
-			MilliSleep(st);
-			first_call = false;
-			_zmsec += st;
+			start_val = now_val;
 			init_ztime();
+			first_call = false;
 		} else {
-			MilliSleep(50);
-			_zmsec += 50;
-		}
-		if (--count == 0) {
 			Fl::awake(ztimer);
-			count = 20;
 		}
+		MilliSleep(50);
 	}
 
 // exit the TOD thread

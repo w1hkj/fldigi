@@ -58,6 +58,7 @@
 
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <cerrno>
 #include <cstring>
 #include <cstdlib>
@@ -67,6 +68,8 @@
 
 //#undef NDEBUG
 #include "debug.h"
+
+#include "main.h"
 
 #include "socket.h"
 
@@ -506,7 +509,7 @@ Socket::Socket(const Address& addr)
 	windows_init();
 #endif
 
-	buffer = new char[BUFSIZ];
+	buffer = new char[S_BUFSIZ];
 
 	memset(&timeout, 0, sizeof(timeout));
 	anum = 0;
@@ -528,7 +531,7 @@ Socket::Socket(int fd)
 #ifdef __MINGW32__
 	windows_init();
 #endif
-	buffer = new char[BUFSIZ];
+	buffer = new char[S_BUFSIZ];
 	anum = 0;
 	memset(&timeout, 0, sizeof(timeout));
 
@@ -557,7 +560,7 @@ Socket::Socket(const Socket& s)
 #ifdef __MINGW32__
 	windows_init();
 #endif
-	buffer = new char[BUFSIZ];
+	buffer = new char[S_BUFSIZ];
 	ainfo = address.get(anum);
 	memcpy(&timeout, &s.timeout, sizeof(timeout));
 	s.set_autoclose(false);
@@ -1097,16 +1100,16 @@ size_t Socket::recv(void* buf, size_t len)
 	// if we have a nonblocking socket and a nonzero timeout,
 	// wait for fd to become writeable
 	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
-		if (!wait(0))
+		if (!wait(0)) {
 			return 0;
-
-	ssize_t r = ::recv(sockfd, (char*)buf, len, 0);
-	if (r == 0)
-		shutdown(sockfd, SHUT_RD);
-	else if (r == -1) {
-		if (errno != EAGAIN)
+	}
+	ssize_t r = 0;
+	try {
+		r = ::recv(sockfd, (char*)buf, len, 0);
+		if (r < 0 && errno != EAGAIN)
 			throw SocketException(errno, "recv");
-		r = 0;
+	} catch (SocketException &e) {
+		throw e;
 	}
 
 	return r;
@@ -1121,35 +1124,25 @@ size_t Socket::recv(void* buf, size_t len)
 ///
 size_t Socket::recv(string& buf)
 {
-	size_t n = 0;
-	ssize_t r;
-	int tout = timeout.tv_sec * 1000 + (timeout.tv_usec / 1000);
-	int msec = tout;
-	try {
-		r = ::recv(sockfd, buffer, BUFSIZ, 0);
-		while (r <= 0 && tout > 0) {
-			MilliSleep(10);
-			tout -= 10;
-			r = ::recv(sockfd, buffer, BUFSIZ, 0);
-		}
-		if (r == 0) {
-			LOG_VERBOSE("%s", "REQ TIMED OUT: shutdown socket");
-			shutdown(sockfd, SHUT_RD);
+	ssize_t r = 0;
+	// if we have a nonblocking socket and a nonzero timeout,
+	// wait for fd to become writeable
+	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
+		if (!wait(0)) {
 			return 0;
-		}
+	}
+	try {
 		buf.clear();
-		while (r  > 0 && tout > 0) {
-			buf.append(buffer, r);
-			n += r;
-			r = ::recv(sockfd, buffer, BUFSIZ, 0);
-			tout -= 10;
-			MilliSleep(10);
-		}
+		memset(buffer, 0, S_BUFSIZ);
+		r = ::recv(sockfd, buffer, S_BUFSIZ, 0);
+		if (r < 0 && errno != EAGAIN)
+			throw SocketException(errno, "recv");
+		if (r > 0)
+			buf = buffer;
 	} catch (SocketException &e) {
 		throw e;
 	}
-	LOG_VERBOSE("Response took %d msec", msec - tout);
-	return n;
+	return r;
 }
 
 ///
@@ -1433,7 +1426,7 @@ size_t Socket::recvFrom(std::string& buf)
 	size_t n = 0;
 	ssize_t r;
 	try {
-		while ((r = recvFrom(buffer, BUFSIZ)) > 0) {
+		while ((r = recvFrom(buffer, S_BUFSIZ)) > 0) {
 			buf.reserve(buf.length() + r);
 			buf.append(buffer, r);
 			n += r;

@@ -183,7 +183,7 @@ void debug::stop(void)
 }
 
 static char fmt[1024];
-static char dtext[16384];
+static char dtext[32768];
 
 void debug::log(level_e level, const char* func, const char* srcf, int line, const char* format, ...)
 {

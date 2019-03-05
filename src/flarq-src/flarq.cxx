@@ -97,6 +97,7 @@
 
 // directory structures for all NBEMS applications
 static void checkdirectories(void);
+string HomeDir;
 string NBEMS_dir;
 string ARQ_dir;
 string ARQ_files_dir;
@@ -1830,6 +1831,7 @@ int main (int argc, char *argv[] )
 			NBEMS_dir.append(".nbems/");
 		}
 #endif
+		HomeDir = NBEMS_dir;
 	}
 
 	checkdirectories();
