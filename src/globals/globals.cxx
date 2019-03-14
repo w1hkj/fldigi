@@ -215,7 +215,10 @@ std::string adif2export(std::string adif)
 		if (test == mode_info[n].adif_name)
 			return mode_info[n].export_mode;
 	}
-	return "DIGI";
+	std::string retstr = adif;
+	for (size_t n = 0; n < retstr.length(); n++)
+		retstr[n] = toupper(retstr[n]);
+	return retstr;
 }
 
 std::string adif2submode(std::string adif)
