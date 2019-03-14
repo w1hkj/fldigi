@@ -135,8 +135,6 @@ const char* zshowtime(void) {
 }
 
 static char tx_time[6];
-static int tx_mins;
-static int tx_secs;
 
 static bool TOD_exit = false;
 static bool TOD_enabled = false;
@@ -148,8 +146,8 @@ void show_tx_timer()
 	if (!tx_timer) return;
 	if (progdefaults.show_tx_timer && tx_timer_active) {
 		snprintf(tx_time, sizeof(tx_time),"%02d:%02d", 
-			(now_val.tv_sec - tx_start_val.tv_sec)/60,
-			(now_val.tv_sec - tx_start_val.tv_sec) % 60 );
+			(int)((now_val.tv_sec - tx_start_val.tv_sec)/60),
+			(int)((now_val.tv_sec - tx_start_val.tv_sec) % 60 ));
 		tx_timer->color(FL_DARK_RED);
 		tx_timer->labelcolor(FL_YELLOW);
 		tx_timer->label(tx_time);
