@@ -48,6 +48,8 @@
 #include "date.h"
 #include "configuration.h"
 #include "flmisc.h"
+#include "strutil.h"
+#include "qrunner.h"
 
 #include "logsupport.h"
 #include "lookupcall.h"
@@ -306,6 +308,10 @@ void submit_ADIF(cQsoRec &rec)
 	putadif(QSL_VIA, rec.getField(QSL_VIA));
 	putadif(QSLRDATE, rec.getField(QSLRDATE));
 	putadif(QSLSDATE, rec.getField(QSLSDATE));
+	putadif(EQSLRDATE, rec.getField(EQSLRDATE));
+	putadif(EQSLSDATE, rec.getField(EQSLSDATE));
+	putadif(LOTWRDATE, rec.getField(LOTWRDATE));
+	putadif(LOTWSDATE, rec.getField(LOTWSDATE));
 
 	writeADIF();
 }
@@ -433,9 +439,95 @@ void EQSL_close(void);
 void EQSL_send();
 
 static std::string EQSL_url = "";
+static std::string SEND_url = "";
 static std::string EQSL_xmlpage = "";
 
 static bool EQSLEXIT = false;
+
+void update_eQSL_fields(void *)
+{
+	std::string call;
+	std::string date;
+	std::string mode = "MODE";
+
+//std::cout << "update_eQSL_fields" << std::endl;
+//std::cout << EQSL_url << std::endl;
+
+	size_t p = EQSL_url.find("<CALL:");
+	if (p == std::string::npos) return;
+	p = EQSL_url.find(">", p);
+	if (p == std::string::npos) return;
+	p++;
+	size_t p2 = EQSL_url.find("<", p);
+	if (p2 == std::string::npos) return;
+	call = EQSL_url.substr(p, p2 - p);
+	p = EQSL_url.find("<QSO_DATE:");
+	if (p == std::string::npos) return;
+	p = EQSL_url.find(">", p);
+	if (p == std::string::npos) return;
+	p++;
+	p2 = EQSL_url.find("<", p);
+	if (p2 == std::string::npos) return;
+	date = EQSL_url.substr(p, p2 - p - 1);
+	p = EQSL_url.find("<MODE:");
+	if (p != std::string::npos) {
+		p = EQSL_url.find(">", p);
+		if (p != std::string::npos) {
+			p2 = EQSL_url.find("<", ++p);
+			if (p2 != std::string::npos)
+				mode = EQSL_url.substr(p, p2 - p);
+		}
+	}
+	p = EQSL_url.find("<SUBMODE:");
+	if (p != std::string::npos) {
+		p = EQSL_url.find(">", p);
+		if (p != std::string::npos) {
+			p2 = EQSL_url.find("<", ++p);
+			if (p2 != std::string::npos) {
+				std::string submode = EQSL_url.substr(p, p2 - p);
+				if (!submode.empty()) mode = submode;
+			}
+		}
+	}
+	SearchLastQSO(call.c_str());
+	inpEQSLsentdate_log->value(date.c_str());
+	updateRecord();
+
+	std::string qsl_logged = "eQSL logged: ";
+	qsl_logged.append(call).append(" on ").append(mode);
+
+	notify_dialog *eqsl_ok = new notify_dialog;
+	eqsl_ok->notify(qsl_logged.c_str(), 5.0, true);
+
+	LOG_INFO("%s", qsl_logged.c_str());
+}
+
+static void cannot_connect_to_eqsl(void *)
+{
+	std::string msg = "Cannot connect to www.eQSL.cc";
+
+//std::cout << msg << std::endl;
+
+	notify_dialog *eqsl_notify = new notify_dialog;
+	eqsl_notify->notify(msg.c_str(), 5.0, true);
+
+}
+
+static void eqsl_error(void *)
+{
+	size_t p = EQSL_xmlpage.find("Error:");
+	size_t p2 = EQSL_xmlpage.find('\n', p);
+	std::string errstr = "eQSL error:";
+	errstr.append("testing 1.2.3");
+	errstr.append(EQSL_xmlpage.substr(p, p2 - p - 1));
+	errstr.append("\n").append(EQSL_url.substr(0,40));
+
+//std::cout << errstr << std::endl;
+
+	notify_dialog *eqsl_notify = new notify_dialog;
+	eqsl_notify->notify(errstr.c_str(), 5.0, true);
+	LOG_ERROR("%s", errstr.c_str());
+}
 
 static void *EQSL_loop(void *args)
 {
@@ -453,13 +545,14 @@ static void *EQSL_loop(void *args)
 			return NULL;
 
 		size_t p;
-		if (get_http(EQSL_url, EQSL_xmlpage, 5.0) <= 0)
-			LOG_ERROR("%s", "eQSL not available");
+		if (get_http(SEND_url, EQSL_xmlpage, 5.0) <= 0) {
+			REQ(cannot_connect_to_eqsl, (void *)0);
+		}
 		else if ((p = EQSL_xmlpage.find("Error:")) != std::string::npos) {
-			size_t p2 = EQSL_xmlpage.find('\n', p);
-			LOG_ERROR("%s\n%s", EQSL_xmlpage.substr(p, p2 - p - 1).c_str(), EQSL_url.c_str());
-		} else
-			LOG_INFO("eQSL logged %s", EQSL_url.c_str());
+			REQ(eqsl_error, (void *)0);
+		} else {
+			REQ(update_eQSL_fields, (void *)0);
+		}
 
 	}
 	return NULL;
@@ -507,7 +600,7 @@ void sendEQSL(const char *url)
 		EQSL_init();
 
 	pthread_mutex_lock(&EQSLmutex);
-	EQSL_url = url;
+	SEND_url = url;
 	pthread_cond_signal(&EQSLcond);
 	pthread_mutex_unlock(&EQSLmutex);
 }
@@ -519,7 +612,8 @@ void makeEQSL(const char *message)
 {
 	char sztemp[100];
 	std::string tempstr;
-	std::string eQSL_url;
+	std::string eQSL_data;
+	std::string eQSL_header;
 	std::string msg;
 	size_t p = 0;
 
@@ -537,21 +631,22 @@ void makeEQSL(const char *message)
 		tempstr.append("/").append(mode_info[active_modem->get_mode()].export_submode);
 		msg.replace(p, 6, tempstr);
 	}
-// eqsl url header
-	eQSL_url = "http://www.eqsl.cc/qslcard/importADIF.cfm?ADIFdata=upload <adIF_ver:5>2.1.9";
+
+//	eQSL_data = "test <adIF_ver:4>4.0 ";
+	eQSL_data = "upload <adIF_ver:4>4.0 ";
 	snprintf(sztemp, sizeof(sztemp),"<EQSL_USER:%d>%s<EQSL_PSWD:%d>%s",
 		static_cast<int>(progdefaults.eqsl_id.length()),
-		progdefaults.eqsl_id.c_str(),
+		ucasestr(progdefaults.eqsl_id).c_str(),
 		static_cast<int>(progdefaults.eqsl_pwd.length()),
 		progdefaults.eqsl_pwd.c_str());
-	eQSL_url.append(sztemp);
-	eQSL_url.append("<PROGRAMID:6>FLDIGI<EOH>");
+	eQSL_data.append(sztemp);
+	eQSL_data.append("<PROGRAMID:6>FLDIGI<EOH>");
 // eqsl nickname
 	if (!progdefaults.eqsl_nick.empty()) {
 		snprintf(sztemp, sizeof(sztemp), "<APP_EQSL_QTH_NICKNAME:%d>%s",
 			static_cast<int>(progdefaults.eqsl_nick.length()),
 			progdefaults.eqsl_nick.c_str());
-		eQSL_url.append(sztemp);
+		eQSL_data.append(sztemp);
 	}
 
 // eqsl record
@@ -560,37 +655,41 @@ void makeEQSL(const char *message)
 	snprintf(sztemp, sizeof(sztemp), "<BAND:%d>%s",
 		static_cast<int>(tempstr.length()),
 		tempstr.c_str());
-	eQSL_url.append(sztemp);
+	eQSL_data.append(sztemp);
 // call
 	tempstr = inpCall->value();
 	snprintf(sztemp, sizeof(sztemp), "<CALL:%d>%s",
 		static_cast<int>(tempstr.length()),
 		tempstr.c_str());
-	eQSL_url.append(sztemp);
+	eQSL_data.append(sztemp);
 // mode
 	tempstr = mode_info[active_modem->get_mode()].export_mode;
 
 	snprintf(sztemp, sizeof(sztemp), "<MODE:%d>%s",
 		static_cast<int>(tempstr.length()),
 		tempstr.c_str());
-	eQSL_url.append(sztemp);
+	eQSL_data.append(sztemp);
 // submode
 	tempstr = mode_info[active_modem->get_mode()].export_submode;
-
-	snprintf(sztemp, sizeof(sztemp), "<SUBMODE:%d>%s",
-		static_cast<int>(tempstr.length()),
-		tempstr.c_str());
-	eQSL_url.append(sztemp);
+	if (!tempstr.empty()) {
+		snprintf(sztemp, sizeof(sztemp), "<SUBMODE:%d>%s",
+			static_cast<int>(tempstr.length()),
+			tempstr.c_str());
+		eQSL_data.append(sztemp);
+	}
 // qso date
-	if (progdefaults.eqsl_datetime_off)
+	if (progdefaults.eqsl_datetime_off) {
+		tempstr = inpDate_log->value();
 		snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s",
-			static_cast<int>(sDate_on.length()),
-			sDate_off.c_str());
-	else
+			static_cast<int>(tempstr.length()),
+			tempstr.c_str());
+	} else  {
+		tempstr = inpDateOff_log->value();
 		snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s",
-			static_cast<int>(sDate_on.length()),
-			sDate_on.c_str());
-	eQSL_url.append(sztemp);
+			static_cast<int>(tempstr.length()),
+			tempstr.c_str());
+	}
+	eQSL_data.append(sztemp);
 // qso time
 	if (progdefaults.eqsl_datetime_off)
 		tempstr = inpTimeOff->value();
@@ -599,31 +698,41 @@ void makeEQSL(const char *message)
 	snprintf(sztemp, sizeof(sztemp), "<TIME_ON:%d>%s",
 		static_cast<int>(tempstr.length()),
 		tempstr.c_str());
-	eQSL_url.append(sztemp);
+	eQSL_data.append(sztemp);
 // rst sent
 	tempstr = inpRstOut->value();
 	snprintf(sztemp, sizeof(sztemp), "<RST_SENT:%d>%s",
 		static_cast<int>(tempstr.length()),
 		tempstr.c_str());
-	eQSL_url.append(sztemp);
+	eQSL_data.append(sztemp);
 // message
 	if (!msg.empty()) {
 		snprintf(sztemp, sizeof(sztemp), "<QSLMSG:%d>%s",
 			static_cast<int>(msg.length()),
 			msg.c_str());
-		eQSL_url.append(sztemp);
+		eQSL_data.append(sztemp);
 	}
-	eQSL_url.append("<EOR>");
+	eQSL_data.append("<EOR>");
+
+
+	eQSL_header = progdefaults.eqsl_www_url;
+
+	EQSL_url.assign(eQSL_header).append(eQSL_data);
 
 	tempstr.clear();
-	for (size_t n = 0; n < eQSL_url.length(); n++) {
-		if (eQSL_url[n] == ' ' || eQSL_url[n] == '\n') tempstr.append("%20");
-		else if (eQSL_url[n] == '<') tempstr.append("%3c");
-		else if (eQSL_url[n] == '>') tempstr.append("%3e");
-		else if (eQSL_url[n] > ' ' && eQSL_url[n] <= '}')
-			tempstr += eQSL_url[n];
+	for (size_t n = 0; n < eQSL_data.length(); n++) {
+		if (eQSL_data[n] == ' ' || eQSL_data[n] == '\n') tempstr.append("%20");
+		else if (eQSL_data[n] == '<') tempstr.append("%3C");
+		else if (eQSL_data[n] == '>') tempstr.append("%3E");
+		else if (eQSL_data[n] == '_') tempstr.append("%5F");
+		else if (eQSL_data[n] == ':') tempstr.append("%3A");
+		else if (eQSL_data[n] > ' ' && eQSL_data[n] <= '}')
+			tempstr += eQSL_data[n];
 	}
 
-	sendEQSL(tempstr.c_str());
+	eQSL_data = eQSL_header;
+	eQSL_data.append(tempstr);
+
+	sendEQSL(eQSL_data.c_str());
 
 }

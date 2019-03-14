@@ -1045,6 +1045,9 @@
               true)                                                                     \
         ELEM_(bool, QRZchanged, "", "",  false)                                         \
         /* eQSL */                                                                      \
+        ELEM_(std::string, eqsl_www_url, "EQSL_url",                                    \
+              "eQSL web site",                                                          \
+             "http://www.eqsl.cc/qslcard/importADIF.cfm?ADIFdata=")                     \
         ELEM_(std::string, eqsl_id, "EQSL_ID",                                          \
               "eQSL login id",                                                          \
               "")                                                                       \

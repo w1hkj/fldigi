@@ -9019,7 +9019,7 @@ if (progdefaults.kml_enabled) {
         } {
           Fl_Group {} {
             label {Call Lookup} open
-            xywh {0 50 675 340}
+            xywh {0 50 675 340} hide
           } {
             Fl_Group {} {
               label {Web Browser lookup} open
@@ -9099,7 +9099,7 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group {} {
-              label {Data base lookup} open selected
+              label {Data base lookup} open
               xywh {8 188 585 195} box ENGRAVED_FRAME align 21
             } {
               Fl_Round_Button btnQRZXMLnotavailable {
@@ -9210,25 +9210,34 @@ progdefaults.changed= true;}
           }
           Fl_Group tabEQSL {
             label eQSL open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
+            Fl_Input inpEQSL_www_url {
+              label {www url}
+              callback {progdefaults.eqsl_www_url = o->value();
+progdefaults.changed = true;} selected
+              tooltip {Your login name} xywh {155 59 390 22}
+              code0 {o->value(progdefaults.eqsl_www_url.c_str());}
+              code1 {o->labelsize(FL_NORMAL_SIZE);}
+              class Fl_Input2
+            }
             Fl_Input inpEQSL_id {
               label {User ID}
               callback {progdefaults.eqsl_id = o->value();
 progdefaults.changed = true;}
-              tooltip {Your login name} xywh {154 60 150 22}
+              tooltip {Your login name} xywh {154 82 150 22}
               code0 {o->value(progdefaults.eqsl_id.c_str());}
-              code1 {inpEQSL_id->labelsize(FL_NORMAL_SIZE);}
+              code1 {o->labelsize(FL_NORMAL_SIZE);}
               class Fl_Input2
             }
             Fl_Input inpEQSL_pwd {
               label Password
               callback {progdefaults.eqsl_pwd = o->value();
 progdefaults.changed = true;}
-              tooltip {Your login password} xywh {154 87 150 22}
+              tooltip {Your login password} xywh {154 105 150 22}
               code0 {o->value(progdefaults.eqsl_pwd.c_str());}
               code1 {o->type(FL_SECRET_INPUT);}
-              code2 {inpEQSL_pwd->labelsize(FL_NORMAL_SIZE);}
+              code2 {o->labelsize(FL_NORMAL_SIZE);}
               class Fl_Input2
             }
             Fl_Button btnEQSL_pwd_show {
@@ -9236,67 +9245,67 @@ progdefaults.changed = true;}
               callback {inpEQSL_pwd->type(inpEQSL_pwd->type() ^ FL_SECRET_INPUT);
 inpEQSL_pwd->redraw();
 o->label((inpEQSL_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
-              tooltip {Show password in plain text} xywh {310 87 70 22}
+              tooltip {Show password in plain text} xywh {310 105 70 22}
             }
             Fl_Input inpEQSL_nick {
               label {QTH Nickname}
               callback {progdefaults.eqsl_nick = o->value();
 progdefaults.changed = true;}
-              tooltip {Your login name} xywh {154 115 150 22}
+              tooltip {Your login name} xywh {154 129 150 22}
               code0 {o->value(progdefaults.eqsl_nick.c_str());}
-              code1 {inpEQSL_nick->labelsize(FL_NORMAL_SIZE);}
+              code1 {o->labelsize(FL_NORMAL_SIZE);}
               class Fl_Input2
             }
             Fl_Button btn_verify_eqsl {
               label Verify
               callback cb_btn_verify_eqsl
-              tooltip {Verify database with eQSL download file} xywh {475 111 70 24}
+              tooltip {Verify database with eQSL download file} xywh {475 129 70 22}
             }
             Fl_Group {} {
               label Options open
-              xywh {42 141 516 223} box ENGRAVED_FRAME align 21
+              xywh {42 157 516 223} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_send_when_logged {
                 label {send when logged (log button, <LOG>, <LNW>)}
                 callback {progdefaults.eqsl_when_logged = o->value();
 progdefaults.changed = true;}
-                tooltip {automatic data upload} xywh {91 166 70 15} down_box DOWN_BOX
+                tooltip {automatic data upload} xywh {91 182 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.eqsl_when_logged);}
               }
               Fl_Input txt_eqsl_default_message {
                 label {Default message}
                 callback {progdefaults.eqsl_default_message = o->value();
 progdefaults.changed = true;}
-                tooltip {default text to send with <LOG> etc} xywh {95 226 451 40} type Multiline align 5 when 1
+                tooltip {default text to send with <LOG> etc} xywh {95 242 451 40} type Multiline align 5 when 1
                 code0 {o->value(progdefaults.eqsl_default_message.c_str());}
                 class Fl_Input2
               }
               Fl_Group {} {
                 label {Text Tags (tags use {} delimiters)} open
-                xywh {49 270 481 90} box FLAT_BOX align 21
+                xywh {49 286 481 90} box FLAT_BOX align 21
               } {
                 Fl_Box eqsl_txt1 {
                   label {  {CALL} other ops call sign}
-                  xywh {64 317 220 17} align 20
+                  xywh {64 333 220 17} align 20
                 }
                 Fl_Box eqsl_txt2 {
                   label {  {MODE} full mode / submode}
-                  xywh {62 336 220 17} align 20
+                  xywh {62 352 220 17} align 20
                 }
                 Fl_Box eqsl_txt3 {
                   label {{NAME} other ops name}
-                  xywh {310 317 220 17} align 20
+                  xywh {310 333 220 17} align 20
                 }
                 Fl_Box {} {
                   label {These tags can also be used in <EQSL:[message]>}
-                  xywh {80 293 440 17}
+                  xywh {80 309 440 17}
                 }
               }
               Fl_Check_Button btn_send_datetime_off {
                 label {Use date/time off for log entry}
                 callback {progdefaults.eqsl_datetime_off = o->value();
 progdefaults.changed = true;}
-                tooltip {default uses date/time on} xywh {92 188 70 15} down_box DOWN_BOX
+                tooltip {default uses date/time on} xywh {92 204 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.eqsl_datetime_off);}
               }
             }

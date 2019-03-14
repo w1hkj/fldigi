@@ -7393,6 +7393,13 @@ progdefaults.changed= true;
 
 Fl_Group *tabEQSL=(Fl_Group *)0;
 
+Fl_Input2 *inpEQSL_www_url=(Fl_Input2 *)0;
+
+static void cb_inpEQSL_www_url(Fl_Input2* o, void*) {
+  progdefaults.eqsl_www_url = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Input2 *inpEQSL_id=(Fl_Input2 *)0;
 
 static void cb_inpEQSL_id(Fl_Input2* o, void*) {
@@ -15689,6 +15696,7 @@ and restarted if needed."));
       { tabQRZ = new Fl_Group(0, 25, 675, 365, _("Web"));
         { tabsQRZ = new Fl_Tabs(0, 25, 675, 365);
           { Fl_Group* o = new Fl_Group(0, 50, 675, 340, _("Call Lookup"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(8, 56, 585, 131, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -15887,8 +15895,22 @@ and restarted if needed."));
             o->end();
           } // Fl_Group* o
           { tabEQSL = new Fl_Group(0, 50, 600, 340, _("eQSL"));
-            tabEQSL->hide();
-            { Fl_Input2* o = inpEQSL_id = new Fl_Input2(154, 60, 150, 22, _("User ID"));
+            { Fl_Input2* o = inpEQSL_www_url = new Fl_Input2(155, 59, 390, 22, _("www url"));
+              inpEQSL_www_url->tooltip(_("Your login name"));
+              inpEQSL_www_url->box(FL_DOWN_BOX);
+              inpEQSL_www_url->color(FL_BACKGROUND2_COLOR);
+              inpEQSL_www_url->selection_color(FL_SELECTION_COLOR);
+              inpEQSL_www_url->labeltype(FL_NORMAL_LABEL);
+              inpEQSL_www_url->labelfont(0);
+              inpEQSL_www_url->labelsize(14);
+              inpEQSL_www_url->labelcolor(FL_FOREGROUND_COLOR);
+              inpEQSL_www_url->callback((Fl_Callback*)cb_inpEQSL_www_url);
+              inpEQSL_www_url->align(Fl_Align(FL_ALIGN_LEFT));
+              inpEQSL_www_url->when(FL_WHEN_RELEASE);
+              o->value(progdefaults.eqsl_www_url.c_str());
+              o->labelsize(FL_NORMAL_SIZE);
+            } // Fl_Input2* inpEQSL_www_url
+            { Fl_Input2* o = inpEQSL_id = new Fl_Input2(154, 82, 150, 22, _("User ID"));
               inpEQSL_id->tooltip(_("Your login name"));
               inpEQSL_id->box(FL_DOWN_BOX);
               inpEQSL_id->color(FL_BACKGROUND2_COLOR);
@@ -15901,9 +15923,9 @@ and restarted if needed."));
               inpEQSL_id->align(Fl_Align(FL_ALIGN_LEFT));
               inpEQSL_id->when(FL_WHEN_RELEASE);
               o->value(progdefaults.eqsl_id.c_str());
-              inpEQSL_id->labelsize(FL_NORMAL_SIZE);
+              o->labelsize(FL_NORMAL_SIZE);
             } // Fl_Input2* inpEQSL_id
-            { Fl_Input2* o = inpEQSL_pwd = new Fl_Input2(154, 87, 150, 22, _("Password"));
+            { Fl_Input2* o = inpEQSL_pwd = new Fl_Input2(154, 105, 150, 22, _("Password"));
               inpEQSL_pwd->tooltip(_("Your login password"));
               inpEQSL_pwd->box(FL_DOWN_BOX);
               inpEQSL_pwd->color(FL_BACKGROUND2_COLOR);
@@ -15917,13 +15939,13 @@ and restarted if needed."));
               inpEQSL_pwd->when(FL_WHEN_RELEASE);
               o->value(progdefaults.eqsl_pwd.c_str());
               o->type(FL_SECRET_INPUT);
-              inpEQSL_pwd->labelsize(FL_NORMAL_SIZE);
+              o->labelsize(FL_NORMAL_SIZE);
             } // Fl_Input2* inpEQSL_pwd
-            { btnEQSL_pwd_show = new Fl_Button(310, 87, 70, 22, _("Show"));
+            { btnEQSL_pwd_show = new Fl_Button(310, 105, 70, 22, _("Show"));
               btnEQSL_pwd_show->tooltip(_("Show password in plain text"));
               btnEQSL_pwd_show->callback((Fl_Callback*)cb_btnEQSL_pwd_show);
             } // Fl_Button* btnEQSL_pwd_show
-            { Fl_Input2* o = inpEQSL_nick = new Fl_Input2(154, 115, 150, 22, _("QTH Nickname"));
+            { Fl_Input2* o = inpEQSL_nick = new Fl_Input2(154, 129, 150, 22, _("QTH Nickname"));
               inpEQSL_nick->tooltip(_("Your login name"));
               inpEQSL_nick->box(FL_DOWN_BOX);
               inpEQSL_nick->color(FL_BACKGROUND2_COLOR);
@@ -15936,22 +15958,22 @@ and restarted if needed."));
               inpEQSL_nick->align(Fl_Align(FL_ALIGN_LEFT));
               inpEQSL_nick->when(FL_WHEN_RELEASE);
               o->value(progdefaults.eqsl_nick.c_str());
-              inpEQSL_nick->labelsize(FL_NORMAL_SIZE);
+              o->labelsize(FL_NORMAL_SIZE);
             } // Fl_Input2* inpEQSL_nick
-            { btn_verify_eqsl = new Fl_Button(475, 111, 70, 24, _("Verify"));
+            { btn_verify_eqsl = new Fl_Button(475, 129, 70, 22, _("Verify"));
               btn_verify_eqsl->tooltip(_("Verify database with eQSL download file"));
               btn_verify_eqsl->callback((Fl_Callback*)cb_btn_verify_eqsl);
             } // Fl_Button* btn_verify_eqsl
-            { Fl_Group* o = new Fl_Group(42, 141, 516, 223, _("Options"));
+            { Fl_Group* o = new Fl_Group(42, 157, 516, 223, _("Options"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_send_when_logged = new Fl_Check_Button(91, 166, 70, 15, _("send when logged (log button, <LOG>, <LNW>)"));
+              { Fl_Check_Button* o = btn_send_when_logged = new Fl_Check_Button(91, 182, 70, 15, _("send when logged (log button, <LOG>, <LNW>)"));
                 btn_send_when_logged->tooltip(_("automatic data upload"));
                 btn_send_when_logged->down_box(FL_DOWN_BOX);
                 btn_send_when_logged->callback((Fl_Callback*)cb_btn_send_when_logged);
                 o->value(progdefaults.eqsl_when_logged);
               } // Fl_Check_Button* btn_send_when_logged
-              { Fl_Input2* o = txt_eqsl_default_message = new Fl_Input2(95, 226, 451, 40, _("Default message"));
+              { Fl_Input2* o = txt_eqsl_default_message = new Fl_Input2(95, 242, 451, 40, _("Default message"));
                 txt_eqsl_default_message->tooltip(_("default text to send with <LOG> etc"));
                 txt_eqsl_default_message->type(4);
                 txt_eqsl_default_message->box(FL_DOWN_BOX);
@@ -15966,23 +15988,23 @@ and restarted if needed."));
                 txt_eqsl_default_message->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.eqsl_default_message.c_str());
               } // Fl_Input2* txt_eqsl_default_message
-              { Fl_Group* o = new Fl_Group(49, 270, 481, 90, _("Text Tags (tags use {} delimiters)"));
+              { Fl_Group* o = new Fl_Group(49, 286, 481, 90, _("Text Tags (tags use {} delimiters)"));
                 o->box(FL_FLAT_BOX);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { eqsl_txt1 = new Fl_Box(64, 317, 220, 17, _("  {CALL} other ops call sign"));
+                { eqsl_txt1 = new Fl_Box(64, 333, 220, 17, _("  {CALL} other ops call sign"));
                 eqsl_txt1->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
                 } // Fl_Box* eqsl_txt1
-                { eqsl_txt2 = new Fl_Box(62, 336, 220, 17, _("  {MODE} full mode / submode"));
+                { eqsl_txt2 = new Fl_Box(62, 352, 220, 17, _("  {MODE} full mode / submode"));
                 eqsl_txt2->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
                 } // Fl_Box* eqsl_txt2
-                { eqsl_txt3 = new Fl_Box(310, 317, 220, 17, _("{NAME} other ops name"));
+                { eqsl_txt3 = new Fl_Box(310, 333, 220, 17, _("{NAME} other ops name"));
                 eqsl_txt3->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
                 } // Fl_Box* eqsl_txt3
-                { new Fl_Box(80, 293, 440, 17, _("These tags can also be used in <EQSL:[message]>"));
+                { new Fl_Box(80, 309, 440, 17, _("These tags can also be used in <EQSL:[message]>"));
                 } // Fl_Box* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Check_Button* o = btn_send_datetime_off = new Fl_Check_Button(92, 188, 70, 15, _("Use date/time off for log entry"));
+              { Fl_Check_Button* o = btn_send_datetime_off = new Fl_Check_Button(92, 204, 70, 15, _("Use date/time off for log entry"));
                 btn_send_datetime_off->tooltip(_("default uses date/time on"));
                 btn_send_datetime_off->down_box(FL_DOWN_BOX);
                 btn_send_datetime_off->callback((Fl_Callback*)cb_btn_send_datetime_off);

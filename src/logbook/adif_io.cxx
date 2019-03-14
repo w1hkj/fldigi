@@ -74,11 +74,11 @@ FIELD fields[] = {
 	{QSLRDATE,     8,     "QSLRDATE",         &btnSelectQSLrcvd},   // QSL received date
 	{QSLSDATE,     8,     "QSLSDATE",         &btnSelectQSLsent},   // QSL sent date
 
-	{EQSLRDATE,    8,     "EQSLRDATE",        NULL},                // EQSL received date
-	{EQSLSDATE,    8,     "EQSLSDATE",        NULL},                // EQSL sent date
+	{EQSLRDATE,    8,     "EQSLRDATE",        &btnSelecteQSLrcvd},  // EQSL received date
+	{EQSLSDATE,    8,     "EQSLSDATE",        &btnSelecteQSLsent},  // EQSL sent date
 
-	{LOTWRDATE,    8,     "LOTWRDATE",        NULL},                // EQSL received date
-	{LOTWSDATE,    8,     "LOTWSDATE",        NULL},                // EQSL sent date
+	{LOTWRDATE,    8,     "LOTWRDATE",        &btnSelectLOTWrcvd},  // LOTW received date
+	{LOTWSDATE,    8,     "LOTWSDATE",        &btnSelectLOTWsent},  // LOTW sent date
 
 	{GRIDSQUARE,   8,     "GRIDSQUARE",       &btnSelectLOC},       // contacted stations Maidenhead Grid Square
 	{BAND,         8,     "BAND",             &btnSelectBand},      // QSO band
