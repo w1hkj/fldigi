@@ -2900,13 +2900,17 @@ void cb_mnuCheckUpdate(Fl_Widget *, void *)
 
 	int is_ok = version_check(string(PACKAGE_VERSION), version_str);
 
-	if (is_ok == 0)
-		fl_message2(_("You are running the latest version"));
-	else if (is_ok > 0)
-		fl_message2(_("\
-You are probably running an alpha version, %s\n\
-\nPosted version: %s"), PACKAGE_VERSION, version_str.c_str());
-	else
+	if (is_ok == 0) {
+		notify_dialog *latest_dialog = new notify_dialog;
+		latest_dialog->notify(_("You are running the latest version"), 5.0, true);
+	} else if (is_ok > 0) {
+		notify_dialog *alpha_dialog = new notify_dialog();
+		std::string probable;
+		probable.assign(_("You are probably running an alpha version "));
+		probable.append( PACKAGE_VERSION ).append(_("\nPosted version: "));
+		probable.append(version_str);
+		alpha_dialog->notify(probable.c_str(), 5.0, true);
+	} else
 		fl_message2(_("Version %s is available at Source Forge"),
 				  version_str.c_str());
 
