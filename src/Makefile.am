@@ -1000,6 +1000,7 @@ flarq_SOURCES += \
 	misc/stacktrace.cxx \
 	misc/threads.cxx \
 	misc/timeops.cxx \
+	network/socket.cxx \
 	widgets/flinput2.cxx \
 	widgets/flmisc.cxx \
 	widgets/flslider2.cxx \
@@ -1008,7 +1009,6 @@ flarq_SOURCES += \
 	misc/pixmaps_tango.cxx \
 	misc/re.cxx \
 	misc/util.cxx \
-	network/socket.cxx \
 	widgets/Fl_Text_Buffer_mod.cxx \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \

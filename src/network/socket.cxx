@@ -69,7 +69,11 @@
 //#undef NDEBUG
 #include "debug.h"
 
-#include "main.h"
+#ifdef BUILD_FLARQ
+#	include "flarq.h"
+#else
+#	include "main.h"
+#endif
 
 #include "socket.h"
 

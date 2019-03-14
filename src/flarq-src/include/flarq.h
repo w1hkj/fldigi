@@ -33,6 +33,24 @@ extern void sendBinaryFile();
 extern void changeMyCall(const char *);
 extern void changeBeaconText(const char *);
 
+extern std::string HomeDir;
+extern std::string NBEMS_dir;
+extern std::string ARQ_dir;
+extern std::string ARQ_files_dir;
+extern std::string ARQ_recv_dir;
+extern std::string ARQ_send_dir;
+extern std::string ARQ_mail_dir;
+extern std::string ARQ_mail_in_dir;
+extern std::string ARQ_mail_out_dir;
+extern std::string ARQ_mail_sent_dir;
+extern std::string WRAP_dir;
+extern std::string WRAP_recv_dir;
+extern std::string WRAP_send_dir;
+extern std::string WRAP_auto_dir;
+extern std::string ICS_dir;
+extern std::string ICS_msg_dir;
+extern std::string ICS_tmp_dir;
+
 extern std::string	MyCall;
 extern std::string	InFolder;
 extern std::string	OutFolder;
