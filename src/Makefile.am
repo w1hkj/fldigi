@@ -15,13 +15,13 @@ endif
 # The BUILD_* variables are defined in build.m4
 fldigi_CPPFLAGS = -DBUILD_FLDIGI -DLOCALEDIR=\"$(localedir)\" @FLDIGI_BUILD_CPPFLAGS@ -DPKGDATADIR=\"$(pkgdatadir)\"
 fldigi_CXXFLAGS = @FLDIGI_BUILD_CXXFLAGS@
-fldigi_CFLAGS = $(fldigi_CXXFLAGS)
+fldigi_CFLAGS = @FLDIGI_BUILD_CFLAGS@
 fldigi_LDFLAGS = @FLDIGI_BUILD_LDFLAGS@
 fldigi_LDADD = @FLDIGI_BUILD_LDADD@
 
 flarq_CPPFLAGS = -DBUILD_FLARQ -DLOCALEDIR=\"$(localedir)\" @FLARQ_BUILD_CPPFLAGS@
 flarq_CXXFLAGS = @FLARQ_BUILD_CXXFLAGS@
-flarq_CFLAGS = $(flarq_CXXFLAGS)
+flarq_CFLAGS = $(fldigi_CFLAGS)
 flarq_LDFLAGS = @FLARQ_BUILD_LDFLAGS@
 flarq_LDADD = @FLARQ_BUILD_LDADD@
 
