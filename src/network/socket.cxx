@@ -76,7 +76,7 @@
 #endif
 
 #include "socket.h"
-
+#include "estrings.h"
 
 #if HAVE_GETADDRINFO && !defined(AI_NUMERICSERV)
 #  define AI_NUMERICSERV 0
@@ -323,7 +323,7 @@ Address& Address::operator=(const Address& rhs)
 
 void Address::lookup(const char* proto_name)
 {
-std::cout << "proto_name: " << proto_name << std::endl;
+//std::cout << "proto_name: " << proto_name << std::endl;
 
 	int proto;
 	if (!strcasecmp(proto_name, "tcp"))
@@ -345,7 +345,7 @@ std::cout << "proto_name: " << proto_name << std::endl;
 	if (service.find_first_not_of("0123456789") == string::npos)
 		hints.ai_flags |= AI_NUMERICSERV;
 
-std::cout << "getaddrinfo(" << node << ", " << service << ")" << std::endl;
+//std::cout << "getaddrinfo(" << node << ", " << service << ")" << std::endl;
 	int r = getaddrinfo(node.empty() ? NULL : node.c_str(), service.c_str(), &hints, &info);
 	if (r != 0) {
 		throw SocketException(gai_strerror(r));
@@ -1136,9 +1136,11 @@ size_t Socket::recv(string& buf)
 	ssize_t rx = 0;
 	// if we have a nonblocking socket and a nonzero timeout,
 	// wait for fd to become writeable
-	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
+	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0))) {
 		if (!wait(0)) {
+			buf = "wait failed!";
 			return 0;
+		}
 	}
 	try {
 		buf.clear();
@@ -1149,10 +1151,16 @@ size_t Socket::recv(string& buf)
 				buf.append(buffer);
 				rx += r;
 			}
-			if (r < 0 && errno != EAGAIN)
-				throw SocketException(errno, "recv");
-			if ( r == 0)
+			if (r == -1 && buf.empty()) {
+				buf = "::recv failed";
+				return 0;
+			}
+			if ( r == 0 ) {
+				if (buf.empty()) {
+					buf = strerror(errno);
+				}
 				break;
+			}
 		}
 	} catch (SocketException &e) {
 		throw e;

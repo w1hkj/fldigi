@@ -138,6 +138,8 @@ extern int editNbr;
 	clear_lotw_recs_sent();
 }
 
+static notify_dialog *alert_window = 0;
+
 void check_lotw_log(void *)
 {
 	string logtxt;
@@ -163,8 +165,9 @@ void check_lotw_log(void *)
 	size_t p = logtxt.find("UploadFile returns 0");
 	if (p != string::npos) {
 		if (progdefaults.lotw_quiet_mode) {
-			notify_dialog* alert_window = new notify_dialog;
-			alert_window->notify(_("LoTW upload OK"), 5.0, true);
+			if (!alert_window) alert_window = new notify_dialog;
+			alert_window->notify(_("LoTW upload OK"), 5.0);
+			REQ(show_notifier, alert_window);
 		}
 		clear_lotw_recs_sent();
 	} else {
@@ -180,8 +183,9 @@ void check_lotw_log(void *)
 		if (progdefaults.lotw_quiet_mode) {
 			std::string alert = _("LoTW upload Failed\nView LoTW error log:");
 			alert.append(errlog);
-			notify_dialog* alert_window = new notify_dialog;
-			alert_window->notify(alert.c_str(), 15.0, true);
+			if (!alert_window) alert_window = new notify_dialog;
+			alert_window->notify(alert.c_str(), 15.0);
+			REQ(show_notifier, alert_window);
 		}
 		restore_lotwsdates();
 	}
@@ -496,8 +500,9 @@ void update_eQSL_fields(void *)
 	std::string qsl_logged = "eQSL logged: ";
 	qsl_logged.append(call).append(" on ").append(mode);
 
-	notify_dialog *eqsl_ok = new notify_dialog;
-	eqsl_ok->notify(qsl_logged.c_str(), 5.0, true);
+	if (!alert_window) alert_window = new notify_dialog;
+	alert_window->notify(qsl_logged.c_str(), 5.0);
+	REQ(show_notifier, alert_window);
 
 	LOG_INFO("%s", qsl_logged.c_str());
 }
@@ -508,8 +513,9 @@ static void cannot_connect_to_eqsl(void *)
 
 //std::cout << msg << std::endl;
 
-	notify_dialog *eqsl_notify = new notify_dialog;
-	eqsl_notify->notify(msg.c_str(), 5.0, true);
+	if (!alert_window) alert_window = new notify_dialog;
+	alert_window->notify(msg.c_str(), 5.0);
+	REQ(show_notifier, alert_window);
 
 }
 
@@ -524,8 +530,9 @@ static void eqsl_error(void *)
 
 //std::cout << errstr << std::endl;
 
-	notify_dialog *eqsl_notify = new notify_dialog;
-	eqsl_notify->notify(errstr.c_str(), 5.0, true);
+	if (!alert_window) alert_window = new notify_dialog;
+	alert_window->notify(errstr.c_str(), 5.0);
+	REQ(show_notifier, alert_window);
 	LOG_ERROR("%s", errstr.c_str());
 }
 

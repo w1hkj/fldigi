@@ -379,14 +379,16 @@ void adjust_freq(string sfreq)
 //======================================================================
 //
 //======================================================================
+static notify_dialog *alert_window = 0;
 void set_connect_box()
 {
+	if (!alert_window) alert_window = new notify_dialog;
 	box_n3fjp_connected->color(
 		n3fjp_connected ? FL_DARK_GREEN : FL_BACKGROUND2_COLOR);
 	box_n3fjp_connected->redraw();
 	if (n3fjp_connected) {
-		notify_dialog* alert_window = new notify_dialog;
-		alert_window->notify(_("Connected to N3FJP logger"), 1.0, true);
+		alert_window->notify(_("Connected to N3FJP logger"), 1.0);
+		REQ(show_notifier, alert_window);
 	}
 	else {
 		progdefaults.CONTESTnotes = "";

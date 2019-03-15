@@ -84,14 +84,17 @@ static bool enable_heard_log = false;
 
 #include "fsq-pic.cxx"
 
+static notify_dialog *alert_window = 0;
+
 void post_alert(std::string s1, double timeout = 0.0, std::string s2 = "")
 {
 	if (active_modem && (active_modem->get_mode() == MODE_FSQ)  && !s2.empty()) {
 		active_modem->send_ack(s2);
 	}
 
-	notify_dialog* alert_window = new notify_dialog;
-	alert_window->notify(s1.c_str(), timeout, true);
+	if (!alert_window) alert_window = new notify_dialog;
+	alert_window->notify(s1.c_str(), timeout);
+	REQ(show_notifier, alert_window);
 
 	display_fsq_mon_text(s1, FTextBase::ALTR);
 

@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <string>
 #include <cmath>
 
@@ -143,6 +144,8 @@ class Url {
 
 	double _timeout;
 
+	std::ofstream debug_file;
+
 	int http_get(std::string &response);
 	int https_get(std::string &response);
 
@@ -192,7 +195,7 @@ public:
 	void timeout(double t) { _timeout = t; }
 	double timeout() { return _timeout; }
 
-	void debug(bool on) { _debug = on; }
+	void debug(bool on);
 };
 
 

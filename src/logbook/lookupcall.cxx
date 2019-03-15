@@ -123,6 +123,8 @@ void QRZ_DETAILS_query();
 
 QRZ *qCall = 0;
 
+static notify_dialog *announce = 0;
+
 void print_query(const string &name, const string &s)
 {
 //	LOG_WARN("%s query:\n%s", name.c_str(), s.c_str());
@@ -213,6 +215,13 @@ bool parseSessionKey(const string& sessionpage)
 bool parse_xml(const string& xmlpage)
 {
 	print_data("xmldata.qrz.com", xmlpage);
+
+	if (xmlpage.find("<Error>Not found") != std::string::npos) {
+		if (!announce) announce = new notify_dialog;
+		announce->notify("Not found", 2.0);
+		REQ(show_notifier, announce);
+		return false;
+	}
 
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlpage));
 
@@ -621,12 +630,23 @@ string node_data(const string &xmlpage, const string nodename)
 void parse_callook(string& xmlpage)
 {
 	print_data("Callook info", xmlpage);
-	string nodestr;
-	nodestr = node_data(xmlpage, "current");
-	if (nodestr.empty()) {
-		lookup_notes = "no data from callook.info";
+
+	if (xmlpage.find("INVALID") != std::string::npos) {
+		if (!announce) announce = new notify_dialog;
+		announce->notify("Call not found", 2.0);
+		REQ(show_notifier, announce);
 		return;
 	}
+
+	string nodestr = node_data(xmlpage, "current");
+
+	if (nodestr.empty()) {
+		if (!announce) announce = new notify_dialog;
+		announce->notify("no data from callook.info", 2.0);
+		REQ(show_notifier, announce);
+		return;
+	}
+
 	size_t start_pos = xmlpage.find("</trustee>");
 	if (start_pos == string::npos) return;
 
@@ -679,7 +699,7 @@ bool CALLOOKGetXML(string& xmlpage)
 	if ((p = url.find("https")) != std::string::npos)
 		url.erase(p+4,1);
 	url.append(callsign).append("/xml");
-	bool res = get_http(url, xmlpage, 2.0);
+	bool res = get_http(url, xmlpage, 5.0);
 	LOG_VERBOSE("result = %d", res);
 	return res;
 }
@@ -688,14 +708,15 @@ void CALLOOKquery()
 {
 	ENSURE_THREAD(QRZ_TID);
 
-	bool ok = true;
+//	bool ok = true;
 
 	string CALLOOKpage;
 
 	clear_Lookup();
-	ok = CALLOOKGetXML(CALLOOKpage);
-	if (ok)
-		parse_callook(CALLOOKpage);
+//	ok = 
+	CALLOOKGetXML(CALLOOKpage);
+//	if (ok)
+	parse_callook(CALLOOKpage);
 	REQ(QRZ_disp_result);
 }
 
@@ -862,8 +883,6 @@ bool HAMQTH_get_session_id()
 	HAMQTH_session_id.clear();
 
 	int ret = get_http(url, retstr, 5.0);
-std::cout << "get_http(" << url << ", retstr, 5.0) returned: " << ret << std::endl;
-std::cout << "retstr:\n" << retstr << std::endl;
 
 	if (ret == 0 ) {
 		LOG_ERROR("get_http( %s, retstr, 5.0) failed\n", url.c_str());
@@ -914,8 +933,9 @@ void parse_HAMQTH_html(const string& htmlpage)
 		p1 = htmlpage.find("</error>", p);
 		if (p1 != string::npos) {
 			std::string errstr = htmlpage.substr(p, p1 - p);
-			notify_dialog *err_dialog = new notify_dialog;
-			err_dialog->notify(errstr.c_str(), 5.0, true);
+			if (!announce) announce = new notify_dialog;
+			announce->notify(errstr.c_str(), 2.0);
+			REQ(show_notifier, announce);
 		}
 		return;
 	}

@@ -40,6 +40,7 @@
 #include "timeops.h"
 #include "gettext.h"
 #include "debug.h"
+#include "main.h"
 
 #include "network.h"
 #include "socket.h"
@@ -99,18 +100,18 @@ void Url::parse(std::string url)
 	_url = stripped(url);
 	_request = stripped(_request);
 if (_debug) {
-	std::cout << "parser:" << std::endl;
-	std::cout << "url:  " << url << std::endl;
-	std::cout << "host: " << _host << std::endl;
-	std::cout << "port: " << _port << std::endl;
-	std::cout << "req:  " << _request << std::endl;
+	debug_file << "parser:" << std::endl;
+	debug_file << "url:  " << url << std::endl;
+	debug_file << "host: " << _host << std::endl;
+	debug_file << "port: " << _port << std::endl;
+	debug_file << "req:  " << _request << std::endl;
 }
 }
 
 int Url::http_get(std::string &response)
 {
 	std::ostringstream REQUEST;
-	size_t len;
+	size_t len, rcvd;
 	bool ret = true;
 
 	const char service[] = "http";
@@ -123,10 +124,10 @@ Connection: close\r\n\r\n";
 	len = REQUEST.str().length();
 
 if (_debug) {
-	std::cout << "Url::http_get(...)" << std::endl;
-	std::cout << "Host:    " << _host << std::endl;
-	std::cout << "Service: " << service << std::endl;
-	std::cout << "Request: " << REQUEST.str() << std::endl;
+	debug_file << "Url::http_get(...)" << std::endl;
+	debug_file << "Host:    " << _host << std::endl;
+	debug_file << "Service: " << service << std::endl;
+	debug_file << "Request: " << REQUEST.str() << std::endl;
 }
 	try {
 		Address addr(_host.c_str(), service);
@@ -139,22 +140,31 @@ if (_debug) {
 		if (s.send(REQUEST.str()) != len) {
 			response = "Send timed out";
 			ret = false;
-		} 
-		else if (s.recv(response) == 0) {
-			response = "Reply timed out";
+			goto recv_exit;
+		}
+if (_debug)
+	debug_file << "sent: " << len << " bytes." << std::endl;
+
+		if ((rcvd = s.recv(response)) == 0) {
+if (_debug)
+	debug_file << "s.recv(...) failed: " << response << std::endl;
 			ret = false;
 		}
 	}
 	catch (const SocketException& e) {
+		response = e.what();
+		if (response.empty()) response = "UNKNOWN ERROR";
 if (_debug) {
-	std::cout << "Caught socket exception:" << std::endl;
-}		response = e.what();
+	debug_file << "Caught socket exception: " << errno << ": " << response << std::endl;
+}
 		ret = false;
 	}
 
 if (_debug) {
-	std::cout << "Response:\n" << response << std::endl;
+	debug_file << "recv: " << rcvd << " bytes." << std::endl;
+	debug_file << "Response: " << response << std::endl;
 }
+recv_exit:
 	return ret;
 }
 
@@ -184,8 +194,8 @@ int Url::https_get(std::string &response)
 	mbedtls_ctr_drbg_init( &ctr_drbg );
 
 if (_debug) {
-	std::cout << "\n  . Seeding the random number generator...";
-	fflush( stdout );
+	debug_file << "\n  . Seeding the random number generator...";
+	debug_file.flush();
 }
 	mbedtls_entropy_init( &entropy );
 	if ( ( ret = mbedtls_ctr_drbg_seed(
@@ -200,14 +210,14 @@ if (_debug) {
 		goto exit;
 	}
 if (_debug) {
-	std::cout << " ok\n";
+	debug_file << " ok\n";
 }
 	/*
 	 * 0. Initialize certificates
 	 */
 if (_debug) {
-	std::cout << "  . Loading the CA root certificate ...";
-	fflush( stdout );
+	debug_file << "  . Loading the CA root certificate ...";
+	debug_file.flush();
 }
 	ca_crt_rsa[ca_crt_rsa_size - 1] = 0;
 	ret = mbedtls_x509_crt_parse(&cacert, (uint8_t *)ca_crt_rsa, ca_crt_rsa_size);
@@ -220,15 +230,15 @@ if (_debug) {
 	}
 
 if (_debug) {
-	std::cout << " ok (" << ret << " skipped)\n";
+	debug_file << " ok (" << ret << " skipped)\n";
 }
 	/*
 	 * 1. Start the connection
 	 */
 if (_debug) {
-	std::cout << "  . Connecting to tcp/"
+	debug_file << "  . Connecting to tcp/"
 			  << _host << ":" << _port << "...";
-	fflush( stdout );
+	debug_file.flush();
 }
 	if( ( ret = mbedtls_net_connect(
 					&server_fd,
@@ -242,14 +252,14 @@ if (_debug) {
 	}
 
 if (_debug) {
-	std::cout << " ok\n";
+	debug_file << " ok\n";
 }
 	/*
 	 * 2. Setup stuff
 	 */
 if (_debug) {
-	std::cout << "  . Setting up the SSL/TLS structure...";
-	fflush( stdout );
+	debug_file << "  . Setting up the SSL/TLS structure...";
+	debug_file.flush();
 }
 	if( ( ret = mbedtls_ssl_config_defaults( &conf,
 					MBEDTLS_SSL_IS_CLIENT,
@@ -262,7 +272,7 @@ if (_debug) {
 	}
 
 if (_debug) {
-	std::cout << " ok\n";
+	debug_file << " ok\n";
 }
 	/* OPTIONAL is not optimal for security,
 	 * but makes interop easier in this simplified example */
@@ -291,8 +301,8 @@ if (_debug) {
 	 * 4. Handshake
 	 */
 if (_debug) {
-	std::cout << "  . Performing the SSL/TLS handshake...";
-	fflush( stdout );
+	debug_file << "  . Performing the SSL/TLS handshake...";
+	debug_file.flush();
 }
 	while( ( ret = mbedtls_ssl_handshake( &ssl ) ) != 0 ) {
 		if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE ) {
@@ -304,34 +314,34 @@ if (_debug) {
 	}
 
 if (_debug) {
-	std::cout << " ok\n";
+	debug_file << " ok\n";
 }
 	/*
 	 * 5. Verify the server certificate
 	 */
 if (_debug) {
-	std::cout << "  . Verifying peer X.509 certificate...";
+	debug_file << "  . Verifying peer X.509 certificate...";
 }
 	/* In real life, we probably want to bail out when ret != 0 */
 	if( ( flags = mbedtls_ssl_get_verify_result( &ssl ) ) != 0 ) {
 		char vrfy_buf[512];
 if (_debug) {
-	std::cout << " failed\n";
+	debug_file << " failed\n";
 }
 		mbedtls_x509_crt_verify_info( vrfy_buf, sizeof( vrfy_buf ), "  ! ", flags );
 if (_debug) {
-	std::cout << vrfy_buf << std::endl;
+	debug_file << vrfy_buf << std::endl;
 }
 	} else
 if (_debug) {
-	std::cout << " ok\n";
+	debug_file << " ok\n";
 }
 	/*
 	 * 3. Write the GET request
 	 */
 if (_debug) {
-	std::cout << "  > Write to server:";
-	fflush( stdout );
+	debug_file << "  > Write to server:";
+	debug_file.flush();
 }
 
 	REQUEST << "GET " << _request << " HTTP/1.1\r\n";
@@ -356,15 +366,15 @@ Connection: Keep-Alive\r\n\r\n";
 
 	len = ret;
 if (_debug) {
-	std::cout << len << " bytes written\n\"" << REQUEST.str() << "\"";
-	fflush(stdout);
+	debug_file << len << " bytes written\n\"" << REQUEST.str() << "\"";
+	debug_file.flush();
 }
 	/*
 	 * 7. Read the HTTP response
 	 */
 if (_debug) {
-	std::cout << "\n  < Read from server:";
-	fflush( stdout );
+	debug_file << "\n  < Read from server:";
+	debug_file.flush();
 }
 	do {
 		len = sizeof( buf ) - 1;
@@ -379,21 +389,21 @@ if (_debug) {
 
 		if( ret < 0 ) {
 if (_debug) {
-	std::cout << "failed\n  ! mbedtls_ssl_read returned " << ret << std::endl;
+	debug_file << "failed\n  ! mbedtls_ssl_read returned " << ret << std::endl;
 }
 			break;
 		}
 
 		if( ret == 0 ) {
 if (_debug) {
-	std::cout << "\n\nEOF\n\n";
+	debug_file << "\n\nEOF\n\n";
 }
 			break;
 		}
 
 		len = ret;
 if (_debug) {
-	std::cout << len << " bytes read\n\n" << (char *) buf << std::endl;
+	debug_file << len << " bytes read\n\n" << (char *) buf << std::endl;
 }
 		_data.append(buf);
 		break;
@@ -440,6 +450,22 @@ int Url::get(std::string url, std::string &response)
 		ret = http_get(response);
 
 	return ret;
+}
+
+void Url::debug(bool on)
+{ 
+	_debug = on;
+	if (on) {
+		std::string fname = DebugDir;
+		fname.append("network_debug.txt");
+		remove(fname.c_str());
+		debug_file.open(fname.c_str(), ios::app);
+	}
+	else {
+		if (debug_file) {
+			debug_file.close();
+		}
+	}
 }
 
 bool get_http(const std::string& url, std::string& reply, double timeout)

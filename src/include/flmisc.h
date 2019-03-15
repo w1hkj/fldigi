@@ -48,25 +48,29 @@ void make_pixmap(Pixmap *xpm, const char **data, int argc, char** argv);
 
 class notify_dialog : public Fl_Window
 {
+friend void show_notifier(notify_dialog *nd);
+
 	Fl_Box icon;
 	Fl_Input2 message;
 	Fl_Dial dial;
 	Fl_Return_Button button;
 	Fl_Box resize_box;
-	bool delete_on_hide;
+//	bool delete_on_hide;
+	double _timeout;
 
 public:
 	notify_dialog(int X = 410, int Y = 103, const char* l = 0);
 	~notify_dialog();
 	int handle(int event);
 	Fl_Button* make_button(int W, int H = 23);
-	void notify(const char* msg, double timeout, bool delete_on_hide_ = false);
+	void notify(const char* msg, double timeout);
 private:
 	static void button_cb(Fl_Widget* w, void*);
 	static void dial_timer(void* arg);
 	int newx;
 };
 
+void show_notifier(notify_dialog *nd);
 
 #ifdef BUILD_FLDIGI
 

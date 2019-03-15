@@ -97,6 +97,7 @@
 #include "gettext.h"
 #include "notifydialog.h"
 #include "notify.h"
+#include "qrunner.h"
 
 using namespace std;
 
@@ -720,9 +721,10 @@ static void notify_alert_window_cb(Fl_Widget* w, void* arg)
 	w->hide();
 }
 
+static notify_dialog *alert_window = 0;
 static void notify_show_alert(const notify_t& n, const char* msg)
 {
-	notify_dialog* alert_window = new notify_dialog;
+	if (!alert_window) alert_window = new notify_dialog;
 	Fl_Button* goto_freq = alert_window->make_button(120);
 	if (goto_freq) {
 		char label[32];
@@ -732,7 +734,8 @@ static void notify_show_alert(const notify_t& n, const char* msg)
 		alert_window->callback(notify_alert_window_cb, goto_freq->user_data());
 	}
 
-	alert_window->notify(msg, n.action.alert_timeout, true);
+	alert_window->notify(msg, n.action.alert_timeout);
+	REQ(show_notifier, alert_window);
 }
 
 struct replace_refs

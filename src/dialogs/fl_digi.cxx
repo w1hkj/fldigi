@@ -2878,6 +2878,7 @@ inline int version_check(string v1, string v2) {
 	return 0;
 }
 
+static notify_dialog *latest_dialog = 0;
 void cb_mnuCheckUpdate(Fl_Widget *, void *)
 {
 	const char *url = "http://www.w1hkj.com/files/fldigi/";
@@ -2901,16 +2902,17 @@ void cb_mnuCheckUpdate(Fl_Widget *, void *)
 
 	int is_ok = version_check(string(PACKAGE_VERSION), version_str);
 
+	if (!latest_dialog) latest_dialog = new notify_dialog;
 	if (is_ok == 0) {
-		notify_dialog *latest_dialog = new notify_dialog;
-		latest_dialog->notify(_("You are running the latest version"), 5.0, true);
+		latest_dialog->notify(_("You are running the latest version"), 5.0);
+		REQ(show_notifier, latest_dialog);
 	} else if (is_ok > 0) {
-		notify_dialog *alpha_dialog = new notify_dialog();
 		std::string probable;
 		probable.assign(_("You are probably running an alpha version "));
 		probable.append( PACKAGE_VERSION ).append(_("\nPosted version: "));
 		probable.append(version_str);
-		alpha_dialog->notify(probable.c_str(), 5.0, true);
+		latest_dialog->notify(probable.c_str(), 5.0);
+		REQ(show_notifier, latest_dialog);
 	} else
 		fl_message2(_("Version %s is available at Source Forge"),
 				  version_str.c_str());

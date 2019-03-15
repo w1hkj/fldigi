@@ -169,11 +169,7 @@ notify_dialog::~notify_dialog()
 
 int notify_dialog::handle(int event)
 {
-	if (event == FL_HIDE && delete_on_hide) {
-		Fl::delete_widget(this);
-		return 1;
-	}
-	else if (event == FL_PUSH) {
+	if (event == FL_PUSH) {
 		dial.hide();
 		return Fl_Window::handle(event);
 	}
@@ -213,10 +209,12 @@ Fl_Button* notify_dialog::make_button(int W, int H)
 	return b;
 }
 
-void notify_dialog::notify(const char* msg, double timeout, bool delete_on_hide_)
+void notify_dialog::notify(const char* msg, double timeout)
 {
-	delete_on_hide = delete_on_hide_;
+	if (this->visible()) return;
+
 	message.value(msg);
+	_timeout = timeout;
 	const char* p;
 	if ((p = strchr(msg, '\n'))) { // use first line as label
 		string l(msg, p - msg);
@@ -230,17 +228,20 @@ void notify_dialog::notify(const char* msg, double timeout, bool delete_on_hide_
 	for (const char* p = msg; (p = strchr(p, '\n')); p++)
 		H++;
 	size(w(), h() + max(H - 1, 0) * fl_height());
+}
 
-	if (timeout > 0.0) {
-		dial.maximum(timeout);
-		dial.value(timeout);
-		dial.show();
-		Fl::add_timeout(0.0, dial_timer, &dial);
+void show_notifier(notify_dialog *me)
+{
+	if (me->_timeout > 0.0) {
+		me->dial.maximum(me->_timeout);
+		me->dial.value(me->_timeout);
+		me->dial.show();
+		Fl::add_timeout(0.0, notify_dialog::dial_timer, &me->dial);
 	}
 	else
-		dial.hide();
-	button.take_focus();
-	show();
+		me->dial.hide();
+	me->button.take_focus();
+	me->show();
 }
 
 // =============================================================================

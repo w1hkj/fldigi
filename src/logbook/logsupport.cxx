@@ -909,13 +909,15 @@ abort:
 	return NULL;
 }
 
+static notify_dialog *alert_window = 0;
 void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 
 	ENSURE_THREAD(FLMAIN_TID);
 
 	if (MERGE_thread) {
-		notify_dialog* alert_window = new notify_dialog;
-		alert_window->notify(_("Database merger in progress"), 5.0, true);
+		if (!alert_window) alert_window = new notify_dialog;
+		alert_window->notify(_("Database merger in progress"), 5.0);
+		REQ(show_notifier, alert_window);
 		return;
 	}
 
@@ -1014,8 +1016,9 @@ void verify_lotw(void *)
 			LOG_INFO("%d records verified", nverified);
 			LOG_INFO("%d records unverified", unverified);
 		}
-		notify_dialog* alert_window = new notify_dialog;
-		alert_window->notify(ss_note.str().c_str(), 15.0, true);
+		if (!alert_window) alert_window = new notify_dialog;
+		alert_window->notify(ss_note.str().c_str(), 15.0);
+		REQ(show_notifier, alert_window);
 	}
 	delete lotw_db;
 }
@@ -1080,8 +1083,9 @@ Download from ARRL's LoTW page after logging in at:\n\n\
 https://lotw.arrl.org/lotwuser/default\n\n\
 Store the report file to the fldigi LOTW folder,\n\n\
 naming the file 'lotwreport.adi'");
-		notify_dialog* alert_window = new notify_dialog;
-		alert_window->notify(alert.c_str(), 20, true);
+		if (!alert_window) alert_window = new notify_dialog;
+		alert_window->notify(alert.c_str(), 20);
+		REQ(show_notifier, alert_window);
 		return;
 	}
 //	lotw_download_name = p;
