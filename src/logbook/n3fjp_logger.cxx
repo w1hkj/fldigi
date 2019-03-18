@@ -2595,7 +2595,7 @@ void n3fjp_start()
 						 "tcp") );
 		if (!n3fjp_socket) return;
 
-		n3fjp_socket->set_timeout(0.05);
+		n3fjp_socket->set_timeout(0.20);//0.05);
 		n3fjp_socket->set_nonblocking(true);
 
 		result.str("");

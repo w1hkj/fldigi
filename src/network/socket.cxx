@@ -1107,10 +1107,10 @@ size_t Socket::recv(void* buf, size_t len)
 {
 	// if we have a nonblocking socket and a nonzero timeout,
 	// wait for fd to become writeable
-	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
-		if (!wait(0)) {
-			return 0;
-	}
+//	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
+//		if (!wait(0)) {
+//			return 0;
+//	}
 	ssize_t r = 0;
 	try {
 		r = ::recv(sockfd, (char*)buf, len, 0);
@@ -1138,34 +1138,36 @@ size_t Socket::recv(string& buf)
 	// wait for fd to become writeable
 	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0))) {
 		if (!wait(0)) {
-			buf = "wait failed!";
+			buf.clear();
 			return 0;
 		}
 	}
+	int tout = 1000;
 	try {
 		buf.clear();
-		while (1) {
+		while (tout) {
 			memset(buffer, 0, S_BUFSIZ);
 			r = ::recv(sockfd, buffer, S_BUFSIZ, 0);
 			if (r > 0) {
 				buf.append(buffer);
 				rx += r;
 			}
-			if (r == -1 && buf.empty()) {
-				buf = "::recv failed";
-				return 0;
-			}
 			if ( r == 0 ) {
+//std::cout << "tout " << tout << std::endl;
 				if (buf.empty()) {
 					buf = strerror(errno);
+					return buf.length();
 				}
-				break;
+				return rx;
 			}
+			MilliSleep(10);
+			tout -= 10;
 		}
 	} catch (SocketException &e) {
 		throw e;
 	}
-	return rx;
+	if (buf.empty()) buf = "::recv timed out";
+	return buf.length();
 }
 
 ///

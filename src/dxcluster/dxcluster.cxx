@@ -91,7 +91,7 @@ bool DXcluster_exit = false;
 bool DXcluster_enabled = false;
 
 #define DXCLUSTER_CONNECT_TIMEOUT 5000 // 5 second timeout
-#define DXCLUSTER_SOCKET_TIMEOUT 100 // milliseconds
+#define DXCLUSTER_SOCKET_TIMEOUT 200 // milliseconds
 #define DXCLUSTER_LOOP_TIME 100 // milliseconds
 int  DXcluster_connect_timeout =
 	(DXCLUSTER_CONNECT_TIMEOUT) / (DXCLUSTER_SOCKET_TIMEOUT + DXCLUSTER_LOOP_TIME);
@@ -416,8 +416,9 @@ void login_to_dxspider()
 		logged_in = true;
 		cluster_login = NIL;
 	} catch (const SocketException& e) {
-		LOG_ERROR("%s", e.what() );
-		REQ(show_error, e.what());
+		string serr = e.what();
+		LOG_ERROR("%s", serr.c_str() );
+		REQ(show_error, serr);
 	}
 }
 
@@ -432,8 +433,9 @@ void login_to_arcluster()
 		logged_in = true;
 		cluster_login = NIL;
 	} catch (const SocketException& e) {
-		LOG_ERROR("%s", e.what() );
-		REQ(show_error, e.what());
+		string serr = e.what();
+		LOG_ERROR("%s", serr.c_str() );
+		REQ(show_error, serr);
 	}
 }
 
@@ -545,8 +547,9 @@ void login_to_cccluster()
 		logged_in = true;
 		cluster_login = NIL;
 	} catch (const SocketException& e) {
-		LOG_ERROR("%s", e.what() );
-		REQ(show_error, e.what());
+		string serr = e.what();
+		LOG_ERROR("%s", serr.c_str() );
+		REQ(show_error, serr);
 	}
 }
 
@@ -569,8 +572,9 @@ void send_password()
 		}
 
 	} catch (const SocketException& e) {
-		LOG_ERROR("%s", e.what() );
-		REQ(show_error, e.what());
+		string serr = e.what();
+		LOG_ERROR("%s", serr.c_str() );
+		REQ(show_error, serr);
 	}
 
 }
@@ -664,6 +668,7 @@ void clear_dxcluster_viewer()
 {
 	guard_lock dxcc_lock(&dxcc_mutex);
 	brws_dx_cluster->clear();
+	brws_tcpip_stream->clear();
 }
 
 //======================================================================
@@ -722,8 +727,9 @@ void dxc_help_query()
 		DXcluster_socket->send(sendbuf.c_str());
 		REQ(show_tx_stream, sendbuf);
 	} catch (const SocketException& e) {
-		LOG_ERROR("%s", e.what() );
-		REQ(show_error, e.what());
+		string serr = e.what();
+		LOG_ERROR("%s", serr.c_str() );
+		REQ(show_error, serr);
 	}
 
 }
@@ -753,8 +759,9 @@ void DXcluster_submit()
 		DXcluster_socket->send(sendbuf.c_str());
 		REQ(show_tx_stream, sendbuf);
 	} catch (const SocketException& e) {
-		LOG_ERROR("%s", e.what() );
-		REQ(show_error, e.what());
+		string serr = e.what();
+		LOG_ERROR("%s", serr.c_str() );
+		REQ(show_error, serr);
 	}
 	inp_dxcluster_cmd->value("");
 }
@@ -987,19 +994,41 @@ void DXcluster_doconnect()
 			connect_changed = false;
 			return;
 		} catch (const SocketException& e) {
-			LOG_ERROR("%s", e.what() );
-			REQ(show_error, e.what());
+			string serr = e.what();
+			LOG_ERROR("%s", serr.c_str() );
+			REQ(show_error, serr);
+			connect_to_cluster = false;
+			connect_changed = false;
+			DXcluster_state = DISCONNECTED;
+			set_btn_dxcc_connect(false);
+			REQ(dxc_label);
+			return;
 		}
 	}	else {
-		if (!DXcluster_socket) return;
+		if (!DXcluster_socket) {
+			REQ(show_error, "NO socket!");
+			DXcluster_state = DISCONNECTED;
+			connect_to_cluster = false;
+			connect_changed = false;
+			set_btn_dxcc_connect(false);
+			REQ(dxc_label);
+			return;
+		}
 
 		try {
 			string bye = "BYE\r\n";
 			DXcluster_socket->send(bye);
 			REQ(show_tx_stream, bye);
 		} catch (const SocketException& e) {
-			LOG_ERROR("%s", e.what() );
-			REQ(show_error, e.what());
+			string serr = e.what();
+			LOG_ERROR("%s", serr.c_str() );
+			REQ(show_error, serr);
+			DXcluster_state = DISCONNECTED;
+			connect_to_cluster = false;
+			connect_changed = false;
+			set_btn_dxcc_connect(false);
+			REQ(dxc_label);
+			return;
 		}
 
 		MilliSleep(50);
@@ -1346,8 +1375,9 @@ void dxc_send_string(string &tosend)
 			DXcluster_socket->send(line);
 			REQ(show_tx_stream, line);
 		} catch (const SocketException& e) {
-			LOG_ERROR("%s", e.what() );
-			REQ(show_error, e.what());
+			string serr = e.what();
+			LOG_ERROR("%s", serr.c_str() );
+			REQ(show_error, serr);
 		}
 	}
 }
