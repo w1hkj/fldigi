@@ -260,8 +260,6 @@ void xml_add_record()
 
 	adif.append("<eor>");
 
-std::cout << adif << std::endl;
-
 // send it to the server
 	XmlRpcValue oneArg, result;
 	oneArg[0] = adif.c_str();

@@ -1511,7 +1511,17 @@ void cb_btnRetrieve(Fl_Button* b, void* d)
 	const cQsoRec *qsoPtr = qsodb.getRec(editNbr);
 	inpCall->value(qsoPtr->getField(CALL));
 	inpName->value (qsoPtr->getField(NAME));
-	inpTimeOn->value (inpTimeOff->value());
+
+	sDate_on = sDate_off = zdate();
+	sTime_on = sTime_off = ztime();
+
+	inpTimeOn->value(inpTimeOff->value());
+	inpTimeOn1->value(inpTimeOff->value());
+	inpTimeOn2->value(inpTimeOff->value());
+	inpTimeOn3->value(inpTimeOff->value());
+	inpTimeOn4->value(inpTimeOff->value());
+	inpTimeOn5->value(inpTimeOff->value());
+
 	inpState->value (qsoPtr->getField(STATE));
 	inpState->position (0);
 	inpCounty->value (qsoPtr->getField(CNTY));

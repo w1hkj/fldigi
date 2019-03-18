@@ -82,6 +82,9 @@ static int logcheck_count = 0;
 
 string str_lotw;
 //======================================================================
+// eQSL
+void submit_eQSL(cQsoRec &rec, string msg);
+//======================================================================
 
 static string adif;
 
@@ -164,7 +167,7 @@ void check_lotw_log(void *)
 
 	size_t p = logtxt.find("UploadFile returns 0");
 	if (p != string::npos) {
-		if (progdefaults.lotw_quiet_mode) {
+		if (progdefaults.lotw_quiet_mode && progdefaults.lotw_show_delivery) {
 			if (!alert_window) alert_window = new notify_dialog;
 			alert_window->notify(_("LoTW upload OK"), 5.0);
 			REQ(show_notifier, alert_window);
@@ -396,7 +399,10 @@ void submit_record(cQsoRec &rec)
 	send_IPC_log(rec);
 #endif
 	submit_ADIF(rec);
-	submit_lotw(rec);
+	if (progdefaults.submit_lotw)
+		submit_lotw(rec);
+	if (progdefaults.eqsl_when_logged)
+		submit_eQSL(rec, "");
 	n3fjp_add_record(rec);
 }
 
@@ -416,9 +422,6 @@ void submit_log(void)
 
 	logmode = mode_info[active_modem->get_mode()].adif_name;
 
-	if (progdefaults.eqsl_when_logged)
-		makeEQSL("");
-
 	if (progdefaults.xml_logbook && qsodb.isdirty()) {
 		xml_add_record();
 		qsodb.isdirty(0);
@@ -426,6 +429,10 @@ void submit_log(void)
 		AddRecord();
 
 	if (FD_logged_on) FD_add_record();
+
+//	if (progdefaults.eqsl_when_logged)
+//		makeEQSL("");
+
 }
 
 //======================================================================
@@ -472,7 +479,7 @@ void update_eQSL_fields(void *)
 	p++;
 	p2 = EQSL_url.find("<", p);
 	if (p2 == std::string::npos) return;
-	date = EQSL_url.substr(p, p2 - p - 1);
+	date = EQSL_url.substr(p, p2 - p);
 	p = EQSL_url.find("<MODE:");
 	if (p != std::string::npos) {
 		p = EQSL_url.find(">", p);
@@ -493,16 +500,17 @@ void update_eQSL_fields(void *)
 			}
 		}
 	}
-	SearchLastQSO(call.c_str());
 	inpEQSLsentdate_log->value(date.c_str());
 	updateRecord();
 
 	std::string qsl_logged = "eQSL logged: ";
 	qsl_logged.append(call).append(" on ").append(mode);
 
-	if (!alert_window) alert_window = new notify_dialog;
-	alert_window->notify(qsl_logged.c_str(), 5.0);
-	REQ(show_notifier, alert_window);
+	if (progdefaults.eqsl_show_delivery) {
+		if (!alert_window) alert_window = new notify_dialog;
+		alert_window->notify(qsl_logged.c_str(), 5.0);
+		REQ(show_notifier, alert_window);
+	}
 
 	LOG_INFO("%s", qsl_logged.c_str());
 }
@@ -511,12 +519,9 @@ static void cannot_connect_to_eqsl(void *)
 {
 	std::string msg = "Cannot connect to www.eQSL.cc";
 
-//std::cout << msg << std::endl;
-
 	if (!alert_window) alert_window = new notify_dialog;
 	alert_window->notify(msg.c_str(), 5.0);
 	REQ(show_notifier, alert_window);
-
 }
 
 static void eqsl_error(void *)
@@ -527,8 +532,6 @@ static void eqsl_error(void *)
 	errstr.append("testing 1.2.3");
 	errstr.append(EQSL_xmlpage.substr(p, p2 - p - 1));
 	errstr.append("\n").append(EQSL_url.substr(0,40));
-
-//std::cout << errstr << std::endl;
 
 	if (!alert_window) alert_window = new notify_dialog;
 	alert_window->notify(errstr.c_str(), 5.0);
@@ -599,47 +602,12 @@ static void EQSL_init(void)
 	MilliSleep(10);
 }
 
-void sendEQSL(const char *url)
+void submit_eQSL(cQsoRec &rec, string msg)
 {
-	ENSURE_THREAD(FLMAIN_TID);
-
-	if (!EQSLthread)
-		EQSL_init();
-
-	pthread_mutex_lock(&EQSLmutex);
-	SEND_url = url;
-	pthread_cond_signal(&EQSLcond);
-	pthread_mutex_unlock(&EQSLmutex);
-}
-
-// this function may be called from several places including macro
-// expansion and execution
-
-void makeEQSL(const char *message)
-{
+	string eQSL_data;
+	string tempstr;
 	char sztemp[100];
-	std::string tempstr;
-	std::string eQSL_data;
-	std::string eQSL_header;
-	std::string msg;
-	size_t p = 0;
 
-	msg = message;
-
-	if (msg.empty()) msg = progdefaults.eqsl_default_message;
-
-// replace message tags {CALL}, {NAME}, {MODE}
-	while ((p = msg.find("{CALL}")) != std::string::npos)
-		msg.replace(p, 6, inpCall->value());
-	while ((p = msg.find("{NAME}")) != std::string::npos)
-		msg.replace(p, 6, inpName->value());
-	while ((p = msg.find("{MODE}")) != std::string::npos) {
-		tempstr.assign(mode_info[active_modem->get_mode()].export_mode);
-		tempstr.append("/").append(mode_info[active_modem->get_mode()].export_submode);
-		msg.replace(p, 6, tempstr);
-	}
-
-//	eQSL_data = "test <adIF_ver:4>4.0 ";
 	eQSL_data = "upload <adIF_ver:4>4.0 ";
 	snprintf(sztemp, sizeof(sztemp),"<EQSL_USER:%d>%s<EQSL_PSWD:%d>%s",
 		static_cast<int>(progdefaults.eqsl_id.length()),
@@ -648,7 +616,6 @@ void makeEQSL(const char *message)
 		progdefaults.eqsl_pwd.c_str());
 	eQSL_data.append(sztemp);
 	eQSL_data.append("<PROGRAMID:6>FLDIGI<EOH>");
-// eqsl nickname
 	if (!progdefaults.eqsl_nick.empty()) {
 		snprintf(sztemp, sizeof(sztemp), "<APP_EQSL_QTH_NICKNAME:%d>%s",
 			static_cast<int>(progdefaults.eqsl_nick.length()),
@@ -656,73 +623,40 @@ void makeEQSL(const char *message)
 		eQSL_data.append(sztemp);
 	}
 
-// eqsl record
-// band
-	tempstr = band_name(band(wf->rfcarrier()));
-	snprintf(sztemp, sizeof(sztemp), "<BAND:%d>%s",
-		static_cast<int>(tempstr.length()),
-		tempstr.c_str());
-	eQSL_data.append(sztemp);
-// call
-	tempstr = inpCall->value();
-	snprintf(sztemp, sizeof(sztemp), "<CALL:%d>%s",
-		static_cast<int>(tempstr.length()),
-		tempstr.c_str());
-	eQSL_data.append(sztemp);
-// mode
-	tempstr = mode_info[active_modem->get_mode()].export_mode;
+	putadif(CALL, rec.getField(CALL), eQSL_data);
+	putadif(MODE, adif2export(rec.getField(MODE)).c_str(), eQSL_data);
+	putadif(SUBMODE, adif2submode(rec.getField(MODE)).c_str(), eQSL_data);
+	tempstr = rec.getField(FREQ);
+	tempstr.resize(7);
+	putadif(FREQ, tempstr.c_str(), eQSL_data);
+	putadif(BAND, rec.getField(BAND), eQSL_data);
+	putadif(QSO_DATE, sDate_on.c_str(), eQSL_data);
+	tempstr = rec.getField(TIME_ON);
+	if (tempstr.length() > 4) tempstr.erase(4);
+	putadif(TIME_ON, tempstr.c_str(), eQSL_data);
+	putadif(RST_SENT, rec.getField(RST_SENT), eQSL_data);
 
-	snprintf(sztemp, sizeof(sztemp), "<MODE:%d>%s",
-		static_cast<int>(tempstr.length()),
-		tempstr.c_str());
-	eQSL_data.append(sztemp);
-// submode
-	tempstr = mode_info[active_modem->get_mode()].export_submode;
-	if (!tempstr.empty()) {
-		snprintf(sztemp, sizeof(sztemp), "<SUBMODE:%d>%s",
-			static_cast<int>(tempstr.length()),
-			tempstr.c_str());
-		eQSL_data.append(sztemp);
-	}
-// qso date
-	if (progdefaults.eqsl_datetime_off) {
-		tempstr = inpDate_log->value();
-		snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s",
-			static_cast<int>(tempstr.length()),
-			tempstr.c_str());
-	} else  {
-		tempstr = inpDateOff_log->value();
-		snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s",
-			static_cast<int>(tempstr.length()),
-			tempstr.c_str());
-	}
-	eQSL_data.append(sztemp);
-// qso time
-	if (progdefaults.eqsl_datetime_off)
-		tempstr = inpTimeOff->value();
-	else
-		tempstr = inpTimeOn->value();
-	snprintf(sztemp, sizeof(sztemp), "<TIME_ON:%d>%s",
-		static_cast<int>(tempstr.length()),
-		tempstr.c_str());
-	eQSL_data.append(sztemp);
-// rst sent
-	tempstr = inpRstOut->value();
-	snprintf(sztemp, sizeof(sztemp), "<RST_SENT:%d>%s",
-		static_cast<int>(tempstr.length()),
-		tempstr.c_str());
-	eQSL_data.append(sztemp);
-// message
+	size_t p = 0;
+	if (msg.empty()) msg = progdefaults.eqsl_default_message;
 	if (!msg.empty()) {
+// replace message tags {CALL}, {NAME}, {MODE}
+		while ((p = msg.find("{CALL}")) != std::string::npos)
+			msg.replace(p, 6, inpCall->value());
+		while ((p = msg.find("{NAME}")) != std::string::npos)
+			msg.replace(p, 6, inpName->value());
+		while ((p = msg.find("{MODE}")) != std::string::npos) {
+			tempstr.assign(mode_info[active_modem->get_mode()].export_mode);
+			tempstr.append("/").append(mode_info[active_modem->get_mode()].export_submode);
+			msg.replace(p, 6, tempstr);
+		}
 		snprintf(sztemp, sizeof(sztemp), "<QSLMSG:%d>%s",
 			static_cast<int>(msg.length()),
 			msg.c_str());
 		eQSL_data.append(sztemp);
 	}
-	eQSL_data.append("<EOR>");
+	eQSL_data.append("<EOR>\n");
 
-
-	eQSL_header = progdefaults.eqsl_www_url;
+	std::string eQSL_header = progdefaults.eqsl_www_url;
 
 	EQSL_url.assign(eQSL_header).append(eQSL_data);
 
@@ -742,4 +676,28 @@ void makeEQSL(const char *message)
 
 	sendEQSL(eQSL_data.c_str());
 
+}
+
+void sendEQSL(const char *url)
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
+	if (!EQSLthread)
+		EQSL_init();
+
+	pthread_mutex_lock(&EQSLmutex);
+	SEND_url = url;
+	pthread_cond_signal(&EQSLcond);
+	pthread_mutex_unlock(&EQSLmutex);
+}
+
+// this function may be called from several places including macro
+// expansion and execution
+
+void makeEQSL(const char *message)
+{
+	cQsoRec *rec;
+	if (qsodb.nbrRecs() <= 0) return;
+	rec = qsodb.getRec(qsodb.nbrRecs() - 1); // last record
+	submit_eQSL(*rec, message);
 }

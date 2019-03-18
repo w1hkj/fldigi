@@ -439,8 +439,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 600 365} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 600 365} when 1
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -9012,14 +9012,14 @@ if (progdefaults.kml_enabled) {
       }
       Fl_Group tabQRZ {
         label Web open
-        xywh {0 25 675 365}
+        xywh {0 25 675 365} hide
       } {
         Fl_Tabs tabsQRZ {open
           xywh {0 25 675 365}
         } {
           Fl_Group {} {
             label {Call Lookup} open
-            xywh {0 50 675 340} hide
+            xywh {0 50 675 340}
           } {
             Fl_Group {} {
               label {Web Browser lookup} open
@@ -9210,12 +9210,12 @@ progdefaults.changed= true;}
           }
           Fl_Group tabEQSL {
             label eQSL open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Input inpEQSL_www_url {
               label {www url}
               callback {progdefaults.eqsl_www_url = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
               tooltip {Your login name} xywh {155 59 390 22}
               code0 {o->value(progdefaults.eqsl_www_url.c_str());}
               code1 {o->labelsize(FL_NORMAL_SIZE);}
@@ -9269,20 +9269,34 @@ progdefaults.changed = true;}
                 label {send when logged (log button, <LOG>, <LNW>)}
                 callback {progdefaults.eqsl_when_logged = o->value();
 progdefaults.changed = true;}
-                tooltip {automatic data upload} xywh {91 182 70 15} down_box DOWN_BOX
+                tooltip {automatic data upload} xywh {126 166 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.eqsl_when_logged);}
+              }
+              Fl_Check_Button btn_send_datetime_off {
+                label {Use date/time off for log entry}
+                callback {progdefaults.eqsl_datetime_off = o->value();
+progdefaults.changed = true;}
+                tooltip {default uses date/time on} xywh {126 186 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.eqsl_datetime_off);}
+              }
+              Fl_Check_Button btn_show_eqsl_delivery {
+                label {Show delivery message}
+                callback {progdefaults.eqsl_show_delivery = o->value();
+progdefaults.changed = true;}
+                tooltip {Display timed delivery message if enabled} xywh {126 206 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.eqsl_show_delivery);}
               }
               Fl_Input txt_eqsl_default_message {
                 label {Default message}
                 callback {progdefaults.eqsl_default_message = o->value();
 progdefaults.changed = true;}
-                tooltip {default text to send with <LOG> etc} xywh {95 242 451 40} type Multiline align 5 when 1
+                tooltip {default text to send with <LOG> etc} xywh {95 247 451 40} type Multiline align 5 when 1
                 code0 {o->value(progdefaults.eqsl_default_message.c_str());}
                 class Fl_Input2
               }
               Fl_Group {} {
                 label {Text Tags (tags use {} delimiters)} open
-                xywh {49 286 481 90} box FLAT_BOX align 21
+                xywh {58 293 481 81} box FLAT_BOX align 21
               } {
                 Fl_Box eqsl_txt1 {
                   label {  {CALL} other ops call sign}
@@ -9298,15 +9312,8 @@ progdefaults.changed = true;}
                 }
                 Fl_Box {} {
                   label {These tags can also be used in <EQSL:[message]>}
-                  xywh {80 309 440 17}
+                  xywh {80 312 440 17}
                 }
-              }
-              Fl_Check_Button btn_send_datetime_off {
-                label {Use date/time off for log entry}
-                callback {progdefaults.eqsl_datetime_off = o->value();
-progdefaults.changed = true;}
-                tooltip {default uses date/time on} xywh {92 204 70 15} down_box DOWN_BOX
-                code0 {o->value(progdefaults.eqsl_datetime_off);}
               }
             }
           }
@@ -9425,6 +9432,13 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
               label {View Unmatched}
               callback cb_btn_view_unmatched
               tooltip {Verify database with LoTW download file} xywh {456 356 139 24} deactivate
+            }
+            Fl_Check_Button btn_show_lotw_delivery {
+              label {Show delivery message}
+              callback {progdefaults.lotw_show_delivery = o->value();
+progdefaults.changed = true;}
+              tooltip {Display timed delivery message if enabled} xywh {341 247 70 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.lotw_show_delivery);}
             }
           }
         }

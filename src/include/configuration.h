@@ -1066,6 +1066,9 @@
         ELEM_(bool, eqsl_datetime_off, "EQSL_DATETIME_OFF",                             \
               "Send logbook date/time off vice date on (default)",                      \
               false)                                                                    \
+        ELEM_(bool, eqsl_show_delivery, "EQSL_SHOW_DELIVERY",                           \
+              "Show timed delivery message for successful eQSL upload",                 \
+              true)                                                                     \
         /* tqsl automatic log submission */                                             \
         ELEM_(bool, submit_lotw, "SUBMIT_LOTW",                                         \
               "Send adif record to LoTW",                                               \
@@ -1081,6 +1084,9 @@
               "")                                                                       \
         ELEM_(bool, submit_lotw_password, "SUBMIT_LOTW_PASSWORD",                       \
               "Send -p <password> with each upload ",                                   \
+              true)                                                                     \
+        ELEM_(bool, lotw_show_delivery, "LOTW_SHOW_DELIVERY",                           \
+              "Show timed delivery message for successful LoTW upload",                 \
               true)                                                                     \
         ELEM_(std::string, lotw_location, "LOTW_LOCATION",                              \
               "Tqsl station location for uploading records",                            \
