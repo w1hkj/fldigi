@@ -346,6 +346,8 @@ int xml_check_dup()
 		string res = std::string(result);
 		if (res == "true")
 			dup_test = 1;
+		else if (res == "possible")
+			dup_test = 2;
 	}
 	return dup_test;
 }
