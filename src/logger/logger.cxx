@@ -171,6 +171,8 @@ void check_lotw_log(void *)
 			if (!alert_window) alert_window = new notify_dialog;
 			alert_window->notify(_("LoTW upload OK"), 5.0);
 			REQ(show_notifier, alert_window);
+			if (progdefaults.xml_logbook)
+				xml_update_lotw();
 		}
 		clear_lotw_recs_sent();
 	} else {
@@ -246,7 +248,10 @@ string lotw_rec(cQsoRec &rec)
 	putadif(CALL, rec.getField(CALL), strrec);
 
 	putadif(MODE, adif2export(rec.getField(MODE)).c_str(), strrec);
-	putadif(SUBMODE, adif2submode(rec.getField(MODE)).c_str(), strrec);
+
+	string sm = adif2submode(rec.getField(MODE));
+	if (!sm.empty())
+	putadif(SUBMODE, sm.c_str(), strrec);
 
 	temp = rec.getField(FREQ);
 	temp.resize(7);
@@ -290,7 +295,11 @@ void submit_ADIF(cQsoRec &rec)
 	putadif(CALL, rec.getField(CALL));
 	putadif(FREQ, rec.getField(FREQ));
 	putadif(MODE, adif2export(rec.getField(MODE)).c_str());
-	putadif(SUBMODE, adif2submode(rec.getField(MODE)).c_str());
+
+	string sm = adif2submode(rec.getField(MODE));
+	if (!sm.empty())
+		putadif(SUBMODE, sm.c_str());
+
 	putadif(RST_SENT, rec.getField(RST_SENT));
 	putadif(RST_RCVD, rec.getField(RST_RCVD));
 	putadif(TX_PWR, rec.getField(TX_PWR));
@@ -360,7 +369,11 @@ static void send_IPC_log(cQsoRec &rec)
 	addtomsg("call:",		rec.getField(CALL));
 	addtomsg("mhz:",		rec.getField(FREQ));
 	addtomsg("mode:",		adif2export(rec.getField(MODE)));
-	addtomsg("submode:",	adif2submode(rec.getField(MODE)));
+
+	string sm = adif2submode(rec.getField(MODE));
+	if (!sm.empty())
+		addtomsg("submode:",	sm.c_str());
+
 	addtomsg("tx:",			rec.getField(RST_SENT));
 	addtomsg("rx:",			rec.getField(RST_RCVD));
 	addtomsg("name:",		rec.getField(NAME));
@@ -457,6 +470,11 @@ static bool EQSLEXIT = false;
 
 void update_eQSL_fields(void *)
 {
+	if (progdefaults.xml_logbook) {
+		xml_update_eqsl();
+		return;
+	}
+
 	std::string call;
 	std::string date;
 	std::string mode = "MODE";
@@ -625,7 +643,11 @@ void submit_eQSL(cQsoRec &rec, string msg)
 
 	putadif(CALL, rec.getField(CALL), eQSL_data);
 	putadif(MODE, adif2export(rec.getField(MODE)).c_str(), eQSL_data);
-	putadif(SUBMODE, adif2submode(rec.getField(MODE)).c_str(), eQSL_data);
+
+	string sm = adif2submode(rec.getField(MODE));
+	if (!sm.empty())
+		putadif(SUBMODE, sm.c_str(), eQSL_data);
+
 	tempstr = rec.getField(FREQ);
 	tempstr.resize(7);
 	putadif(FREQ, tempstr.c_str(), eQSL_data);
@@ -646,7 +668,9 @@ void submit_eQSL(cQsoRec &rec, string msg)
 			msg.replace(p, 6, inpName->value());
 		while ((p = msg.find("{MODE}")) != std::string::npos) {
 			tempstr.assign(mode_info[active_modem->get_mode()].export_mode);
-			tempstr.append("/").append(mode_info[active_modem->get_mode()].export_submode);
+			sm = mode_info[active_modem->get_mode()].export_submode;
+			if (!sm.empty())
+				tempstr.append("/").append(sm);
 			msg.replace(p, 6, tempstr);
 		}
 		snprintf(sztemp, sizeof(sztemp), "<QSLMSG:%d>%s",
@@ -659,6 +683,7 @@ void submit_eQSL(cQsoRec &rec, string msg)
 	std::string eQSL_header = progdefaults.eqsl_www_url;
 
 	EQSL_url.assign(eQSL_header).append(eQSL_data);
+std::cout << EQSL_url << std::endl;
 
 	tempstr.clear();
 	for (size_t n = 0; n < eQSL_data.length(); n++) {
@@ -676,6 +701,7 @@ void submit_eQSL(cQsoRec &rec, string msg)
 
 	sendEQSL(eQSL_data.c_str());
 
+//	xml_update_eqsl();
 }
 
 void sendEQSL(const char *url)

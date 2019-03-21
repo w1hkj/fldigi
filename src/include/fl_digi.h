@@ -528,6 +528,8 @@ extern void set_server_label(bool);
 extern void activate_menu_item(const char *caption, bool val);
 extern int  xml_check_dup();
 extern bool xml_get_record(const char *);
+extern void xml_update_eqsl();
+extern void xml_update_lotw();
 
 extern const char* zdate(void);
 extern const char* ztime(void);

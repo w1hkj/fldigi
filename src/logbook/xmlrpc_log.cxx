@@ -352,6 +352,30 @@ int xml_check_dup()
 	return dup_test;
 }
 
+void xml_update_eqsl()
+{
+	adif.erase();
+	adif_str(EQSLSDATE, sDate_on.c_str());
+	adif.append("<EOR>");
+
+	XmlRpcValue oneArg, result;
+	oneArg[0] = adif.c_str();
+std::cout << "xml_update_eqsl() " << adif << std::endl;
+
+	log_client->execute("log.update_record", oneArg, result);
+}
+
+void xml_update_lotw()
+{
+	adif.erase();
+	adif_str(LOTWSDATE, sDate_on.c_str());
+	adif.append("<EOR>");
+
+	XmlRpcValue oneArg, result;
+	oneArg[0] = adif.c_str();
+
+	log_client->execute("log.update_record", oneArg, result);
+}
 
 void connect_to_log_server(void *)
 {

@@ -2159,7 +2159,7 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
  			time4(rec->getField(TIME_OFF)),
  			rec->getField(CALL),
 			szfreq(rec->getField(FREQ)),
-			rec->getField(MODE) );
+			adif2export(rec->getField(MODE)).c_str() );
         chkCabBrowser->add(line);
 	}
 	wCabrillo->show();
@@ -2185,7 +2185,7 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	}
 
 	if (btnCabMode->value()) {
-		mode = rec->getField(MODE);
+		mode = adif2export(rec->getField(MODE));
 		if (mode.compare("USB") == 0 || mode.compare("LSB") == 0 ||
 			mode.compare("SSB") == 0 || mode.compare("PH") == 0 ) mode = "PH";
 		else if (mode.compare("FM") == 0 || mode.compare("CW") == 0 ) ;

@@ -473,5 +473,6 @@ bool get_http(const std::string& url, std::string& reply, double timeout)
 	Url target_url;
 	target_url.debug(true);
 	target_url.timeout(timeout);
+
 	return target_url.get(url, reply);
 }
