@@ -468,7 +468,7 @@ bool WRAP_auto_arqRx()
 //======================================================================
 
 #define ARQLOOP_TIMING 50 // 100 // msec
-#define CLIENT_TIMEOUT 600 // timeout after 10 minutes; 60 // timeout after 60 secs
+#define CLIENT_TIMEOUT 5 // timeout after 5 secs
 
 struct ARQCLIENT { Socket sock; time_t keep_alive; };
 static string errstring;
@@ -678,13 +678,20 @@ void test_arq_clients()
 	vector<ARQCLIENT *>::iterator p;
 	p = arqclient.begin();
 	time_t now;
-	while (p != arqclient.end()) {
+	size_t ret;
+	while (p < arqclient.end()) {
 		if (difftime(now = time(0), (*p)->keep_alive) > CLIENT_TIMEOUT) {
 			try {
 				(*p)->sock.wait(1);
-				(*p)->sock.send("\0", 1);
-				(*p)->keep_alive = now;
-				p++;
+				ret = (*p)->sock.send("\0", 1);
+				if (ret <= 0) {
+					LOG_INFO("closing inactive socket %d", (int)((*p)->sock.fd()));
+					(*p)->sock.close();
+					arqclient.erase(p); // sets p to next iterator
+				} else {
+					(*p)->keep_alive = now;
+					p++;
+				}
 			}
 			catch (const SocketException& e) {
 				LOG_INFO("socket %d timed out, error %d, %s", (*p)->sock.fd(), e.error(), e.what());
@@ -720,7 +727,6 @@ bool Socket_arqRx()
 					txstring.append(instr);
 					LOG_VERBOSE("%s", txstring.c_str());
 				}
-				(*p)->keep_alive = time(0);
 				p++;
 			}
 			catch (const SocketException& e) {
@@ -797,7 +803,7 @@ static void *arq_loop(void *args)
 		if (arq_exit)
 			break;
 
-//		test_arq_clients();
+		test_arq_clients();
 
 		{
 			/// Mutex is unlocked when exiting block

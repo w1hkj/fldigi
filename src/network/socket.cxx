@@ -1054,10 +1054,27 @@ size_t Socket::send(const void* buf, size_t len)
 	while ( nToWrite > 0) {
 #if defined(__WIN32__)
 		r = ::send(sockfd, sp, nToWrite, 0);
+		if (r > 0) {
+			sp += r;
+			nToWrite -= r;
+		} else {
+			if (r == 0) {
+				shutdown(sockfd, SHUT_WR);
+				throw SocketException(errno, "send");
+			} else if (r < 0) {
+				switch(errno) {
+					case EAGAIN:
+						break;
+					case ENOTCONN:
+ 				    case EBADF:
+					default:
+						throw SocketException(errno, "send");
+				}
+				r = 0;
+			}
+		}
 #else
 		r = ::write(sockfd, sp, nToWrite);
-#endif
-
 		if (r > 0) {
 			sp += r;
 			nToWrite -= r;
@@ -1077,6 +1094,7 @@ size_t Socket::send(const void* buf, size_t len)
 				r = 0;
 			}
 		}
+#endif
 	}
 	return r;
 
@@ -1092,7 +1110,13 @@ size_t Socket::send(const void* buf, size_t len)
 ///
 size_t Socket::send(const string& buf)
 {
-	return send(buf.data(), buf.length());
+	size_t ret;
+	try {
+		ret = send(buf.data(), buf.length());
+	} catch (...) {
+		throw;
+	}
+	return ret;
 }
 
 ///
@@ -1107,19 +1131,17 @@ size_t Socket::recv(void* buf, size_t len)
 {
 	// if we have a nonblocking socket and a nonzero timeout,
 	// wait for fd to become writeable
-//	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
-//		if (!wait(0)) {
-//			return 0;
-//	}
+	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
+		if (!wait(0)) {
+			return 0;
+	}
 	ssize_t r = 0;
 	try {
 		r = ::recv(sockfd, (char*)buf, len, 0);
-		if (r < 0 && errno != EAGAIN)
-			throw SocketException(errno, "recv");
 	} catch (SocketException &e) {
 		throw e;
 	}
-
+	if (r < 0) r = 0;
 	return r;
 }
 
@@ -1133,7 +1155,6 @@ size_t Socket::recv(void* buf, size_t len)
 size_t Socket::recv(string& buf)
 {
 	ssize_t r = 0;
-	ssize_t rx = 0;
 	// if we have a nonblocking socket and a nonzero timeout,
 	// wait for fd to become writeable
 	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0))) {
@@ -1142,31 +1163,20 @@ size_t Socket::recv(string& buf)
 			return 0;
 		}
 	}
-	int tout = 1000;
+	int tout = 2;
 	try {
 		buf.clear();
-		while (tout) {
+		while (tout > 0) {
 			memset(buffer, 0, S_BUFSIZ);
 			r = ::recv(sockfd, buffer, S_BUFSIZ, 0);
-			if (r > 0) {
+			if (r > 0)
 				buf.append(buffer);
-				rx += r;
-			}
-			if ( r == 0 ) {
-//std::cout << "tout " << tout << std::endl;
-				if (buf.empty()) {
-					buf = strerror(errno);
-					return buf.length();
-				}
-				return rx;
-			}
-			MilliSleep(10);
-			tout -= 10;
+			MilliSleep(50);
+			tout--;
 		}
 	} catch (SocketException &e) {
 		throw e;
 	}
-	if (buf.empty()) buf = "::recv timed out";
 	return buf.length();
 }
 
