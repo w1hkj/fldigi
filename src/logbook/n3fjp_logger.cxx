@@ -2162,9 +2162,9 @@ static void enter_log_data()
 			string other = "XCVR:";
 			char szfreq[6];
 			snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
-			other.append(ModeIsLSB(rec.getField(MODE)) ? "LSB" : "USB");
+			other.append(ModeIsLSB(rec.getField(ADIF_MODE)) ? "LSB" : "USB");
 			other.append(" MODE:");
-			other.append(strip(rec.getField(MODE)));
+			other.append(strip(rec.getField(ADIF_MODE)));
 			other.append(" WF:");
 			other.append(szfreq);
 			send_control("OTHER8", other);

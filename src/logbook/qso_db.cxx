@@ -158,7 +158,7 @@ void cQsoRec::trimFields () {
 			p = s.length();
 		}
 //make all upper case if Callsign or Mode
-		if (i == CALL || i == MODE) {
+		if (i == CALL || i == ADIF_MODE) {
 			for (p = 0; p < s.length(); p++)
 				s[p] = toupper(s[p]);
 		}
@@ -199,7 +199,7 @@ int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
 }
 
 int compareModes (const cQsoRec &r1, const cQsoRec &r2) {
-	return (r1.qsofield[MODE])->compare( *r2.qsofield[MODE] );
+	return (r1.qsofield[ADIF_MODE])->compare( *r2.qsofield[ADIF_MODE] );
 }
 
 int compareFreqs (const cQsoRec &r1, const cQsoRec &r2) {
@@ -611,8 +611,8 @@ int cQsoDb::duplicate(
 				b_stateDUP = (qsorec[i].getField(STATE)[0] == 0 && state[0] == 0) ||
 							 (strcasestr(qsorec[i].getField(STATE), state) != 0);
 			if (chkmode)
-				b_modeDUP  = (qsorec[i].getField(MODE)[0] == 0 && mode[0] == 0) ||
-							 (strcasestr(qsorec[i].getField(MODE), mode) != 0);
+				b_modeDUP  = (qsorec[i].getField(ADIF_MODE)[0] == 0 && mode[0] == 0) ||
+							 (strcasestr(qsorec[i].getField(ADIF_MODE), mode) != 0);
 			if (chkxchg1)
 				b_xchg1DUP = (qsorec[i].getField(XCHG1)[0] == 0 && xchg1[0] == 0) ||
 							 (strcasestr(qsorec[i].getField(XCHG1), xchg1) != 0);
@@ -655,7 +655,7 @@ int cQsoDb::matched( cQsoRec *rec )
 	const char *callsign = rec->getField(CALL);
 	const char *date = rec->getField(QSO_DATE);
 	const char *time = rec->getField(TIME_ON);
-	const char *mode = rec->getField(MODE); 
+	const char *mode = rec->getField(ADIF_MODE); 
 	const char *band = rec->getField(BAND);
 
 	unsigned long qsodatetime,
@@ -675,9 +675,9 @@ int cQsoDb::matched( cQsoRec *rec )
 		match = match && test;
 		if (!match) continue;
 // test MODE
-		test = (qsorec[i].getField(MODE)[0] == 0 && mode[0] == 0) ||
-				(strcasestr(qsorec[i].getField(MODE), mode) != 0);
-		if (!test) test = (strcasecmp(mode, adifmode(qsorec[i].getField(MODE))) == 0);
+		test = (qsorec[i].getField(ADIF_MODE)[0] == 0 && mode[0] == 0) ||
+				(strcasestr(qsorec[i].getField(ADIF_MODE), mode) != 0);
+		if (!test) test = (strcasecmp(mode, adifmode(qsorec[i].getField(ADIF_MODE))) == 0);
 		if (!test) test = (strcasecmp(mode, "DATA") == 0);
 		match = match && test;
 		if (!match) continue;
@@ -695,8 +695,8 @@ int cQsoDb::matched( cQsoRec *rec )
 // found match
 
 //	printf("%10s, %12s, %s, %s, %s\n%10s, %12s, %s, %s, %s\n",
-//		rec->getField(CALL), rec->getField(FREQ), rec->getField(QSO_DATE), rec->getField(TIME_ON), rec->getField(MODE),
-//		qsorec[i].getField(CALL), qsorec[i].getField(FREQ), qsorec[i].getField(QSO_DATE), qsorec[i].getField(TIME_ON), qsorec[i].getField(MODE) );
+//		rec->getField(CALL), rec->getField(FREQ), rec->getField(QSO_DATE), rec->getField(TIME_ON), rec->getField(ADIF_MODE),
+//		qsorec[i].getField(CALL), qsorec[i].getField(FREQ), qsorec[i].getField(QSO_DATE), qsorec[i].getField(TIME_ON), qsorec[i].getField(ADIF_MODE) );
 //	printf("epoch test: %ud ~= %ud ==> %d\n", (uint)lotwdatetime, (uint)qsodatetime, difftime);
 
 		return i;

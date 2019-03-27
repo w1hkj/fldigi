@@ -247,9 +247,9 @@ string lotw_rec(cQsoRec &rec)
 
 	putadif(CALL, rec.getField(CALL), strrec);
 
-	putadif(MODE, adif2export(rec.getField(MODE)).c_str(), strrec);
+	putadif(ADIF_MODE, adif2export(rec.getField(ADIF_MODE)).c_str(), strrec);
 
-	string sm = adif2submode(rec.getField(MODE));
+	string sm = adif2submode(rec.getField(ADIF_MODE));
 	if (!sm.empty())
 	putadif(SUBMODE, sm.c_str(), strrec);
 
@@ -294,9 +294,9 @@ void submit_ADIF(cQsoRec &rec)
 	putadif(TIME_OFF, rec.getField(TIME_OFF));
 	putadif(CALL, rec.getField(CALL));
 	putadif(FREQ, rec.getField(FREQ));
-	putadif(MODE, adif2export(rec.getField(MODE)).c_str());
+	putadif(ADIF_MODE, adif2export(rec.getField(ADIF_MODE)).c_str());
 
-	string sm = adif2submode(rec.getField(MODE));
+	string sm = adif2submode(rec.getField(ADIF_MODE));
 	if (!sm.empty())
 		putadif(SUBMODE, sm.c_str());
 
@@ -368,9 +368,9 @@ static void send_IPC_log(cQsoRec &rec)
 	addtomsg("endtime:",            sztime);
 	addtomsg("call:",		rec.getField(CALL));
 	addtomsg("mhz:",		rec.getField(FREQ));
-	addtomsg("mode:",		adif2export(rec.getField(MODE)));
+	addtomsg("mode:",		adif2export(rec.getField(ADIF_MODE)));
 
-	string sm = adif2submode(rec.getField(MODE));
+	string sm = adif2submode(rec.getField(ADIF_MODE));
 	if (!sm.empty())
 		addtomsg("submode:",	sm.c_str());
 
@@ -642,9 +642,9 @@ void submit_eQSL(cQsoRec &rec, string msg)
 	}
 
 	putadif(CALL, rec.getField(CALL), eQSL_data);
-	putadif(MODE, adif2export(rec.getField(MODE)).c_str(), eQSL_data);
+	putadif(ADIF_MODE, adif2export(rec.getField(ADIF_MODE)).c_str(), eQSL_data);
 
-	string sm = adif2submode(rec.getField(MODE));
+	string sm = adif2submode(rec.getField(ADIF_MODE));
 	if (!sm.empty())
 		putadif(SUBMODE, sm.c_str(), eQSL_data);
 

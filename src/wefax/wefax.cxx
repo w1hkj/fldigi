@@ -2646,7 +2646,7 @@ int wefax::tx_process()
 		LOG_INFO("Sending cancelled" );
 		m_qso_rec.putField(NOTES, status.c_str() );
 	}
-	qso_rec_save();
+//	qso_rec_save();
 
 	REQ_FLUSH(GET_THREAD_ID());
 
@@ -2739,34 +2739,13 @@ void wefax::qso_rec_init(void)
 {
 	/// This is always initialised because the flag progdefaults.WEFAX_AdifLog
 	/// may be set in the middle of an image reception.
-
 	/// Ideally we should find out the name of the fax station.
 	m_qso_rec.putField(CALL, "Wefax");
 	m_qso_rec.putField(NAME, "Weather fax");
 	m_qso_rec.putField( TX_PWR, "0");
 	m_qso_rec.setDateTime(true);
 	m_qso_rec.setFrequency( wf->rfcarrier() + m_impl->carrier() );
-
-	m_qso_rec.putField(MODE, mode_info[get_mode()].adif_name );
-
-	// m_qso_rec.putField(QTH, inpQth_log->value());
-	// m_qso_rec.putField(STATE, inpState_log->value());
-	// m_qso_rec.putField(VE_PROV, inpVE_Prov_log->value());
-	// m_qso_rec.putField(COUNTRY, inpCountry_log->value());
-	// m_qso_rec.putField(GRIDSQUARE, inpLoc_log->value());
-	// m_qso_rec.putField(QSLRDATE, inpQSLrcvddate_log->value());
-	// m_qso_rec.putField(QSLSDATE, inpQSLsentdate_log->value());
-	// m_qso_rec.putField(RST_RCVD, inpRstR_log->value ());
-	// m_qso_rec.putField(RST_SENT, inpRstS_log->value ());
-	// m_qso_rec.putField(SRX, inpSerNoIn_log->value());
-	// m_qso_rec.putField(STX, inpSerNoOut_log->value());
-	// m_qso_rec.putField(XCHG1, inpXchgIn_log->value());
-	// m_qso_rec.putField(MYXCHG, inpMyXchg_log->value());
-	// m_qso_rec.putField(IOTA, inpIOTA_log->value());
-	// m_qso_rec.putField(DXCC, inpDXCC_log->value());
-	// m_qso_rec.putField(CONT, inpCONT_log->value());
-	// m_qso_rec.putField(CQZ, inpCQZ_log->value());
-	// m_qso_rec.putField(ITUZ, inpITUZ_log->value());
+	m_qso_rec.putField(ADIF_MODE, mode_info[get_mode()].adif_name );
 }
 
 /// Called once a QSO rec has been filled with information. Saved to adif file.

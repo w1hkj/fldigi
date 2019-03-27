@@ -1253,7 +1253,7 @@ void CALLSIGNquery()
 QsoHelper::QsoHelper(int the_mode)
 	: qso_rec( new cQsoRec )
 {
-	qso_rec->putField(MODE, mode_info[the_mode].adif_name );
+	qso_rec->putField(ADIF_MODE, mode_info[the_mode].adif_name );
 }
 
 /// This saves the new record to a file and must be run in the main thread.

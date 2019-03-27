@@ -1783,7 +1783,7 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 	if (qso) {
 		const char* info[] = {
 			qso->getField(NAME), qso->getField(QTH), qso->getField(QSO_DATE),
-			qso->getField(BAND), qso->getField(MODE)
+			qso->getField(BAND), qso->getField(ADIF_MODE)
 		};
 		// name & qth
 		if (*info[0])

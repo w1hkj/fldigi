@@ -998,7 +998,7 @@ void verify_lotw(void *)
 							<< lrec->getField(TIME_ON) << ", "
 							<< lrec->getField(FREQ) << ", "
 							<< lrec->getField(BAND) << ", "
-							<< lrec->getField(MODE) << "\n";
+							<< lrec->getField(ADIF_MODE) << "\n";
 			}
 		}
 		report_file.close();
@@ -1144,8 +1144,8 @@ void cb_Export_log() {
 			rec->getField((export_to == LOTW ? TIME_ON : TIME_OFF) ),
 			rec->getField(CALL),
 			szfreq(rec->getField(FREQ)),
-			adif2export(rec->getField(MODE)).c_str(),
-			adif2submode(rec->getField(MODE)).c_str()
+			adif2export(rec->getField(ADIF_MODE)).c_str(),
+			adif2submode(rec->getField(ADIF_MODE)).c_str()
 		);
 		chkExportBrowser->add(line);
 	}
@@ -1378,6 +1378,9 @@ void DupCheck()
 
 cQsoRec* SearchLog(const char *callsign)
 {
+	if (progdefaults.xml_logbook)
+		return search_fllog(callsign);
+
 	size_t len = strlen(callsign);
 	char* re = new char[len + 3];
 	snprintf(re, len + 3, "^%s$", callsign);
@@ -1613,7 +1616,7 @@ void saveRecord() {
 
 	rec.putField(FREQ, inpFreq_log->value());
 	rec.putField(BAND, inpBand_log->value());
-	rec.putField(MODE, inpMode_log->value());
+	rec.putField(ADIF_MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
 	rec.putField(STATE, inpState_log->value());
 	rec.putField(VE_PROV, inpVE_Prov_log->value());
@@ -1730,7 +1733,7 @@ void updateRecord() {
 
 	rec.putField(FREQ, inpFreq_log->value());
 	rec.putField(BAND, inpBand_log->value());
-	rec.putField(MODE, inpMode_log->value());
+	rec.putField(ADIF_MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
 	rec.putField(STATE, inpState_log->value());
 	rec.putField(VE_PROV, inpVE_Prov_log->value());
@@ -1837,7 +1840,7 @@ void EditRecord( int i )
 	inpRstS_log->value (editQSO->getField(RST_SENT));
 	inpFreq_log->value (editQSO->getField(FREQ));
 	inpBand_log->value (editQSO->getField(BAND));
-	inpMode_log->value (editQSO->getField(MODE));
+	inpMode_log->value (editQSO->getField(ADIF_MODE));
 	inpState_log->value (editQSO->getField(STATE));
 	inpVE_Prov_log->value (editQSO->getField(VE_PROV));
 	inpCountry_log->value (editQSO->getField(COUNTRY));
@@ -2000,7 +2003,7 @@ void addBrowserRow(cQsoRec *rec, int nbr)
 		rec->getField(CALL),
 		rec->getField(NAME),
 		rec->getField(FREQ),
-		rec->getField(MODE),
+		rec->getField(ADIF_MODE),
 		sNbr);
 }
 
@@ -2159,7 +2162,7 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
  			time4(rec->getField(TIME_OFF)),
  			rec->getField(CALL),
 			szfreq(rec->getField(FREQ)),
-			adif2export(rec->getField(MODE)).c_str() );
+			adif2export(rec->getField(ADIF_MODE)).c_str() );
         chkCabBrowser->add(line);
 	}
 	wCabrillo->show();
@@ -2185,7 +2188,7 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	}
 
 	if (btnCabMode->value()) {
-		mode = adif2export(rec->getField(MODE));
+		mode = adif2export(rec->getField(ADIF_MODE));
 		if (mode.compare("USB") == 0 || mode.compare("LSB") == 0 ||
 			mode.compare("SSB") == 0 || mode.compare("PH") == 0 ) mode = "PH";
 		else if (mode.compare("FM") == 0 || mode.compare("CW") == 0 ) ;

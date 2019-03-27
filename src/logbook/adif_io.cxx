@@ -57,7 +57,7 @@ FIELD fields[] = {
 //  TYPE,          FSIZE,  NAME,              WIDGET
 	{FREQ,         12,    "FREQ",             &btnSelectFreq},      // QSO frequency in Mhz
 	{CALL,         30,    "CALL",             &btnSelectCall},      // contacted stations CALLSIGN
-	{MODE,         20,    "MODE",             &btnSelectMode},      // QSO mode
+	{ADIF_MODE,    20,    "MODE",             &btnSelectMode},      // QSO mode
 	{SUBMODE,      20,    "SUBMODE",          NULL},                // QSO submode
 	{NAME,         80,    "NAME",             &btnSelectName},      // contacted operators NAME
 	{QSO_DATE,     8,     "QSO_DATE",         &btnSelectQSOdateOn}, // QSO data
@@ -442,7 +442,7 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 						field_type = fields[j].type;
 						sFld = rec->getField(field_type);
 						sName = fields[j].name;
-						if (field_type == MODE  && !sFld.empty()) {
+						if (field_type == ADIF_MODE  && !sFld.empty()) {
 							fprintf(adiFile, adifmt,
 								"MODE",
 								adif2export(sFld).length());

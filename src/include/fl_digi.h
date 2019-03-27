@@ -46,6 +46,7 @@
 #include "smeter.h"
 #include "pwrmeter.h"
 #include "picture.h"
+#include "qso_db.h"
 
 extern fre_t seek_re;
 
@@ -528,6 +529,7 @@ extern void set_server_label(bool);
 extern void activate_menu_item(const char *caption, bool val);
 extern int  xml_check_dup();
 extern bool xml_get_record(const char *);
+extern cQsoRec* search_fllog(const char *callsign);
 extern void xml_update_eqsl();
 extern void xml_update_lotw();
 

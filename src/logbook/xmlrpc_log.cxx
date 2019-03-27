@@ -109,6 +109,33 @@ string get_field(string &adifline, int field)
 	return fld;
 }
 
+cQsoRec* search_fllog(const char *callsign)
+{
+	cQsoRec *rec = new cQsoRec;
+
+	XmlRpcValue oneArg, result;
+	if (!test_connection()) {
+		LOG_INFO("%s","Logbook server down!");
+		progdefaults.xml_logbook = false;
+		activate_log_menus(true);
+		start_logbook();
+		return (cQsoRec *)0;
+	}
+	oneArg[0] = callsign;
+	if (log_client->execute("log.get_record", oneArg, result)) {
+		string adifline = std::string(result);
+
+		rec->putField(NAME, get_field(adifline, NAME).c_str());
+		rec->putField(QTH, get_field(adifline, QTH).c_str());
+		rec->putField(QSO_DATE, get_field(adifline, QSO_DATE).c_str());
+		rec->putField(BAND, get_field(adifline, BAND).c_str());
+		rec->putField(ADIF_MODE, get_field(adifline, ADIF_MODE).c_str());
+
+		return rec;
+	}
+	return (cQsoRec *)0;
+}
+
 bool xml_get_record(const char *callsign)
 {
 	XmlRpcValue oneArg, result;
@@ -213,7 +240,7 @@ void xml_add_record()
 		inpFreq_log->value(Mhz);
 		adif_str(FREQ, Mhz);
 	}
-	adif_str(MODE, mode_info[active_modem->get_mode()].adif_name);
+	adif_str(ADIF_MODE, mode_info[active_modem->get_mode()].adif_name);
 	adif_str(RST_SENT, inpRstOut->value());
 	adif_str(RST_RCVD, inpRstIn->value());
 	adif_str(TX_PWR, progdefaults.mytxpower.c_str());
@@ -274,7 +301,7 @@ void xml_add_record()
 	rec.putField(TIME_ON, inpTimeOn->value());
 	rec.putField(TIME_OFF, ztime());
 	rec.putField(FREQ, Mhz);
-	rec.putField(MODE, mode_info[active_modem->get_mode()].adif_name);
+	rec.putField(ADIF_MODE, mode_info[active_modem->get_mode()].adif_name);
 	rec.putField(QTH, inpQth->value());
 	rec.putField(STATE, inpState->value());
 	rec.putField(VE_PROV, inpVEprov->value());
