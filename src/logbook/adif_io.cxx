@@ -622,10 +622,12 @@ void cAdifIO::do_writelog()
 	cQsoRec *rec;
 
 	records.clear();
+
 	for (int i = 0; i < adifdb->nbrRecs(); i++) {
 		rec = adifdb->getRec(i);
 		records.append(adif_record(rec));
-		adifdb->qsoUpdRec(i, rec);
+		if (wrdb)
+			adifdb->qsoUpdRec(i, rec);
 	}
 	nrecs = adifdb->nbrRecs();
 

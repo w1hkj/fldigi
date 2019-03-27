@@ -121,6 +121,7 @@ extern void show_dup(void *);
 extern void cb_search(Fl_Widget* w, void*);
 extern int log_search_handler(int);
 extern void reload_browser();
+extern void restore_sort();
 
 extern void cb_doExport();
 

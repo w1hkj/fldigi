@@ -2615,6 +2615,7 @@ void cb_logfile(Fl_Widget* w, void*)
 void cb_log_server(Fl_Widget* w, void*)
 {
 	progdefaults.xml_logbook = reinterpret_cast<Fl_Menu_*>(w)->mvalue()->value();
+	close_logbook();
 	connect_to_log_server();
 }
 

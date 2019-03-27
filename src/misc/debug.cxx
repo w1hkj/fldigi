@@ -130,6 +130,24 @@ void rotate_log(std::string filename)
 	}
 	remove(oldfn.str().c_str());
 	rename(filename.c_str(), oldfn.str().c_str());
+
+	char buffer[65536];
+	FILE *orig = fopen(filename.c_str(), "wb");
+	FILE *orig1 = fopen(oldfn.str().c_str(), "rb");
+
+	if (orig && orig1) {
+		size_t n;
+		while (1) {
+			memset(buffer, 0, sizeof(buffer));
+			n = fread(buffer, 1, sizeof(buffer), orig1);
+			n = fwrite(buffer, 1, n, orig);
+			if (feof(orig1)) {
+				break;
+			}
+		}
+	}
+	fclose(orig);
+	fclose(orig1);
 }
 
 

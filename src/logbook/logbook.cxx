@@ -21,12 +21,15 @@
 #include <config.h>
 
 #include <cstring>
+#include <iostream>
+#include <fstream>
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
 
 #include "main.h"
 #include "logbook.h"
+#include "logsupport.h"
 #include "configuration.h"
 #include "debug.h"
 #include "qrunner.h"
@@ -48,10 +51,17 @@ void start_logbook ()
 	qsodb.deleteRecs();
 
 	adifFile.readFile (logbook_filename.c_str(), &qsodb);
+	rotate_log(logbook_filename);
 
 	string label = "Logbook - ";
 	label.append(fl_filename_name(logbook_filename.c_str()));
 	dlgLogbook->copy_label(label.c_str());
+
+	restore_sort();
+	loadBrowser();
+
+	qsodb.isdirty(0);
+	MilliSleep(100);
 
 	return;
 }

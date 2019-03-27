@@ -398,7 +398,6 @@ void connect_to_log_server(void *)
 			start_logbook();
 		}
 	} else {
-		close_logbook();
 		activate_log_menus(true);
 		start_logbook();
 	}

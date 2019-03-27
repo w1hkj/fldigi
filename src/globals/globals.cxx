@@ -136,15 +136,15 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 {MODE_8PSK1200F,&_8psk1200f_modem,"8PSK1200F","8PSK-1200F","8PSK1200F","8PSK1200F","PSK","","8PSK1200F", ARQ_IO | KISS_IO },
 
 {MODE_OLIVIA,&olivia_modem,"OLIVIA","OLIVIA","OLIVIA","OLIVIA","OLIVIA","","OL", DISABLED_IO },
-{MODE_OLIVIA_4_250,&olivia_4_250_modem,"Olivia-4-250","OL 4-250","OLIV 4-250","OLIVIA 4/250","OLIVIA","OLIVIA 4/250","OL4/250", ARQ_IO  },
-{MODE_OLIVIA_8_250,&olivia_8_250_modem,"Olivia-8-250","OL 8-250","OLIV 8-250","OLIVIA 8/250","OLIVIA","OLIVIA 8/250","OL8/250", ARQ_IO  },
-{MODE_OLIVIA_4_500,&olivia_4_500_modem,"Olivia-4-500","OL 4-500","OLIV 4-500","OLIVIA 4/500","OLIVIA","OLIVIA 4/500","OL4/500", ARQ_IO | KISS_IO },
-{MODE_OLIVIA_8_500,&olivia_8_500_modem,"Olivia-8-500","OL 8-500","OLIV 8-500","OLIVIA 8/500","OLIVIA","OLIVIA 8/500","OL8/500", ARQ_IO | KISS_IO },
-{MODE_OLIVIA_16_500,&olivia_16_500_modem,"Olivia-16-500","OL 16-500","OLIV 16-500","OLIVIA 16/500","OLIVIA","OLIVIA 16/500","OL16/500", ARQ_IO | KISS_IO },
-{MODE_OLIVIA_8_1000,&olivia_8_1000_modem,"Olivia-8-1K","OL 8-1K","OLIV 8-1K","OLIVIA 8/1000","OLIVIA","OLIVIA 8/1000","OL8/1K", ARQ_IO | KISS_IO  },
-{MODE_OLIVIA_16_1000,&olivia_16_1000_modem,"Olivia-16-1K","OL 16-1K","OLIV 16-1K","OLIVIA 16/1000","OLIVIA","OLIVIA 16/1000","OL16/1K", ARQ_IO | KISS_IO  },
-{MODE_OLIVIA_32_1000,&olivia_32_1000_modem,"Olivia-32-1K","OL 32-1K","OLIV 32-1K","OLIVIA 32/1000","OLIVIA","OLIVIA 32/1000","OL32/1K", ARQ_IO | KISS_IO  },
-{MODE_OLIVIA_64_2000,&olivia_64_2000_modem,"Olivia-64-2K","OL 64-2K","OLIV 64-2K","OLIVIA 64/2000","OLIVIA","OLIVIA 64/2000","OL64/2K", ARQ_IO | KISS_IO  },
+{MODE_OLIVIA_4_250,&olivia_4_250_modem,"OLIVIA-4-250","OL 4-250","OLIV 4-250","OLIVIA 4/250","OLIVIA","OLIVIA 4/250","OL4/250", ARQ_IO  },
+{MODE_OLIVIA_8_250,&olivia_8_250_modem,"OLIVIA-8-250","OL 8-250","OLIV 8-250","OLIVIA 8/250","OLIVIA","OLIVIA 8/250","OL8/250", ARQ_IO  },
+{MODE_OLIVIA_4_500,&olivia_4_500_modem,"OLIVIA-4-500","OL 4-500","OLIV 4-500","OLIVIA 4/500","OLIVIA","OLIVIA 4/500","OL4/500", ARQ_IO | KISS_IO },
+{MODE_OLIVIA_8_500,&olivia_8_500_modem,"OLIVIA-8-500","OL 8-500","OLIV 8-500","OLIVIA 8/500","OLIVIA","OLIVIA 8/500","OL8/500", ARQ_IO | KISS_IO },
+{MODE_OLIVIA_16_500,&olivia_16_500_modem,"OLIVIA-16-500","OL 16-500","OLIV 16-500","OLIVIA 16/500","OLIVIA","OLIVIA 16/500","OL16/500", ARQ_IO | KISS_IO },
+{MODE_OLIVIA_8_1000,&olivia_8_1000_modem,"OLIVIA-8-1K","OL 8-1K","OLIV 8-1K","OLIVIA 8/1000","OLIVIA","OLIVIA 8/1000","OL8/1K", ARQ_IO | KISS_IO  },
+{MODE_OLIVIA_16_1000,&olivia_16_1000_modem,"OLIVIA-16-1K","OL 16-1K","OLIV 16-1K","OLIVIA 16/1000","OLIVIA","OLIVIA 16/1000","OL16/1K", ARQ_IO | KISS_IO  },
+{MODE_OLIVIA_32_1000,&olivia_32_1000_modem,"OLIVIA-32-1K","OL 32-1K","OLIV 32-1K","OLIVIA 32/1000","OLIVIA","OLIVIA 32/1000","OL32/1K", ARQ_IO | KISS_IO  },
+{MODE_OLIVIA_64_2000,&olivia_64_2000_modem,"OLIVIA-64-2K","OL 64-2K","OLIV 64-2K","OLIVIA 64/2000","OLIVIA","OLIVIA 64/2000","OL64/2K", ARQ_IO | KISS_IO  },
 
 {MODE_RTTY,&rtty_modem,"RTTY","RTTY","RTTY","RTTY","RTTY","","RY", DISABLED_IO },
 
@@ -212,27 +212,24 @@ std::string adif2export(std::string adif)
 {
 	std::string test = ucasestr(adif);
 	for (int n = 0; n < NUM_MODES; n++) {
-		if (test == mode_info[n].sname ||
-			test == mode_info[n].adif_name ||
-			test == mode_info[n].export_mode ||
-			test == mode_info[n].export_submode)
-			return mode_info[n].export_mode;
+		if (test == ucasestr(mode_info[n].sname) ||
+			test == ucasestr(mode_info[n].adif_name) ||
+			test == ucasestr(mode_info[n].export_mode) ||
+			test == ucasestr(mode_info[n].export_submode))
+			return ucasestr(mode_info[n].export_mode);
 	}
-	std::string retstr = adif;
-	for (size_t n = 0; n < retstr.length(); n++)
-		retstr[n] = toupper(retstr[n]);
-	return retstr;
+	return test;
 }
 
 std::string adif2submode(std::string adif)
 {
 	std::string test = ucasestr(adif);
 	for (int n = 0; n < NUM_MODES; n++) {
-		if (test == mode_info[n].sname ||
-			test == mode_info[n].adif_name ||
-			test == mode_info[n].export_mode ||
-			test == mode_info[n].export_submode)
-			return mode_info[n].export_submode;
+		if (test == ucasestr(mode_info[n].sname) ||
+			test == ucasestr(mode_info[n].adif_name) ||
+			test == ucasestr(mode_info[n].export_mode) ||
+			test == ucasestr(mode_info[n].export_submode))
+			return ucasestr(mode_info[n].export_submode);
 	}
 	return "";
 }
