@@ -40,6 +40,8 @@
 #include "logbook.h"
 #include "logger.h"
 #include "locator.h"
+#include "counties.h"
+#include "confdialog.h"
 #include "fl_digi.h"
 #include "adif_io.h"
 #include "modem.h"
@@ -285,6 +287,14 @@ void xml_add_record()
 	adif_str(SCOUTS,  progdefaults.my_JOTA_scout.c_str());
 	adif_str(SCOUTR, inp_JOTA_scout->value());
 
+	adif_str(OP_CALL, progdefaults.operCall.c_str());
+	adif_str(STA_CALL, progdefaults.myCall.c_str());
+	adif_str(MY_CITY,
+		std::string(progdefaults.myQth).
+		append(", ").
+		append(inp_QP_state_short->value()).c_str());
+	adif_str(MY_GRID, progdefaults.myLocator.c_str());
+
 	adif.append("<eor>");
 
 // send it to the server
@@ -343,6 +353,9 @@ void xml_add_record()
 	rec.putField(TROOPR, inp_JOTA_troop->value());
 	rec.putField(SCOUTS,  progdefaults.my_JOTA_scout.c_str());
 	rec.putField(SCOUTR, inp_JOTA_scout->value());
+
+	rec.putField(OP_CALL, progdefaults.operCall.c_str());
+	rec.putField(STA_CALL, progdefaults.myCall.c_str());
 
 	submit_record(rec);
 
