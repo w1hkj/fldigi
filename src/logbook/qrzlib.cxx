@@ -251,7 +251,7 @@ void QRZ::OpenQRZFiles( const char *fname )
 
 	idxsize = fsize - 48;
 
-	index = (char *) malloc( idxsize );
+	index = new char[idxsize];
 
 	if( index == NULL ) {
 		fclose( idxfile );
@@ -265,7 +265,7 @@ void QRZ::OpenQRZFiles( const char *fname )
 
 	if (num1 != 1 || num2 != 1) {
 		fclose( idxfile );
-		free( index );
+		delete [] index;
 		QRZvalid = 0;
 		return;
 	}
@@ -276,23 +276,25 @@ void QRZ::OpenQRZFiles( const char *fname )
 
 	datafile = fl_fopen( dfname, "r" );
 	if( datafile == NULL ) {
-		free( index );
+		delete [] index;
 		QRZvalid = 0;
 		return;
 	}
 
 	sscanf( idxhdr.bytesperkey, "%d", &datarecsize );
 	if( datarecsize == 0 || datarecsize > 32767 ) {
-		free( index );
+		delete [] index;
 		QRZvalid = 0;
 		return;
 	}
 
 // allocate sufficient data buffer for file read over key boundary
 
-	data = (char *) malloc( datarecsize + 512 );
+	if (data) delete [] data;
+	data = new char[datarecsize + 512];
+
 	if( data == NULL ) {
-		free( index );
+		delete [] index;
 		QRZvalid = 0;
 		return;
 	}
@@ -331,8 +333,8 @@ void QRZ::NewDBpath( const char *fname )
 
 QRZ::~QRZ()
 {
-	if( index != NULL ) free( index );
-	if( data  != NULL ) free( data );
+	if (index) delete [] index;
+	if (data) delete [] data;
 	if( datafile != NULL ) fclose( datafile );
 	return;
 }
