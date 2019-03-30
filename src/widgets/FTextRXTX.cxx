@@ -259,7 +259,6 @@ int FTextRX::handle(int event)
 			break;
 		switch (Fl::event_button()) {
 		case FL_LEFT_MOUSE:
-//			if (Fl::event_shift() || progdefaults.rxtext_clicks_qso_data) {
 			if (progdefaults.rxtext_clicks_qso_data) {
 				if (handle_clickable(Fl::event_x() - x(), Fl::event_y() - y()))
 					return 1;
@@ -784,6 +783,8 @@ void parseSQSO(std::string str)
 
 int FTextRX::handle_qso_data(int start, int end)
 {
+	if (start < 0 || end < 0) return 0;
+
 	num_words = 1;
 
 	if (Fl::event_state() & FL_SHIFT) {
