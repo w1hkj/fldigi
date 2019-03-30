@@ -56,6 +56,8 @@ void start_logbook ()
 	string label = "Logbook - ";
 	label.append(fl_filename_name(logbook_filename.c_str()));
 	dlgLogbook->copy_label(label.c_str());
+	txtLogFile->value(logbook_filename.c_str());
+	txtLogFile->redraw();
 
 	restore_sort();
 	loadBrowser();

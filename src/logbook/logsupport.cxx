@@ -411,6 +411,9 @@ void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 	progdefaults.logbookfilename = logbook_filename = temp;
 
 	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
+	txtLogFile->value(logbook_filename.c_str());
+	txtLogFile->redraw();
+
 	progdefaults.changed = true;
 	qsodb.deleteRecs();
 	dxcc_entity_cache_clear();
@@ -456,6 +459,10 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 
 	adifFile.readFile (logbook_filename.c_str(), &qsodb);
 	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
+
+	txtLogFile->value(logbook_filename.c_str());
+	txtLogFile->redraw();
+
 	qsodb.isdirty(0);
 
 }
@@ -485,6 +492,8 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 	progdefaults.changed = true;
 
 	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
+	txtLogFile->value(logbook_filename.c_str());
+	txtLogFile->redraw();
 
 //	cQsoDb::reverse = false;
 //	qsodb.SortByDate(progdefaults.sort_date_time_off);
