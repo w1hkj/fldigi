@@ -38,7 +38,7 @@ rigcontrol/rigclass.cxx
 
 XMLRPC_SRC = \
 include/xmlrpc.h \
-misc/xmlrpc.cxx
+network/xmlrpc.cxx
 
 FLDIGI_WIN32_RES_SRC = fldigirc.rc
 
@@ -83,8 +83,171 @@ XMLRPCPP_SRC = \
 	xmlrpcpp/XmlRpcValue.cpp \
 	xmlrpcpp/XmlRpcValue.h
 
-EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(FLDIGI_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC) \
-	$(BENCHMARK_SRC) $(REGEX_SRC) $(STACK_SRC) $(MINGW32_SRC) $(NLS_SRC) $(XMLRPCPP_SRC)
+# Build the libmbedtls source if libmbedtls is not found
+LIBMBEDTLS_SRC = \
+	mbedtls/aes.c \
+	mbedtls/aesni.c \
+	mbedtls/arc4.c \
+	mbedtls/aria.c \
+	mbedtls/asn1parse.c \
+	mbedtls/asn1write.c \
+	mbedtls/base64.c \
+	mbedtls/bignum.c \
+	mbedtls/blowfish.c \
+	mbedtls/camellia.c \
+	mbedtls/ccm.c \
+	mbedtls/certs.c \
+	mbedtls/chacha20.c \
+	mbedtls/chachapoly.c \
+	mbedtls/cipher.c \
+	mbedtls/cipher_wrap.c \
+	mbedtls/cmac.c \
+	mbedtls/ctr_drbg.c \
+	mbedtls/debug.c \
+	mbedtls/des.c \
+	mbedtls/dhm.c \
+	mbedtls/ecdh.c \
+	mbedtls/ecdsa.c \
+	mbedtls/ecjpake.c \
+	mbedtls/ecp.c \
+	mbedtls/ecp_curves.c \
+	mbedtls/entropy.c \
+	mbedtls/entropy_poll.c \
+	mbedtls/error.c \
+	mbedtls/gcm.c \
+	mbedtls/havege.c \
+	mbedtls/hkdf.c \
+	mbedtls/hmac_drbg.c \
+	mbedtls/md2.c \
+	mbedtls/md4.c \
+	mbedtls/md5.c \
+	mbedtls/md.c \
+	mbedtls/md_wrap.c \
+	mbedtls/memory_buffer_alloc.c \
+	mbedtls/net_sockets.c \
+	mbedtls/nist_kw.c \
+	mbedtls/oid.c \
+	mbedtls/padlock.c \
+	mbedtls/pem.c \
+	mbedtls/pk.c \
+	mbedtls/pkcs11.c \
+	mbedtls/pkcs12.c \
+	mbedtls/pkcs5.c \
+	mbedtls/pkparse.c \
+	mbedtls/pk_wrap.c \
+	mbedtls/pkwrite.c \
+	mbedtls/platform.c \
+	mbedtls/platform_util.c \
+	mbedtls/poly1305.c \
+	mbedtls/ripemd160.c \
+	mbedtls/rsa.c \
+	mbedtls/rsa_internal.c \
+	mbedtls/sha1.c \
+	mbedtls/sha256.c \
+	mbedtls/sha512.c \
+	mbedtls/ssl_cache.c \
+	mbedtls/ssl_ciphersuites.c \
+	mbedtls/ssl_cli.c \
+	mbedtls/ssl_cookie.c \
+	mbedtls/ssl_srv.c \
+	mbedtls/ssl_ticket.c \
+	mbedtls/ssl_tls.c \
+	mbedtls/threading.c \
+	mbedtls/timing.c \
+	mbedtls/version.c \
+	mbedtls/version_features.c \
+	mbedtls/x509.c \
+	mbedtls/x509_create.c \
+	mbedtls/x509_crl.c \
+	mbedtls/x509_crt.c \
+	mbedtls/x509_csr.c \
+	mbedtls/x509write_crt.c \
+	mbedtls/x509write_csr.c \
+	mbedtls/xtea.c \
+	include/mbedtls/aes.h \
+	include/mbedtls/aesni.h \
+	include/mbedtls/arc4.h \
+	include/mbedtls/aria.h \
+	include/mbedtls/asn1.h \
+	include/mbedtls/asn1write.h \
+	include/mbedtls/base64.h \
+	include/mbedtls/bignum.h \
+	include/mbedtls/blowfish.h \
+	include/mbedtls/bn_mul.h \
+	include/mbedtls/camellia.h \
+	include/mbedtls/ccm.h \
+	include/mbedtls/certs.h \
+	include/mbedtls/chacha20.h \
+	include/mbedtls/chachapoly.h \
+	include/mbedtls/check_config.h \
+	include/mbedtls/cipher.h \
+	include/mbedtls/cipher_internal.h \
+	include/mbedtls/cmac.h \
+	include/mbedtls/compat-1.3.h \
+	include/mbedtls/config.h \
+	include/mbedtls/ctr_drbg.h \
+	include/mbedtls/debug.h \
+	include/mbedtls/des.h \
+	include/mbedtls/dhm.h \
+	include/mbedtls/ecdh.h \
+	include/mbedtls/ecdsa.h \
+	include/mbedtls/ecjpake.h \
+	include/mbedtls/ecp.h \
+	include/mbedtls/ecp_internal.h \
+	include/mbedtls/entropy.h \
+	include/mbedtls/entropy_poll.h \
+	include/mbedtls/error.h \
+	include/mbedtls/gcm.h \
+	include/mbedtls/havege.h \
+	include/mbedtls/hkdf.h \
+	include/mbedtls/hmac_drbg.h \
+	include/mbedtls/md2.h \
+	include/mbedtls/md4.h \
+	include/mbedtls/md5.h \
+	include/mbedtls/md.h \
+	include/mbedtls/md_internal.h \
+	include/mbedtls/memory_buffer_alloc.h \
+	include/mbedtls/net.h \
+	include/mbedtls/net_sockets.h \
+	include/mbedtls/nist_kw.h \
+	include/mbedtls/oid.h \
+	include/mbedtls/padlock.h \
+	include/mbedtls/pem.h \
+	include/mbedtls/pkcs11.h \
+	include/mbedtls/pkcs12.h \
+	include/mbedtls/pkcs5.h \
+	include/mbedtls/pk.h \
+	include/mbedtls/pk_internal.h \
+	include/mbedtls/platform.h \
+	include/mbedtls/platform_time.h \
+	include/mbedtls/platform_util.h \
+	include/mbedtls/poly1305.h \
+	include/mbedtls/ripemd160.h \
+	include/mbedtls/rsa.h \
+	include/mbedtls/rsa_internal.h \
+	include/mbedtls/sha1.h \
+	include/mbedtls/sha256.h \
+	include/mbedtls/sha512.h \
+	include/mbedtls/ssl_cache.h \
+	include/mbedtls/ssl_ciphersuites.h \
+	include/mbedtls/ssl_cookie.h \
+	include/mbedtls/ssl.h \
+	include/mbedtls/ssl_internal.h \
+	include/mbedtls/ssl_ticket.h \
+	include/mbedtls/threading.h \
+	include/mbedtls/timing.h \
+	include/mbedtls/version.h \
+	include/mbedtls/x509_crl.h \
+	include/mbedtls/x509_crt.h \
+	include/mbedtls/x509_csr.h \
+	include/mbedtls/x509.h \
+	include/mbedtls/xtea.h
+
+
+EXTRA_fldigi_SOURCES = \
+	$(HAMLIB_SRC) $(XMLRPC_SRC) $(FLDIGI_WIN32_RES_SRC) \
+	$(COMMON_WIN32_RES_SRC) $(BENCHMARK_SRC) $(REGEX_SRC) $(STACK_SRC) \
+	$(MINGW32_SRC) $(NLS_SRC) $(XMLRPCPP_SRC) $(LIBMBEDTLS_SRC)
 
 EXTRA_flarq_SOURCES = $(FLARQ_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC) $(XMLRPCPP_SRC)
 
@@ -105,6 +268,15 @@ flarq_CPPFLAGS += @FLXMLRPC_CFLAGS@
 flarq_CXXFLAGS += @FLXMLRPC_CFLAGS@
 flarq_CFLAGS   += @FLXMLRPC_CFLAGS@
 flarq_LDFLAGS  += @FLXMLRPC_LIBS@
+endif
+
+if !ENABLE_LIBMBEDTLS
+fldigi_SOURCES += $(LIBMBEDTLS_SRC)
+else
+fldigi_CPPFLAGS += @LIBMBEDTLS_CFLAGS@
+fldigi_CXXFLAGS += @LIBMBEDTLS_CFLAGS@
+fldigi_CFLAGS   += @LIBMBEDTLS_CFLAGS@
+fldigi_LDFLAGS  += @LIBMBEDTLS_LIBS@
 endif
 
 if ENABLE_HAMLIB
@@ -330,29 +502,34 @@ clean-local:
 # Sources that we build. It is OK to have headers here.
 fldigi_SOURCES += \
 	combo/combo.cxx \
+	config_script/create_default_script.cxx \
+	config_script/run_script.h \
+	config_script/run_scripts.cxx \
+	config_script/script_parsing.cxx \
+	config_script/script_parsing.h \
+	contestia/contestia.cxx \
 	cw_rtty/cw.cxx \
 	cw_rtty/morse.cxx \
-	cw_rtty/rtty.cxx \
-	cw_rtty/view_rtty.cxx \
 	cw_rtty/nanoIO.cxx \
 	cw_rtty/Nav.cxx \
-	cw_rtty/winkeyer.cxx \
+	cw_rtty/rtty.cxx \
 	cw_rtty/view_cw.cxx \
-	contestia/contestia.cxx \
+	cw_rtty/view_rtty.cxx \
+	cw_rtty/winkeyer.cxx \
 	dialogs/confdialog.cxx \
 	dialogs/fl_digi.cxx \
 	dialogs/font_browser.cxx \
-	dialogs/Viewer.cxx \
 	dialogs/htmlstrings.cxx \
 	dialogs/notifydialog.cxx \
 	dialogs/record_browse.cxx \
-	dialogs/tod_clock.cxx \
 	dialogs/testsigs.cxx \
-	dtmf/dtmf.cxx \
-	thor/thor.cxx \
-	thor/thorvaricode.cxx \
+	dialogs/tod_clock.cxx \
+	dialogs/Viewer.cxx \
 	dominoex/dominoex.cxx \
 	dominoex/dominovar.cxx \
+	dtmf/dtmf.cxx \
+	dxcluster/dxcluster.cxx \
+	dxcluster/dx_dialog.cxx \
 	feld/feld.cxx \
 	feld/feldfonts.cxx \
 	fft-monitor/fft-monitor.cxx \
@@ -362,182 +539,11 @@ fldigi_SOURCES += \
 	filters/fftfilt.cxx \
 	filters/filters.cxx \
 	filters/viterbi.cxx \
+	fsq/fsq.cxx \
+	fsq/fsq_monitor.cxx \
 	globals/globals.cxx \
-	config_script/create_default_script.cxx \
-	config_script/run_scripts.cxx \
-	config_script/run_script.h \
-	config_script/script_parsing.cxx \
-	config_script/script_parsing.h \
-	include/htmlstrings.h \
-	include/arq_io.h \
-	include/confdialog.h \
-	include/contest.h \
-	include/counties.h \
-	include/dtmf.h \
-	include/FTextView.h \
-	include/FTextRXTX.h \
-	include/fileselect.h \
-	include/Panel.h \
-	include/FreqControl.h \
-	include/analysis.h \
-	include/ascii.h \
-	include/charsetdistiller.h \
-	include/charsetlist.h \
-	include/colorbox.h \
-	include/combo.h \
-	include/complex.h \
-	include/configuration.h \
-	include/contestia.h \
-	include/cw.h \
-	include/view_cw.h \
-	include/data_io.h \
-	include/debug.h \
-	include/digiscope.h \
-	include/dxcc.h \
-	include/thor.h \
-	include/thorvaricode.h \
-	include/dominoex.h \
-	include/dominovar.h \
-	include/fd_logger.h \
-	include/feld.h \
-	include/fftfilt.h \
-	include/fft-monitor.h \
-	include/filters.h \
-	include/fl_digi.h \
-	include/fl_lock.h \
-	include/fldigi-config.h \
-	include/flinput2.h \
-	include/flmisc.h \
-	include/flslider2.h \
-	include/font_browser.h \
-	include/fontdef.h \
-	include/gettext.h \
-	include/globals.h \
-	include/icons.h \
-	include/interleave.h \
-	include/jalocha/pj_cmpx.h \
-	include/jalocha/pj_fft.h \
-	include/jalocha/pj_fht.h \
-	include/jalocha/pj_fifo.h \
-	include/jalocha/pj_gray.h \
-	include/jalocha/pj_lowpass3.h \
-	include/jalocha/pj_mfsk.h \
-	include/jalocha/pj_struc.h \
-	include/kiss_io.h \
-	include/maclogger.h \
-	include/n3fjp_logger.h \
-	include/ax25_decode.h \
-	include/coordinate.h \
-	include/gfft.h \
-	include/kmlserver.h \
-	include/locator.h \
-	include/log.h \
-	include/logger.h \
-	include/macroedit.h \
-	include/macros.h \
-	include/main.h \
-	include/mbuffer.h \
-	include/mfsk.h \
-	include/mfskvaricode.h \
-	include/wefax.h \
-	include/wefax-pic.h \
-	include/wefax_map.h \
-	include/navtex.h \
-	include/misc.h \
-	include/modem.h \
-	include/morse.h \
-	include/mt63base.h \
-	include/mt63.h \
-	include/network.h \
-	include/dsp.h \
-	include/newinstall.h \
-	include/notify.h \
-	include/notifydialog.h \
-	include/record_browse.h \
-	include/olivia.h \
-	include/pkg.h \
-	include/picture.h \
-	include/progress.h \
-	include/psk.h \
-	include/viewpsk.h \
-	include/pskcoeff.h \
-	include/pskvaricode.h \
-	include/pskeval.h \
-	include/ptt.h \
-	include/pixmaps.h \
-	include/pskrep.h \
-	include/qrunner.h \
-	include/lookupcall.h \
-	include/qrzlib.h \
-	include/raster.h \
-	include/re.h \
-	include/rigCAT.h \
-	include/rigio.h \
-	include/rigsupport.h \
-	include/rigxml.h \
-	include/ringbuffer.h \
-	include/rsid.h \
-	include/rtty.h \
-	include/view_rtty.h \
-	include/nco.h \
-	include/synop.h \
-	include/nullmodem.h \
-	include/record_loader.h \
-	include/record_loader_gui.h \
-	include/rx_extract.h \
-	include/speak.h \
-	include/serial.h \
-	include/estrings.h \
-	include/smeter.h \
-	include/pwrmeter.h \
-	include/socket.h \
-	include/sound.h \
-	include/soundconf.h \
-	include/spectrum.h \
-	include/spectrum_viewer.h \
-	include/spot.h \
-	include/ssb.h \
-	include/stacktrace.h \
-	include/status.h \
-	include/strutil.h \
-	include/testmodem.h \
-	include/threads.h \
-	include/throb.h \
-	include/timeops.h \
-	include/trx.h \
-	include/util.h \
-	include/Viewer.h \
-	include/viterbi.h \
-	include/waterfall.h \
-	include/fsq.h \
-	include/ifkp.h \
-	include/wwv.h \
-	include/xmlreader.h \
-	include/adif_def.h \
-	include/adif_io.h \
-	include/calendar.h \
-	include/date.h \
-	include/dx_dialog.h \
-	include/dx_cluster.h \
-	include/field_def.h \
-	include/logbook.h \
-	include/lgbook.h \
-	include/fd_view.h \
-	include/logsupport.h \
-	include/outputencoder.h \
-	include/qso_db.h \
-	include/table.h \
-	include/textio.h \
-	include/psk_browser.h \
-	include/nanoIO.h \
-	include/Nav.h \
-	include/utf8file_io.h \
-	include/weather.h \
-	include/winkeyer.h \
-	include/audio_alert.h \
-	include/play.pa.h \
-	include/testsigs.h \
-	include/test_signal.h \
+	ifkp/ifkp.cxx \
+	ifkp/tux.cxx \
 	irrxml/CXMLReaderImpl.h \
 	irrxml/fast_atof.h \
 	irrxml/heapsort.h \
@@ -546,10 +552,8 @@ fldigi_SOURCES += \
 	irrxml/irrTypes.h \
 	irrxml/irrXML.cpp \
 	irrxml/irrXML.h \
-	psm/psm.cxx \
-	psm/psm.h \
-	dxcluster/dx_dialog.cxx \
-	dxcluster/dxcluster.cxx \
+	libtiniconv/tiniconv.c \
+	libtiniconv/tiniconv_desc.c \
 	logbook/adif_io.cxx \
 	logbook/calendar.cxx \
 	logbook/contest.cxx \
@@ -558,8 +562,8 @@ fldigi_SOURCES += \
 	logbook/cty-dat.cxx \
 	logbook/date.cxx \
 	logbook/fd_logger.cxx \
-	logbook/lgbook.cxx \
 	logbook/fd_view.cxx \
+	logbook/lgbook.cxx \
 	logbook/logbook.cxx \
 	logbook/logsupport.cxx \
 	logbook/lookupcall.cxx \
@@ -569,18 +573,15 @@ fldigi_SOURCES += \
 	logbook/qso_db.cxx \
 	logbook/table.cxx \
 	logbook/textio.cxx \
+	logbook/xmlrpc_log.cxx \
 	logger/logger.cxx \
 	logger/rx_extract.cxx \
 	logger/speak.cxx \
 	main.cxx \
 	mfsk/interleave.cxx \
-	misc/locator.cxx \
 	mfsk/mfsk.cxx \
 	mfsk/mfskvaricode.cxx \
-	wefax/wefax.cxx \
-	wefax/wefax-pic.cxx \
-	wefax/wefax_map.cxx \
-	navtex/navtex.cxx \
+	misc/arq_io.cxx \
 	misc/ascii.cxx \
 	misc/ax25_decode.cxx \
 	misc/charsetdistiller.cxx \
@@ -589,22 +590,21 @@ fldigi_SOURCES += \
 	misc/coordinate.cxx \
 	misc/debug.cxx \
 	misc/dxcc.cxx \
+	misc/estrings.cxx \
 	misc/icons.cxx \
 	misc/kiss_io.cxx \
 	misc/kmlserver.cxx \
+	misc/locator.cxx \
 	misc/log.cxx \
 	misc/macroedit.cxx \
 	misc/macros.cxx \
 	misc/misc.cxx \
-	misc/network.cxx \
 	misc/newinstall.cxx \
 	misc/outputencoder.cxx \
-	misc/arq_io.cxx \
 	misc/pixmaps.cxx \
 	misc/pixmaps_tango.cxx \
-	misc/re.cxx \
 	misc/record_loader.cxx \
-	misc/socket.cxx \
+	misc/re.cxx \
 	misc/stacktrace.cxx \
 	misc/status.cxx \
 	misc/strutil.cxx \
@@ -612,17 +612,23 @@ fldigi_SOURCES += \
 	misc/timeops.cxx \
 	misc/utf8file_io.cxx \
 	misc/util.cxx \
-	misc/weather.cxx \
 	mt63/dsp.cxx \
-	mt63/mt63.cxx \
 	mt63/mt63base.cxx \
-	include/navtex.h \
+	mt63/mt63.cxx \
+	navtex/navtex.cxx \
+	network/ca_cert.cxx \
+	network/metar.cxx \
+	network/network.cxx \
+	network/socket.cxx \
+	network/weather.cxx \
 	olivia/olivia.cxx \
-	psk/psk.cxx \
 	psk/pskcoeff.cxx \
+	psk/psk.cxx \
+	psk/pskeval.cxx \
 	psk/pskvaricode.cxx \
 	psk/viewpsk.cxx \
-	psk/pskeval.cxx \
+	psm/psm.cxx \
+	psm/psm.h \
 	qrunner/fqueue.h \
 	qrunner/qrunner.cxx \
 	rigcontrol/FreqControl.cxx \
@@ -633,55 +639,52 @@ fldigi_SOURCES += \
 	rigcontrol/rigxml.cxx \
 	rigcontrol/serial.cxx \
 	rigcontrol/xmlrpc_rig.cxx \
-	misc/estrings.cxx \
 	rsid/rsid.cxx \
-	soundcard/sound.cxx \
-	soundcard/soundconf.cxx \
 	soundcard/audio_alert.cxx \
 	soundcard/bark.cxx \
 	soundcard/checkout.cxx \
 	soundcard/diesel.cxx \
-	soundcard/doesnot.cxx \
 	soundcard/dinnerbell.cxx \
+	soundcard/doesnot.cxx \
 	soundcard/play.pa.cxx \
+	soundcard/soundconf.cxx \
+	soundcard/sound.cxx \
 	soundcard/steam_train.cxx \
 	spot/notify.cxx \
 	spot/pskrep.cxx \
 	spot/spot.cxx \
 	ssb/ssb.cxx \
 	synop-src/synop.cxx \
+	thor/thor.cxx \
+	thor/thorvaricode.cxx \
 	throb/throb.cxx \
 	trx/modem.cxx \
 	trx/nullmodem.cxx \
-	trx/trx.cxx \
 	trx/test_signal.cxx \
+	trx/trx.cxx \
 	waterfall/colorbox.cxx \
 	waterfall/digiscope.cxx \
 	waterfall/raster.cxx \
 	waterfall/waterfall.cxx \
-	widgets/Fl_Text_Buffer_mod.cxx \
-	widgets/Fl_Text_Display_mod.cxx \
-	widgets/Fl_Text_Editor_mod.cxx \
-	widgets/FTextView.cxx \
-	widgets/FTextRXTX.cxx \
-	widgets/Panel.cxx \
+	wefax/wefax.cxx \
+	wefax/wefax_map.cxx \
+	wefax/wefax-pic.cxx \
 	widgets/flinput2.cxx \
 	widgets/flmisc.cxx \
 	widgets/flslider2.cxx \
+	widgets/Fl_Text_Buffer_mod.cxx \
+	widgets/Fl_Text_Display_mod.cxx \
+	widgets/Fl_Text_Editor_mod.cxx \
+	widgets/FTextRXTX.cxx \
+	widgets/FTextView.cxx \
+	widgets/Panel.cxx \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
 	widgets/psk_browser.cxx \
-	widgets/smeter.cxx \
 	widgets/pwrmeter.cxx \
-	fsq/fsq.cxx \
-	ifkp/ifkp.cxx \
-	ifkp/tux.cxx \
-	fsq/fsq_monitor.cxx \
+	widgets/smeter.cxx \
 	wwv/analysis.cxx \
-	wwv/wwv.cxx \
-	logbook/xmlrpc_log.cxx \
-	libtiniconv/tiniconv.c \
-	libtiniconv/tiniconv_desc.c
+	wwv/wwv.cxx
 
 #	packet/pkt.cxx
 #	include/pkt.h
@@ -732,6 +735,179 @@ EXTRA_fldigi_SOURCES += \
 	thor/thor-pic.cxx \
 	trx/tune.cxx \
 	dialogs/guide.cxx \
+	include/adif_def.h \
+	include/adif_io.h \
+	include/analysis.h \
+	include/arq_io.h \
+	include/ascii.h \
+	include/audio_alert.h \
+	include/ax25_decode.h \
+	include/calendar.h \
+	include/charsetdistiller.h \
+	include/charsetlist.h \
+	include/colorbox.h \
+	include/combo.h \
+	include/complex.h \
+	include/confdialog.h \
+	include/configuration.h \
+	include/contest.h \
+	include/contestia.h \
+	include/coordinate.h \
+	include/counties.h \
+	include/cw.h \
+	include/data_io.h \
+	include/date.h \
+	include/debug.h \
+	include/digiscope.h \
+	include/dominoex.h \
+	include/dominovar.h \
+	include/dsp.h \
+	include/dtmf.h \
+	include/dxcc.h \
+	include/dx_cluster.h \
+	include/dx_dialog.h \
+	include/estrings.h \
+	include/fd_logger.h \
+	include/fd_view.h \
+	include/feld.h \
+	include/fftfilt.h \
+	include/fft-monitor.h \
+	include/field_def.h \
+	include/fileselect.h \
+	include/filters.h \
+	include/fldigi-config.h \
+	include/fl_digi.h \
+	include/flinput2.h \
+	include/fl_lock.h \
+	include/flmisc.h \
+	include/flslider2.h \
+	include/font_browser.h \
+	include/fontdef.h \
+	include/FreqControl.h \
+	include/fsq.h \
+	include/FTextRXTX.h \
+	include/FTextView.h \
+	include/gettext.h \
+	include/gfft.h \
+	include/globals.h \
+	include/htmlstrings.h \
+	include/https.h \
+	include/icons.h \
+	include/ifkp.h \
+	include/interleave.h \
+	include/jalocha/pj_cmpx.h \
+	include/jalocha/pj_fft.h \
+	include/jalocha/pj_fht.h \
+	include/jalocha/pj_fifo.h \
+	include/jalocha/pj_gray.h \
+	include/jalocha/pj_lowpass3.h \
+	include/jalocha/pj_mfsk.h \
+	include/jalocha/pj_struc.h \
+	include/kiss_io.h \
+	include/kmlserver.h \
+	include/lgbook.h \
+	include/locator.h \
+	include/logbook.h \
+	include/logger.h \
+	include/log.h \
+	include/logsupport.h \
+	include/lookupcall.h \
+	include/maclogger.h \
+	include/macroedit.h \
+	include/macros.h \
+	include/main.h \
+	include/mbuffer.h \
+	include/metar.h \
+	include/mfsk.h \
+	include/mfskvaricode.h \
+	include/misc.h \
+	include/modem.h \
+	include/morse.h \
+	include/mt63base.h \
+	include/mt63.h \
+	include/n3fjp_logger.h \
+	include/nanoIO.h \
+	include/Nav.h \
+	include/navtex.h \
+	include/navtex.h \
+	include/nco.h \
+	include/network.h \
+	include/newinstall.h \
+	include/notifydialog.h \
+	include/notify.h \
+	include/nullmodem.h \
+	include/olivia.h \
+	include/outputencoder.h \
+	include/Panel.h \
+	include/picture.h \
+	include/pixmaps.h \
+	include/pkg.h \
+	include/play.pa.h \
+	include/progress.h \
+	include/psk_browser.h \
+	include/pskcoeff.h \
+	include/pskeval.h \
+	include/psk.h \
+	include/pskrep.h \
+	include/pskvaricode.h \
+	include/ptt.h \
+	include/pwrmeter.h \
+	include/qrunner.h \
+	include/qrzlib.h \
+	include/qso_db.h \
+	include/raster.h \
+	include/record_browse.h \
+	include/record_loader_gui.h \
+	include/record_loader.h \
+	include/re.h \
+	include/rigCAT.h \
+	include/rigio.h \
+	include/rigsupport.h \
+	include/rigxml.h \
+	include/ringbuffer.h \
+	include/rsid.h \
+	include/rtty.h \
+	include/rx_extract.h \
+	include/serial.h \
+	include/smeter.h \
+	include/socket.h \
+	include/soundconf.h \
+	include/sound.h \
+	include/speak.h \
+	include/spectrum.h \
+	include/spectrum_viewer.h \
+	include/spot.h \
+	include/ssb.h \
+	include/stacktrace.h \
+	include/status.h \
+	include/strutil.h \
+	include/synop.h \
+	include/table.h \
+	include/testmodem.h \
+	include/test_signal.h \
+	include/testsigs.h \
+	include/textio.h \
+	include/thor.h \
+	include/thorvaricode.h \
+	include/threads.h \
+	include/throb.h \
+	include/timeops.h \
+	include/trx.h \
+	include/utf8file_io.h \
+	include/util.h \
+	include/view_cw.h \
+	include/Viewer.h \
+	include/viewpsk.h \
+	include/view_rtty.h \
+	include/viterbi.h \
+	include/waterfall.h \
+	include/weather.h \
+	include/wefax.h \
+	include/wefax_map.h \
+	include/wefax-pic.h \
+	include/winkeyer.h \
+	include/wwv.h \
+	include/xmlreader.h \
 	libtiniconv/tiniconv.h \
 	libtiniconv/tiniconv_int.h \
 	libtiniconv/encdec/ascii.h \
@@ -831,8 +1007,8 @@ flarq_SOURCES += \
 	misc/pixmaps.cxx \
 	misc/pixmaps_tango.cxx \
 	misc/re.cxx \
-	misc/socket.cxx \
 	misc/util.cxx \
+	network/socket.cxx \
 	widgets/Fl_Text_Buffer_mod.cxx \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \
@@ -864,6 +1040,9 @@ EXTRA_DIST = \
 	$(srcdir)/../data/flarq.xpm \
 	$(srcdir)/../data/mac/flarq.icns \
 	$(srcdir)/../data/win32/flarq.ico \
+	$(srcdir)/mbedtls/libmbedtls.pc \
+	$(srcdir)/mbedtls/LICENSE \
+	$(srcdir)/mbedtls/gpl-2.0.txt \
 	$(srcdir)/synop-src/synop_tool.cxx \
 	$(srcdir)/synop-src/README \
 	$(srcdir)/synop-src/Makefile \

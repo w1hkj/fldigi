@@ -260,7 +260,7 @@ Address::Address(const char* host, const char* port_name, const char* proto_name
 	}
 }
 
-Address::Address(const Address& addr)
+Address::Address(const Address &addr)
 {
 #if HAVE_GETADDRINFO
 	info = NULL;
@@ -319,6 +319,8 @@ Address& Address::operator=(const Address& rhs)
 
 void Address::lookup(const char* proto_name)
 {
+std::cout << "proto_name: " << proto_name << std::endl;
+
 	int proto;
 	if (!strcasecmp(proto_name, "tcp"))
 		proto = IPPROTO_TCP;
@@ -339,9 +341,11 @@ void Address::lookup(const char* proto_name)
 	if (service.find_first_not_of("0123456789") == string::npos)
 		hints.ai_flags |= AI_NUMERICSERV;
 
+std::cout << "getaddrinfo(" << node << ", " << service << ")" << std::endl;
 	int r = getaddrinfo(node.empty() ? NULL : node.c_str(), service.c_str(), &hints, &info);
-	if (r != 0)
+	if (r != 0) {
 		throw SocketException(gai_strerror(r));
+	}
 
 #else // use gethostbyname etc.
 	memset(&host_entry, 0, sizeof(host_entry));
@@ -503,7 +507,7 @@ void windows_init(void)
 ///
 /// @param addr An Address object
 ///
-Socket::Socket(const Address& addr)
+Socket::Socket(const Address &addr)
 {
 #ifdef __MINGW32__
 	windows_init();
@@ -1125,6 +1129,7 @@ size_t Socket::recv(void* buf, size_t len)
 size_t Socket::recv(string& buf)
 {
 	ssize_t r = 0;
+	ssize_t rx = 0;
 	// if we have a nonblocking socket and a nonzero timeout,
 	// wait for fd to become writeable
 	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
@@ -1133,16 +1138,22 @@ size_t Socket::recv(string& buf)
 	}
 	try {
 		buf.clear();
-		memset(buffer, 0, S_BUFSIZ);
-		r = ::recv(sockfd, buffer, S_BUFSIZ, 0);
-		if (r < 0 && errno != EAGAIN)
-			throw SocketException(errno, "recv");
-		if (r > 0)
-			buf = buffer;
+		while (1) {
+			memset(buffer, 0, S_BUFSIZ);
+			r = ::recv(sockfd, buffer, S_BUFSIZ, 0);
+			if (r > 0) {
+				buf.append(buffer);
+				rx += r;
+			}
+			if (r < 0 && errno != EAGAIN)
+				throw SocketException(errno, "recv");
+			if ( r == 0)
+				break;
+		}
 	} catch (SocketException &e) {
 		throw e;
 	}
-	return r;
+	return rx;
 }
 
 ///

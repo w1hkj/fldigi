@@ -51,7 +51,7 @@
 
 // NASA coefficients for viterbi encode/decode algorithms
 
-#define	K	7
+#define	NASA_K	7
 #define	POLY1	0x6d
 #define	POLY2	0x4f
 

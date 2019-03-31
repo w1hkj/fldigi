@@ -1022,7 +1022,7 @@
               "http://www.qrz.com/")                                                    \
         ELEM_(std::string, callookurl, "CALLOOKURL",                                    \
               "web address of callook",                                                 \
-              "http://callook.info/")                                                   \
+              "https://callook.info/")                                                  \
         ELEM_(int, QRZWEB, "QRZWEBTYPE",                                                \
               "Callsign browser query type.  Values are as follows:\n"                  \
               "  0: none; 1: QRZ web browser; 2: HamCall web browser\n"                 \

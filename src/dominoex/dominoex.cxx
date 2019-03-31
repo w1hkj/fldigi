@@ -320,8 +320,8 @@ dominoex::dominoex(trx_mode md)
 
 	prev1symbol = prev2symbol = 0;
 
-	MuPskEnc	= new encoder (K, POLY1, POLY2);
-	MuPskDec	= new viterbi (K, POLY1, POLY2);
+	MuPskEnc	= new encoder (NASA_K, POLY1, POLY2);
+	MuPskDec	= new viterbi (NASA_K, POLY1, POLY2);
 	MuPskDec->settraceback (45);
 	MuPskDec->setchunksize (1);
 	MuPskTxinlv = new interleave (4, 4, INTERLEAVE_FWD);

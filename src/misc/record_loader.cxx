@@ -445,8 +445,7 @@ void DerivedRecordLst::cbGuiUpdate()
 
 	if( server[server.size()-1] != '/' ) server += '/' ;
 
-	for( int row = 0; row < dataloader_nb; ++row )
-	{
+	for( int row = 0; row < dataloader_nb; ++row ) {
 		Row * ptrRow = all_recs + row;
 		if( ! ptrRow->m_select->value() ) continue ;
 		RecordLoaderInterface * it = ptrRow->m_itf;
@@ -454,14 +453,14 @@ void DerivedRecordLst::cbGuiUpdate()
 		std::string url = server + it->base_filename();
 		std::string reply ;
 
-		double timeout=600.0;
+//		double timeout=5.0;
 		// Consider truncating the HTTP header.
-		int res = fetch_http_gui(url, reply, timeout );
+//		int res = get_http_gui(url, reply, timeout );
+		int res = get_http(url, reply, 5.0);
 		if (bMOREINFO)
 			LOG_INFO("Loaded %s : %d chars. res=%d",
 				url.c_str(), (int)reply.size(), res );
-		if( ! res )
-		{
+		if (reply.empty()) {
 			int ok = fl_choice2(
 					_("Could not download %s"),
 					_("Continue"),
@@ -572,7 +571,6 @@ void createRecordLoader()
 	if (dlgRecordLoader) return;
 	dlgRecordLoader = make_record_loader_window();
 	fl_input_add("http://www.w1hkj.com/support_files/");
-	fl_input_add("http://primhillcomputers.com/fldigi/data");
 
 	inpDataSources->value(0);
 }

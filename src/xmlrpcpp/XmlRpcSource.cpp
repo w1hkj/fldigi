@@ -31,7 +31,7 @@ extern "C" {
 }
 #endif
 
-#if USE_OPENSSL
+#if USE_OPENSSL_XMLRPC
 # include <openssl/crypto.h>
 # include <openssl/x509.h>
 # include <openssl/pem.h>
@@ -43,7 +43,7 @@ namespace XmlRpc {
 
   struct SslProxy
   {
-#if USE_OPENSSL
+#if USE_OPENSSL_XMLRPC
     SSL_CTX* _ssl_ctx;
     SSL_METHOD* _ssl_meth;
     SSL* _ssl_ssl;
@@ -69,7 +69,7 @@ namespace XmlRpc {
   void
   XmlRpcSource::setSslEnabled(bool b /*=true*/)
   {
-#if USE_OPENSSL
+#if USE_OPENSSL_XMLRPC
     _sslEnabled = b;
 #endif
   }
@@ -78,14 +78,14 @@ namespace XmlRpc {
   bool
   XmlRpcSource::doConnect()
   {
-#if USE_OPENSSL
+#if USE_OPENSSL_XMLRPC
     // Perform SSL if needed
     if (_sslEnabled)
     {
       _ssl = new SslProxy;
 
       SSLeay_add_ssl_algorithms();
-      _ssl->_ssl_meth = SSLv23_client_method();
+      _ssl->_ssl_meth = const_cast<SSL_METHOD*>(SSLv23_client_method());
       SSL_load_error_strings();
       _ssl->_ssl_ctx = SSL_CTX_new(_ssl->_ssl_meth);
       _ssl->_ssl_ssl = SSL_new(_ssl->_ssl_ctx);
@@ -111,7 +111,7 @@ namespace XmlRpc {
     {
       int n;
 
-#if USE_OPENSSL
+#if USE_OPENSSL_XMLRPC
       // Perform SSL if needed
       if (_ssl && _ssl->_ssl_ssl)
       {
@@ -152,7 +152,7 @@ namespace XmlRpc {
     while ( nToWrite > 0 && ! wouldBlock )
     {
       int n;
-#if USE_OPENSSL
+#if USE_OPENSSL_XMLRPC
       // Perform SSL if needed
       if (_ssl && _ssl->_ssl_ssl)
       {
@@ -189,7 +189,7 @@ namespace XmlRpc {
   void
   XmlRpcSource::close()
   {
-#if USE_OPENSSL
+#if USE_OPENSSL_XMLRPC
     if (_ssl && _ssl->_ssl_ssl)
     {
       SSL_shutdown(_ssl->_ssl_ssl);

@@ -453,9 +453,8 @@ static void *EQSL_loop(void *args)
 			return NULL;
 
 		size_t p;
-		if (fetch_http(EQSL_url, EQSL_xmlpage, 5.0) == false)
+		if (get_http(EQSL_url, EQSL_xmlpage, 5.0) <= 0)
 			LOG_ERROR("%s", "eQSL not available");
-
 		else if ((p = EQSL_xmlpage.find("Error:")) != std::string::npos) {
 			size_t p2 = EQSL_xmlpage.find('\n', p);
 			LOG_ERROR("%s\n%s", EQSL_xmlpage.substr(p, p2 - p - 1).c_str(), EQSL_url.c_str());

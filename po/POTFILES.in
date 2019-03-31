@@ -15,7 +15,7 @@ src/misc/status.cxx
 src/misc/debug.cxx
 src/misc/macroedit.cxx
 src/misc/macros.cxx
-src/misc/network.cxx
+src/network/network.cxx
 src/misc/newinstall.cxx
 src/mfsk/mfsk-pic.cxx
 src/waterfall/waterfall.cxx

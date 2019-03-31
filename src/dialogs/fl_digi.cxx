@@ -2887,7 +2887,8 @@ void cb_mnuCheckUpdate(Fl_Widget *, void *)
 
 	put_status(_("Checking for updates..."));
 
-	int ret = fetch_http_gui(url, reply, 20.0);
+//	int ret = get_http_gui(url, reply, 20.0);
+	int ret = get_http(url, reply, 5.0);
 	if (!ret) {
 		put_status(_("Update site not available"), 10);
 		return;
@@ -6608,7 +6609,8 @@ void cb_qso_inpAct(Fl_Widget*, void*)
 		url.append("&?grid=").append(progdefaults.myLocator, 0, 2);
 
 	string::size_type i;
-	if (!fetch_http_gui(url, data, 10.0) ||
+	if (!get_http(url, data, 10.0) ||
+//	if (!get_http_gui(url, data, 10.0) ||
 		(i = data.find("\r\n\r\n")) == string::npos) {
 		LOG_ERROR("Error while fetching \"%s\": %s", url.c_str(), data.c_str());
 		return;

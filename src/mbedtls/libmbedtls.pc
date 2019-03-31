@@ -1,0 +1,23 @@
+#***************************************************************************
+#
+#  Example libmbedtls.pc file
+#
+#  This example is for compiled and linked libmbedtls targeted for
+#  /usr/local/lib
+#
+#  If library is in /usr/lib then change the prefix accordingly
+#
+#  The pc file is placed in the location ${prefix}/lib/pkgconfig/
+#
+###########################################################################
+
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/mbedtls
+
+Name: libmbedtls
+Description: Library to access network sites using https protocol
+Version: 2.16.0
+Libs: -L${libdir} -lmbedx509 -lmbedtls -lmbedcrypto
+Cflags: -I${prefix}/include -I${includedir}

@@ -304,9 +304,9 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 
 	pipe		= new rxpipe[ 2 * symlen ];
 
-	enc			= new encoder (K, POLY1, POLY2);
-	dec1		= new viterbi (K, POLY1, POLY2);
-	dec2		= new viterbi (K, POLY1, POLY2);
+	enc			= new encoder (NASA_K, POLY1, POLY2);
+	dec1		= new viterbi (NASA_K, POLY1, POLY2);
+	dec2		= new viterbi (NASA_K, POLY1, POLY2);
 
 	dec1->settraceback (tracepair.trace);
 	dec2->settraceback (tracepair.trace);

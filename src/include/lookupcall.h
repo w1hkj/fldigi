@@ -48,7 +48,7 @@ HAMQTH };
 enum qrz_webquery_t { 
 QRZWEB_EXIT = -1, 
 QRZWEBNONE, 
-QRZHTML, HAMCALLHTML, HAMQTHHTML };
+QRZHTML, HAMCALLHTML, HAMQTHHTML, CALLOOKHTML };
 
 extern void sendEQSL(const char *url);
 extern void makeEQSL(const char *msg);

@@ -1,0 +1,451 @@
+// ----------------------------------------------------------------------------
+// network.cxx
+//
+// Copyright (C) 2008...2019
+//		David Freese, W1HKJ
+//
+// This file is part of fldigi.
+//
+// Fldigi is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Fldigi is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
+// ----------------------------------------------------------------------------
+
+#include <config.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <cmath>
+#include <string>
+#include <sstream>
+#include <errno.h>
+#include <pthread.h>
+#include <time.h>
+
+#include <FL/Fl.H>
+#include <FL/Fl_Window.H>
+
+#include "socket.h"
+#include "timeops.h"
+#include "gettext.h"
+#include "debug.h"
+
+#include "network.h"
+#include "socket.h"
+//#include "https.h"
+
+using namespace std;
+
+//----------------------------------------------------------------------
+//
+//----------------------------------------------------------------------
+static void my_debug( void *ctx, int level,
+					  const char *file, int line,
+					  const char *str )
+{
+	((void) level);
+
+	fprintf( (FILE *) ctx, "%s:%04d: %s", file, line, str );
+	fflush(  (FILE *) ctx  );
+}
+
+std::string stripped(std::string s)
+{
+	while (s[0] == ' ') s.erase(0,1);
+	while (s[s.length()-1] == ' ') s.erase(s.length() - 1);
+	return s;
+}
+
+void Url::parse(std::string url)
+{
+	_https = false;
+	_host.clear();
+	_port.clear();
+	_request.clear();
+	_url = url;
+
+	if (_url.find("https://") == 0) {
+		_https = true;
+		_url.erase(0,8);
+		_port = "443";
+	} else if (url.find("http://") == 0)  {
+		_url.erase(0,7);
+		_port = "80";
+	}
+	size_t p = _url.find(":");
+	if (p != std::string::npos) {
+		_port = _url.substr(p+1);
+		_url.erase(p);
+	}
+	p = _url.find("/");
+	if (p != std::string::npos) {
+		_host = _url.substr(0, p);
+		_request = _url.substr(p);
+	} else {
+		_host = _url;
+	}
+	_host = stripped(_host);
+	_url = stripped(url);
+	_request = stripped(_request);
+if (_debug) {
+	std::cout << "parser:" << std::endl;
+	std::cout << "url:  " << url << std::endl;
+	std::cout << "host: " << _host << std::endl;
+	std::cout << "port: " << _port << std::endl;
+	std::cout << "req:  " << _request << std::endl;
+}
+}
+
+int Url::http_get(std::string &response)
+{
+	std::ostringstream REQUEST;
+	size_t len;
+	bool ret = true;
+
+	const char service[] = "http";
+
+	REQUEST << "GET " << _request << " HTTP/1.1\r\n" <<
+"User-Agent: fldigi " << FLDIGI_VERSION << "\r\n\
+Host: " << _host << "\r\n\
+Connection: close\r\n\r\n";
+
+	len = REQUEST.str().length();
+
+if (_debug) {
+	std::cout << "Url::http_get(...)" << std::endl;
+	std::cout << "Host:    " << _host << std::endl;
+	std::cout << "Service: " << service << std::endl;
+	std::cout << "Request: " << REQUEST.str() << std::endl;
+}
+	try {
+		Address addr(_host.c_str(), service);
+		Socket s(addr);
+//		Socket s(Address(_host.c_str(), service));
+		s.connect();
+		s.set_nonblocking();
+		s.set_timeout(_timeout);
+
+		if (s.send(REQUEST.str()) != len) {
+			response = "Send timed out";
+			ret = false;
+		} 
+		else if (s.recv(response) == 0) {
+			response = "Reply timed out";
+			ret = false;
+		}
+	}
+	catch (const SocketException& e) {
+if (_debug) {
+	std::cout << "Caught socket exception:" << std::endl;
+}		response = e.what();
+		ret = false;
+	}
+
+if (_debug) {
+	std::cout << "Response:\n" << response << std::endl;
+}
+	return ret;
+}
+
+int Url::https_get(std::string &response)
+{
+	int ret = 1, len;
+	_err = MBEDTLS_EXIT_FAILURE;
+	std::ostringstream REQUEST;
+
+	mbedtls_entropy_context entropy;
+	mbedtls_ctr_drbg_context ctr_drbg;
+	mbedtls_ssl_context ssl;
+	mbedtls_ssl_config conf;
+	mbedtls_x509_crt cacert;
+
+#if defined(MBEDTLS_DEBUG_C)
+	mbedtls_debug_set_threshold( 1 );
+#endif
+
+	/*
+	 * 0. Initialize the RNG and the session data
+	 */
+	mbedtls_net_init( &server_fd );
+	mbedtls_ssl_init( &ssl );
+	mbedtls_ssl_config_init( &conf );
+	mbedtls_x509_crt_init( &cacert );
+	mbedtls_ctr_drbg_init( &ctr_drbg );
+
+if (_debug) {
+	std::cout << "\n  . Seeding the random number generator...";
+	fflush( stdout );
+}
+	mbedtls_entropy_init( &entropy );
+	if ( ( ret = mbedtls_ctr_drbg_seed(
+					&ctr_drbg,
+					mbedtls_entropy_func,
+					&entropy,
+					(const unsigned char *)_pers.c_str(),
+					_pers.length() ) ) != 0 ) {
+		snprintf(err_string, sizeof(err_string),
+			" failed\n  ! mbedtls_ctr_drbg_seed returned %d\n", ret );
+		_err = ret;
+		goto exit;
+	}
+if (_debug) {
+	std::cout << " ok\n";
+}
+	/*
+	 * 0. Initialize certificates
+	 */
+if (_debug) {
+	std::cout << "  . Loading the CA root certificate ...";
+	fflush( stdout );
+}
+	ca_crt_rsa[ca_crt_rsa_size - 1] = 0;
+	ret = mbedtls_x509_crt_parse(&cacert, (uint8_t *)ca_crt_rsa, ca_crt_rsa_size);
+
+	if( ret < 0 ) {
+		snprintf(err_string, sizeof(err_string),
+			" failed\n  !  mbedtls_x509_crt_parse returned -0x%x\n\n", -ret );
+		_err = ret;
+		goto exit;
+	}
+
+if (_debug) {
+	std::cout << " ok (" << ret << " skipped)\n";
+}
+	/*
+	 * 1. Start the connection
+	 */
+if (_debug) {
+	std::cout << "  . Connecting to tcp/"
+			  << _host << ":" << _port << "...";
+	fflush( stdout );
+}
+	if( ( ret = mbedtls_net_connect(
+					&server_fd,
+					_host.c_str(),
+					_port.c_str(),
+					MBEDTLS_NET_PROTO_TCP ) ) != 0 ) {
+		snprintf(err_string, sizeof(err_string),
+			" failed\n  ! mbedtls_net_connect returned %d\n\n", ret );
+		_err = ret;
+		goto exit;
+	}
+
+if (_debug) {
+	std::cout << " ok\n";
+}
+	/*
+	 * 2. Setup stuff
+	 */
+if (_debug) {
+	std::cout << "  . Setting up the SSL/TLS structure...";
+	fflush( stdout );
+}
+	if( ( ret = mbedtls_ssl_config_defaults( &conf,
+					MBEDTLS_SSL_IS_CLIENT,
+					MBEDTLS_SSL_TRANSPORT_STREAM,
+					MBEDTLS_SSL_PRESET_DEFAULT ) ) != 0 ) {
+		snprintf(err_string, sizeof(err_string),
+			" failed\n  ! mbedtls_ssl_config_defaults returned %d\n\n", ret );
+		_err = ret;
+		goto exit;
+	}
+
+if (_debug) {
+	std::cout << " ok\n";
+}
+	/* OPTIONAL is not optimal for security,
+	 * but makes interop easier in this simplified example */
+	mbedtls_ssl_conf_authmode( &conf, MBEDTLS_SSL_VERIFY_OPTIONAL );
+	mbedtls_ssl_conf_ca_chain( &conf, &cacert, NULL );
+	mbedtls_ssl_conf_rng( &conf, mbedtls_ctr_drbg_random, &ctr_drbg );
+	mbedtls_ssl_conf_dbg( &conf, my_debug, stdout );
+
+	if( ( ret = mbedtls_ssl_setup( &ssl, &conf ) ) != 0 ) {
+		snprintf(err_string, sizeof(err_string),
+			" failed\n  ! mbedtls_ssl_setup returned %d\n\n", ret );
+		_err = ret;
+		goto exit;
+	}
+
+	if( ( ret = mbedtls_ssl_set_hostname( &ssl, _host.c_str() ) ) != 0 ) {
+		snprintf(err_string, sizeof(err_string),
+			" failed\n  ! mbedtls_ssl_set_hostname returned %d\n\n", ret );
+		_err = ret;
+		goto exit;
+	}
+
+	mbedtls_ssl_set_bio( &ssl, &server_fd, mbedtls_net_send, mbedtls_net_recv, NULL );
+
+	/*
+	 * 4. Handshake
+	 */
+if (_debug) {
+	std::cout << "  . Performing the SSL/TLS handshake...";
+	fflush( stdout );
+}
+	while( ( ret = mbedtls_ssl_handshake( &ssl ) ) != 0 ) {
+		if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE ) {
+			snprintf(err_string, sizeof(err_string),
+				" failed\n  ! mbedtls_ssl_handshake returned -0x%x\n\n", -ret );
+			_err = ret;
+			goto exit;
+		}
+	}
+
+if (_debug) {
+	std::cout << " ok\n";
+}
+	/*
+	 * 5. Verify the server certificate
+	 */
+if (_debug) {
+	std::cout << "  . Verifying peer X.509 certificate...";
+}
+	/* In real life, we probably want to bail out when ret != 0 */
+	if( ( flags = mbedtls_ssl_get_verify_result( &ssl ) ) != 0 ) {
+		char vrfy_buf[512];
+if (_debug) {
+	std::cout << " failed\n";
+}
+		mbedtls_x509_crt_verify_info( vrfy_buf, sizeof( vrfy_buf ), "  ! ", flags );
+if (_debug) {
+	std::cout << vrfy_buf << std::endl;
+}
+	} else
+if (_debug) {
+	std::cout << " ok\n";
+}
+	/*
+	 * 3. Write the GET request
+	 */
+if (_debug) {
+	std::cout << "  > Write to server:";
+	fflush( stdout );
+}
+
+	REQUEST << "GET " << _request << " HTTP/1.1\r\n";
+	REQUEST << 
+"User-Agent: fldigi-4.1.02.10\r\n\
+Host: tgftp.nws.noaa.gov:443\r\n\
+Content-Type: application/json; charset=utf-8\r\n\
+Connection: Keep-Alive\r\n\r\n";
+	len = REQUEST.str().length();
+
+	while( ( ret = mbedtls_ssl_write(
+						&ssl,
+						(const unsigned char *)REQUEST.str().c_str(),
+						len ) ) <= 0 ) {
+		if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE ) {
+			snprintf(err_string, sizeof(err_string),
+				" failed\n  ! mbedtls_ssl_write returned %d\n\n", ret );
+			_err = ret;
+			goto exit;
+		}
+	}
+
+	len = ret;
+if (_debug) {
+	std::cout << len << " bytes written\n\"" << REQUEST.str() << "\"";
+	fflush(stdout);
+}
+	/*
+	 * 7. Read the HTTP response
+	 */
+if (_debug) {
+	std::cout << "\n  < Read from server:";
+	fflush( stdout );
+}
+	do {
+		len = sizeof( buf ) - 1;
+		memset( buf, 0, sizeof( buf ) );
+		ret = mbedtls_ssl_read( &ssl, (unsigned char *)buf, len );
+
+		if( ret == MBEDTLS_ERR_SSL_WANT_READ || ret == MBEDTLS_ERR_SSL_WANT_WRITE )
+			continue;
+
+		if( ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY )
+			break;
+
+		if( ret < 0 ) {
+if (_debug) {
+	std::cout << "failed\n  ! mbedtls_ssl_read returned " << ret << std::endl;
+}
+			break;
+		}
+
+		if( ret == 0 ) {
+if (_debug) {
+	std::cout << "\n\nEOF\n\n";
+}
+			break;
+		}
+
+		len = ret;
+if (_debug) {
+	std::cout << len << " bytes read\n\n" << (char *) buf << std::endl;
+}
+		_data.append(buf);
+		break;
+	} while( 1 );
+
+	mbedtls_ssl_close_notify( &ssl );
+
+	response = _data;
+	_err = MBEDTLS_EXIT_SUCCESS;
+
+exit:
+
+#ifdef MBEDTLS_ERROR_C
+	if( _err != MBEDTLS_EXIT_SUCCESS ) {
+		char error_buf[100];
+		mbedtls_strerror( _err, error_buf, 100 );
+		snprintf(err_string, sizeof(err_string),
+			"Last error was: %d - %s\n\n", _err, error_buf );
+	}
+#endif
+
+	mbedtls_net_free( &server_fd );
+
+	mbedtls_x509_crt_free( &cacert );
+	mbedtls_ssl_free( &ssl );
+	mbedtls_ssl_config_free( &conf );
+	mbedtls_ctr_drbg_free( &ctr_drbg );
+	mbedtls_entropy_free( &entropy );
+
+	return( _err );
+}
+
+int Url::get(std::string url, std::string &response)
+{
+	if (url.empty())
+		return -1;
+
+	parse(url);
+
+	int ret = 0;
+	if (_https)
+		ret = https_get(response);
+	else
+		ret = http_get(response);
+
+	return ret;
+}
+
+bool get_http(const std::string& url, std::string& reply, double timeout)
+{
+	Url target_url;
+	target_url.debug(true);
+	target_url.timeout(timeout);
+	return target_url.get(url, reply);
+}

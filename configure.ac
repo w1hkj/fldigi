@@ -287,6 +287,14 @@ AC_FLDIGI_PKG_CHECK([flxmlrpc], [flxmlrpc >= 0.1.0],
   [yes], [yes], [use external flxmlrpc library @<:@autodetect@:>@],
   [ENABLE_FLXMLRPC])
 
+### libmbedtls
+# Set ac_cv_mbedtls to yes/no
+# Define USE_LIBMBEDTLS in config.h
+# Substitute LIBMBEDTLS_CFLAGS and LIBMBEDTLS_LIBS in Makefile
+AC_FLDIGI_PKG_CHECK([libmbedtls], [libmbedtls >= 2.16.0], 
+  [yes], [yes], [use mbedtls libraries @<:@autodetect@:>@],
+  [ENABLE_LIBMBEDTLS])
+
 ### libintl
 # Substitute INTL_CFLAGS in Makefile
 # Substitute INTL_LIBS in Makefile
@@ -340,7 +348,13 @@ ac_xmlrpc_report="internal lib";
 if test "x$ac_cv_flxmlrpc" = "xyes"; then
   ac_xmlrpc_report="external lib";
 fi
- 
+
+ac_mbedtls_report="internal lib";
+
+if test "x$ac_cv_libmbedtls" = "xyes"; then
+  ac_mbedtls_report="external lib";
+fi
+
 if test "x$ac_cv_want_fldigi" = "xyes"; then
   AC_MSG_RESULT([ fldigi build options:
 
@@ -349,6 +363,7 @@ if test "x$ac_cv_want_fldigi" = "xyes"; then
   portaudio ................... $ac_cv_portaudio
   pulseaudio .................. $ac_cv_pulseaudio
 
+  libmbedtls .................. $ac_mbedtls_report
   flxmlrpc .................... $ac_xmlrpc_report
 
   hamlib ...................... $ac_cv_hamlib
