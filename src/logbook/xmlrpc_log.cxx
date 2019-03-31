@@ -261,6 +261,7 @@ void xml_add_record()
 	adif_str(NOTES, inpNotes->value());
 	adif_str(CLASS, inpClass->value());
 	adif_str(ARRL_SECT, inpSection->value());
+	adif_str(CQZ, inp_CQzone->value());
 // these fields will always be blank unless they are added to the main
 // QSO log area.
 // need to add the remaining fields
