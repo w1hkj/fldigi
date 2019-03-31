@@ -112,42 +112,40 @@ Fl_Menu_Item src_menu[] = {
 
 void rotate_log(std::string filename)
 {
-	const int n = 5; // rename existing log files to keep up to 5 old versions
-	ostringstream oldfn, newfn;
-	ostringstream::streampos p;
+	FILE *fp;
+	std::string oldfn, newfn;
+	const char *ext[] = {".5", ".4", ".3", ".2", ".1"};
 
-	oldfn << filename << '.';
-	newfn << filename << '.';
-	p = oldfn.tellp();
-
-	for (int i = n - 1; i > 0; i--) {
-		oldfn.seekp(p);
-		newfn.seekp(p);
-		oldfn << i;
-		newfn << i + 1;
-		remove(newfn.str().c_str());
-		rename(oldfn.str().c_str(), newfn.str().c_str());
+	for (int i = 0; i < 4; i++) {
+		newfn.assign(filename).append(ext[i]);
+		oldfn.assign(filename).append(ext[i+1]);
+		if ((fp = fopen(oldfn.c_str(), "r")) == NULL)
+			continue;
+		fclose(fp);
+		rename(oldfn.c_str(), newfn.c_str());
 	}
-	remove(oldfn.str().c_str());
-	rename(filename.c_str(), oldfn.str().c_str());
 
+	newfn.assign(filename).append(ext[4]);
 	char buffer[65536];
-	FILE *orig = fopen(filename.c_str(), "wb");
-	FILE *orig1 = fopen(oldfn.str().c_str(), "rb");
 
-	if (orig && orig1) {
-		size_t n;
-		while (1) {
-			memset(buffer, 0, sizeof(buffer));
-			n = fread(buffer, 1, sizeof(buffer), orig1);
-			n = fwrite(buffer, 1, n, orig);
-			if (feof(orig1)) {
-				break;
+	FILE *original = fopen(filename.c_str(), "rb");
+	if (original) {
+		FILE *backup = fopen(newfn.c_str(), "wb");
+		if (backup) {
+			size_t n;
+			while (1) {
+				memset(buffer, 0, sizeof(buffer));
+				n = fread(buffer, 1, sizeof(buffer), original);
+				n = fwrite(buffer, 1, n, backup);
+				if (feof(original)) {
+					break;
+				}
 			}
+			fflush(backup);
+			fclose(backup);
 		}
+		fclose(original);
 	}
-	fclose(orig);
-	fclose(orig1);
 }
 
 
