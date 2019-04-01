@@ -6535,6 +6535,9 @@ void update_main_title()
 		if (progdefaults.logging == LOG_SQSO) {
 			buf.append(" : ").append(QSOparties.qso_parties[progdefaults.SQSOcontest].contest);
 		}
+		if (progdefaults.logging == 0 && n3fjp_connected) {
+			buf.append(" : N3FJP Amateur Contact Log");
+		}
 	}
 	if (fl_digi_main) {
 		fl_digi_main->copy_label(buf.c_str());

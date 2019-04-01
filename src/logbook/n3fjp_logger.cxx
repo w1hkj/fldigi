@@ -104,7 +104,7 @@ int  tracked_mode = -1;
 
 enum {
   FJP_NONE,
-  FJP_GENERIC,
+  FJP_ACL,			// Amateur Contact Log
   FJP_FD,			// ARRL Field Day
   FJP_WFD,			// ARRL Winter Field Day
   FJP_KD,			// ARRL Kids Day
@@ -153,7 +153,7 @@ struct N3FJP_LOGGER {
 	bool       in_state;
 } n3fjp_logger[] = {
 	{"No Contest", FJP_NONE, false},
-	{"Amateur Contact Log", FJP_NONE, false},
+	{"Amateur Contact Log", FJP_ACL, false},
 	{"Africa All-Mode International", FJP_AIDX, false},
 	{"ARRL Field Day", FJP_FD, false},
 	{"Winter FD", FJP_WFD, false},
@@ -2015,7 +2015,7 @@ static void check_log_data()
 		case FJP_QP6:
 			n3fjp_check_QP6();
 			break;
-		case FJP_GENERIC:
+		case FJP_ACL:
 		case FJP_NONE:
 		default:
 			n3fjp_check_GENERIC();
@@ -2144,7 +2144,7 @@ static void send_log_data()
 			case FJP_QP6:
 				n3fjp_send_QP6();
 				break;
-			case FJP_GENERIC:
+			case FJP_ACL:
 			default:
 				n3fjp_send_GENERIC();
 				break;
@@ -2508,7 +2508,7 @@ static bool connect_to_n3fjp_server()
 
 		n3fjp_contest = FJP_NONE;
 
-		n = info.find("N3FJP's");
+		n = info.find("N3FJP's ");
 		if (n != std::string::npos) info.erase(n, 8);
 
 		if (info.find("Winter") != std::string::npos)
@@ -2517,7 +2517,7 @@ static bool connect_to_n3fjp_server()
 		n3fjp_print(std::string("Info: ").append(info));
 
 		for (n = 0; n < sizeof(n3fjp_logger) / sizeof(*n3fjp_logger); n++) {
-			if (info.find(n3fjp_logger[n].program) == 0) {//!= string::npos) {
+			if (info.find(n3fjp_logger[n].program) == 0) {
 				n3fjp_contest = n3fjp_logger[n].contest;
 				n3fjp_in_state = n3fjp_logger[n].in_state;
 				logger_nbr = n;
