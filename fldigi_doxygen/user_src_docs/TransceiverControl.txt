@@ -35,11 +35,31 @@ mouse cursor on a digit and then use the mouse wheel to roll the frequency
 up and down.
 <br>
 
-Manual entry of frequency can be accomplished by hovering the mouse pointer
-over the frequency display and entering the desired frequency (in Khz) via
-the keyboard. Pressing \<return\> or \<enter\> on completion sets the
-frequency to an active state, effecting rig control and future log entires.
-Don't forget the decimal point if you are entering a fractional KHz value.
+The frequency display becomes the focus of keyboard activity once a digit
+has been accessed with the mouse (above).  You can then modify the current
+frequency entry a number of ways:
+<ul>
+<li>right / left arrow keys: +/- 1 Hz</li>
+<li>up / down arrow keys:- +/- 10 Hz</li>
+<li>shift right / left arrow keys: +/- 100 Hz</li>
+<li>shift up / down arrow keys: +/- 1000 Hz</li>
+<li>direct entry of desired frequency</li>
+</ul>
+
+Use the numeric keys for direct entry of the frequency (in Khz). Press 
+\<return\> or \<enter\> to complete the entry and return the
+frequency display to an active state.  Don't forget the decimal point if 
+you are entering a fractional KHz value, (i.e. 14070.125).
+
+The frequency display will reverse it's color scheme when in the direct
+frequency entry mode, and the decimal point will occult.
+\image html FreqControl_normal.png "Normal Frequency Control Appearance"
+\image latex FreqControl_normal.png "Normal Frequency Control Appearance" width=2.0in
+<br>
+\image html FreqControl_entry_mode.png "Entry Mode Frequency Control Appearance"
+\image latex FreqControl_entry_mode.png "Entry Mode Frequency Control Appearance" width=2.0in
+<br>
+Don't forget to complete the numeric entry with the \"Enter\" key.
 <br>
 
 The Smeter / Power-meter display is only active if fldigi is configured for xmlrpc

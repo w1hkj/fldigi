@@ -438,13 +438,13 @@ replaced with the time interval in seconds.
 	<li>disable PTT</li>
 	<li>and count down 20 seconds before repeating the macro</li>
 	<li>after sending the text the count down timer button (upper right
-	hand corner of main dialog) will display the current timer value in
-	seconds.  Press this button to disable the timer. </li>
-	<li>the timer be disabled if the Escape key is pressed, the T/R is
-	pressed, and macro key is pressed, or if a callsign is copied from the
-	Rx text area to the callsign logbook entry.</li>
-	<li>the time will be disabled if any mouse activity occurs in the
-	waterfall control.</li>
+ hand corner of main dialog) will display the current timer value in
+ seconds.  Press this button to disable the timer. </li>
+	<li>during transmission, the timer will be disabled if the Escape key
+ is pressed, the T/R is pressed, and macro key is pressed, or if a
+ callsign is copied from the Rx text area to the callsign logbook entry.</li>
+	<li>the timer will be disabled if any mouse activity occurs in the
+ waterfall control.</li>
 </ul>
 <br>
 
