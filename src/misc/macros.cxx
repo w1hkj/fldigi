@@ -925,7 +925,6 @@ static void mMODEM(std::string s)
 static void mFREQ(int f)
 {
 	active_modem->set_freq(f);
-	wf->redraw();
 }
 
 static void doPOP(std::string s)
@@ -2972,7 +2971,6 @@ static void doGOFREQ(std::string s)
 		if (number > progdefaults.HighFreqCutoff)
 			number = progdefaults.HighFreqCutoff;
 		active_modem->set_freq(number);
-		wf->redraw();
 	}
 	que_ok = true;
 }

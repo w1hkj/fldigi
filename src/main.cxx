@@ -761,6 +761,7 @@ void delayed_startup(void *)
 	} catch (...) {
 	}
 #endif
+
 }
 
 int main(int argc, char ** argv)

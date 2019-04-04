@@ -80,6 +80,8 @@
 
 using namespace std;
 
+pthread_mutex_t draw_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 #define bwFFT		30
 #define cwRef		50
 #define bwX1		25
@@ -563,8 +565,6 @@ void WFdisp::processFFT() {
 					 (void *)(fft_db + j * IMAGE_WIDTH),
 					 IMAGE_WIDTH * sizeof(short int));
 		}
-		redraw();
-		Fl::flush();
 
 		dispcnt = 1.0 * WFBLOCKSIZE / SC_SMPLRATE; // FAST
 		if (wfspeed == NORMAL) dispcnt *= NORMAL;
@@ -600,15 +600,11 @@ FL_LOCK_D();
 		for (; sigy > ynext; sigy--) sig_img[sigpixel += IMAGE_WIDTH] = graylevel;
 		sig_img[sigpixel++] = graylevel;
 	}
-	redraw();
-//FL_UNLOCK();
 FL_UNLOCK_D();
 }
 
 void WFdisp::redrawCursor()
 {
-	redraw();
-//	cursormoved = true;
 }
 
 //----------------------------------------------------------------------
@@ -680,11 +676,13 @@ void WFdisp::handle_sig_data()
 		}
 		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 
+{
+	guard_lock dlock(&draw_mutex);
 		if (mode == SCOPE)
 			process_analog(circbuff, FFT_LEN);
 		else
 			processFFT();
-
+}
 		put_WARNstatus(peakaudio);
 
 		static char szFrequency[14];

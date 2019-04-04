@@ -221,6 +221,18 @@ void ztimer(void *)
 }
 
 //======================================================================
+// Use TOD loop for periodically redrawing the waterfall
+//======================================================================
+extern pthread_mutex_t draw_mutex;
+void wf_update(void *)
+{
+	{
+		guard_lock dlock(&draw_mutex);
+		wf->redraw();
+	}
+}
+
+//======================================================================
 // TOD Thread loop
 //======================================================================
 static bool first_call = true;
@@ -229,6 +241,9 @@ void *TOD_loop(void *args)
 {
 	SET_THREAD_ID(TOD_TID);
 
+#define LOOP1 4
+#define LOOP2 5
+	int loop_nbr = 1;
 	while(1) {
 
 		if (TOD_exit) break;
@@ -242,9 +257,16 @@ void *TOD_loop(void *args)
 			init_ztime();
 			first_call = false;
 		} else {
-			Fl::awake(ztimer);
+			if (loop_nbr % 5)
+				Fl::awake(ztimer);
 		}
-		MilliSleep(50);
+		if (loop_nbr % 4)
+			Fl::awake(wf_update);
+
+		if (loop_nbr == (LOOP1 * LOOP2)) loop_nbr = 0;
+		loop_nbr++;
+
+		MilliSleep(10);
 	}
 
 // exit the TOD thread
