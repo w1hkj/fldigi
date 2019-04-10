@@ -555,10 +555,8 @@ int configuration::setDefaults()
 
 	chkUSEHAMLIB->value(0);
 	chkUSERIGCAT->value(0);
-	chkUSEXMLRPC->value(0);
 	if (chkUSEHAMLIBis) chkUSEHAMLIB->value(1);
 	if (chkUSERIGCATis) chkUSERIGCAT->value(1);
-	if (chkUSEXMLRPCis) chkUSEXMLRPC->value(1);
 
 	if (!XmlRigFilename.empty()) readRigXML();
 
@@ -811,10 +809,6 @@ void configuration::initInterface()
 			wf->setQSY(0);
 		}
 #endif
-	} else if (chkUSEXMLRPCis) {
-		LOG_INFO("%s", "using XMLRPC");
-		wf->USB(true);
-		wf->setQSY(0);
 	} else {
 		LOG_INFO("%s", "No xcvr control selected");
 		noCAT_init();

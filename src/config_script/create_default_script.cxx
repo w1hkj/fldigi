@@ -432,13 +432,6 @@ static int create_default_script(char *file_name)
 	if(add_command(fd, (char *)CMD_END_CMD,                  0)) return fclose(fd);
 #endif //#if USE_HAMLIB
 
-	// XMLRPC RC
-	if(add_command(fd, (char *)CMD_RC_XMLRPC,            0)) return fclose(fd);
-	if(add_command(fd, (char *)CMD_RC_XMLRPC_STATE,      (bool)   chkUSEXMLRPC->value(), 1)) return fclose(fd);
-	if(add_command(fd, (char *)CMD_RC_XMLRPC_BW_DELAY,   (double) mbw_delay->value(),    1)) return fclose(fd);
-	if(add_command(fd, (char *)CMD_RC_XMLRPC_INITIALIZE, 1)) return fclose(fd);
-	if(add_command(fd, (char *)CMD_END_CMD,              0)) return fclose(fd);
-
 	// IO Config Panel
 	if(add_command(fd, (char *)CMD_IO,               0)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_IO_LOCK,          (bool)   btnDisable_p2p_io_widgets->value(), 1)) return fclose(fd);

@@ -3160,7 +3160,7 @@ UI_select();}
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -3537,7 +3537,7 @@ behaves inside the waterfall} xywh {65 188 150 22} box DOWN_BOX color 7 align 8
           }
           Fl_Group {} {
             label Spectrum open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
               label {Spectrum Scope / Waterfall interaction} open
@@ -3591,7 +3591,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group tabsCW_general {
                 label General
-                xywh {0 75 600 315} align 5 hide
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {
                   label Receive open
@@ -4508,7 +4508,7 @@ for information regarding extended Morse characters.} open
               }
               Fl_Group tab_nanoCW {
                 label nanoCW
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group select_nanoCW_CommPort {
                   label {Ser. Port}
@@ -6426,9 +6426,7 @@ progdefaults.changed = true;}
 if (o->value()) {
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = false;
-  progdefaults.chkUSEXMLRPCis = false;
   chkUSEHAMLIB->value(0);
-  chkUSEXMLRPC->value(0);
   chkUSERIGCAT->value(0);
 }
 progdefaults.changed=true;}
@@ -6445,11 +6443,8 @@ progdefaults.changed=true;}
               label {Use RigCAT}
               callback {if (o->value() == 1) {
   chkUSEHAMLIB->value(0);
-  chkUSEXMLRPC->value(0);
   btn_fldigi_client_to_fldigi->value(0);
-  progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = true;
-  progdefaults.chkUSEXMLRPCis = false;
   progdefaults.fldigi_client_to_flrig = false;
   btnInitRIGCAT->labelcolor(FL_RED);
   btnInitRIGCAT->redraw();
@@ -6656,10 +6651,8 @@ btnInitRIGCAT->redraw_label();}
               callback {progdefaults.chkUSEHAMLIBis = o->value();
 if (o->value() == 1) {
   chkUSERIGCAT->value(0);
-  chkUSEXMLRPC->value(0);
   btn_fldigi_client_to_fldigi->value(0);
   progdefaults.chkUSERIGCATis = false;
-  progdefaults.chkUSEXMLRPCis = false;
   progdefaults.fldigi_client_to_flrig = false;
   btnInitHAMLIB->labelcolor(FL_RED);
   btnInitHAMLIB->activate();
@@ -6864,56 +6857,6 @@ in format: param=val ...} xywh {30 350 460 24} align 5
 o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;}
                 tooltip {Initialize hamlib interface} xywh {495 350 80 24}
-              }
-            }
-          }
-          Fl_Group tabXMLRPC {
-            label {XML-RPC}
-            xywh {0 50 600 340} hide
-          } {
-            Fl_Group grpXMLRPC {open
-              xywh {55 61 490 160} box ENGRAVED_FRAME
-            } {
-              Fl_Output {} {
-                xywh {210 80 190 58} type Multiline box BORDER_BOX color 50
-                code0 {o->value(_("Rig control via external\\nprogram using xmlrpc\\nremote calls."));}
-              }
-              Fl_Check_Button chkUSEXMLRPC {
-                label {Use XML-RPC program}
-                callback {progdefaults.chkUSEXMLRPCis = o->value();
-if(o->value() == 1){
-  chkUSEHAMLIB->value(0);
-  chkUSERIGCAT->value(0);
-  btn_fldigi_client_to_fldigi->value(0);
-  progdefaults.chkUSEHAMLIBis = false;
-  progdefaults.chkUSERIGCATis = false;
-  progdefaults.fldigi_client_to_flrig = false;
-  btnInitXMLRPC->labelcolor(FL_RED);
-  btnInitXMLRPC->redraw_label();
-} else {
-  progdefaults.initInterface();
-}
-progdefaults.changed = true;}
-                tooltip Experimental xywh {210 148 183 20} down_box DOWN_BOX
-              }
-              Fl_Button btnInitXMLRPC {
-                label Initialize
-                callback {progdefaults.initInterface();
-o->labelcolor(FL_FOREGROUND_COLOR);
-progdefaults.changed = true;}
-                tooltip {Initialize XML-RPC rig control} xywh {251 184 113 24}
-              }
-            }
-            Fl_Group {} {open
-              xywh {55 225 490 50} box ENGRAVED_BOX
-            } {
-              Fl_Counter mbw_delay {
-                label {Mode/BW delay}
-                callback {progdefaults.mbw=o->value();
-progdefaults.changed=true;}
-                tooltip {Delay in seconds between <RIGMODE... and <FILWID...
-when both in same macro definition} xywh {210 239 90 21} type Simple align 8 minimum 0.1 maximum 2 step 0.05 value 0.1
-                code0 {o->value(progdefaults.mbw);}
               }
             }
           }

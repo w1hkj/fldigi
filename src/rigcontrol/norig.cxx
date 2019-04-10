@@ -105,11 +105,6 @@ void noCAT_init()
 	btnInitHAMLIB->labelcolor(FL_BLACK);
 	btnInitHAMLIB->redraw_label();
 
-	chkUSEXMLRPC->value(0);
-	chkUSEXMLRPC->redraw();
-	btnInitXMLRPC->labelcolor(FL_BLACK);
-	btnInitXMLRPC->redraw_label();
-
 	chkUSERIGCAT->value(0);
 	chkUSERIGCAT->redraw();
 	btnInitRIGCAT->labelcolor(FL_BLACK);

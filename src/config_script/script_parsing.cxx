@@ -148,15 +148,6 @@ static const SCRIPT_COMMANDS default_hamlib_command_table[] = {
 	{ {0} }
 };
 
-static const SCRIPT_COMMANDS default_rc_xmlrpc_command_table[] = {
-	{ CMD_RC_XMLRPC_STATE,         SCRIPT_COMMAND, 0,  1, {0}, { p_bool     }, 0, 0, 0, process_use_xml_rpc,           0, 0},
-	{ CMD_RC_XMLRPC_BW_DELAY,      SCRIPT_COMMAND, 0,  1, {0}, { p_float    }, 0, 0, 0, process_xml_rpc_mode_bw_delay, 0, 0},
-	{ CMD_RC_XMLRPC_INITIALIZE,    SCRIPT_COMMAND, 0,  0, {0}, { p_void     }, 0, 0, 0, process_xml_rpc_initialize,    0, 0},
-	{ CMD_END_CMD,                 SCRIPT_COMMAND, 0,  0, {0}, { p_list_end }, 0, 0, 0, 0, 0, 0},
-	{ {0} }
-};
-
-
 static const SCRIPT_COMMANDS default_kiss_command_table[] = {
 	{ CMD_IO_KISS_IPA,             SCRIPT_COMMAND, 0,  1, {0}, { p_string  },  0, 0, 0, process_io_kiss_ip_address,     0, 0},
 	{ CMD_IO_KISS_IOPN,            SCRIPT_COMMAND, 0,  1, {0}, { p_int  },     0, 0, 0, process_io_kiss_io_port_no,     0, 0},
@@ -278,7 +269,6 @@ static const SCRIPT_COMMANDS default_top_level_command_table[] = {
 	{ CMD_HRDWR_PTT,        SCRIPT_COMMAND, 0,  0, {0}, { p_list   }, 0, 0, 0, 0, (struct script_cmds *) &default_rig_hrdwr_ptt_command_table,    sizeof(default_rig_hrdwr_ptt_command_table)/sizeof(SCRIPT_COMMANDS)},
 	{ CMD_RIGCAT,           SCRIPT_COMMAND, 0,  0, {0}, { p_list   }, 0, 0, 0, 0, (struct script_cmds *) &default_rigcat_command_table,           sizeof(default_rigcat_command_table)/sizeof(SCRIPT_COMMANDS)},
 	{ CMD_HAMLIB,           SCRIPT_COMMAND, 0,  0, {0}, { p_list   }, 0, 0, 0, 0, (struct script_cmds *) &default_hamlib_command_table,           sizeof(default_hamlib_command_table)/sizeof(SCRIPT_COMMANDS)},
-	{ CMD_RC_XMLRPC,        SCRIPT_COMMAND, 0,  0, {0}, { p_list   }, 0, 0, 0, 0, (struct script_cmds *) &default_rc_xmlrpc_command_table,        sizeof(default_rc_xmlrpc_command_table)/sizeof(SCRIPT_COMMANDS)},
 	{ CMD_IO,               SCRIPT_COMMAND, 0,  0, {0}, { p_list   }, 0, 0, 0, 0, (struct script_cmds *) &default_io_command_table,               sizeof(default_io_command_table)/sizeof(SCRIPT_COMMANDS)},
 	{ CMD_NBEMS,            SCRIPT_COMMAND, 0,  0, {0}, { p_list   }, 0, 0, 0, 0, (struct script_cmds *) &default_nbems_command_table,            sizeof(default_nbems_command_table)/sizeof(SCRIPT_COMMANDS)},
 	{ CMD_ID,               SCRIPT_COMMAND, 0,  0, {0}, { p_list   }, 0, 0, 0, 0, (struct script_cmds *) &default_id_command_table,               sizeof(default_id_command_table)/sizeof(SCRIPT_COMMANDS)},

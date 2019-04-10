@@ -99,10 +99,6 @@ extern int process_hamlib_xon_xoff_flow(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_hamlib_advanced_config(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_hamlib_initialize(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 
-extern int process_use_xml_rpc(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
-extern int process_xml_rpc_mode_bw_delay(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
-extern int process_xml_rpc_initialize(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
-
 extern int process_io_kiss_ip_address(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_io_kiss_io_port_no(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_io_kiss_o_port_no(ScriptParsing *sp, SCRIPT_COMMANDS *sc);

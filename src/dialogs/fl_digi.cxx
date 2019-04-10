@@ -9289,8 +9289,6 @@ void qsy(long long rfc, int fmid)
 	else if (progdefaults.chkUSEHAMLIBis)
 		REQ(hamlib_set_qsy, rfc);
 #endif
-	else if (progdefaults.chkUSEXMLRPCis)
-		REQ(xmlrpc_set_qsy, rfc);
 	else
 		qso_selectFreq((long int) rfc, fmid);
 

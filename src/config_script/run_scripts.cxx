@@ -2688,61 +2688,6 @@ int process_hamlib_initialize(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
 }
 
 /** ********************************************************
- * \brief Set XMLRPC rig control to active use.
- * \param sp Access to ScritpParsing members.
- * \param sc Access to SCRIPT_COMMANDS structure variables.
- * \return 0 (no error) Other (error)
- ***********************************************************/
-int process_use_xml_rpc(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
-{
-	bool value = 0;
-	int error = assign_bool(chkUSEXMLRPC, sp, sc, value);
-
-	if(!error && chkUSEXMLRPC) {
-		progdefaults.chkUSEXMLRPCis = value;
-		progdefaults.changed = true;
-	}
-
-	return error;
-}
-
-/** ********************************************************
- * \brief
- * \param sp Access to ScritpParsing members.
- * \param sc Access to SCRIPT_COMMANDS structure variables.
- * \return 0 (no error) Other (error)
- ***********************************************************/
-int process_xml_rpc_mode_bw_delay(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
-{
-	double value = 0;
-	int error = assign_double(mbw_delay, sp, sc, value);
-
-	if(!error && mbw_delay) {
-		progdefaults.mbw = value;
-		progdefaults.changed = true;
-	}
-
-	return error;
-}
-
-/** ********************************************************
- * \brief Initialize Rig Control XMLRPC interface.
- * \param sp Access to ScritpParsing members.
- * \param sc Access to SCRIPT_COMMANDS structure variables.
- * \return 0 (no error) Other (error)
- ***********************************************************/
-int process_xml_rpc_initialize(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
-{
-
-	if(!btnInitXMLRPC)
-		return script_no_errors;
-
-	btnInitXMLRPC->do_callback();
-
-	return script_no_errors;
-}
-
-/** ********************************************************
  * \brief Assign Macro information to there respective
  * macro button.
  * \param sp Access to ScritpParsing members.

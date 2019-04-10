@@ -1039,15 +1039,7 @@ public:
 			return;
 		}
 LOG_VERBOSE("main.set_sb (DEPRECATED): %s", s.c_str());
-//		if (progdefaults.chkUSERIGCATis)
-//			rigCAT_setmode(s);
-//#if USE_HAMLIB
-//		else if (progdefaults.chkUSEHAMLIBis)
-//			hamlib_setmode(s == "LSB" ? RIG_MODE_LSB : RIG_MODE_USB);
-//#endif
-//		else
-//		if (progdefaults.chkUSEXMLRPCis)
-			REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
+		REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
 
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2387,85 +2379,6 @@ LOG_VERBOSE("rig.set_notch: %d", notch);
 	}
 };
 
-static int rig_control_counter;
-
-static void set_rig_control(bool xmlrpc)
-{
-	struct rcb_t {
-		Fl_Button *toggle, *init;
-	};
-	static struct rcb_t prev_rigcontrol;
-
-	if (xmlrpc) {
-		rcb_t b[] = {
-			{ chkUSERIGCAT, btnInitRIGCAT },
-			{ chkUSEHAMLIB, btnInitHAMLIB },
-			{ chkUSEXMLRPC, btnInitXMLRPC }
-		};
-		for (size_t i = 0; i < sizeof(b)/sizeof(*b); i++) {
-			if (b[i].toggle->value()) {
-				prev_rigcontrol = b[i];
-				break;
-			}
-		}
-		if (!prev_rigcontrol.toggle) {
-			prev_rigcontrol.toggle = chkUSEXMLRPC;
-			prev_rigcontrol.init = btnInitXMLRPC;
-		}
-		bool changed = progdefaults.changed;
-		chkUSEXMLRPC->value(1);
-		chkUSEXMLRPC->do_callback();
-		btnInitXMLRPC->do_callback();
-		wf->setQSY(true);
-		progdefaults.changed = changed;
-	}
-	else {
-		bool changed = progdefaults.changed;
-		prev_rigcontrol.toggle->value(1);
-		prev_rigcontrol.toggle->do_callback();
-		prev_rigcontrol.init->do_callback();
-		progdefaults.changed = changed;
-	}
-}
-
-class Rig_take_control : public xmlrpc_c::method
-{
-public:
-	Rig_take_control()
-	{
-		_signature = "n:n";
-		_help = "Switches rig control to XML-RPC";
-	}
-	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-	{
-		XMLRPC_LOCK;
-		if (++rig_control_counter == 1) {
-			REQ_SYNC(set_rig_control, true);
-LOG_VERBOSE("rig.take_control: %s", "control ON");
-		}
-		*retval = xmlrpc_c::value_nil();
-	}
-};
-
-class Rig_release_control : public xmlrpc_c::method
-{
-public:
-	Rig_release_control()
-	{
-		_signature = "n:n";
-		_help = "Switches rig control to previous setting";
-	}
-	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-	{
-		XMLRPC_LOCK;
-		if (rig_control_counter && !--rig_control_counter) {
-LOG_VERBOSE("rig.release_control: %s", "control OFF");
-			REQ_SYNC(set_rig_control, false);
-		}
-		*retval = xmlrpc_c::value_nil();
-	}
-};
-
 // =============================================================================
 
 class Main_set_rig_name : public Rig_set_name
@@ -3750,8 +3663,6 @@ ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")                          \
 ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")                        \
 ELEM_(Rig_get_notch, "rig.get_notch")                                  \
 ELEM_(Rig_set_notch, "rig.set_notch")                                  \
-ELEM_(Rig_take_control, "rig.take_control")                            \
-ELEM_(Rig_release_control, "rig.release_control")                      \
 \
 ELEM_(Log_get_freq, "log.get_frequency")                               \
 ELEM_(Log_get_time_on, "log.get_time_on")                              \

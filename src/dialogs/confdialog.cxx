@@ -5119,9 +5119,7 @@ static void cb_btn_fldigi_client_to_fldigi(Fl_Check_Button* o, void*) {
 if (o->value()) {
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = false;
-  progdefaults.chkUSEXMLRPCis = false;
   chkUSEHAMLIB->value(0);
-  chkUSEXMLRPC->value(0);
   chkUSERIGCAT->value(0);
 }
 progdefaults.changed=true;
@@ -5132,11 +5130,8 @@ Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
 static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   if (o->value() == 1) {
   chkUSEHAMLIB->value(0);
-  chkUSEXMLRPC->value(0);
   btn_fldigi_client_to_fldigi->value(0);
-  progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = true;
-  progdefaults.chkUSEXMLRPCis = false;
   progdefaults.fldigi_client_to_flrig = false;
   btnInitRIGCAT->labelcolor(FL_RED);
   btnInitRIGCAT->redraw();
@@ -5323,10 +5318,8 @@ static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
   progdefaults.chkUSEHAMLIBis = o->value();
 if (o->value() == 1) {
   chkUSERIGCAT->value(0);
-  chkUSEXMLRPC->value(0);
   btn_fldigi_client_to_fldigi->value(0);
   progdefaults.chkUSERIGCATis = false;
-  progdefaults.chkUSEXMLRPCis = false;
   progdefaults.fldigi_client_to_flrig = false;
   btnInitHAMLIB->labelcolor(FL_RED);
   btnInitHAMLIB->activate();
@@ -5502,44 +5495,6 @@ static void cb_btnInitHAMLIB(Fl_Button* o, void*) {
   progdefaults.initInterface();
 o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
-}
-
-Fl_Group *tabXMLRPC=(Fl_Group *)0;
-
-Fl_Group *grpXMLRPC=(Fl_Group *)0;
-
-Fl_Check_Button *chkUSEXMLRPC=(Fl_Check_Button *)0;
-
-static void cb_chkUSEXMLRPC(Fl_Check_Button* o, void*) {
-  progdefaults.chkUSEXMLRPCis = o->value();
-if(o->value() == 1){
-  chkUSEHAMLIB->value(0);
-  chkUSERIGCAT->value(0);
-  btn_fldigi_client_to_fldigi->value(0);
-  progdefaults.chkUSEHAMLIBis = false;
-  progdefaults.chkUSERIGCATis = false;
-  progdefaults.fldigi_client_to_flrig = false;
-  btnInitXMLRPC->labelcolor(FL_RED);
-  btnInitXMLRPC->redraw_label();
-} else {
-  progdefaults.initInterface();
-}
-progdefaults.changed = true;
-}
-
-Fl_Button *btnInitXMLRPC=(Fl_Button *)0;
-
-static void cb_btnInitXMLRPC(Fl_Button* o, void*) {
-  progdefaults.initInterface();
-o->labelcolor(FL_FOREGROUND_COLOR);
-progdefaults.changed = true;
-}
-
-Fl_Counter *mbw_delay=(Fl_Counter *)0;
-
-static void cb_mbw_delay(Fl_Counter* o, void*) {
-  progdefaults.mbw=o->value();
-progdefaults.changed=true;
 }
 
 Fl_Check_Button *btnPTTrightchannel=(Fl_Check_Button *)0;
@@ -9988,7 +9943,6 @@ i on a\ntouch screen device such as a tablet."));
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Display"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(50, 63, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10374,6 +10328,7 @@ i on a\ntouch screen device such as a tablet."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Spectrum"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(10, 65, 580, 150, _("Spectrum Scope / Waterfall interaction"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
@@ -10423,7 +10378,6 @@ i on a\ntouch screen device such as a tablet."));
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tabsCW_general->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11398,6 +11352,7 @@ ded Morse characters."));
               } // Fl_Group* tabsCW_ext_chars
               { tab_nanoCW = new Fl_Group(0, 75, 600, 315, _("nanoCW"));
                 tab_nanoCW->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tab_nanoCW->hide();
                 { Fl_ComboBox* o = select_nanoCW_CommPort = new Fl_ComboBox(86, 85, 420, 23, _("Ser. Port"));
                 select_nanoCW_CommPort->tooltip(_("nanoIO serial port"));
                 select_nanoCW_CommPort->box(FL_DOWN_BOX);
@@ -14001,45 +13956,6 @@ i.e. localhost"));
             } // Fl_Group* grpHamlib
             tabHamlib->end();
           } // Fl_Group* tabHamlib
-          { tabXMLRPC = new Fl_Group(0, 50, 600, 340, _("XML-RPC"));
-            tabXMLRPC->hide();
-            { grpXMLRPC = new Fl_Group(55, 61, 490, 160);
-              grpXMLRPC->box(FL_ENGRAVED_FRAME);
-              { Fl_Output* o = new Fl_Output(210, 80, 190, 58);
-                o->type(12);
-                o->box(FL_BORDER_BOX);
-                o->color(FL_LIGHT1);
-                o->value(_("Rig control via external\nprogram using xmlrpc\nremote calls."));
-              } // Fl_Output* o
-              { chkUSEXMLRPC = new Fl_Check_Button(210, 148, 183, 20, _("Use XML-RPC program"));
-                chkUSEXMLRPC->tooltip(_("Experimental"));
-                chkUSEXMLRPC->down_box(FL_DOWN_BOX);
-                chkUSEXMLRPC->callback((Fl_Callback*)cb_chkUSEXMLRPC);
-              } // Fl_Check_Button* chkUSEXMLRPC
-              { btnInitXMLRPC = new Fl_Button(251, 184, 113, 24, _("Initialize"));
-                btnInitXMLRPC->tooltip(_("Initialize XML-RPC rig control"));
-                btnInitXMLRPC->callback((Fl_Callback*)cb_btnInitXMLRPC);
-              } // Fl_Button* btnInitXMLRPC
-              grpXMLRPC->end();
-            } // Fl_Group* grpXMLRPC
-            { Fl_Group* o = new Fl_Group(55, 225, 490, 50);
-              o->box(FL_ENGRAVED_BOX);
-              { Fl_Counter* o = mbw_delay = new Fl_Counter(210, 239, 90, 21, _("Mode/BW delay"));
-                mbw_delay->tooltip(_("Delay in seconds between <RIGMODE... and <FILWID...\nwhen both in same macro \
-definition"));
-                mbw_delay->type(1);
-                mbw_delay->minimum(0.1);
-                mbw_delay->maximum(2);
-                mbw_delay->step(0.05);
-                mbw_delay->value(0.1);
-                mbw_delay->callback((Fl_Callback*)cb_mbw_delay);
-                mbw_delay->align(Fl_Align(FL_ALIGN_RIGHT));
-                o->value(progdefaults.mbw);
-              } // Fl_Counter* mbw_delay
-              o->end();
-            } // Fl_Group* o
-            tabXMLRPC->end();
-          } // Fl_Group* tabXMLRPC
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Hardware PTT"));
             o->hide();
             { Fl_Group* o = new Fl_Group(10, 57, 580, 38);
