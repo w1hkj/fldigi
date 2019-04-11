@@ -45,6 +45,11 @@ void adjust_color_inv(unsigned char& bg1r, unsigned char& bg1g, unsigned char& b
 #  include <FL/x.H>
 void make_pixmap(Pixmap *xpm, const char **data, int argc, char** argv);
 #endif
+struct dialog_positions {
+	int used;
+	int X;
+	int Y;
+};
 
 class notify_dialog : public Fl_Window
 {
@@ -54,12 +59,14 @@ friend void show_notifier(notify_dialog *nd);
 	Fl_Input2 message;
 	Fl_Dial dial;
 	Fl_Return_Button button;
+	Fl_Button *user_button;
 	Fl_Box resize_box;
-//	bool delete_on_hide;
 	double _timeout;
 
+	int dialog_number;
+	static dialog_positions positions[11];
 public:
-	notify_dialog(int X = 410, int Y = 103, const char* l = 0);
+	notify_dialog(int X = 0, int Y = 0);
 	~notify_dialog();
 	int handle(int event);
 	Fl_Button* make_button(int W, int H = 23);

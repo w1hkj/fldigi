@@ -141,7 +141,7 @@ extern int editNbr;
 	clear_lotw_recs_sent();
 }
 
-static notify_dialog *alert_window = 0;
+static notify_dialog *lotw_alert_window = 0;
 
 void check_lotw_log(void *)
 {
@@ -168,9 +168,9 @@ void check_lotw_log(void *)
 	size_t p = logtxt.find("UploadFile returns 0");
 	if (p != string::npos) {
 		if (progdefaults.lotw_quiet_mode && progdefaults.lotw_show_delivery) {
-			if (!alert_window) alert_window = new notify_dialog;
-			alert_window->notify(_("LoTW upload OK"), 5.0);
-			REQ(show_notifier, alert_window);
+			if (!lotw_alert_window) lotw_alert_window = new notify_dialog;
+			lotw_alert_window->notify(_("LoTW upload OK"), 5.0);
+			REQ(show_notifier, lotw_alert_window);
 			if (progdefaults.xml_logbook)
 				xml_update_lotw();
 		}
@@ -188,9 +188,9 @@ void check_lotw_log(void *)
 		if (progdefaults.lotw_quiet_mode) {
 			std::string alert = _("LoTW upload Failed\nView LoTW error log:");
 			alert.append(errlog);
-			if (!alert_window) alert_window = new notify_dialog;
-			alert_window->notify(alert.c_str(), 15.0);
-			REQ(show_notifier, alert_window);
+			if (!lotw_alert_window) lotw_alert_window = new notify_dialog;
+			lotw_alert_window->notify(alert.c_str(), 15.0);
+			REQ(show_notifier, lotw_alert_window);
 		}
 		restore_lotwsdates();
 	}
@@ -468,19 +468,13 @@ static std::string EQSL_xmlpage = "";
 
 static bool EQSLEXIT = false;
 
+static notify_dialog *eqsl_alert_window = 0;
+
 void update_eQSL_fields(void *)
 {
-	if (progdefaults.xml_logbook) {
-		xml_update_eqsl();
-		return;
-	}
-
 	std::string call;
 	std::string date;
 	std::string mode = "MODE";
-
-//std::cout << "update_eQSL_fields" << std::endl;
-//std::cout << EQSL_url << std::endl;
 
 	size_t p = EQSL_url.find("<CALL:");
 	if (p == std::string::npos) return;
@@ -519,15 +513,19 @@ void update_eQSL_fields(void *)
 		}
 	}
 	inpEQSLsentdate_log->value(date.c_str());
-	updateRecord();
+
+	if (progdefaults.xml_logbook)
+		xml_update_eqsl();
+	else
+		updateRecord();
 
 	std::string qsl_logged = "eQSL logged: ";
 	qsl_logged.append(call).append(" on ").append(mode);
 
 	if (progdefaults.eqsl_show_delivery) {
-		if (!alert_window) alert_window = new notify_dialog;
-		alert_window->notify(qsl_logged.c_str(), 5.0);
-		REQ(show_notifier, alert_window);
+		if (!eqsl_alert_window) eqsl_alert_window = new notify_dialog;
+		eqsl_alert_window->notify(qsl_logged.c_str(), 5.0);
+		REQ(show_notifier, eqsl_alert_window);
 	}
 
 	LOG_INFO("%s", qsl_logged.c_str());
@@ -537,9 +535,9 @@ static void cannot_connect_to_eqsl(void *)
 {
 	std::string msg = "Cannot connect to www.eQSL.cc";
 
-	if (!alert_window) alert_window = new notify_dialog;
-	alert_window->notify(msg.c_str(), 5.0);
-	REQ(show_notifier, alert_window);
+	if (!eqsl_alert_window) eqsl_alert_window = new notify_dialog;
+	eqsl_alert_window->notify(msg.c_str(), 5.0);
+	REQ(show_notifier, eqsl_alert_window);
 }
 
 static void eqsl_error(void *)
@@ -551,9 +549,9 @@ static void eqsl_error(void *)
 	errstr.append(EQSL_xmlpage.substr(p, p2 - p - 1));
 	errstr.append("\n").append(EQSL_url.substr(0,40));
 
-	if (!alert_window) alert_window = new notify_dialog;
-	alert_window->notify(errstr.c_str(), 5.0);
-	REQ(show_notifier, alert_window);
+	if (!eqsl_alert_window) eqsl_alert_window = new notify_dialog;
+	eqsl_alert_window->notify(errstr.c_str(), 5.0);
+	REQ(show_notifier, eqsl_alert_window);
 	LOG_ERROR("%s", errstr.c_str());
 }
 
@@ -683,7 +681,6 @@ void submit_eQSL(cQsoRec &rec, string msg)
 	std::string eQSL_header = progdefaults.eqsl_www_url;
 
 	EQSL_url.assign(eQSL_header).append(eQSL_data);
-std::cout << EQSL_url << std::endl;
 
 	tempstr.clear();
 	for (size_t n = 0; n < eQSL_data.length(); n++) {
@@ -701,7 +698,6 @@ std::cout << EQSL_url << std::endl;
 
 	sendEQSL(eQSL_data.c_str());
 
-//	xml_update_eqsl();
 }
 
 void sendEQSL(const char *url)

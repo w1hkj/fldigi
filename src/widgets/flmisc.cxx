@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdarg>
+#include <iostream>
 
 #include <FL/Fl.H>
 #include <FL/Enumerations.H>
@@ -133,21 +134,39 @@ void make_pixmap(Pixmap *xpm, const char **data, int argc, char** argv)
 }
 #endif
 
+dialog_positions notify_dialog::positions[11] = {
+	{0, 50, 50},	//0
+	{0, 150, 200},	//1
+	{0, 200, 350},	//2
+	{0, 150, 50},	//3
+	{0, 150, 200},	//4
+	{0, 200, 350},	//5
+	{0, 250, 50},	//6
+	{0, 350, 200},	//7
+	{0, 450, 350},	//8
+	{0, 350, 50},	//9
+	{0, 400, 300}	//10 centered on screen, all dialogs past 10
+};
 
-notify_dialog::notify_dialog(int X, int Y, const char* l)
-	: Fl_Window(X, Y, l), icon(10, 10, 50, 50), message(70, 25, 330, 35),
+notify_dialog::notify_dialog(int X, int Y)
+	: Fl_Window(X, Y, 410, 103, ""), icon(10, 10, 50, 50), message(70, 25, 330, 35),
 	  dial(277, 70, 23, 23), button(309, 70, 90, 23, "Close"), resize_box(399, 26, 1, 1)
 {
-	set_modal();
-	end();
+	set_non_modal();
+
+	for (dialog_number = 0; dialog_number < 10; dialog_number++)
+		if (positions[dialog_number].used == 0) break;
+	positions[dialog_number].used = 1;
+
+	position (positions[dialog_number].X, positions[dialog_number].Y);
 
 	icon.image(new Fl_Pixmap(dialog_information_48_icon));
 
-	message.type(FL_MULTILINE_OUTPUT);
-	message.box(FL_FLAT_BOX);
-	message.color(FL_BACKGROUND_COLOR);
+	message.type (FL_MULTILINE_OUTPUT);
+	message.box (FL_FLAT_BOX);
+	message.color (FL_BACKGROUND_COLOR);
 
-	button.callback(button_cb);
+	button.callback (button_cb);
 	newx = button.x();
 
 	dial.box(FL_FLAT_BOX);
@@ -157,14 +176,22 @@ notify_dialog::notify_dialog(int X, int Y, const char* l)
 	dial.angle2(-180);
 	dial.minimum(0.0);
 
+	user_button = (Fl_Button *)0;
+
 	xclass(PACKAGE_TARNAME);
 	resizable(resize_box);
+
+	end();
+	hide();
 }
 
 notify_dialog::~notify_dialog()
 {
-	delete icon.image();
 	Fl::remove_timeout(dial_timer, &dial);
+	this->hide();
+	delete icon.image();
+	delete user_button;
+	positions[dialog_number].used = 0;
 }
 
 int notify_dialog::handle(int event)
@@ -180,6 +207,7 @@ void notify_dialog::button_cb(Fl_Widget* w, void*)
 {
 	w->window()->hide();
 }
+
 void notify_dialog::dial_timer(void* arg)
 {
 	Fl_Dial* dial = reinterpret_cast<Fl_Dial*>(arg);
@@ -196,23 +224,22 @@ Fl_Button* notify_dialog::make_button(int W, int H)
 {
 	Fl_Group* cur = Fl_Group::current();
 	Fl_Group::current(this);
-	Fl_Button* b = 0;
+
+	if (user_button) return user_button;
 
 	int pad = 10;
 	int X = newx - pad - W;
 	if (X - pad - dial.w() > 0) {
-		b = new Fl_Button(newx = X, button.y(), W, H);
-		dial.position(b->x() - dial.w() - pad, dial.y());
+		user_button = new Fl_Button(newx = X, button.y(), W, H);
+		dial.position(user_button->x() - dial.w() - pad, dial.y());
 	}
 
 	Fl_Group::current(cur);
-	return b;
+	return user_button;
 }
 
 void notify_dialog::notify(const char* msg, double timeout)
 {
-	if (this->visible()) return;
-
 	message.value(msg);
 	_timeout = timeout;
 	const char* p;
@@ -227,7 +254,9 @@ void notify_dialog::notify(const char* msg, double timeout)
 	int H = 0;
 	for (const char* p = msg; (p = strchr(p, '\n')); p++)
 		H++;
-	size(w(), h() + max(H - 1, 0) * fl_height());
+
+	int nuh = 103 + max(H-1, 0) * fl_height();
+	resize(x(), y(), w(), nuh);
 }
 
 void show_notifier(notify_dialog *me)
