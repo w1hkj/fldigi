@@ -1,8 +1,45 @@
+2019-04-12  David Freese  <w1hkj@bellsouth.net>
+
+	807401e: OS X build
+
+
+=Version 4.1.02=
+
+	9174705: notifier dialog
+	f5e73c9: Xmlrpc Rig control
+	0b89ee1: wfall only tests
+	c2dd5f8: waterfall process
+	2dcd586: Language update
+	07f3b66: Documentation update
+	6fa7cb8: N3FJP ACL
+	791f084: CQzone
+	4670875: trx_xmit_wfall_draw
+	933f6b8: Log rotation
+	5c6d04e: Secure METAR
+	6b86a02: lgbook File:
+	2ca145a: qrz malloc
+	1593939: Rx Panel clicking
+	ef4ecf3: myCall
+	5224d09: QTE-QRB
+	7944d44: Olivia modes
+	6dfac39: logbook-backups
+	43a4c74: ARQ server
+	aeb0ff4: fllog eQSL/LoTW
+	d756b06: XmlRpc Log Dup Check
+	db20208: flrig ptt
+	b01c3b6: DxCluster/N3FJP i/o
+	22735f4: eQSL / LoTW submission
+	a0bd33b: mbedtls CFLAGS
+	590181b: lookup call
+	c29f732: MODE export
+	582f98b: flarq socket
+	ef6456f: eQSL export
+	f15f71c: tod clock start
+	14c092d: ARQ socket i/o
+	4886d58: analysis mode
 
 
 =Version 4.1.01=
-
-2019-02-18  David Freese  <w1hkj@bellsouth.net>
 
 	1d4798c: CW h/w ptt
 	ca3e777: nanoIO
