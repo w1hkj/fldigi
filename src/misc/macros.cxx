@@ -912,8 +912,9 @@ stack<STRpush> mf_stack;
 static void mMODEM(std::string s)
 {
 	trx_mode m;
+	s = ucasestr(s);
 	for (m = 0; m < NUM_MODES; m++)
-		if (s == mode_info[m].sname)
+		if (s == ucasestr(mode_info[m].sname))
 			break;
 	if (m == NUM_MODES) {
 		return;
@@ -2314,9 +2315,9 @@ static void pMODEM_compSKED(std::string &s, size_t &i, size_t endbracket)
 	k = j;
 	while (++k < len)
 		if (isspace(s[k])  || s[k] == '<') break;
-	name = s.substr(j, k - j);
+	name = ucasestr(s.substr(j, k - j));
 	for (int m = 0; m < NUM_MODES; m++) {
-		if (name == mode_info[m].sname) {
+		if (name == ucasestr(mode_info[m].sname)) {
 			if (active_modem->get_mode() != mode_info[m].mode)
 				init_modem(mode_info[m].mode);
 			break;
@@ -2473,9 +2474,10 @@ static void doMODEM(std::string s)
 
 	const std::vector<regmatch_t>& o = re.suboff();
 	std::string name = tomatch.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
+	name = ucasestr(name);
 	trx_mode m;
 	for (m = 0; m < NUM_MODES; m++)
-		if (name == mode_info[m].sname)
+		if (name == ucasestr(mode_info[m].sname))
 			break;
 	// do we have arguments and a valid modem?
 	if (o.size() == 2 || m == NUM_MODES) {
@@ -2588,6 +2590,19 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 	static fre_t re("<MODEM:([[:alnum:]-]+)((:[[:digit:].+-]*)*)>", REG_EXTENDED);
 
 	std::string testmode = s.substr(i, endbracket - i + 1);
+	std::string name = testmode;
+	name.erase(0,7);
+	name.erase(name.length() - 1);
+	name = ucasestr(name);
+
+// test for exact match on mode name (ignore case)
+	for (trx_mode m = 0; m < NUM_MODES; m++) {
+		if (name == ucasestr(mode_info[m].sname)) {
+			init_modem(mode_info[m].mode);
+			s.erase(i, endbracket - i + 1);
+			return;
+		}
+	}
 
 	if (!re.match(testmode.c_str())) {
 		s.erase(i, endbracket - i + 1);
@@ -2595,10 +2610,10 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 	}
 
 	const std::vector<regmatch_t>& o = re.suboff();
-	std::string name = testmode.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
+	name = ucasestr(testmode.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so));
 	trx_mode m;
 	for (m = 0; m < NUM_MODES; m++)
-		if (name == mode_info[m].sname)
+		if (name == ucasestr(mode_info[m].sname))
 			break;
 	// do we have arguments and a valid modem?
 	if (o.size() == 2 || m == NUM_MODES) {
