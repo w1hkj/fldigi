@@ -46,11 +46,11 @@ static string text[24];
 
 void newmacros()
 {
-label[0] = "CQ @>|";
-text[0] = "<TX>\n\
+label[0] = "RsID CQ";
+text[0] = "<TXRSID:on><TX>\n\
 CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL>\n\
 CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL> pse k\n\
-<RX>";
+<RX><@TXRSID:off>";
 
 label[1] = "ANS @>|";
 text[1] = "<TX>\
@@ -73,9 +73,9 @@ tnx fer QSO <NAME>, 73, God bless.\n\
 
 label[5] = "Me/Qth";
 text[5] = "\n\
-my name ... <MYNAME> <MYNAME>\n\
-my QTH .... <MYQTH>\n\
-my LOC .... <MYLOC>\n";
+op:  <MYNAME>\n\
+qth: <MYQTH>\n\
+loc: <MYLOC>\n";
 
 label[6] = "Brag";
 text[6] = "\n\
@@ -84,7 +84,7 @@ Age:   \n\
 Rig:   \n\
 Pwr:   \n\
 Ant:   \n\
-OS:    Linux\n\
+OS:    \n\
 Soft:  <VER>\n\
 Web:   \n\
 Email: ";
@@ -128,20 +128,20 @@ label[17] = "Log QSO";
 text[17] = "<LOG><INCR>";
 
 label[18] = "CW-CQ @>|";
-text[18] = "<TX>CQ CQ CQ DE <MYCALL> <MYCALL> <MYCALL>  CQ CQ CQ DE <MYCALL> K<RX>";
+text[18] = "<TX>CQ CQ CQ DE <MYCALL> <MYCALL>  CQ CQ CQ DE <MYCALL> K<RX>";
 
 label[19] = "";
 text[19] = "";
 
 label[20] = "CQ @-3+";
 text[20] = "<TX>\n\
-<IDLE:5>CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL>\n\
-CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL> k<RX><TIMER:15>";
+<IDLE:5>CQ CQ CQ de <MYCALL> <MYCALL>\n\
+CQ CQ CQ de <MYCALL> k<RX><TIMER:15>";
 
 label[21] = "CQ-ID @>|";
 text[21] = "<TX><ID>\n\
-CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL>\n\
-CQ CQ CQ de <MYCALL> <MYCALL> <MYCALL> pse k\n\
+CQ CQ CQ de <MYCALL> <MYCALL>\n\
+CQ CQ CQ de <MYCALL> <MYCALL> K\n\
 <RX>";
 
 label[22] = "";
