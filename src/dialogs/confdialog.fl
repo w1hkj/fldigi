@@ -432,15 +432,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {507 54 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {24 32 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 675 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 600 365} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 600 365} when 1 hide
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -3577,7 +3577,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 609 365} hide
+        xywh {0 25 609 365}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 609 365} selection_color 50 align 9
@@ -3591,7 +3591,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group tabsCW_general {
                 label General
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -4117,7 +4117,7 @@ progdefaults.changed = true;} open
               }
               Fl_Group tabsCW_winkeyer {
                 label WinKeyer open
-                xywh {0 75 600 315} align 5 hide
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group select_WK_CommPort {
                   label {Ser. Port}
@@ -4137,7 +4137,7 @@ select_WKFSK_CommPort->value(progStatus.WK_serial_port_name.c_str());} open
                 }
                 Fl_Group {} {
                   label ModeReg open
-                  xywh {10 191 134 192} box ENGRAVED_FRAME align 17
+                  xywh {10 191 134 171} box ENGRAVED_FRAME align 17
                 } {
                   Fl_Check_Button btn_WK_swap {
                     label Swap
@@ -4147,27 +4147,27 @@ select_WKFSK_CommPort->value(progStatus.WK_serial_port_name.c_str());} open
                   Fl_Check_Button btn_WK_auto_space {
                     label {Auto Space}
                     callback {WK_change_btn_auto_space();}
-                    tooltip {Enable paddle auto spacing of characters} xywh {20 249 70 15} down_box DOWN_BOX
+                    tooltip {Enable paddle auto spacing of characters} xywh {20 247 70 15} down_box DOWN_BOX
                   }
                   Fl_Check_Button btn_WK_ct_space {
                     label {CT space}
                     callback {WK_change_btn_ct_space();}
-                    tooltip {Enable contest character spacing} xywh {20 281 70 15} down_box DOWN_BOX
+                    tooltip {Enable contest character spacing} xywh {20 277 70 15} down_box DOWN_BOX
                   }
                   Fl_Check_Button btn_WK_paddledog {
                     label {Paddle Dog}
                     callback {WK_change_btn_paddledog();}
-                    xywh {20 313 70 15} down_box DOWN_BOX
+                    xywh {20 307 70 15} down_box DOWN_BOX
                   }
                   Fl_Check_Button btn_WK_cut_zeronine {
                     label {Cut 0/9}
                     callback {WK_change_btn_cut_zeronine();}
-                    tooltip {Use T/N for 0/9} xywh {20 346 70 15} down_box DOWN_BOX
+                    tooltip {Use T/N for 0/9} xywh {20 337 70 15} down_box DOWN_BOX
                   }
                 }
                 Fl_Group {} {
                   label ModeReg open
-                  xywh {167 191 134 192} box ENGRAVED_FRAME align 17
+                  xywh {167 191 134 171} box ENGRAVED_FRAME align 17
                 } {
                   Fl_Check_Button btn_WK_paddle_echo {
                     label {Paddle echo}
@@ -4177,22 +4177,22 @@ select_WKFSK_CommPort->value(progStatus.WK_serial_port_name.c_str());} open
                   Fl_Check_Button btn_WK_serial_echo {
                     label {Serial echo}
                     callback {WK_change_btn_serial_echo();}
-                    tooltip {Must be enabled} xywh {173 249 70 16} down_box DOWN_BOX value 1 deactivate
+                    xywh {173 247 70 16} down_box DOWN_BOX value 1
                   }
                   Fl_Check_Button btn_WK_sidetone_on {
                     label {Tone Keyer}
                     callback {WK_change_btn_sidetone_on();}
-                    tooltip {Enable Winkeyer tone keying} xywh {173 281 103 16} down_box DOWN_BOX
+                    tooltip {Enable Winkeyer tone keying} xywh {173 277 103 16} down_box DOWN_BOX
                   }
                   Fl_Check_Button btn_WK_tone_on {
                     label {Tone ON}
                     callback {WK_change_btn_tone_on();}
-                    tooltip {Enable Winkeyer audio tone} xywh {173 313 87 16} down_box DOWN_BOX
+                    tooltip {Enable Winkeyer audio tone} xywh {173 307 87 16} down_box DOWN_BOX
                   }
                   Fl_Check_Button btn_WK_ptt_on {
                     label {PTT ON}
                     callback {WK_change_btn_ptt_on();}
-                    tooltip {Enable Winkeyer PTT output} xywh {173 346 87 16} down_box DOWN_BOX
+                    tooltip {Enable Winkeyer PTT output} xywh {173 337 87 16} down_box DOWN_BOX
                   }
                 }
                 Fl_Group {} {
@@ -4335,6 +4335,17 @@ default = 0} xywh {513 300 64 22} type Simple
                 }
                 Fl_Output txt_WK_wpm {
                   tooltip {WPM setting} xywh {505 114 50 22}
+                }
+                Fl_Group {} {open
+                  xywh {10 363 291 23} box ENGRAVED_FRAME
+                } {
+                  Fl_Check_Button btnK3NG {
+                    label {K3NG Arduino sketch emulation}
+                    callback {progdefaults.WK_K3NGsketch = o->value();
+progdefaults.changed = true;} selected
+                    tooltip {Activate for Mortty K3NG sketch} xywh {20 367 223 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WK_K3NGsketch);}
+                  }
                 }
               }
               Fl_Group tabsCW_ext_chars {

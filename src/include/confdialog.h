@@ -400,6 +400,7 @@ extern Fl_Box *box_WK_xoff;
 extern Fl_Box *box_WK_keydown;
 extern Fl_Check_Button *btn_WK_use_pot;
 extern Fl_Output *txt_WK_wpm;
+extern Fl_Check_Button *btnK3NG;
 extern Fl_Group *tabsCW_ext_chars;
 #include "cw.h"
 extern Fl_Check_Button *btn_A_aelig;

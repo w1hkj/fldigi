@@ -48,7 +48,7 @@
 
 #include "icons.h"
 
-#define LOG_WKEY  LOG_INFO
+#define LOG_WKEY  LOG_VERBOSE
 
 using namespace std;
 
@@ -142,6 +142,7 @@ bool WK_readByte(unsigned char &byte);
 int WK_readString();
 int WK_sendString (string &s);
 void WK_clearSerialPort();
+void WK_display_byte(void *d);
 
 bool WK_bypass_serial_thread_loop = true;
 bool WK_run_serial_thread = true;
@@ -223,39 +224,80 @@ int WK_send_char(int c)
 		return 0;
 	}
 
-	lastchar = c;
+	struct timeval t;
+	long msec_start;
+	long msec_end;
+	
 	if (c < ' ') c = ' ';
 
 	if (c == '0' && progStatus.WK_cut_zeronine) c = 'T';
 	if (c == '9' && progStatus.WK_cut_zeronine) c = 'N';
-	{
-		guard_lock wklock(&WK_buffer_mutex);
-		WK_str_out += c;
-		WK_wait_for_char = true;
-	}
-
 	int n = 0;
 
-	if (c != ' ') {
-		std::string code = wkmorse->tx_lookup(c);
-		for (size_t i = 0; i < code.length(); i++) {
+	if (lastchar == ' ' && c == ' ') n = 7;
+	else if (lastchar != ' ' && c == ' ') n = 4;
+	else {
+		if (c != ' ') {
+			std::string code = wkmorse->tx_lookup(c);
+			for (size_t i = 0; i < code.length(); i++) {
+				n += 2;
+				if (code[i] == '-') n += 2;
+			}
 			n += 2;
-			if (code[i] == '-') n += 2;
-		}
-	} else n = 7;
-	n += 4;
-	n *= 120 / cntCW_WPM->value();
-	n *= 2; // needed for ZLP clone compatibility
-
-	while (WK_wait_for_char) {
-		MilliSleep(10);
-		Fl::awake();
-		if (--n == 0 || active_modem->get_stopflag()) {
-			WK_wait_for_char = false;
-			LOG_ERROR("Winkeyer did not echo character!");
-			return 1;
 		}
 	}
+//	if (btn_WK_serial_echo->value())
+//		n *= 2; // needed for ZLP clone compatibility
+	n *= 1200 / cntCW_WPM->value();
+
+	lastchar = c;
+
+	if (c != ' ') {
+		guard_lock wklock(&WK_buffer_mutex);
+		WK_str_out += c;
+		if (btn_WK_serial_echo->value())
+			WK_wait_for_char = true;
+	}
+
+	gettimeofday(&t, NULL);
+	msec_start = (t.tv_sec - (t.tv_sec / 10000) * 10000) * 1000;
+	msec_start += t.tv_usec / 1000;
+	msec_start += n;
+
+	if (WK_wait_for_char) {
+		n += 100;
+		while (WK_wait_for_char) {
+			MilliSleep(1);
+			if (n % 50 == 0) Fl::awake();
+			if (--n == 0) {
+				WK_wait_for_char = false;
+				LOG_ERROR("Winkeyer did not echo character!");
+				return 1;
+			}
+			if (active_modem->get_stopflag()) {
+				WK_wait_for_char = false;
+				LOG_INFO("Aborted transmission");
+				return 1;
+			}
+		}
+	} else {
+		while (!active_modem->get_stopflag()) {
+			MilliSleep(1);
+			gettimeofday(&t, NULL);
+			msec_end = (t.tv_sec - (t.tv_sec / 10000) * 10000) * 1000;
+			msec_end += t.tv_usec / 1000;
+			if (msec_end >= msec_start) {
+				break;
+			}
+			n--;
+			if (n == 0) {
+				break;
+			}
+			if (n % 50 == 0) Fl::awake();
+		}
+		Fl::awake(WK_display_byte, reinterpret_cast<void*>(c));
+	}
+
 	return 0;
 }
 
@@ -267,7 +309,7 @@ unsigned char byte;
 	for(;;) {
 		if (!WK_run_serial_thread) break;
 
-		MilliSleep(5);
+		MilliSleep(1);//5);
 
 		if (WK_bypass_serial_thread_loop ||
 			!WK_serial.IsOpen()) goto WK_serial_bypass_loop;
@@ -311,7 +353,7 @@ void WK_display_byte(void *d)
 	long lch = (long)d;
 	char ch = (char)lch;
 LOG_WKEY("echo: %02x", ch);
-//	ReceiveText->add(ch, FTextBase::XMIT);
+	ReceiveText->add(ch, FTextBase::XMIT);
 }
 
 void WK_display_chars(void *d)
@@ -465,7 +507,7 @@ void WK_eeprom_(int byte)
 
 void load_defaults()
 {
-	progStatus.WK_mode_register |= 0x04; // Winkeyer must echo characters
+//	progStatus.WK_mode_register |= 0x04; // Winkeyer must echo characters
 
 	string cmd = LOAD_DEFAULTS;
 
@@ -558,10 +600,6 @@ LOG_WKEY("WK2_MODE %s", hexstr(cmd).c_str());
 
 	load_defaults();
 
-	btn_WK_use_pot->value(progStatus.WK_use_pot);
-
-	load_defaults();
-
 	cmd = GET_SPEED_POT;
 LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 	WK_send_command(cmd);
@@ -594,50 +632,60 @@ LOG_WKEY("NULL_CMD : %s", hexstr(cmd).c_str());
 
 	WK_clearSerialPort();
 
-	cmd = "  ";
-	cmd[0] = ADMIN;
-	cmd[1] = ECHO_TEST;
-	cmd += 'U';
+// This code only works for a real WinKeyer
+// fails for the K3NG Arduino sketch code as written to MORTTY
+
+	if (btn_WK_serial_echo->value() && !btnK3NG->value()) {
+		cmd = "  ";
+		cmd[0] = ADMIN;
+		cmd[1] = ECHO_TEST;
+		cmd += 'U';
 
 LOG_WKEY("ECHO_TEST : %s", hexstr(cmd).c_str());
 
-	WK_send_command(cmd, WAIT_ECHO);
+		WK_send_command(cmd, WAIT_ECHO);
 
-	cnt = 5000;
-	while (WK_test_echo == true && cnt) {
-		MilliSleep(1);
-		cnt--;
+		cnt = 5000;
+		while (WK_test_echo == true && cnt) {
+			MilliSleep(1);
+			cnt--;
+		}
+
+		if (WK_test_echo) {
+			debug::show();
+			LOG_ERROR("%s", "Winkeyer not responding");
+			WK_test_echo = false;
+			pthread_mutex_lock(&WK_mutex_serial);
+				WK_bypass_serial_thread_loop = true;
+			pthread_mutex_unlock(&WK_mutex_serial);
+			WK_serial.ClosePort();
+			progStatus.WK_serial_port_name = "NONE";
+			select_WK_CommPort->value(progStatus.WK_serial_port_name.c_str());
+			return;
+		}
+
+		LOG_WKEY("Echo response in %d msec", 5000 - cnt);
+
+//		cmd = "  ";
+//		cmd[0] = ADMIN;
+//		cmd[1] = DUMP_EEPROM;
+//		WK_send_command(cmd);
+//		read_EEPROM = true;
+
+//		cnt = 4000;
+//		while (read_EEPROM == true && cnt) {
+//			MilliSleep(10);
+//			cnt--;
+//		}
+//		LOG_WKEY("EEprom read time %.2f sec", (4000 - cnt) * 0.01);
 	}
-
-	if (WK_test_echo) {
-		debug::show();
-		LOG_ERROR("%s", "Winkeyer not responding");
-		WK_test_echo = false;
-		pthread_mutex_lock(&WK_mutex_serial);
-			WK_bypass_serial_thread_loop = true;
-		pthread_mutex_unlock(&WK_mutex_serial);
-		WK_serial.ClosePort();
-		progStatus.WK_serial_port_name = "NONE";
-		select_WK_CommPort->value(progStatus.WK_serial_port_name.c_str());
-		return;
-	}
-
-LOG_WKEY("Echo response in %d msec", 5000 - cnt);
-
-/*
-	cmd = "  ";
-	cmd[0] = ADMIN;
-	cmd[1] = DUMP_EEPROM;
-	WK_send_command(cmd);
-	read_EEPROM = true;
-
-	cnt = 4000;
-	while (read_EEPROM == true && cnt) {
-		MilliSleep(10);
-		cnt--;
-	}
-	LOG_WKEY("EEprom read time %.2f sec", (4000 - cnt) * 0.01);
-*/
+//	else {
+//		cmd = "  ";
+//		cmd[0] = ADMIN;
+//		cmd[1] = ECHO_TEST;
+//		cmd += 'U';
+//		WK_send_command(cmd);
+//	}
 
 	cmd = "  ";
 	cmd[0] = ADMIN;
@@ -700,7 +748,8 @@ void WK_change_btn_swap()
 	progStatus.WK_mode_register &=0xF7;
 	progStatus.WK_mode_register |= btn_WK_swap->value() ? 0x08 : 0x00;
 	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 void WK_change_btn_auto_space()
@@ -708,7 +757,8 @@ void WK_change_btn_auto_space()
 	progStatus.WK_mode_register &=0xFD;
 	progStatus.WK_mode_register |= btn_WK_auto_space->value() ? 0x02 : 0x00;
 	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -717,7 +767,8 @@ void WK_change_btn_ct_space()
 	progStatus.WK_mode_register &= 0xFE;
 	progStatus.WK_mode_register |= btn_WK_ct_space->value();
 	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -726,7 +777,8 @@ void WK_change_btn_paddledog()
 	progStatus.WK_mode_register &=0x7F;
 	progStatus.WK_mode_register |= btn_WK_paddledog->value() ? 0x80 : 0x00;
 	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -741,7 +793,8 @@ void WK_change_btn_paddle_echo()
 	progStatus.WK_mode_register &=0xBF;
 	progStatus.WK_mode_register |= btn_WK_paddle_echo->value() ? 0x40 : 0x00;
 	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -750,7 +803,8 @@ void WK_change_btn_serial_echo()
 	progStatus.WK_mode_register &=0xFB;
 	progStatus.WK_mode_register |= btn_WK_serial_echo->value() ? 0x04 : 0x00;
 	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -758,20 +812,23 @@ void WK_change_btn_sidetone_on()
 {
 	progStatus.WK_sidetone = choice_WK_sidetone->index() + 1;
 	progStatus.WK_sidetone |= (btn_WK_sidetone_on->value() ? 0x80 : 0x00);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 void WK_change_btn_tone_on()
 {
 	progStatus.WK_pin_configuration = (progStatus.WK_pin_configuration & 0xFD) | (btn_WK_tone_on->value() ? 2 : 0);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
 void WK_change_btn_ptt_on()
 {
 	progStatus.WK_pin_configuration = (progStatus.WK_pin_configuration & 0xFE) | (btn_WK_ptt_on->value() ? 1 : 0);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
  
 void WK_change_cntr_min_wpm()
@@ -783,7 +840,8 @@ void WK_change_cntr_min_wpm()
 		progStatus.WK_speed_wpm = progStatus.WK_min_wpm;
 		cntCW_WPM->value(progStatus.WK_speed_wpm);
 	}
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -796,14 +854,16 @@ void WK_change_cntr_rng_wpm()
 		progStatus.WK_speed_wpm = progStatus.WK_min_wpm + progStatus.WK_rng_wpm;
 		cntCW_WPM->value(progStatus.WK_speed_wpm);
 	}
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
 void WK_change_cntr_farnsworth()
 {
 	progStatus.WK_farnsworth_wpm = cntr_WK_farnsworth->value();
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -816,49 +876,56 @@ void WK_change_cntr_cmd_wpm()
 void WK_change_cntr_ratio()
 {
 	progStatus.WK_dit_dah_ratio = (unsigned char)(cntr_WK_ratio->value() * 50 / 3);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
 void WK_change_cntr_comp()
 {
 	progStatus.WK_key_compensation = cntr_WK_comp->value();
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
 void WK_change_cntr_first_ext()
 {
 	progStatus.WK_first_extension = cntr_WK_first_ext->value();
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
 void WK_change_cntr_sample()
 {
 	progStatus.WK_paddle_setpoint = cntr_WK_sample->value();
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
 void WK_change_cntr_weight()
 {
 	progStatus.WK_weight = cntr_WK_weight->value();
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
 void WK_change_cntr_leadin()
 {
 	progStatus.WK_lead_in_time = cntr_WK_leadin->value();
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
 void WK_change_cntr_tail()
 {
 	progStatus.WK_tail_time = cntr_WK_tail->value();
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -867,7 +934,8 @@ void WK_change_choice_keyer_mode()
 	int modebits = choice_WK_keyer_mode->index() << 4;
 	progStatus.WK_mode_register = (progStatus.WK_mode_register & 0xCF) | modebits;
 	LOG_WKEY("mode reg: %02X", progStatus.WK_mode_register);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -875,7 +943,8 @@ void WK_change_choice_hang()
 {
 	int hangbits = choice_WK_hang->index() << 4;
 	progStatus.WK_pin_configuration = (progStatus.WK_pin_configuration & 0xCF) | hangbits;
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -883,7 +952,8 @@ void WK_change_choice_sidetone()
 {
 	progStatus.WK_sidetone = choice_WK_sidetone->index() + 1;
 	progStatus.WK_sidetone |= (btn_WK_sidetone_on->value() ? 0x80 : 0x00);
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 
@@ -891,7 +961,8 @@ void WK_change_choice_output_pins()
 {
 	int pinbits = (choice_WK_output_pins->index() + 1) << 2;
 	progStatus.WK_pin_configuration = (progStatus.WK_pin_configuration & 0xF3) | pinbits;
-	load_defaults();
+	if (progStatus.WK_online)
+		load_defaults();
 }
 
 //----------------------------------------------------------------------

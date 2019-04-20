@@ -3505,6 +3505,13 @@ static void cb_btn_WK_use_pot(Fl_Check_Button*, void*) {
 
 Fl_Output *txt_WK_wpm=(Fl_Output *)0;
 
+Fl_Check_Button *btnK3NG=(Fl_Check_Button *)0;
+
+static void cb_btnK3NG(Fl_Check_Button* o, void*) {
+  progdefaults.WK_K3NGsketch = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabsCW_ext_chars=(Fl_Group *)0;
 
 Fl_Check_Button *btn_A_aelig=(Fl_Check_Button *)0;
@@ -8192,6 +8199,7 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 590, 285, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10369,7 +10377,6 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 609, 365, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 609, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -10378,6 +10385,7 @@ i on a\ntouch screen device such as a tablet."));
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tabsCW_general->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11008,7 +11016,6 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Group* tabsCW_prosigns
               { tabsCW_winkeyer = new Fl_Group(0, 75, 600, 315, _("WinKeyer"));
                 tabsCW_winkeyer->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tabsCW_winkeyer->hide();
                 { Fl_ComboBox* o = select_WK_CommPort = new Fl_ComboBox(69, 85, 405, 23, _("Ser. Port"));
                 select_WK_CommPort->tooltip(_("Xcvr serial port"));
                 select_WK_CommPort->box(FL_DOWN_BOX);
@@ -11029,7 +11036,7 @@ i on a\ntouch screen device such as a tablet."));
                 btn_WKCW_connect->callback((Fl_Callback*)cb_btn_WKCW_connect);
                 o->value(progStatus.WK_online);
                 } // Fl_Light_Button* btn_WKCW_connect
-                { Fl_Group* o = new Fl_Group(10, 191, 134, 192, _("ModeReg"));
+                { Fl_Group* o = new Fl_Group(10, 191, 134, 171, _("ModeReg"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
                 { btn_WK_swap = new Fl_Check_Button(20, 217, 70, 15, _("Swap"));
@@ -11037,28 +11044,28 @@ i on a\ntouch screen device such as a tablet."));
                 btn_WK_swap->down_box(FL_DOWN_BOX);
                 btn_WK_swap->callback((Fl_Callback*)cb_btn_WK_swap);
                 } // Fl_Check_Button* btn_WK_swap
-                { btn_WK_auto_space = new Fl_Check_Button(20, 249, 70, 15, _("Auto Space"));
+                { btn_WK_auto_space = new Fl_Check_Button(20, 247, 70, 15, _("Auto Space"));
                 btn_WK_auto_space->tooltip(_("Enable paddle auto spacing of characters"));
                 btn_WK_auto_space->down_box(FL_DOWN_BOX);
                 btn_WK_auto_space->callback((Fl_Callback*)cb_btn_WK_auto_space);
                 } // Fl_Check_Button* btn_WK_auto_space
-                { btn_WK_ct_space = new Fl_Check_Button(20, 281, 70, 15, _("CT space"));
+                { btn_WK_ct_space = new Fl_Check_Button(20, 277, 70, 15, _("CT space"));
                 btn_WK_ct_space->tooltip(_("Enable contest character spacing"));
                 btn_WK_ct_space->down_box(FL_DOWN_BOX);
                 btn_WK_ct_space->callback((Fl_Callback*)cb_btn_WK_ct_space);
                 } // Fl_Check_Button* btn_WK_ct_space
-                { btn_WK_paddledog = new Fl_Check_Button(20, 313, 70, 15, _("Paddle Dog"));
+                { btn_WK_paddledog = new Fl_Check_Button(20, 307, 70, 15, _("Paddle Dog"));
                 btn_WK_paddledog->down_box(FL_DOWN_BOX);
                 btn_WK_paddledog->callback((Fl_Callback*)cb_btn_WK_paddledog);
                 } // Fl_Check_Button* btn_WK_paddledog
-                { btn_WK_cut_zeronine = new Fl_Check_Button(20, 346, 70, 15, _("Cut 0/9"));
+                { btn_WK_cut_zeronine = new Fl_Check_Button(20, 337, 70, 15, _("Cut 0/9"));
                 btn_WK_cut_zeronine->tooltip(_("Use T/N for 0/9"));
                 btn_WK_cut_zeronine->down_box(FL_DOWN_BOX);
                 btn_WK_cut_zeronine->callback((Fl_Callback*)cb_btn_WK_cut_zeronine);
                 } // Fl_Check_Button* btn_WK_cut_zeronine
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(167, 191, 134, 192, _("ModeReg"));
+                { Fl_Group* o = new Fl_Group(167, 191, 134, 171, _("ModeReg"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
                 { btn_WK_paddle_echo = new Fl_Check_Button(173, 217, 70, 16, _("Paddle echo"));
@@ -11066,24 +11073,22 @@ i on a\ntouch screen device such as a tablet."));
                 btn_WK_paddle_echo->down_box(FL_DOWN_BOX);
                 btn_WK_paddle_echo->callback((Fl_Callback*)cb_btn_WK_paddle_echo);
                 } // Fl_Check_Button* btn_WK_paddle_echo
-                { btn_WK_serial_echo = new Fl_Check_Button(173, 249, 70, 16, _("Serial echo"));
-                btn_WK_serial_echo->tooltip(_("Must be enabled"));
+                { btn_WK_serial_echo = new Fl_Check_Button(173, 247, 70, 16, _("Serial echo"));
                 btn_WK_serial_echo->down_box(FL_DOWN_BOX);
                 btn_WK_serial_echo->value(1);
                 btn_WK_serial_echo->callback((Fl_Callback*)cb_btn_WK_serial_echo);
-                btn_WK_serial_echo->deactivate();
                 } // Fl_Check_Button* btn_WK_serial_echo
-                { btn_WK_sidetone_on = new Fl_Check_Button(173, 281, 103, 16, _("Tone Keyer"));
+                { btn_WK_sidetone_on = new Fl_Check_Button(173, 277, 103, 16, _("Tone Keyer"));
                 btn_WK_sidetone_on->tooltip(_("Enable Winkeyer tone keying"));
                 btn_WK_sidetone_on->down_box(FL_DOWN_BOX);
                 btn_WK_sidetone_on->callback((Fl_Callback*)cb_btn_WK_sidetone_on);
                 } // Fl_Check_Button* btn_WK_sidetone_on
-                { btn_WK_tone_on = new Fl_Check_Button(173, 313, 87, 16, _("Tone ON"));
+                { btn_WK_tone_on = new Fl_Check_Button(173, 307, 87, 16, _("Tone ON"));
                 btn_WK_tone_on->tooltip(_("Enable Winkeyer audio tone"));
                 btn_WK_tone_on->down_box(FL_DOWN_BOX);
                 btn_WK_tone_on->callback((Fl_Callback*)cb_btn_WK_tone_on);
                 } // Fl_Check_Button* btn_WK_tone_on
-                { btn_WK_ptt_on = new Fl_Check_Button(173, 346, 87, 16, _("PTT ON"));
+                { btn_WK_ptt_on = new Fl_Check_Button(173, 337, 87, 16, _("PTT ON"));
                 btn_WK_ptt_on->tooltip(_("Enable Winkeyer PTT output"));
                 btn_WK_ptt_on->down_box(FL_DOWN_BOX);
                 btn_WK_ptt_on->callback((Fl_Callback*)cb_btn_WK_ptt_on);
@@ -11249,6 +11254,16 @@ i on a\ntouch screen device such as a tablet."));
                 { txt_WK_wpm = new Fl_Output(505, 114, 50, 22);
                 txt_WK_wpm->tooltip(_("WPM setting"));
                 } // Fl_Output* txt_WK_wpm
+                { Fl_Group* o = new Fl_Group(10, 363, 291, 23);
+                o->box(FL_ENGRAVED_FRAME);
+                { Fl_Check_Button* o = btnK3NG = new Fl_Check_Button(20, 367, 223, 15, _("K3NG Arduino sketch emulation"));
+                btnK3NG->tooltip(_("Activate for Mortty K3NG sketch"));
+                btnK3NG->down_box(FL_DOWN_BOX);
+                btnK3NG->callback((Fl_Callback*)cb_btnK3NG);
+                o->value(progdefaults.WK_K3NGsketch);
+                } // Fl_Check_Button* btnK3NG
+                o->end();
+                } // Fl_Group* o
                 tabsCW_winkeyer->end();
               } // Fl_Group* tabsCW_winkeyer
               { tabsCW_ext_chars = new Fl_Group(0, 75, 600, 315, _("Ext. Chars."));
