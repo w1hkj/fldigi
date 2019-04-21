@@ -1,5 +1,13 @@
-2019-04-12  David Freese  <w1hkj@bellsouth.net>
 
+
+=Version 4.1.03=
+
+2019-04-21  David Freese  <w1hkj@bellsouth.net>
+
+	a6923d1: wf updates
+	377a7fa: WinKeyer emulators
+	53a06da: New install macros
+	9a0124d: MACRO <MODEM:
 	807401e: OS X build
 
 
