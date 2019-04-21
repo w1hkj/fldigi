@@ -386,6 +386,8 @@ struct QSOP Ccontests::qso_parties[] = {
 {"CAQP (Out of State)",            "CA", "",    "",    "B",  "B",  "B",   "I",    "",     "",    "",      "CALL SERNO CNTY"},
 {"Colorado QSO Party",             "CO", "T",   "",    "B",  "B",  "",    "I",    "B",    "",    "",      "CALL NAME CNTY ST/PR/CNTRY"},
 {"COQP (Out of State)",            "CO", "",    "",    "B",  "B",  "",    "I",    "B",    "",    "",      "CALL NAME CNTY"},
+{"Delaware QSO Party",             "DE", "T",   "B",   "B",  "B",  "",    "",     "",     "",    "",      "CALL RST CNTY ST/PR/CNTRY"},
+{"DEQP (Out of State)",            "DE", "",    "B",   "B",  "B",  "",    "",     "",     "",    "",      "CALL RST CNTY"},
 {"Florida QSO Party",              "FL", "T",   "B",   "B",  "B",  "",    "I",    "",     "",    "",      "CALL RST CNTY ST/PR/CNTRY"},
 {"FLQP (Out of State)",            "FL", "",    "B",   "B",  "B",  "",    "I",    "",     "",    "",      "CALL RST CNTY"},
 {"Georgia QSO Party",              "GA", "T",   "B",   "B",  "B",  "",    "" ,    "",     "",    "",      "CALL RST CNTY ST/PR/CNTRY"},
@@ -466,7 +468,6 @@ struct QSOP Ccontests::qso_parties[] = {
 };
 //{"Alaska QSO Party",           "AK", "T",   "",    "",   "",   "",    "",     "",     "",    "",      ""},
 //{"Connecticut QSO Party",      "CT", "T",   "",    "",   "",   "",    "",     "",     "",    "",      ""},
-//{"Delaware QSO Party",         "DE", "T",   "",    "",   "",   "",    "",     "",     "",    "",      ""},
 //{"Massachusetts QSO Party",    "MA", "T",   "",    "",   "",   "",    "",     "",     "",    "",      ""},
 //{"New Hampshire QSO Party",    "NH", "T",   "",    "",   "",   "",    "",     "",     "",    "",      ""},
 //{"Nevada QSO Party",           "NV", "T",   "",    "",   "",   "",    "",     "",     "",    "",      ""},

@@ -363,9 +363,9 @@ Connecticut,CT,Fairfield,FAI\n\
 ,CT,New London,NLN\n\
 ,CT,Tolland,TOL\n\
 ,CT,Windham,WIN\n\
-Delaware,DE,Kent,\n\
-,DE,New Castle,\n\
-,DE,Sussex,\n\
+Delaware,DE,Kent,KDE\n\
+,DE,New Castle,NDE\n\
+,DE,Sussex,SDE\n\
 Dist. of Col.,DC,District of Columbia,\n\
 Florida,FL,ALACHUA,ALC\n\
 ,FL,BAKER,BAK\n\
