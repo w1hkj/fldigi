@@ -241,26 +241,27 @@ void *TOD_loop(void *args)
 {
 	SET_THREAD_ID(TOD_TID);
 
-#define LOOP1 4
-#define LOOP2 5
+#define LOOP1 8  // update waterfall every 80 msec
+#define LOOP2 5  // update clock every 50 msec
 	int loop_nbr = 1;
 	while(1) {
 
 		if (TOD_exit) break;
 
-		{
+		if (first_call) {
 			guard_lock tmlock(&time_mutex);
 			gettimeofday(&now_val, NULL);
-		}
-		if (first_call) {
 			start_val = now_val;
 			init_ztime();
 			first_call = false;
 		} else {
-			if (loop_nbr % 5)
+			if (loop_nbr % LOOP2 == 0) {
+				guard_lock tmlock(&time_mutex);
+				gettimeofday(&now_val, NULL);
 				Fl::awake(ztimer);
+			}
 		}
-		if (loop_nbr % 4)
+		if (loop_nbr % LOOP1 == 0)
 			Fl::awake(wf_update);
 
 		if (loop_nbr == (LOOP1 * LOOP2)) loop_nbr = 0;
