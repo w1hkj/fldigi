@@ -293,6 +293,7 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	size_t p = sbuff.find("<EOH>");
 	if (p == std::string::npos) p = sbuff.find("<eoh>");
 	if (p == std::string::npos) {
+		LOG_ERROR("Could not find <EOH> in %s", fname);
 		return;
 	}
 
@@ -310,7 +311,10 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 		p = sbuff.find("<EOR>");
 		if (p == std::string::npos) p = sbuff.find("<eor>");
 	}
-	if (p == std::string::npos) return;
+	if (p == std::string::npos) {
+		LOG_ERROR("Could not find any records in %s", fname);
+		return;
+	}
 
 	char *ptr = 0, *ptr2 = 0;
 	int recnbr = 0;
