@@ -1,8 +1,12 @@
+2019-04-29  David Freese  <w1hkj@bellsouth.net>
+
+	b4767a9: wfonly controls
+	ef2d55e: Read log debugging
+	2928a9b: New Modem Macro
+	90b0212: DE QSO Party
 
 
 =Version 4.1.03=
-
-2019-04-21  David Freese  <w1hkj@bellsouth.net>
 
 	a6923d1: wf updates
 	377a7fa: WinKeyer emulators

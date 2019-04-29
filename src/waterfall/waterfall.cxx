@@ -1864,7 +1864,9 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 void waterfall::UI_select(bool on) {
 	if (on) {
 		if (!progdefaults.WF_UIrev)
-			btnRev->hide(); else btnRev->show();
+			btnRev->hide();
+		else 
+			btnRev->show();
 		if (!progdefaults.WF_UIwfcarrier)
 			wfcarrier->hide(); else wfcarrier->show();
 		if (!progdefaults.WF_UIwfreflevel)
@@ -1899,7 +1901,10 @@ void waterfall::UI_select(bool on) {
 		}
 //if (noUI) xmtrcv->hide();
 	} else {
-		btnRev->show();
+//		btnRev->show();
+		if (!progdefaults.WF_UIrev)
+			btnRev->hide();
+		else btnRev->show();
 		wfcarrier->show();
 		wfRefLevel->show();
 		wfAmpSpan->show();

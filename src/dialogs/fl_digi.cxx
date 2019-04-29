@@ -5191,15 +5191,10 @@ void UI_select()
 	if (bWF_only) {
 		int Y = cntTxLevel->y();
 		int psm_width = progdefaults.show_psm_btn ? bwSqlOnOff : 0;
-		StatusBar->resize(
-			fl_digi_main->w() - rightof(Status2), Y,
-			fl_digi_main->w() - rightof(Status2) -
-			bwTxLevel -  // tx level control
-			Wwarn -      // Warn indicator
-			bwAfcOnOff - // afc button
-			bwSqlOnOff - // sql button
-			psm_width,   // psm button, bwSqlOnOff / 0
-			StatusBar->h());
+		int X = rightof(Status2);
+		int W = fl_digi_main->w() - X - bwTxLevel - Wwarn - bwAfcOnOff -
+			bwSqlOnOff - psm_width;
+		StatusBar->resize( X, Y, W, StatusBar->h());
 
 		cntTxLevel->position(rightof(StatusBar), Y);
 		WARNstatus->position(rightof(cntTxLevel), Y);
@@ -8251,10 +8246,10 @@ void create_fl_digi_main_WF_only() {
 	progdefaults.WF_UIwfmode =
 	progdefaults.WF_UIx1 =
 	progdefaults.WF_UIwfshift =
-	progdefaults.WF_UIwfdrop = true;
 	progdefaults.WF_UIrev =
 	progdefaults.WF_UIwfstore =
 	progdefaults.WF_UIxmtlock =
+	progdefaults.WF_UIwfdrop = true;
 	progdefaults.WF_UIqsy = false;
 	wf->UI_select(true);
 
