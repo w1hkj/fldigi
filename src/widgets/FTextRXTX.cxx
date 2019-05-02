@@ -797,7 +797,7 @@ int FTextRX::handle_qso_data(int start, int end)
 		}
 	}
 
-	char *sz = get_word(start, end, "", num_words);
+	char *sz = get_word(start, end, progdefaults.nonwordchars.c_str(), num_words);
 
 	if (!sz)
 		return 0;
