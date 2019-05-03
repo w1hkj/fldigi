@@ -32,7 +32,55 @@ contest specific fields that are displayed in the main dialog logging group.
 <li>North American Sprint</li>
 <li>Ten Ten</li>
 <li>VHF</li>
-<li>State QSO parties</li>
+</ul>
+<br>
+State QSO parties
+<ul>
+<li>Alabama QSO Party, ALQP (Out of State)</li>
+<li>Arizona QSO Party, AZQP (Out of State)</li>
+<li><li>Arkansas QSO Party, ARQP (Out of State)</li>
+<li>British Columbia QSO Party, BCQP (Out of Province)</li>
+<li>California QSO Party, CAQP (Out of State)</li>
+<li>Colorado QSO Party, COQP (Out of State)</li>
+<li>Delaware QSO Party, DEQP (Out of State)</li>
+<li>Florida QSO Party, FLQP (Out of State)</li>
+<li>Georgia QSO Party, GAQP (Out of State)</li>
+<li>Hawaii QSO Party, HIQP (Out of State)</li>
+<li>Idaho QSO Party, IDQP (Out of State)</li>
+<li>Illinois QSO Party, ILQP (Out of State)</li>
+<li>Indiana QSO Party, INQP (Out of State)</li>
+<li>Iowa QSO Party, IAQP (Out of State)</li>
+<li>Kansas QSO Party, KSQP (Out of State)</li>
+<li>Kentucky QSO Party, KYQP (Out of State)</li>
+<li>Louisiana QSO Party, LAQP (Out of State)</li>
+<li>Maine QSO Party, MEQP (Out of State)</li>
+<li>Maryland QSO Party, MDQP (Out of State)</li>
+<li>Michigan QSO Party, MIQP (Out of State)</li>
+<li>Minnesota QSO Party, MNQP (Out of State)</li>
+<li>Missouri QSO Party, MOQP (Out of State)</li>
+<li>Mississippi QSO Party, MSQP (Out of State)</li>
+<li>Montana QSO Party, MTQP (Out of State)</li>
+<li>North Carolina QSO Party, NCQP (Out of State)</li>
+<li>Nebraska QSO Party, NEQP (Out of State)</li>
+<li>New Jersey QSO Party, NJQP (Out of State)</li>
+<li>New Mexico QSO Party, NMQP (Out of State)</li>
+<li>New York QSO Party, NYQP (Out of State)</li>
+<li>North Dakota QSO Party, NDQP (Out of State)</li>
+<li>Ohio QSO Party, OHQP (Out of State)</li>
+<li>Oklahoma QSO Party, OKQP (Out of State)</li>
+<li>Ontario QSO Party, ONQP (Out of Province)</li>
+<li>Pennsylvania QSO Party, PAQP (Out of State)</li>
+<li>South Carolina QSO Party, SCQP (Out of State)</li>
+<li>South Dakota QSO Party, SDQP (Out of State)</li>
+<li>Tennessee QSO Party, TNQP (Out of State)</li>
+<li>Texas QSO Party, TXQP (Out of State)</li>
+<li>Vermont QSO Party, VTQP (Out of State)</li>
+<li>Virginia QSO Party, VAQP (Out of State)</li>
+<li>Washington Salmon Run QSO Party, WAQP (Out of State)</li>
+<li>Wisconsin QSO Party, WIQP (Out of State)</li>
+<li>West Virginia QSO Party, WVQP (Out of State)</li>
+<li>7QP QSO Party, 7QP (Out of Region)</li>
+<li>New England QSO Party, NEQP (Out of Region)</li>
 </ul>
 
 Select the contest type from the Contest combo:

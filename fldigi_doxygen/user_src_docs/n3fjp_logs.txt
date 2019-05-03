@@ -127,7 +127,7 @@ Select the CQWW contest on the Contest configuration tab.  The fields for
 CQzone and CQstate are then visible, as are the respective Rx text, right click
 popup menu items.
 
-\ref ui_configuration_contest_page "Return to Top of Page"
+\ref n3fjp_logs_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"
 

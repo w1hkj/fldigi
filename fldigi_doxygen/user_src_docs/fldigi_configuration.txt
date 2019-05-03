@@ -52,7 +52,6 @@ program:
 	<li> \subpage psk_mail_configuation_page </li>
 	<li> \subpage touch_page </li>
 	<li> \subpage ui_configuration_broswer_page </li>
-	<li> \subpage ui_configuration_contest_page </li>
 	<li> \subpage ui_configuration_general_page </li>
 	<li> \subpage ui_configuration_logging_page </li>
 	<li> \subpage ui_configuration_macros_page </li>

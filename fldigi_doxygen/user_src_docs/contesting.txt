@@ -10,30 +10,60 @@ contest specific fields that are displayed in the main dialog logging group.
 
 \image html config-ui-contest.png "UI Contest"
 \image latex config-ui-contest.png "UI Contest" width=5.0in
-
-<ul>
-<li>Generic contest</li>
-<li>Africa All-Mode International</li>
-<li>ARRL Field Day</li>
-<li>ARRL International DX (cw)</li>
-<li>ARRL Jamboree on the Air</li>
-<li>ARRL Kids Day</li>
-<li>ARRL Rookie Roundup</li>
-<li>ARRL RTTY Roundup</li>
-<li>ARRL School Club Roundup</li>
-<li>ARRL November Sweepstakes</li>
-<li>Winter FD</li>
-<li>BARTG RTTY contest</li>
-<li>CQ WPX</li>
-<li>CQ WW DX</li>
-<li>CQ WW DX RTTY</li>
-<li>Italian A.R.I. International DX</li>
-<li>North American QSO Party</li>
-<li>North American Sprint</li>
-<li>Ten Ten</li>
-<li>VHF</li>
-<li>State & Regional QSO parties</li>
-</ul>
+<br>
+<center>
+<table width="50%" border="0" cellspacing="1" cellpadding="1">
+<tr><td align="center"><b>Contest Type</b></td>
+    <td align="center"><b>State/Province QSO Party</b></td>
+    <td align="center"><b>Out of St/Pr/Area</b></td>
+</tr>
+<tr><td>Generic contest</td><td>Alabama QSO Party</td><td>ALQP</td></tr>
+<tr><td>Africa All-Mode International</td><td>Arizona QSO Party</td><td>AZQP</td></tr>
+<tr><td>ARRL Field Day</td><td>Arkansas QSO Party</td><td>ARQP</td></tr>
+<tr><td>ARRL International DX (cw)</td><td>British Columbia QSO Party</td><td>BCQP</td></tr>
+<tr><td>ARRL Jamboree on the Air</td><td>California QSO Party</td><td>CAQP</td></tr>
+<tr><td>ARRL Kids Day</td><td>Colorado QSO Party</td><td>COQP</td></tr>
+<tr><td>ARRL Rookie Roundup</td><td>Delaware QSO Party</td><td>DEQP</td></tr>
+<tr><td>ARRL RTTY Roundup</td><td>Florida QSO Party</td><td>FLQP</td></tr>
+<tr><td>ARRL School Club Roundup</td><td>Georgia QSO Party</td><td>GAQP</td></tr>
+<tr><td>ARRL November Sweepstakes</td><td>Hawaii QSO Party</td><td>HIQP</td></tr>
+<tr><td>Winter FD</td><td>Idaho QSO Party</td><td>IDQP</td></tr>
+<tr><td>BARTG RTTY contest</td><td>Illinois QSO Party</td><td>ILQP</td></tr>
+<tr><td>CQ WPX</td><td>Indiana QSO Party</td><td>INQP</td></tr>
+<tr><td>CQ WW DX</td><td>Iowa QSO Party</td><td>IAQP</td></tr>
+<tr><td>CQ WW DX RTTY</td><td>Kansas QSO Party</td><td>KSQP</td></tr>
+<tr><td>Italian A.R.I. International DX</td><td>Kentucky QSO Party</td><td>KYQP</td></tr>
+<tr><td>North American QSO Party</td><td>Louisiana QSO Party</td><td>LAQP</td></tr>
+<tr><td>North American Sprint</td><td>Maine QSO Party</td><td>MEQP</td></tr>
+<tr><td>Ten Ten</td><td>Maryland QSO Party</td><td>MDQP</td></tr>
+<tr><td>VHF</td><td>Michigan QSO Party</td><td>MIQP</td></tr>
+<tr><td><br></td><td>Minnesota QSO Party</td><td>MNQP</td></tr>
+<tr><td><br></td><td>Missouri QSO Party</td><td>MOQP</td></tr>
+<tr><td><br></td><td>Mississippi QSO Party</td><td>MSQP</td></tr>
+<tr><td><br></td><td>Montana QSO Party</td><td>MTQP</td></tr>
+<tr><td><br></td><td>Nebraska QSO Party</td><td>NEQP</td></tr>
+<tr><td><br></td><td>New Jersey QSO Party</td><td>NJQP</td></tr>
+<tr><td><br></td><td>New Mexico QSO Party</td><td>NMQP</td></tr>
+<tr><td><br></td><td>New York QSO Party</td><td>NYQP</td></tr>
+<tr><td><br></td><td>North Carolina QSO Party</td><td>NCQP</td></tr>
+<tr><td><br></td><td>North Dakota QSO Party</td><td>NDQP</td></tr>
+<tr><td><br></td><td>Ohio QSO Party</td><td>OHQP</td></tr>
+<tr><td><br></td><td>Oklahoma QSO Party</td><td>OKQP</td></tr>
+<tr><td><br></td><td>Ontario QSO Party</td><td>ONQP</td></tr>
+<tr><td><br></td><td>Pennsylvania QSO Party</td><td>PAQP</td></tr>
+<tr><td><br></td><td>South Carolina QSO Party</td><td>SCQP</td></tr>
+<tr><td><br></td><td>South Dakota QSO Party</td><td>SDQP</td></tr>
+<tr><td><br></td><td>Tennessee QSO Party</td><td>TNQP</td></tr>
+<tr><td><br></td><td>Texas QSO Party</td><td>TXQP</td></tr>
+<tr><td><br></td><td>Vermont QSO Party</td><td>VTQP</td></tr>
+<tr><td><br></td><td>Virginia QSO Party</td><td>VAQP</td></tr>
+<tr><td><br></td><td>Washington Salmon Run QSO Party</td><td>WAQP</td></tr>
+<tr><td><br></td><td>Wisconsin QSO Party</td><td>WIQP</td></tr>
+<tr><td><br></td><td>West Virginia QSO Party</td><td>WVQP</td></tr>
+<tr><td><br></td><td>7QP QSO Party</td><td>7QP</td></tr>
+<tr><td><br></td><td>New England QSO Party</td><td>NEQP</td></tr>
+</table>
+</center>
 
 \section stand-alone-contesting Contesting with fldigi's built-in logbook
 
