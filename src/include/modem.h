@@ -383,17 +383,52 @@ extern modem *rtty_modem;
 //extern modem *pkt_modem;
 
 extern modem *olivia_modem;
+extern modem *olivia_4_125_modem;
 extern modem *olivia_4_250_modem;
-extern modem *olivia_8_250_modem;
 extern modem *olivia_4_500_modem;
+extern modem *olivia_4_1000_modem;
+extern modem *olivia_4_2000_modem;
+
+extern modem *olivia_8_125_modem;
+extern modem *olivia_8_250_modem;
 extern modem *olivia_8_500_modem;
-extern modem *olivia_16_500_modem;
 extern modem *olivia_8_1000_modem;
+extern modem *olivia_8_2000_modem;
+
+extern modem *olivia_16_500_modem;
 extern modem *olivia_16_1000_modem;
+extern modem *olivia_16_2000_modem;
+
 extern modem *olivia_32_1000_modem;
+extern modem *olivia_32_2000_modem;
+
+extern modem *olivia_64_500_modem;
+extern modem *olivia_64_1000_modem;
 extern modem *olivia_64_2000_modem;
 
 extern modem *contestia_modem;
+extern modem *contestia_4_125_modem;
+extern modem *contestia_4_250_modem;
+extern modem *contestia_4_500_modem;
+extern modem *contestia_4_1000_modem;
+extern modem *contestia_4_2000_modem;
+
+extern modem *contestia_8_125_modem;
+extern modem *contestia_8_250_modem;
+extern modem *contestia_8_500_modem;
+extern modem *contestia_8_1000_modem;
+extern modem *contestia_8_2000_modem;
+
+extern modem *contestia_16_500_modem;
+extern modem *contestia_16_1000_modem;
+extern modem *contestia_16_2000_modem;
+
+extern modem *contestia_32_1000_modem;
+extern modem *contestia_32_2000_modem;
+
+extern modem *contestia_64_500_modem;
+extern modem *contestia_64_1000_modem;
+extern modem *contestia_64_2000_modem;
 
 extern modem *thormicro_modem;
 extern modem *thor4_modem;

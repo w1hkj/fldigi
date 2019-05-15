@@ -383,10 +383,7 @@ void olivia::restart()
 	set_bandwidth(Tx->Bandwidth - Tx->Bandwidth / Tx->Tones);
 
 	stringstream info;
-	if (mode == MODE_OLIVIA)
-		info << get_mode_name() << " " << Tx->Tones << "/" << Tx->Bandwidth;
-	else
-		info << mode_info[mode].sname;
+	info << mode_info[mode].sname;
 	put_MODEstatus("%s", info.str().c_str());
 
 	metric = 0;
@@ -423,13 +420,13 @@ olivia::olivia(trx_mode omode)
 	samplerate = 8000;
 
 	switch (mode) {
-		case MODE_OLIVIA_4_250:
+		case MODE_OLIVIA_4_125:
 			progdefaults.oliviatones = tones = 1;
-			progdefaults.oliviabw = bw = 1;
+			progdefaults.oliviabw = bw = 0;
 			REQ(set_olivia_tab_widgets);
 			break;
-		case MODE_OLIVIA_8_250:
-			progdefaults.oliviatones = tones = 2;
+		case MODE_OLIVIA_4_250:
+			progdefaults.oliviatones = tones = 1;
 			progdefaults.oliviabw = bw = 1;
 			REQ(set_olivia_tab_widgets);
 			break;
@@ -438,13 +435,28 @@ olivia::olivia(trx_mode omode)
 			progdefaults.oliviabw = bw = 2;
 			REQ(set_olivia_tab_widgets);
 			break;
-		case MODE_OLIVIA_8_500:
-			progdefaults.oliviatones = tones = 2;
-			progdefaults.oliviabw = bw = 2;
+		case MODE_OLIVIA_4_1000:
+			progdefaults.oliviatones = tones = 1;
+			progdefaults.oliviabw = bw = 3;
 			REQ(set_olivia_tab_widgets);
 			break;
-		case MODE_OLIVIA_16_500:
-			progdefaults.oliviatones = tones = 3;
+		case MODE_OLIVIA_4_2000:
+			progdefaults.oliviatones = tones = 1;
+			progdefaults.oliviabw = bw = 4;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_8_125:
+			progdefaults.oliviatones = tones = 2;
+			progdefaults.oliviabw = bw = 0;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_8_250:
+			progdefaults.oliviatones = tones = 2;
+			progdefaults.oliviabw = bw = 1;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_8_500:
+			progdefaults.oliviatones = tones = 2;
 			progdefaults.oliviabw = bw = 2;
 			REQ(set_olivia_tab_widgets);
 			break;
@@ -453,13 +465,43 @@ olivia::olivia(trx_mode omode)
 			progdefaults.oliviabw = bw = 3;
 			REQ(set_olivia_tab_widgets);
 			break;
+		case MODE_OLIVIA_8_2000:
+			progdefaults.oliviatones = tones = 2;
+			progdefaults.oliviabw = bw = 4;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_16_500:
+			progdefaults.oliviatones = tones = 3;
+			progdefaults.oliviabw = bw = 2;
+			REQ(set_olivia_tab_widgets);
+			break;
 		case MODE_OLIVIA_16_1000:
 			progdefaults.oliviatones = tones = 3;
 			progdefaults.oliviabw = bw = 3;
 			REQ(set_olivia_tab_widgets);
 			break;
+		case MODE_OLIVIA_16_2000:
+			progdefaults.oliviatones = tones = 3;
+			progdefaults.oliviabw = bw = 4;
+			REQ(set_olivia_tab_widgets);
+			break;
 		case MODE_OLIVIA_32_1000:
 			progdefaults.oliviatones = tones = 4;
+			progdefaults.oliviabw = bw = 3;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_32_2000:
+			progdefaults.oliviatones = tones = 4;
+			progdefaults.oliviabw = bw = 4;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_64_500:
+			progdefaults.oliviatones = tones = 5;
+			progdefaults.oliviabw = bw = 2;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_64_1000:
+			progdefaults.oliviatones = tones = 5;
 			progdefaults.oliviabw = bw = 3;
 			REQ(set_olivia_tab_widgets);
 			break;

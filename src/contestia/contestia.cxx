@@ -328,7 +328,7 @@ void contestia::restart()
 	set_bandwidth(Tx->Bandwidth - Tx->Bandwidth / Tx->Tones);
 
 	stringstream info;
-	info << get_mode_name() << " " << Tx->Tones << "/" << Tx->Bandwidth;
+	info << mode_info[mode].sname;
 	put_MODEstatus("%s", info.str().c_str());
 
 	metric = 0;
@@ -355,20 +355,118 @@ void contestia::init()
 
 }
 
-contestia::contestia()
+contestia::contestia(trx_mode omode)
 {
+	mode = omode;
 	cap |= CAP_REV;
 
 	txfbuffer = 0;
 	samplerate = 8000;
+
+	switch (mode) {
+		case MODE_CONTESTIA_4_125:
+			progdefaults.contestiatones = tones = 1;
+			progdefaults.contestiabw = bw = 0;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_4_250:
+			progdefaults.contestiatones = tones = 1;
+			progdefaults.contestiabw = bw = 1;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_4_500:
+			progdefaults.contestiatones = tones = 1;
+			progdefaults.contestiabw = bw = 2;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_4_1000:
+			progdefaults.contestiatones = tones = 1;
+			progdefaults.contestiabw = bw = 3;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_4_2000:
+			progdefaults.contestiatones = tones = 1;
+			progdefaults.contestiabw = bw = 4;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_8_125:
+			progdefaults.contestiatones = tones = 2;
+			progdefaults.contestiabw = bw = 0;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_8_250:
+			progdefaults.contestiatones = tones = 2;
+			progdefaults.contestiabw = bw = 1;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_8_500:
+			progdefaults.contestiatones = tones = 2;
+			progdefaults.contestiabw = bw = 2;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_8_1000:
+			progdefaults.contestiatones = tones = 2;
+			progdefaults.contestiabw = bw = 3;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_8_2000:
+			progdefaults.contestiatones = tones = 2;
+			progdefaults.contestiabw = bw = 4;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_16_500:
+			progdefaults.contestiatones = tones = 3;
+			progdefaults.contestiabw = bw = 2;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_16_1000:
+			progdefaults.contestiatones = tones = 3;
+			progdefaults.contestiabw = bw = 3;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_16_2000:
+			progdefaults.contestiatones = tones = 3;
+			progdefaults.contestiabw = bw = 4;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_32_1000:
+			progdefaults.contestiatones = tones = 4;
+			progdefaults.contestiabw = bw = 3;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_32_2000:
+			progdefaults.contestiatones = tones = 4;
+			progdefaults.contestiabw = bw = 4;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_64_500:
+			progdefaults.contestiatones = tones = 5;
+			progdefaults.contestiabw = bw = 2;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_64_1000:
+			progdefaults.contestiatones = tones = 5;
+			progdefaults.contestiabw = bw = 3;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA_64_2000:
+			progdefaults.contestiatones = tones = 5;
+			progdefaults.contestiabw = bw = 4;
+			REQ(set_contestia_tab_widgets);
+			break;
+		case MODE_CONTESTIA:
+		default:
+			tones = progdefaults.contestiatones;
+			bw    = progdefaults.contestiabw;
+			REQ(set_contestia_tab_widgets);
+			break;
+	}
 
 	Tx = new MFSK_Transmitter< double >;
 	Rx = new MFSK_Receiver< double >;
 
 	Tx->bContestia = true;
 	Rx->bContestia = true;
-
-	mode = MODE_CONTESTIA;
 
 	lastfreq = 0;
 

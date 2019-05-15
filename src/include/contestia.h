@@ -71,7 +71,7 @@ private:
 	void		send_tones();
 	
 public:
-	contestia();
+	contestia(trx_mode omode = MODE_CONTESTIA);
 	~contestia();
 	void init();
 	void rx_init();

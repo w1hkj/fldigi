@@ -1035,6 +1035,16 @@ static void notify_recv(trx_mode mode, int afreq, const char* str, const regmatc
 		n->match_string = str;
 		n->submatch_offsets = sub;
 		n->submatch_length = min(len, (size_t)10); // whole string + up to 9 user-specified backrefs
+
+std::cout << "trigger: " << n->last_trigger << "\n" <<
+"audio freq: " << n->afreq << "\n" <<
+"rf carrier: " << n->rfreq << "\n" <<
+"mode #: " << n->mode << "\n" <<
+"mode: " << mode_info[n->mode].name << "\n" <<
+"match: " << n->match_string << "\n" <<
+"offsets: " << n->submatch_offsets << "\n" <<
+"length: " << n->submatch_length << std::endl;
+
 		notify_notify(*n);
 	}
 }

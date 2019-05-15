@@ -796,16 +796,6 @@ void cb_init_mode(Fl_Widget *, void *arg);
 
 void cb_oliviaCustom(Fl_Widget *w, void *arg);
 
-void cb_contestiaA(Fl_Widget *w, void *arg);
-void cb_contestiaB(Fl_Widget *w, void *arg);
-void cb_contestiaC(Fl_Widget *w, void *arg);
-void cb_contestiaD(Fl_Widget *w, void *arg);
-void cb_contestiaE(Fl_Widget *w, void *arg);
-void cb_contestiaF(Fl_Widget *w, void *arg);
-void cb_contestiaG(Fl_Widget *w, void *arg);
-void cb_contestiaH(Fl_Widget *w, void *arg);
-void cb_contestiaI(Fl_Widget *w, void *arg);
-void cb_contestiaJ(Fl_Widget *w, void *arg);
 void cb_contestiaCustom(Fl_Widget *w, void *arg);
 
 void cb_rtty45(Fl_Widget *w, void *arg);
@@ -1007,30 +997,57 @@ static const Fl_Menu_Item quick_change_throb[] = {
 };
 
 static const Fl_Menu_Item quick_change_olivia[] = {
+	{ mode_info[MODE_OLIVIA_4_125].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_125 },
 	{ mode_info[MODE_OLIVIA_4_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_250 },
-	{ mode_info[MODE_OLIVIA_8_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_250 },
 	{ mode_info[MODE_OLIVIA_4_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_500 },
+	{ mode_info[MODE_OLIVIA_4_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_1000 },
+	{ mode_info[MODE_OLIVIA_4_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_2000 },
+
+	{ mode_info[MODE_OLIVIA_8_125].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_125 },
+	{ mode_info[MODE_OLIVIA_8_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_250 },
 	{ mode_info[MODE_OLIVIA_8_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_500 },
-	{ mode_info[MODE_OLIVIA_16_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_500 },
 	{ mode_info[MODE_OLIVIA_8_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_1000 },
+	{ mode_info[MODE_OLIVIA_8_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_2000 },
+
+	{ mode_info[MODE_OLIVIA_16_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_500 },
 	{ mode_info[MODE_OLIVIA_16_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_1000 },
+	{ mode_info[MODE_OLIVIA_16_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_2000 },
+
 	{ mode_info[MODE_OLIVIA_32_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_32_1000 },
+	{ mode_info[MODE_OLIVIA_32_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_32_2000 },
+
+	{ mode_info[MODE_OLIVIA_64_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_64_500 },
+	{ mode_info[MODE_OLIVIA_64_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_64_1000 },
 	{ mode_info[MODE_OLIVIA_64_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_64_2000 },
+
 	{ _("Custom..."), 0, cb_oliviaCustom, (void *)MODE_OLIVIA },
 	{ 0 }
 };
 
 static const Fl_Menu_Item quick_change_contestia[] = {
-	{ "4/125", 0, cb_contestiaI, (void *)MODE_CONTESTIA },
-	{ "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA },
-	{ "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA },
-	{ "4/500", 0, cb_contestiaC, (void *)MODE_CONTESTIA },
-	{ "8/500", 0, cb_contestiaD, (void *)MODE_CONTESTIA },
-	{ "16/500", 0, cb_contestiaE, (void *)MODE_CONTESTIA },
-	{ "8/1000", 0, cb_contestiaF, (void *)MODE_CONTESTIA },
-	{ "16/1000", 0, cb_contestiaG, (void *)MODE_CONTESTIA },
-	{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA },
-	{ "64/1000", 0, cb_contestiaJ, (void *)MODE_CONTESTIA },
+	{ mode_info[MODE_CONTESTIA_4_125].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_125 },
+	{ mode_info[MODE_CONTESTIA_4_250].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_250 },
+	{ mode_info[MODE_CONTESTIA_4_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_500 },
+	{ mode_info[MODE_CONTESTIA_4_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_1000 },
+	{ mode_info[MODE_CONTESTIA_4_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_2000 },
+
+	{ mode_info[MODE_CONTESTIA_8_125].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_125 },
+	{ mode_info[MODE_CONTESTIA_8_250].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_250 },
+	{ mode_info[MODE_CONTESTIA_8_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_500 },
+	{ mode_info[MODE_CONTESTIA_8_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_1000 },
+	{ mode_info[MODE_CONTESTIA_8_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_2000 },
+
+	{ mode_info[MODE_CONTESTIA_16_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_500 },
+	{ mode_info[MODE_CONTESTIA_16_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_1000 },
+	{ mode_info[MODE_CONTESTIA_16_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_2000 },
+
+	{ mode_info[MODE_CONTESTIA_32_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_32_1000 },
+	{ mode_info[MODE_CONTESTIA_32_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_32_2000 },
+
+	{ mode_info[MODE_CONTESTIA_64_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_64_500 },
+	{ mode_info[MODE_CONTESTIA_64_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_64_1000 },
+	{ mode_info[MODE_CONTESTIA_64_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_64_2000 },
+
 	{ _("Custom..."), 0, cb_contestiaCustom, (void *)MODE_CONTESTIA },
 	{ 0 }
 };
@@ -1127,86 +1144,6 @@ void set_contestia_tab_widgets()
 	set_contestia_default_integ();
 }
 
-void cb_contestiaA(Fl_Widget *w, void *arg)
-{
-	progdefaults.contestiatones = 1;
-	progdefaults.contestiabw = 1;
-	set_contestia_tab_widgets();
-	cb_init_mode(w, arg);
-}
-
-void cb_contestiaB(Fl_Widget *w, void *arg)
-{
-	progdefaults.contestiatones = 2;
-	progdefaults.contestiabw = 1;
-	set_contestia_tab_widgets();
-	cb_init_mode(w, arg);
-}
-
-void cb_contestiaC(Fl_Widget *w, void *arg)
-{
-	progdefaults.contestiatones = 1;
-	progdefaults.contestiabw = 2;
-	set_contestia_tab_widgets();
-	cb_init_mode(w, arg);
-}
-
-void cb_contestiaD(Fl_Widget *w, void *arg)
-{
-	progdefaults.contestiatones = 2;
-	progdefaults.contestiabw = 2;
-	set_contestia_tab_widgets();
-	cb_init_mode(w, arg);
-}
-
-void cb_contestiaE(Fl_Widget *w, void *arg)
-{
-	progdefaults.contestiatones = 3;
-	progdefaults.contestiabw = 2;
-	set_contestia_tab_widgets();
-	cb_init_mode(w, arg);
-}
-
-void cb_contestiaF(Fl_Widget *w, void *arg)
-{
-	progdefaults.contestiatones = 2;
-	progdefaults.contestiabw = 3;
-	set_contestia_tab_widgets();
-	cb_init_mode(w, arg);
-}
-
-void cb_contestiaG(Fl_Widget *w, void *arg)
-{
-	progdefaults.contestiatones = 3;
-	progdefaults.contestiabw = 3;
-	set_contestia_tab_widgets();
-	cb_init_mode(w, arg);
-}
-
-void cb_contestiaH(Fl_Widget *w, void *arg)
-{
-	progdefaults.contestiatones = 4;
-	progdefaults.contestiabw = 3;
-	set_contestia_tab_widgets();
-	cb_init_mode(w, arg);
-}
-
-void cb_contestiaI(Fl_Widget *w, void *arg)
-{
-	progdefaults.contestiatones = 1;
-	progdefaults.contestiabw = 0;
-	set_contestia_tab_widgets();
-	cb_init_mode(w, arg);
-}
-
-void cb_contestiaJ(Fl_Widget *w, void *arg)
-{
-	progdefaults.contestiatones = 5;
-	progdefaults.contestiabw = 3;
-	set_contestia_tab_widgets();
-	cb_init_mode(w, arg);
-}
-
 void cb_contestiaCustom(Fl_Widget *w, void *arg)
 {
 	modem_config_tab = tabContestia;
@@ -1216,6 +1153,7 @@ void cb_contestiaCustom(Fl_Widget *w, void *arg)
 	cb_init_mode(w, arg);
 }
 
+// rtty
 void set_rtty_tab_widgets()
 {
 	selShift->index(progdefaults.rtty_shift);
@@ -2006,14 +1944,23 @@ void init_modem(trx_mode mode, int freq)
 		break;
 
 	case MODE_OLIVIA:
+	case MODE_OLIVIA_4_125:
 	case MODE_OLIVIA_4_250:
-	case MODE_OLIVIA_8_250:
 	case MODE_OLIVIA_4_500:
+	case MODE_OLIVIA_4_1000:
+	case MODE_OLIVIA_4_2000:
+	case MODE_OLIVIA_8_125:
+	case MODE_OLIVIA_8_250:
 	case MODE_OLIVIA_8_500:
-	case MODE_OLIVIA_16_500:
 	case MODE_OLIVIA_8_1000:
+	case MODE_OLIVIA_8_2000:
+	case MODE_OLIVIA_16_500:
 	case MODE_OLIVIA_16_1000:
+	case MODE_OLIVIA_16_2000:
 	case MODE_OLIVIA_32_1000:
+	case MODE_OLIVIA_32_2000:
+	case MODE_OLIVIA_64_500:
+	case MODE_OLIVIA_64_1000:
 	case MODE_OLIVIA_64_2000:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 				  *mode_info[mode].modem = new olivia(mode), freq);
@@ -2022,8 +1969,26 @@ void init_modem(trx_mode mode, int freq)
 		break;
 
 	case MODE_CONTESTIA:
+	case MODE_CONTESTIA_4_125:
+	case MODE_CONTESTIA_4_250:
+	case MODE_CONTESTIA_4_500:
+	case MODE_CONTESTIA_4_1000:
+	case MODE_CONTESTIA_4_2000:
+	case MODE_CONTESTIA_8_125:
+	case MODE_CONTESTIA_8_250:
+	case MODE_CONTESTIA_8_500:
+	case MODE_CONTESTIA_8_1000:
+	case MODE_CONTESTIA_8_2000:
+	case MODE_CONTESTIA_16_500:
+	case MODE_CONTESTIA_16_1000:
+	case MODE_CONTESTIA_16_2000:
+	case MODE_CONTESTIA_32_1000:
+	case MODE_CONTESTIA_32_2000:
+	case MODE_CONTESTIA_64_500:
+	case MODE_CONTESTIA_64_1000:
+	case MODE_CONTESTIA_64_2000:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-				  *mode_info[mode].modem = new contestia, freq);
+				  *mode_info[mode].modem = new contestia(mode), freq);
 		modem_config_tab = tabContestia;
 		quick_change = quick_change_contestia;
 		break;
@@ -2508,13 +2473,24 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 			quick_change = quick_change_mt63;
 			modem_config_tab = tabMT63;
 			break;
-		case MODE_OLIVIA: case MODE_OLIVIA_4_250: case MODE_OLIVIA_8_250:
-		case MODE_OLIVIA_4_500: case MODE_OLIVIA_8_500: case MODE_OLIVIA_16_500:
-		case MODE_OLIVIA_8_1000: case MODE_OLIVIA_16_1000: case MODE_OLIVIA_32_1000:
-		case MODE_OLIVIA_64_2000:
+		case MODE_OLIVIA:
+		case MODE_OLIVIA_4_125:   case MODE_OLIVIA_4_250:   case MODE_OLIVIA_4_500: 
+		case MODE_OLIVIA_4_1000:  case MODE_OLIVIA_4_2000:
+		case MODE_OLIVIA_8_125:   case MODE_OLIVIA_8_250:   case MODE_OLIVIA_8_500: 
+		case MODE_OLIVIA_8_1000:  case MODE_OLIVIA_8_2000:
+		case MODE_OLIVIA_16_500:  case MODE_OLIVIA_16_1000: case MODE_OLIVIA_16_2000:
+		case MODE_OLIVIA_32_1000: case MODE_OLIVIA_32_2000:
+		case MODE_OLIVIA_64_500:  case MODE_OLIVIA_64_1000: case MODE_OLIVIA_64_2000:
 			modem_config_tab = tabOlivia;
 			break;
 		case MODE_CONTESTIA:
+		case MODE_CONTESTIA_4_125:   case MODE_CONTESTIA_4_250:   case MODE_CONTESTIA_4_500: 
+		case MODE_CONTESTIA_4_1000:  case MODE_CONTESTIA_4_2000:
+		case MODE_CONTESTIA_8_125:   case MODE_CONTESTIA_8_250:   case MODE_CONTESTIA_8_500: 
+		case MODE_CONTESTIA_8_1000:  case MODE_CONTESTIA_8_2000:
+		case MODE_CONTESTIA_16_500:  case MODE_CONTESTIA_16_1000: case MODE_CONTESTIA_16_2000:
+		case MODE_CONTESTIA_32_1000: case MODE_CONTESTIA_32_2000:
+		case MODE_CONTESTIA_64_500:  case MODE_CONTESTIA_64_1000: case MODE_CONTESTIA_64_2000:
 			modem_config_tab = tabContestia;
 			break;
 		case MODE_FSQ:
@@ -5933,17 +5909,29 @@ static Fl_Menu_Item menu_[] = {
 
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
-{ CONTESTIA_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ "4/125", 0, cb_contestiaI, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ "4/500", 0, cb_contestiaC, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "8/500", 0, cb_contestiaD, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "16/500", 0, cb_contestiaE, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ "8/1000", 0, cb_contestiaF, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "16/1000", 0, cb_contestiaG, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "64/1000", 0, cb_contestiaJ, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{"Contestia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_4_125].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_4_250].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_4_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_4_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_4_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_CONTESTIA_8_125].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_8_250].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_8_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_8_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_8_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_CONTESTIA_16_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_16_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_16_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_CONTESTIA_32_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_32_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_32_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_32_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_CONTESTIA_64_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_64_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_64_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_64_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_64_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_64_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_contestiaCustom, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -6007,14 +5995,27 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { OLIVIA_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_4_125].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_125, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_4_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_OLIVIA_8_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_4_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_4_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_4_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_OLIVIA_8_125].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_8_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_8_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_OLIVIA_16_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_8_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_8_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_OLIVIA_16_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_16_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_16_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
 { mode_info[MODE_OLIVIA_32_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_32_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_32_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_32_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_OLIVIA_64_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_64_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_64_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_64_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_64_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_64_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_oliviaCustom, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -7548,16 +7549,28 @@ static Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 {"Contestia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ "4/125", 0, cb_contestiaI, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ "4/500", 0, cb_contestiaC, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "8/500", 0, cb_contestiaD, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "16/500", 0, cb_contestiaE, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ "8/1000", 0, cb_contestiaF, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "16/1000", 0, cb_contestiaG, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "64/1000", 0, cb_contestiaJ, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_4_125].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_4_250].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_4_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_4_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_4_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_4_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_CONTESTIA_8_125].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_8_250].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_8_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_8_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_8_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_CONTESTIA_16_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_16_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_16_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_CONTESTIA_32_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_32_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_32_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_32_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_CONTESTIA_64_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_64_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_64_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_64_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_CONTESTIA_64_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_64_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_contestiaCustom, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -7593,14 +7606,27 @@ static Fl_Menu_Item alt_menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"Olivia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_4_125].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_125, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_4_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_OLIVIA_8_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_4_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_4_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_4_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_OLIVIA_8_125].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_8_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_8_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_OLIVIA_16_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_8_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_8_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_OLIVIA_16_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_16_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_16_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_16_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
 { mode_info[MODE_OLIVIA_32_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_32_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_32_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_32_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ mode_info[MODE_OLIVIA_64_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_64_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OLIVIA_64_1000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_64_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_64_2000].name, 0, cb_init_mode, (void *)MODE_OLIVIA_64_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_oliviaCustom, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},

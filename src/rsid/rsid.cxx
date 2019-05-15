@@ -805,7 +805,16 @@ bool cRsId::assigned(trx_mode mode) {
 		break;
 
 	case MODE_CONTESTIA:
-
+	case MODE_CONTESTIA_4_125:
+	case MODE_CONTESTIA_4_250:
+	case MODE_CONTESTIA_8_250:
+	case MODE_CONTESTIA_4_500:
+	case MODE_CONTESTIA_8_500:
+	case MODE_CONTESTIA_16_500:
+	case MODE_CONTESTIA_8_1000:
+	case MODE_CONTESTIA_16_1000:
+	case MODE_CONTESTIA_32_1000:
+	case MODE_CONTESTIA_64_2000:
 		if (progdefaults.contestiatones == 1 && progdefaults.contestiabw == 0)
 			rmode = RSID_CONTESTIA_4_125;
 		else if (progdefaults.contestiatones == 1 && progdefaults.contestiabw == 1)

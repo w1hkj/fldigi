@@ -2512,10 +2512,23 @@ static void doMODEM(std::string s)
 					set_rtty_bits((int)args[2]);
 				break;
 			case MODE_CONTESTIA: // bandwidth, tones
-				if (args.at(0) != DBL_MIN)
-					set_contestia_bw((int)args[0]);
-				if (args.at(1) != DBL_MIN)
-					set_contestia_tones((int)args[1]);
+				if (args.at(0) != DBL_MIN && args.at(1) != DBL_MIN) {
+					int bw = (int)args[0];
+					int tones = (int)args[1];
+					if (bw == 250 && tones == 4) m = MODE_CONTESTIA_4_250;
+					else if (bw == 250 && tones == 8) m = MODE_CONTESTIA_8_250;
+					else if (bw == 500 && tones == 4) m = MODE_CONTESTIA_4_500;
+					else if (bw == 500 && tones == 8) m = MODE_CONTESTIA_8_500;
+					else if (bw == 500 && tones == 16) m = MODE_CONTESTIA_16_500;
+					else if (bw == 1000 && tones == 8) m = MODE_CONTESTIA_8_1000;
+					else if (bw == 1000 && tones == 16) m = MODE_CONTESTIA_16_1000;
+					else if (bw == 1000 && tones == 32) m = MODE_CONTESTIA_32_1000;
+					else if (bw == 2000 && tones == 64) m = MODE_CONTESTIA_64_2000;
+					else {
+						set_contestia_bw(bw);
+						set_contestia_tones(tones);
+					}
+				}
 				break;
 			case MODE_OLIVIA: // bandwidth, tones
 				if (args.at(0) != DBL_MIN && args.at(1) != DBL_MIN) {

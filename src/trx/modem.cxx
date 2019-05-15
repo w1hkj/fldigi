@@ -152,17 +152,54 @@ modem *psk500r_c3_modem = 0;
 modem *psk500r_c4_modem = 0;
 
 modem *olivia_modem = 0;
+
+modem *olivia_4_125_modem = 0;
 modem *olivia_4_250_modem = 0;
-modem *olivia_8_250_modem = 0;
 modem *olivia_4_500_modem = 0;
+modem *olivia_4_1000_modem = 0;
+modem *olivia_4_2000_modem = 0;
+
+modem *olivia_8_125_modem = 0;
+modem *olivia_8_250_modem = 0;
 modem *olivia_8_500_modem = 0;
-modem *olivia_16_500_modem = 0;
 modem *olivia_8_1000_modem = 0;
+modem *olivia_8_2000_modem = 0;
+
+modem *olivia_16_500_modem = 0;
 modem *olivia_16_1000_modem = 0;
+modem *olivia_16_2000_modem = 0;
+
 modem *olivia_32_1000_modem = 0;
+modem *olivia_32_2000_modem = 0;
+
+modem *olivia_64_500_modem = 0;
+modem *olivia_64_1000_modem = 0;
 modem *olivia_64_2000_modem = 0;
 
 modem *contestia_modem = 0;
+
+modem *contestia_4_125_modem = 0;
+modem *contestia_4_250_modem = 0;
+modem *contestia_4_500_modem = 0;
+modem *contestia_4_1000_modem = 0;
+modem *contestia_4_2000_modem = 0;
+
+modem *contestia_8_125_modem = 0;
+modem *contestia_8_250_modem = 0;
+modem *contestia_8_500_modem = 0;
+modem *contestia_8_1000_modem = 0;
+modem *contestia_8_2000_modem = 0;
+
+modem *contestia_16_500_modem = 0;
+modem *contestia_16_1000_modem = 0;
+modem *contestia_16_2000_modem = 0;
+
+modem *contestia_32_1000_modem = 0;
+modem *contestia_32_2000_modem = 0;
+
+modem *contestia_64_500_modem = 0;
+modem *contestia_64_1000_modem = 0;
+modem *contestia_64_2000_modem = 0;
 
 modem *rtty_modem = 0;
 modem *pkt_modem = 0;
