@@ -75,7 +75,7 @@ static void KmlTimestamp( std::ostream &ostrm, time_t tim ) {
 		return;
 	}
 	tm objTm = *gmtime(&tim);
-	char bufTm[24];
+	char bufTm[40];
 	// See http://www.w3.org/TR/xmlschema-2/#isoformats
 	snprintf( bufTm, sizeof(bufTm), "%4d-%02d-%02dT%02d:%02dZ",
 			objTm.tm_year + 1900,
@@ -1772,7 +1772,7 @@ static KmlSrvImpl * Pointer() {
 }
 
 std::string KmlServer::Tm2Time( time_t tim ) {
-	char bufTm[24];
+	char bufTm[40];
 	tm tmpTm;
 	gmtime_r( &tim, & tmpTm );
 

@@ -54,12 +54,15 @@
 
 void fftfilt::clear_filter()
 {
-	memset(filter, 0, flen * sizeof(cmplx));
-	memset(timedata, 0, flen * sizeof(cmplx));
-	memset(freqdata, 0, flen * sizeof(cmplx));
-	memset(output, 0, flen * sizeof(cmplx));
-	memset(ovlbuf, 0, flen2 * sizeof(cmplx));
-	memset(ht, 0, flen * sizeof(cmplx));
+	for (int i = 0; i < flen; i++) {
+		filter[i] = 0;
+		timedata[i] = 0;
+		freqdata[i] = 0;
+		output[i] = 0;
+		ht[i] = 0;
+	}
+	for (int i = 0; i < flen2; i++)
+		ovlbuf[i] = 0;
 	inptr = 0;
 }
 
@@ -122,7 +125,7 @@ void fftfilt::create_filter(double f1, double f2)
 {
 	clear_filter();
 // initialize the filter to zero
-	memset(ht, 0, flen * sizeof(cmplx));
+	for (int i = 0; i < flen; i++) ht[i] = 0;
 
 // create the filter shape coefficients by fft
 // filter values initialized to the ht response h(t)

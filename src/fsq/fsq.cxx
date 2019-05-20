@@ -1287,7 +1287,7 @@ int fsq::rx_process(const double *buf, int len)
 
 			if (bkptr == SHIFT_SIZE) {
 				bkptr = 0;
-				memcpy(	rx_stream,							// to
+				memmove(rx_stream,							// to
 						&rx_stream[SHIFT_SIZE],				// from
 						BLOCK_SIZE*sizeof(*rx_stream));	// # bytes
 				memset(fft_data, 0, sizeof(fft_data));

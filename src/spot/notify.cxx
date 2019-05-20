@@ -756,7 +756,7 @@ struct replace_refs
 	{
 		switch (t) {
 		case REF_MODEM:
-			strncpy(str, mode_info[n.mode].sname, len);
+			strncpy(str, mode_info[n.mode].sname, len-1);
 			str[len - 1] = '\0';
 			break;
 		case REF_DF_HZ:
@@ -774,19 +774,19 @@ struct replace_refs
 			snprintf(str, len, "%d", n.afreq);
 			break;
 		case REF_LF_KHZ:
-			strncpy(str, inpFreq->value(), len);
+			strncpy(str, inpFreq->value(), len-1);
 			str[len - 1] = '\0';
 			break;
 		case REF_CALLSIGN:
 			if (n.event == NOTIFY_EVENT_MYCALL || n.event == NOTIFY_EVENT_STATION) {
 				stringstream info;
 				info << "\\" << event_regex[n.event].index;
-				strncpy(str, info.str().c_str(), len);
+				strncpy(str, info.str().c_str(), len-1);
 			}
 			break;
 		case REF_COUNTRY:
 			if (n.event == NOTIFY_EVENT_STATION) {
-				strncpy(str, n.filter.dxcc_last.c_str(), len);
+				strncpy(str, n.filter.dxcc_last.c_str(), len-1);
 				str[len - 1] = '\0';
 			}
 			break;
@@ -794,7 +794,7 @@ struct replace_refs
 			snprintf(str, len, "\\0");
 			break;
 		case REF_TEXT:
-			strncpy(str, n.match_string, len);
+			strncpy(str, n.match_string, len-1);
 			str[len - 1] = '\0';
 			break;
 		}

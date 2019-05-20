@@ -485,7 +485,7 @@ namespace XmlRpc {
   std::string XmlRpcValue::timeToXml() const
   {
     struct tm* t = _value.asTime;
-    char buf[20];
+    char buf[40];
     snprintf(buf, sizeof(buf)-1, "%04d%02d%02dT%02d:%02d:%02d",
       (1900 + t->tm_year),
       (1 + t->tm_mon) & 0xFF,

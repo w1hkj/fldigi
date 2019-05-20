@@ -1909,7 +1909,7 @@ public:
 
 /// Ship or Buoy Observations: IIIII The ship or buoy identifier
 HEADTK(IIIII) {
-	static const size_t maxsz = 10 ;
+	static const size_t maxsz = 20 ;
 	char m_ship_buoy_identifier[maxsz] ;
 public:
 	GENTK( IIIII, "[A-Z0-9]{3,9}" )

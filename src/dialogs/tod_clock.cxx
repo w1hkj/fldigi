@@ -134,7 +134,7 @@ const char* zshowtime(void) {
 	return (const char *)s;
 }
 
-static char tx_time[6];
+static char tx_time[20];
 
 static bool TOD_exit = false;
 static bool TOD_enabled = false;

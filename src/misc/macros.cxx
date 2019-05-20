@@ -1304,7 +1304,7 @@ static void pNXTNBR(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	char szqsonbr[10];
+	char szqsonbr[20];
 	snprintf(szqsonbr, sizeof(szqsonbr), "%d", qsodb.nbrRecs() + 1);
 	s.replace(i, endbracket - i + 1, szqsonbr);
 }

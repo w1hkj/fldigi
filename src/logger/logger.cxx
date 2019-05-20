@@ -165,6 +165,8 @@ void check_lotw_log(void *)
 	}
 	fclose(logfile);
 
+//LOG_INFO("TQSL log file:\n%s\n", logtxt.c_str());
+
 	size_t p = logtxt.find("UploadFile returns 0");
 	if (p != string::npos) {
 		if (progdefaults.lotw_quiet_mode && progdefaults.lotw_show_delivery) {

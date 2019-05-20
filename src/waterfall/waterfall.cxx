@@ -529,7 +529,8 @@ void WFdisp::processFFT() {
 		static const int log2disp100 = log2disp(-100);
 		double vscale = 2.0 / FFT_LEN;
 
-		memset(wfbuf, 0, FFT_LEN * sizeof(*wfbuf));
+		for (int i = 0; i < FFT_LEN; i++) wfbuf[i] = 0;
+
 		void *pv = static_cast<void*>(wfbuf);
 		wf_fft_type *pbuf = static_cast<wf_fft_type*>(pv);
 

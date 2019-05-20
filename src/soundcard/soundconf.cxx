@@ -323,7 +323,7 @@ static void sound_init_options(void)
 	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	inpPulseServer->value(progdefaults.PulseServer.c_str());
 
-	char sr[6+1];
+	char sr[20];
 	if (progdefaults.in_sample_rate == SAMPLE_RATE_UNSET &&
 		(progdefaults.in_sample_rate = progdefaults.sample_rate) == SAMPLE_RATE_UNSET)
 		progdefaults.in_sample_rate = SAMPLE_RATE_NATIVE;

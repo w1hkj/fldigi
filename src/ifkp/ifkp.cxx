@@ -647,9 +647,9 @@ int ifkp::rx_process(const double *buf, int len)
 
 			if (bkptr == IFKP_SHIFT_SIZE) {
 				bkptr = 0;
-				memcpy(	rx_stream,								// to
-					&rx_stream[IFKP_SHIFT_SIZE],			// from
-					IFKP_BLOCK_SIZE*sizeof(*rx_stream));	// # bytes
+				memmove(rx_stream,								// to
+						&rx_stream[IFKP_SHIFT_SIZE],			// from
+						IFKP_BLOCK_SIZE*sizeof(*rx_stream));	// # bytes
 				memset(fft_data, 0, sizeof(fft_data));
 				for (int i = 0; i < IFKP_BLOCK_SIZE; i++) {
 					double d = rx_stream[i] * a_blackman[i];

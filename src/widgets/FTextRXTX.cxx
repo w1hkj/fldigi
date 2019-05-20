@@ -1667,7 +1667,7 @@ void FTextRX::menu_cb(size_t item)
 				inp_JOTA_spc->value(s.c_str());
 			else
 				cboCountry->value(s.c_str());
-				return;
+			return;
 		case RX_MENU_PROVINCE:
 			if (progdefaults.logging == LOG_NAS)
 				inpXchgIn->value(s.c_str());
