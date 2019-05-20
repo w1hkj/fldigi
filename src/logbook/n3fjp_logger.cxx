@@ -389,6 +389,7 @@ void set_connect_box()
 	if (n3fjp_connected) {
 		alert_window->notify(_("Connected to N3FJP logger"), 1.0);
 		REQ(show_notifier, alert_window);
+		REQ(update_main_title);
 	}
 	else {
 		progdefaults.CONTESTnotes = "";
