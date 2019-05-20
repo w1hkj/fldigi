@@ -1668,24 +1668,11 @@ LOG_ERROR("stopping debug session\n");
 }
 
 // callback executed from Escape / Window decoration 'X' or OS X cmd-Q
-// capture cmd-Q to allow a normal shutdown.
-// Red-X on OS X window decoration will crash with Signal 11 if a dialog
-// is opened post pressing the Red-X
-// Lion also does not allow any dialog other than the main dialog to
-// remain open after a Red-X exit
 
 void cb_wMain(Fl_Widget*, void*)
 {
-#ifdef __APPLE__
-	if (((Fl::event_state() & FL_COMMAND) == FL_COMMAND) && (Fl::event_key() == 'q')) {
-		if (!clean_exit(true)) return;
-	} else {
-		clean_exit(false);
-	}
-#else
 	if (!clean_exit(true)) return;
-#endif
-	remove_windows();  // more Apple Lion madness
+	remove_windows();
 	fl_digi_main->hide();
 }
 
