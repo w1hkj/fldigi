@@ -58,8 +58,7 @@ bool test_connection(bool info = false)
 {
 	if (!log_client) {
 		create_logbook_dialogs();
-		if (!log_client)
-			return false;
+		return false;
 	}
 	XmlRpcValue query, result;
 	if (log_client->execute("system.listMethods", query, result)) {
@@ -424,21 +423,27 @@ void connect_to_log_server(void *)
 		delete log_client;
 		log_client = 0;
 	}
+LOG_DEBUG("%s","Create XMLRPC client");
 	log_client = new XmlRpcClient(
 					progdefaults.xmllog_address.c_str(),
 					atoi(progdefaults.xmllog_port.c_str()));
 
+LOG_DEBUG("%s","Created");
 	if (progdefaults.xml_logbook) {
 		if (test_connection(true)) {
+LOG_DEBUG("%s","Close local logbook");
 			close_logbook();
 			if (dlgLogbook) dlgLogbook->hide();
 			activate_log_menus(false);
 		} else {
+LOG_DEBUG("%s","Remote server not responding");
 			progdefaults.xml_logbook = false;
 			activate_log_menus(true);
 			start_logbook();
+LOG_DEBUG("%s","Use local logbook");
 		}
 	} else {
+LOG_DEBUG("%s","Enable local logbook");
 		activate_log_menus(true);
 		start_logbook();
 	}
