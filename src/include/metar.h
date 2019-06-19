@@ -129,7 +129,7 @@ public:
 	void name(bool b) { _name = b; }
 	bool name() { return _name; }
 
-	void debug(bool on) { _debug = on; url.debug(on); }
+	void debug(bool on) { };//_debug = on; url.debug(on); }
 };
 
 #endif //METAR_H

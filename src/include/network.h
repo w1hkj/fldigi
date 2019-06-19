@@ -141,6 +141,7 @@ class Url {
 	mbedtls_x509_crt cacert;
 
 	bool _debug;
+	static int _rotate_log;
 
 	double _timeout;
 
@@ -158,7 +159,11 @@ public:
 		_url = url;
 		parse(url);
 	}
-	~Url() {};
+	~Url() {
+		if (debug_file) {
+			debug_file.close();
+		}
+	};
 
 	void init() {
 		_https = false;
@@ -170,7 +175,7 @@ public:
 		_data.clear();
 		_pers = "fldigi";
 		_timeout = 5.0;
-		_debug = false;
+		debug();
 	}
 
 	void parse(std::string url);
@@ -195,7 +200,7 @@ public:
 	void timeout(double t) { _timeout = t; }
 	double timeout() { return _timeout; }
 
-	void debug(bool on);
+	void debug();
 };
 
 
