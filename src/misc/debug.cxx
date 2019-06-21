@@ -207,16 +207,14 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 
 	if (!inst)
 		return;
-	if (unlikely(debug::level == DEBUG_LEVEL) || 
-		debug_pskmail || debug_audio) {
-		time_t t = time(NULL);
-		struct tm stm;
-		(void)localtime_r(&t, &stm);
-		snprintf(fmt, sizeof(fmt), "%c: [%02d:%02d:%02d] %s:%d: %s\n",
-				 *prefix[level], stm.tm_hour, stm.tm_min, stm.tm_sec, srcf, line, format);
-	}
-	else
-		snprintf(fmt, sizeof(fmt), "%c: %s: %s\n", *prefix[level], func, format);
+
+// always annotate with date/time & line number
+	time_t t = time(NULL);
+	struct tm stm;
+	(void)localtime_r(&t, &stm);
+	snprintf(fmt, sizeof(fmt), "%c: [%02d:%02d:%02d] %s : %d : %s\n    %s\n",
+		*prefix[level], stm.tm_hour, stm.tm_min, stm.tm_sec, srcf, line, func, format);
+
 	va_list args;
 	va_start(args, format);
 	intptr_t nt = vsnprintf(dtext, sizeof(dtext), fmt, args);

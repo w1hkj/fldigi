@@ -360,13 +360,13 @@ void saveLogbook(bool force)
 		if (!fl_choice2(_("Save changed Logbook?"), _("No"), _("Yes"), NULL))
 			return;
 
-//	cQsoDb::reverse = false;
-//	qsodb.SortByDate(progdefaults.sort_date_time_off);
-
 	qsodb.isdirty(0);
 	restore_sort();
 
-	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	if (force)
+		adifFile.writeLog (logbook_filename.c_str(), &qsodb, true);
+	else
+		adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 
 }
 

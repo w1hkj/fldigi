@@ -70,14 +70,18 @@ void start_logbook ()
 
 void close_logbook()
 {
+/* DISABLE CONSTRAINTS - ATTEMPT TO THWART WINDOWS FAILURE TO WRITE LOG ON EXIT
 	if (!qsodb.isdirty()) return;
 	if (progdefaults.NagMe)
 		if (!fl_choice2(_("Save changed Logbook?"), _("No"), _("Yes"), NULL))
 			return;
-
 	cQsoDb::reverse = false;
 	qsodb.SortByDate(progdefaults.sort_date_time_off);
+*/
+
+// force immediate write to logbook adif file
 
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb, true);
+
 }
 
