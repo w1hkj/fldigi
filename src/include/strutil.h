@@ -152,6 +152,9 @@ size_t levenshtein(const std::string & source, const std::string & target);
 std::string ucasestr( std::string str );
 std::string ucasestr( const char *str);
 
+// find independent of case
+size_t ufind(std::string s1, std::string s2, size_t idx = 0);
+
 // ----------------------------------------------------------------------------
 
 /// This is a read-only replacement for std::stringstream.

@@ -225,6 +225,13 @@ std::string ucasestr(const char *str)
 	return resu ;
 }
 
+size_t ufind(std::string s1, std::string s2, size_t idx)
+{
+	std::string up1 = ucasestr(s1);
+	std::string up2 = ucasestr(s2);
+	return up1.find(up2, idx);
+}
+
 // ----------------------------------------------------------------------------
 
 /// Just reads all chars until the delimiter.

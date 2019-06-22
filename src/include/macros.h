@@ -33,7 +33,6 @@ extern bool PERFORM_CPS_TEST;
 extern int num_cps_chars;
 extern struct timeval tv_cps_start;
 
-
 struct CONTESTCNTR {
 	int count;
 	char   szCount[20];
