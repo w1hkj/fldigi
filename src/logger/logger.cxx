@@ -172,9 +172,9 @@ void check_lotw_log(void *)
 			if (!lotw_alert_window) lotw_alert_window = new notify_dialog;
 			lotw_alert_window->notify(_("LoTW upload OK"), 5.0);
 			REQ(show_notifier, lotw_alert_window);
-			if (progdefaults.xml_logbook)
-				xml_update_lotw();
 		}
+		if (progdefaults.xml_logbook)
+			xml_update_lotw();
 		clear_lotw_recs_sent();
 	} else {
 		string errlog = LoTWDir;
