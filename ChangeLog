@@ -1,17 +1,32 @@
+
+
+=Version 4.1.05=
+
+2019-06-23  David Freese  <w1hkj@bellsouth.net>
+
+	a593ddbb8: LoTW fllog
+	1a42952e4: Modem macro
+	5a36610d1: Close Logbook
+	33177695b: eQSL
+
+
+=Version 4.1.04=
+
+
 2019-06-07  Davide Gerhard IV3CVE  <w1hkj@bellsouth.net>
 
-	51590b10b: MacOS high-DPI
-	33505fec3: timeops
+	e5b05e2a4: MacOS high-DPI
+	e25078f24: timeops
 
 2019-06-07  David Freese  <w1hkj@bellsouth.net>
 
-	c2dbea65b: log server
-	337aa4d2a: xmlrpc <vector>
-	2086bd1fe: LoTW delivery
-	2e0ba6d11: Apple kill button
-	6d9c80e3a: main dialog title
-	2ec197373: Warnings
-	f63f8bc36: Contestia/Olivia
+	2c03575b4: log server
+	d681ab54b: xmlrpc <vector>
+	99a4aa776: LoTW delivery
+	762fd869b: Apple kill button
+	83d115356: main dialog title
+	296295fe1: Warnings
+	5080d85e3: Contestia/Olivia
 	ea39851b6: Log reports
 	f7c376723: Documentation update
 	8d25f53d9: 7qp multi
