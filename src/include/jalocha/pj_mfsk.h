@@ -98,11 +98,11 @@ public:
 	}
 
 	void Free(void) {
-		free(CosineTable); 
+		delete [] CosineTable; 
 		CosineTable = 0;
-		free(SymbolShape);
+		delete [] SymbolShape;
 		SymbolShape = 0;
-		free(OutTap);
+		delete [] OutTap;
 		OutTap = 0;
 	}
 
@@ -253,11 +253,11 @@ public:
 	}
 
 	~BoxFilter() {
-			free(Tap);
+			delete [] Tap;
 	}
 
 	void Free(void) {
-			free(Tap);
+			delete [] Tap;
 			Tap = 0;
 	}
 
@@ -335,14 +335,14 @@ public:
 	}
 
 	void Free(void) {
-			free(InpTap); InpTap = 0;
-			free(OutTap); OutTap = 0;
-			free(WindowShape); WindowShape = 0;
-			free(FFT_Buff); FFT_Buff = 0;
-			free(Spectra[0]); Spectra[0] = 0;
-			free(Spectra[1]); Spectra[1] = 0;
-			free(Output); Output = 0;
-			free(Energy); Energy = 0;
+			delete [] InpTap; InpTap = 0;
+			delete [] OutTap; OutTap = 0;
+			delete [] WindowShape; WindowShape = 0;
+			delete [] FFT_Buff; FFT_Buff = 0;
+			delete [] Spectra[0]; Spectra[0] = 0;
+			delete [] Spectra[1]; Spectra[1] = 0;
+			delete [] Output; Output = 0;
+			delete [] Energy; Energy = 0;
 			FFT.Free();
 			Filter.Free();
 	}
@@ -613,13 +613,13 @@ public:
 	Type	*Data;	// allocated storage
 
 	CircularBuffer() { Init(); }
-	~CircularBuffer() { free(Data); }
+	~CircularBuffer() { delete [] Data; }
 
 	void Init(void)
 	{ Data = 0; Size = 0; Width = 1; }
 
 	void Free(void)
-	{ free(Data); Data = 0; Size = 0; }
+	{ delete [] Data; Data = 0; Size = 0; }
 
 // reset: set pointer to the beginning of the buffer
 	void Reset(void) { Ptr = 0; }
@@ -765,15 +765,15 @@ template <class Type=float>
 		Energy[1]=0;
 		AverageEnergy=0; }
 
-	void Free(void)
-		{ free(InpTap); InpTap=0;
-		free(SymbolShape); SymbolShape=0;
-		free(FFT_Buff); FFT_Buff=0;
-		free(Spectra[0]); Spectra[0]=0;
-		free(Spectra[1]); Spectra[1]=0;
-		free(Energy[0]); Energy[0]=0;
-		free(Energy[1]); Energy[1]=0;
-		free(AverageEnergy); AverageEnergy=0;
+	void Free(void) {
+		delete [] InpTap; InpTap=0;
+		delete [] SymbolShape; SymbolShape=0;
+		delete [] FFT_Buff; FFT_Buff=0;
+		delete [] Spectra[0]; Spectra[0]=0;
+		delete [] Spectra[1]; Spectra[1]=0;
+		delete [] Energy[0]; Energy[0]=0;
+		delete [] Energy[1]; Energy[1]=0;
+		delete [] AverageEnergy; AverageEnergy=0;
 		FFT.Free();
 		EnergyBuffer.Free(); }
 
@@ -850,7 +850,7 @@ template <class Type=float>
 		else
 		{ EnergyBuffer.Free();
 			if (AverageEnergy)
-			{ free(AverageEnergy); AverageEnergy=0; }
+			{ delete [] AverageEnergy; AverageEnergy=0; }
 		}
 
 		return 0;
@@ -1106,8 +1106,8 @@ class MFSK_Encoder
 		OutputBlock=0; }
 
 	void Free(void)
-		{ free(FHT_Buffer); FHT_Buffer=0;
-		free(OutputBlock); OutputBlock=0; }
+		{ delete [] FHT_Buffer; FHT_Buffer=0;
+		delete [] OutputBlock; OutputBlock=0; }
 
 	int Preset(void) { 
 		if (bContestia) {
@@ -1269,11 +1269,11 @@ public:
 	}
 
 	void Free(void) {
-			free(InputBuffer);
+			delete [] InputBuffer;
 			InputBuffer = 0;
-			free(FHT_Buffer);
+			delete [] FHT_Buffer;
 			FHT_Buffer = 0;
-			free(OutputBlock);
+			delete [] OutputBlock;
 			OutputBlock = 0;
 	}
 
@@ -1472,9 +1472,9 @@ public:
 	}
 
 	void Free(void) {
-			free(FilterShape);
+			delete [] FilterShape;
 			FilterShape = 0;
-			free(InputTap);
+			delete [] InputTap;
 			InputTap = 0;
 	}
 
@@ -1673,10 +1673,10 @@ public:
 			Monitor.Free();
 			Encoder.Free();
 			Modulator.Free();
-			free(ModulatorOutput); 
+			delete [] ModulatorOutput; 
 			ModulatorOutput = 0;
 			Converter.Free();
-			free(ConverterOutput); 
+			delete [] ConverterOutput; 
 			ConverterOutput = 0;
 	}
 
@@ -2004,13 +2004,13 @@ public:
 				size_t Idx;
 				for (Idx = 0; Idx < (SlicesPerSymbol * FreqOffsets); Idx++)
 					Decoder[Idx].Free();
-				free(Decoder); Decoder=0;
+				delete [] Decoder; Decoder=0;
 			}
 			if (DecodePipe) {
 				size_t Idx;
 				for (Idx = 0; Idx < BlockPhases; Idx++)
 					DecodePipe[Idx].Free();
-				free(DecodePipe); 
+				delete [] DecodePipe; 
 				DecodePipe = 0;
 			}
 			Converter.Free();
@@ -2364,568 +2364,4 @@ private:
 
 };
 
-// unused code
-// =====================================================================
-/*
-template <class Type=float>
-class MFSK_Symbol
-{
-public:
-	size_t	BitsPerSymbol;
-	size_t	Carriers;
-	
-	Type	*Energy;
-	Type	*Correction;
-	Type	*Corrected;
-
-	size_t	Code;
-	Type	PeakEnergy;
-	Type	Background;
-	Type	ScanThreshold;
-	size_t	ScanIndex;
-
-	MFSK_Symbol() { 
-			Init();
-			Default();
-	}
-
-	~MFSK_Symbol() { Free(); }
-
-	void Init(void) {
-			Energy = 0;
-			Correction = 0;
-			Corrected = 0;
-	}
-
-	void Free(void) {
-			free(Energy);
-			Energy = 0;
-			free(Correction);
-			Correction = 0;
-			free(Corrected);
-			Corrected = 0;
-	}
-
-	void Default(void) { 
-			BitsPerSymbol = 5;
-	}
-
-	int Preset(void) { 
-			Carriers = Exp2(BitsPerSymbol);
-			if (ReallocArray(&Energy, Carriers) < 0)		goto Error;
-			if (ReallocArray(&Correction, Carriers) < 0) goto Error;
-			if (ReallocArray(&Corrected, Carriers) < 0)	goto Error;
-			return 0;
-	Error:
-			Free(); 
-			return -1;
-	}
-
-	void ClearCorrection(void) {
-			size_t Idx;
-			for (Idx = 0; Idx < Carriers; Idx++)
-				Correction[Idx] = 0;
-	}
-
-	void AddCorrection(void) {
-			size_t Idx;
-			for (Idx = 0; Idx < Carriers; Idx++)
-				Corrected[Idx] = Energy[Idx] + Correction[Idx];
-		}
-
-	void AddCorrection(Type Weight) {
-			size_t Idx;
-			for (Idx = 0; Idx < Carriers; Idx++)
-				Corrected[Idx] = Energy[Idx] + Weight * Correction[Idx];
-	}
-
-	void MakeRandom(Type SignalToNoise = 1.0) {
-			Type Signal = 1.0;
-			Type Noise = 1.0 / SignalToNoise;
-			Type NoiseEnergy = Noise * Noise;
-			NoiseEnergy /= Carriers;
-
-			size_t Idx;
-			double UniformNoise = 0;
-			for (Idx = 0; Idx < Carriers; Idx++) {
-				UniformNoise = ((double)rand()+1.0)/((double)RAND_MAX+1.0);
-				Energy[Idx] = NoiseEnergy * (-log(UniformNoise));
-			}
-
-			double Phase = 2 * M_PI * ((double)rand()+1.0)/((double)RAND_MAX+1.0);
-			Type NoiseAmpl = sqrt(Energy[Code]);
-			Signal += cos(Phase) * NoiseAmpl;
-			NoiseAmpl *= sin(Phase);
-			Energy[Code] = Signal*Signal + NoiseAmpl * NoiseAmpl;
-			ClearCorrection();
-			AddCorrection();
-	}
-
-	void Decode(void) {
-			size_t Idx;
-			PeakEnergy = 0;
-			Code = 0;
-			Background = 0;
-			for (Idx=0; Idx<Carriers; Idx++) {
-				Type Energy = Corrected[Idx];
-				Background += Energy;
-				if (Energy > PeakEnergy) {
-					PeakEnergy = Energy;
-					Code = Idx;
-				}
-			}
-			Background -= PeakEnergy;
-			Background /= (Carriers-1);
-	}
-
-	void Scan_Init(Type Threshold = 4.0) { 
-			ScanThreshold = Threshold * Background;
-	}
-
-	int Scan_First(void) {
-			for (ScanIndex = 0; ScanIndex < Carriers; ScanIndex++)
-				if (Corrected[ScanIndex] > ScanThreshold) 
-					return 0;
-			return -1; 
-	} // 0 => OK, -1 => no data above threshold
-
-	int Scan_Next(void) {
-			for ( ScanIndex++; ScanIndex < Carriers; ScanIndex++)
-				if (Corrected[ScanIndex]>ScanThreshold) 
-					return 0;
-			if (Scan_First() < 0) 
-				return -1;
-			return 1;
-	} // 0 => OK, 1 => wrapped around, -1 => no data above threshold
-
-	void Print(void) {
-			size_t Idx;
-			printf("MFSK_Symbol: %d bits/%d carriers, Peak = %3.1f/%3.1f @ 0x%02X\n",
-				BitsPerSymbol,Carriers,
-				PeakEnergy,Background, Code);
-			printf("Energy:");
-			for (Idx=0; Idx<Carriers; Idx++)
-				printf(" %3.1f",Energy[Idx]);
-			printf("\n");
-			printf("Corr:	");
-			for (Idx=0; Idx<Carriers; Idx++)
-				printf(" %3.1f",Correction[Idx]);
-			printf("\n");
-			printf("Ene+Co:");
-			for (Idx=0; Idx<Carriers; Idx++)
-				printf(" %3.1f",Corrected[Idx]);
-			printf("\n");
-	}
-};
-
-template <class Type>
-class MFSK_Delay
-{
-public:
-	size_t	Len;
-	Type	*Tap;
-	size_t	TapPtr;
-
-	MFSK_Delay() { Tap = 0; Len = 0; }
-	~MFSK_Delay() { free(Tap); }
-		
-	int Preset(size_t NewLen) {
-			Len = NewLen;
-			if (ReallocArray(&Tap, Len) < 0) {
-				Len = 0; 
-				return -1;
-			}
-			size_t Idx;
-			for (Idx = 0; Idx < Len; Idx++)
-				Tap[Idx] = 0;
-			TapPtr = 0;
-			return 0;
-	}
-
-	void Process(Type Input) {
-			if (Len == 0) 
-				return;
-			Tap[TapPtr] = Input;
-			TapPtr += 1; 
-			if (TapPtr >= Len) TapPtr -= Len;
-	}
-
-	void Process(Type Input, Type &Output) {
-			if (Len == 0) {
-				Output = Input;
-				return;
-			}
-			Output = Tap[TapPtr];
-			Tap[TapPtr] = Input;
-			TapPtr += 1;
-			if (TapPtr >= Len) TapPtr -= Len;
-	}
-
-	void Process(Type * Buffer, size_t BufferLen) { 
-			size_t Idx; 
-			Type Output;
-			for (Idx = 0; Idx < BufferLen; Idx++) {
-				Process(Buffer[Idx], Output);
-				Buffer[Idx] = Output;
-			}
-	}
-};
-
-template <class Type=float>
-class MFSK_FEC
-{
-public:
-	size_t BitsPerSymbol;
-	size_t SymbolsPerLine;
-	size_t Dimensions;
-	size_t SymbolsPerBlock;
-	size_t CodeMask;
-	MFSK_Symbol<Type> *Symbol;
-
-	MFSK_FEC() { 
-			Init();
-			Default();
-	}
-
-	~MFSK_FEC() {
-			Free();
-	}
-
-	void Init(void) {
-			Symbol = 0;
-	}
-
-	void Free(void) {
-			delete [] Symbol;
-			Symbol = 0;
-	}
-
-	void Default(void) {
-			BitsPerSymbol = 5;
-			SymbolsPerLine = 4;
-			Dimensions = 3;
-	}
-
-	int Preset(void) {
-			Free();
-			SymbolsPerBlock = 1;
-			size_t Dim;
-			for (Dim = 0; Dim < Dimensions; Dim++)
-				SymbolsPerBlock *= SymbolsPerLine;
-			CodeMask = Exp2(BitsPerSymbol) - 1;
-			Symbol = new MFSK_Symbol<Type>[SymbolsPerBlock];
-			if (Symbol == 0) return -1;
-			size_t Idx;
-			for (Idx = 0; Idx < SymbolsPerBlock; Idx++) {
-				Symbol[Idx].BitsPerSymbol = BitsPerSymbol;
-				if (Symbol[Idx].Preset() < 0) return -1;
-			}
-			return 0;
-	}
-
-	void CalculateCheck(size_t Idx, size_t Step) {
-			size_t Check=0;
-			size_t LineIdx;
-			for ( LineIdx = 0; LineIdx < (SymbolsPerLine - 1); LineIdx++,Idx += Step)
-				Check -= Symbol[Idx].Code;
-			Check &= CodeMask;
-			Symbol[Idx].Code = Check;
-	}
-
-	int Correct(void) {
-		return 0;
-	}
-
-};
-
-template <class Type=float>
-class MFSK_LineCorrector
-{ 
-public:
-
-	size_t BitsPerSymbol;
-	size_t SymbolsPerLine;
-	size_t CodeMask;
-	
-	MFSK_Symbol<Type> **Symbol;
-
-	MFSK_LineCorrector() {
-			Init();
-			Default();
-	}
-
-	~MFSK_LineCorrector() {
-			Free();
-	}
-
-	void Init(void) {
-			Symbol = 0;
-	}
-
-	void Free(void) {
-			free(Symbol);
-			Symbol = 0;
-	}
-
-	void Default(void) {
-			BitsPerSymbol = 5;
-			SymbolsPerLine = 4;
-	}
-
-	int Preset(void) {
-			CodeMask = Exp2(BitsPerSymbol) - 1;
-			if (ReallocArray(&Symbol, SymbolsPerLine) < 0) goto Error;
-			return 0;
-	Error:
-			Free();
-			return -1;
-	}
-
-	void CorrectSymbol(size_t SymbolIdx) {
-			size_t Idx;
-			size_t Check = 0;
-			Type Corr = 0;
-			for (Idx = 0; Idx < SymbolsPerLine; Idx++) {
-				if (Idx == SymbolIdx) continue;
-				MFSK_Symbol<Type> *SymbolPtr = Symbol[Idx];
-				Check -= SymbolPtr->Code;
-				Corr += SymbolPtr->PeakEnergy; // -SymbolPtr->Background;
-			}
-			Check &= CodeMask;
-			Symbol[SymbolIdx]->Correction[Check] += Corr;
-	}
-
-	void CorrectSymbol_Slow(size_t SymbolIdx) {
-			size_t Idx;
-			for (Idx = 0; Idx<SymbolsPerLine; Idx++) {
-				if (Idx == SymbolIdx) continue;
-				if (Symbol[Idx]->Scan_First()<0) break;
-			}
-			if (Idx < SymbolsPerLine) return;
-			for ( ; ; ) {
-				size_t Check = 0;
-				Type Corr = 0;
-				for (Idx = 0; Idx < SymbolsPerLine; Idx++) {
-					if (Idx == SymbolIdx) continue;
-					MFSK_Symbol<Type> *SymbolPtr = Symbol[Idx];
-					size_t Code = SymbolPtr->ScanIndex;
-					Check -= Code;
-					Corr += SymbolPtr->Corrected[Code] - SymbolPtr->ScanThreshold;
-				}
-				Check &= CodeMask;
-				Symbol[SymbolIdx]->Correction[Check] += Corr;
-				for (Idx = 0; Idx < SymbolsPerLine; Idx++) {
-					if (Idx == SymbolIdx) continue;
-					if (Symbol[Idx]->Scan_Next() == 0) break;
-				}
-				if (Idx >= SymbolsPerLine) break;
-			}
-	}
-
-	void Correct(size_t Iter = 8, Type Weight = 1.0) {
-			Weight /= (2 * SymbolsPerLine);
-			for ( ; Iter; Iter--) {
-				size_t Idx;
-				for (Idx = 0; Idx < SymbolsPerLine; Idx++) {
-					Symbol[Idx]->ClearCorrection();
-					Symbol[Idx]->Scan_Init();
-				}
-				for (Idx = 0; Idx < SymbolsPerLine; Idx++)
-					CorrectSymbol(Idx);
-				for (Idx = 0; Idx < SymbolsPerLine; Idx++) {
-					Symbol[Idx]->AddCorrection(Weight);
-					Symbol[Idx]->Decode();
-				}
-			}
-	}
-
-} ;
-
-class MFSK_HardDecoder
-{
-public:
-	size_t	BitsPerSymbol;
-	size_t	BitsPerCharacter;
-	size_t	Symbols;
-	size_t	SymbolsPerBlock;
-
-	float	Signal, NoiseEnergy;
-	uint8_t *OutputBlock;
-	bContestia				= false;
-//	bRTTYM					= false;
-
-	static const uint64_t ScramblingCodeOlivia	= 0xE257E6D0291574EC;
-	static const uint64_t ScramblingCodeContestia = 0xEDB88320L;
-
-private:
-	static const uint64_t ScramblingCode = ScramblingCodeOlivia;
-
-	uint8_t *InputBuffer;
-	size_t	InputPtr;
-	size_t	InputWrap;
-	int8_t	*FHT_Buffer;
-
-public:
-	MFSK_HardDecoder() {
-			Init();
-			Default();
-	}
-	~MFSK_HardDecoder() {
-			Free();
-	}
-
-	void Default(void) {
-		BitsPerSymbol = 5;
-		BitsPerCharacter = 7;
-	}
-
-	void Init(void) {
-		InputBuffer = 0;
-		FHT_Buffer = 0;
-		OutputBlock = 0;
-	}
-
-	void Free(void) {
-		free(InputBuffer); 
-		InputBuffer = 0;
-		free(FHT_Buffer);
-		FHT_Buffer = 0;
-		free(OutputBlock); 
-		OutputBlock = 0;
-	}
-
-	void Reset(void) {
-		size_t Idx;
-		for (Idx = 0; Idx < SymbolsPerBlock; Idx++)
-				InputBuffer[Idx] = 0;
-			InputPtr = 0;
-	}
-
-	int Preset(void) {
-			Symbols = 1<<BitsPerSymbol;
-			SymbolsPerBlock = Exp2(BitsPerCharacter-1);
-			if (ReallocArray(&InputBuffer,SymbolsPerBlock) < 0) goto Error;
-			if (ReallocArray(&FHT_Buffer,SymbolsPerBlock) < 0) goto Error;
-			if (ReallocArray(&OutputBlock,BitsPerSymbol) < 0) goto Error;
-
-			InputWrap = SymbolsPerBlock - 1;
-			Reset();
-
-			return 0;
-	Error:
-			Free();
-			return -1;
-	}
-
-	void Input(uint8_t Symbol) {
-		InputBuffer[InputPtr]=Symbol;
-		InputPtr += 1;
-		InputPtr &= InputWrap;
-	}
-
-	void DecodeCharacter(size_t FreqBit) {
-		size_t TimeBit;
-		size_t Ptr = InputPtr;
-		size_t Rotate = FreqBit;
-		size_t CodeWrap = (SymbolsPerBlock-1);
-		// Olivia (13 bit shift) or Contentia/RTTYM (5 bit shift)
-		size_t nShift	= bContestia ? 5 : 13;	
-		size_t CodeBit = FreqBit * nShift;  //13;
-		CodeBit &= CodeWrap;
-		for (TimeBit = 0; TimeBit < SymbolsPerBlock; TimeBit++) {
-			uint8_t Bit = InputBuffer[Ptr];
-			Bit >>= Rotate;
-			Bit &= 1;
-			uint64_t CodeMask = 1;
-			CodeMask <<= CodeBit;
-			if (ScramblingCode&CodeMask) Bit ^= 1;
-			FHT_Buffer[TimeBit]= Bit ? -1 : 1;
-			CodeBit += 1;
-			CodeBit &= CodeWrap;
-			Rotate += 1;
-			if (Rotate >= BitsPerSymbol) Rotate -= BitsPerSymbol;
-			Ptr += 1;
-			Ptr &= InputWrap;
-		}
-
-		FHT(FHT_Buffer,SymbolsPerBlock);
-		int32_t Peak = 0;
-		size_t PeakPos = 0;
-		int32_t SqrSum = 0; 
-		for (TimeBit = 0; TimeBit < SymbolsPerBlock; TimeBit++) {
-			int32_t Signal = FHT_Buffer[TimeBit];
-			SqrSum += Signal * Signal;
-			if (abs(Signal) > abs(Peak)) {
-				Peak = Signal;
-				PeakPos = TimeBit;
-			}
-		}
-
-		uint8_t Char = PeakPos;
-		if (Peak < 0) Char += SymbolsPerBlock;
-		SqrSum -= Peak * Peak;
-			OutputBlock[FreqBit] = Char;
-		NoiseEnergy += (float)SqrSum / (SymbolsPerBlock - 1);
-		Signal += abs(Peak);
-	}
-
-	void Process(void) {
-			size_t FreqBit;
-			Signal = 0;
-			NoiseEnergy = 0;
-			for (FreqBit=0; FreqBit<BitsPerSymbol; FreqBit++)
-				DecodeCharacter(FreqBit);
-			Signal /= BitsPerSymbol;
-			NoiseEnergy /= BitsPerSymbol;
-	}
-
-	size_t Output(uint8_t *Buffer) {
-			size_t FreqBit;
-			for (FreqBit = 0; FreqBit < BitsPerSymbol; FreqBit++)
-				Buffer[FreqBit]=OutputBlock[FreqBit];
-			return BitsPerSymbol;
-	}
-
-	size_t Output(uint64_t &PackedBuffer) {
-			size_t FreqBit;
-			PackedBuffer = 0;
-			for (FreqBit = BitsPerSymbol; FreqBit > 0; ) {
-				PackedBuffer <<= 8;
-				FreqBit--;
-				PackedBuffer |= OutputBlock[FreqBit];
-			}
-			return BitsPerSymbol;
-	}
-
-	size_t Output(uint64_t *PackedBuffer) {
-			return Output(*PackedBuffer);
-	}
-
-	void PrintOutputBlock(FILE *File=stdout)
-		{ size_t FreqBit;
-		fprintf(File,"'");
-		for (FreqBit=0; FreqBit<BitsPerSymbol; FreqBit++)
-		{ uint8_t Char=OutputBlock[FreqBit];
-			fprintf(File,"%c", (Char>=' ')&&(Char<127) ? Char:' '); }
-		fprintf(File,"', S/N = %5.1f/%4.1f",Signal,sqrt(NoiseEnergy));
-		if (NoiseEnergy>0) fprintf(File," = %5.1f",Signal/sqrt(NoiseEnergy));
-		fprintf(File,"\n"); }
-
-	void PrintInputBuffer(void) {
-			size_t TimeBit;
-			size_t Ptr = InputPtr;
-			for (TimeBit = 0; TimeBit < SymbolsPerBlock; TimeBit++) {
-				printf("%2d: ",(int)TimeBit);
-				PrintBinary(InputBuffer[Ptr], BitsPerSymbol);
-				printf("\n");
-				Ptr += 1;
-				Ptr &= InputWrap;
-			}
-	}
-	
-};
-
-*/
-// =====================================================================
-
-#endif // of __MFSK_H__
+#endif

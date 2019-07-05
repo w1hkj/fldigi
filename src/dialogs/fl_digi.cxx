@@ -8459,7 +8459,7 @@ char *get_rxtx_data()
 {
 	ENSURE_THREAD(FLMAIN_TID);
 	memset(rxtx_raw_chars, 0, RAW_BUFF_LEN+1);
-	strncpy(rxtx_raw_chars, rxtx_raw_buff, RAW_BUFF_LEN);
+	strcpy(rxtx_raw_chars, rxtx_raw_buff);
 	memset(rxtx_raw_buff, 0, RAW_BUFF_LEN+1);
 	rxtx_raw_len = 0;
 	return rxtx_raw_chars;
@@ -8484,7 +8484,7 @@ char *get_rx_data()
 {
 	ENSURE_THREAD(FLMAIN_TID);
 	memset(rx_raw_chars, 0, RAW_BUFF_LEN+1);
-	strncpy(rx_raw_chars, rx_raw_buff, RAW_BUFF_LEN);
+	strcpy(rx_raw_chars, rx_raw_buff);
 	memset(rx_raw_buff, 0, RAW_BUFF_LEN+1);
 	rx_raw_len = 0;
 	return rx_raw_chars;
@@ -8510,7 +8510,7 @@ char *get_tx_data()
 {
 	ENSURE_THREAD(FLMAIN_TID);
 	memset(tx_raw_chars, 0, RAW_BUFF_LEN+1);
-	strncpy(tx_raw_chars, tx_raw_buff, RAW_BUFF_LEN);
+	strcpy(tx_raw_chars, tx_raw_buff);
 	memset(tx_raw_buff, 0, RAW_BUFF_LEN+1);
 	tx_raw_len = 0;
 	return tx_raw_chars;
