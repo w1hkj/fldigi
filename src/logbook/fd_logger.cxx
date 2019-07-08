@@ -50,6 +50,7 @@
 #include "logsupport.h"
 #include "fd_logger.h"
 #include "fd_view.h"
+#include "flmisc.h"
 
 #include "confdialog.h"
 
@@ -495,7 +496,7 @@ void FD_logoff()
 void FD_band_check() {
 	if (fd_band != FD_opband()) {
 		FD_logoff();
-		FD_start();
+//		FD_start();
 		FD_logon();
 	}
 }
@@ -506,7 +507,7 @@ void FD_band_check() {
 void FD_mode_check() {
 	if (fd_mode != FD_opmode()) {
 		FD_logoff();
-		FD_start();
+//		FD_start();
 		FD_logon();
 	}
 }
@@ -623,18 +624,40 @@ void FD_disconnect()
 //======================================================================
 // Thread loop
 //======================================================================
+
+static notify_dialog *fd_alert_window = 0;
+
+void ui_feedback()
+{
+	btn_fd_connect->value(0);
+
+	if (!fd_alert_window) fd_alert_window = new notify_dialog;
+
+	fd_alert_window->notify(_("Check FD server, connect failed"), 15.0);
+	show_notifier(fd_alert_window);
+}
+
 void *FD_loop(void *args)
 {
 	SET_THREAD_ID(FD_TID);
 
+	int try_count = 10;
 	while(1) {
 		for (int i = 0; i < fd_looptime/50; i++) {
 			MilliSleep(50);
 			if (FD_exit) break;
 		}
 
-		if (!FD_connected && progdefaults.connect_to_fdserver)
-			FD_start();
+		if (!FD_connected && progdefaults.connect_to_fdserver) {
+			if (try_count--)
+				FD_start();
+			else {
+				progdefaults.connect_to_fdserver = false;
+				REQ(ui_feedback);
+				try_count = 10;
+			}
+		}
+
 		if ( FD_connected &&
 			 ((FD_ip_addr != progdefaults.fd_tcpip_addr) ||
 			  (FD_ip_port != progdefaults.fd_tcpip_port)) )
