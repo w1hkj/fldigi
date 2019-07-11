@@ -1349,6 +1349,9 @@
         ELEM_(bool, disable_CW_PTT, "disable_CW_PTT",                                   \
               "Disable CAT PTT signal during CW ops with expernal h/w",                 \
               0)                                                                        \
+        ELEM_(int, nanoIO_speed_pot, "nanoIO_speed_pot",                                \
+              "Enable speed pot in nanoIO circuit / script",                            \
+              1)                                                                        \
         /* TTY h/w interface */                                                         \
         ELEM_(int, xcvr_FSK_sideband, "XCVRFSKSIDEBAND",                                \
               "0 = LSB | 1 = USB",                                                      \

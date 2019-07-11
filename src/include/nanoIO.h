@@ -82,6 +82,11 @@ extern void nano_help();
 extern void nano_CW_save();
 extern void nanoCW_tune(int val);
 extern void set_nanoIO_incr();
+extern void nanoIO_set_cw_ptt();
+extern void nanoIO_use_pot();
+extern void set_nanoIO_min_max();
+extern void nanoIO_read_pot();
+extern void set_paddle_WPM(int);
 
 extern void nano_serial_flush();
 

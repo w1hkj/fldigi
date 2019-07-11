@@ -3674,6 +3674,26 @@ static void cb_btn_nanoCW_connect(Fl_Light_Button* o, void*) {
 };
 }
 
+Fl_Button *btn_cwfsk_save=(Fl_Button *)0;
+
+static void cb_btn_cwfsk_save(Fl_Button*, void*) {
+  nano_CW_save();
+}
+
+Fl_Button *btn_cwfsk_query=(Fl_Button *)0;
+
+static void cb_btn_cwfsk_query(Fl_Button*, void*) {
+  nano_CW_query();
+}
+
+Fl_Counter *cntr_nanoCW_paddle_WPM=(Fl_Counter *)0;
+
+static void cb_cntr_nanoCW_paddle_WPM(Fl_Counter* o, void*) {
+  progdefaults.CW_keyspeed = (int)o->value();
+set_nano_keyerWPM(progdefaults.CW_keyspeed);
+progdefaults.changed = true;
+}
+
 FTextView *txt_nano_CW_io=(FTextView *)0;
 
 Fl_Counter *cntr_nanoCW_WPM=(Fl_Counter *)0;
@@ -3694,24 +3714,12 @@ cntCWdash2dot->value(progdefaults.CWdash2dot);
 progdefaults.changed = true;
 }
 
-Fl_Counter *cntr_nanoCW_paddle_WPM=(Fl_Counter *)0;
+Fl_ListBox *listbox_nano_keyer=(Fl_ListBox *)0;
 
-static void cb_cntr_nanoCW_paddle_WPM(Fl_Counter* o, void*) {
-  progdefaults.CW_keyspeed = (int)o->value();
-set_nano_keyerWPM(progdefaults.CW_keyspeed);
+static void cb_listbox_nano_keyer(Fl_ListBox* o, void*) {
+  progdefaults.nanoIO_CW_keyer = o->index();
+set_nanoIO_keyer(o->index());
 progdefaults.changed = true;
-}
-
-Fl_Button *btn_cwfsk_save=(Fl_Button *)0;
-
-static void cb_btn_cwfsk_save(Fl_Button*, void*) {
-  nano_CW_save();
-}
-
-Fl_Button *btn_cwfsk_query=(Fl_Button *)0;
-
-static void cb_btn_cwfsk_query(Fl_Button*, void*) {
-  nano_CW_query();
 }
 
 Fl_ListBox *listbox_incr=(Fl_ListBox *)0;
@@ -3722,19 +3730,36 @@ set_nanoIO_incr();
 progdefaults.changed = true;
 }
 
-Fl_ListBox *listbox_nano_keyer=(Fl_ListBox *)0;
-
-static void cb_listbox_nano_keyer(Fl_ListBox* o, void*) {
-  progdefaults.nanoIO_CW_keyer = o->index();
-set_nanoIO_keyer(o->index());
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *btn_disable_CW_PTT=(Fl_Check_Button *)0;
 
 static void cb_btn_disable_CW_PTT(Fl_Check_Button* o, void*) {
   progdefaults.disable_CW_PTT=o->value();
 progdefaults.changed=true;
+nanoIO_set_cw_ptt();
+}
+
+Fl_Check_Button *btn_nanoIO_pot=(Fl_Check_Button *)0;
+
+static void cb_btn_nanoIO_pot(Fl_Check_Button* o, void*) {
+  progdefaults.nanoIO_speed_pot=o->value();
+progdefaults.changed=true;
+nanoIO_use_pot();
+}
+
+Fl_Counter *cntr_nanoIO_min_wpm=(Fl_Counter *)0;
+
+static void cb_cntr_nanoIO_min_wpm(Fl_Counter* o, void*) {
+  if ((o->value() + cntr_nanoIO_rng_wpm->value()) > 100)
+  cntr_nanoIO_rng_wpm->value(100 - o->value());
+set_nanoIO_min_max();
+}
+
+Fl_Counter *cntr_nanoIO_rng_wpm=(Fl_Counter *)0;
+
+static void cb_cntr_nanoIO_rng_wpm(Fl_Counter* o, void*) {
+  if ((cntr_nanoIO_min_wpm->value() + o->value()) > 100)
+o->value(100 - cntr_nanoIO_min_wpm->value());
+set_nanoIO_min_max();
 }
 
 Fl_Group *tabDomEX=(Fl_Group *)0;
@@ -8199,7 +8224,6 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 590, 285, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9951,6 +9975,7 @@ i on a\ntouch screen device such as a tablet."));
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Display"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(50, 63, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10336,7 +10361,6 @@ i on a\ntouch screen device such as a tablet."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Spectrum"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(10, 65, 580, 150, _("Spectrum Scope / Waterfall interaction"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
@@ -10377,6 +10401,7 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 609, 365, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 609, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -10385,7 +10410,6 @@ i on a\ntouch screen device such as a tablet."));
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tabsCW_general->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11016,6 +11040,7 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Group* tabsCW_prosigns
               { tabsCW_winkeyer = new Fl_Group(0, 75, 600, 315, _("WinKeyer"));
                 tabsCW_winkeyer->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tabsCW_winkeyer->hide();
                 { Fl_ComboBox* o = select_WK_CommPort = new Fl_ComboBox(69, 85, 405, 23, _("Ser. Port"));
                 select_WK_CommPort->tooltip(_("Xcvr serial port"));
                 select_WK_CommPort->box(FL_DOWN_BOX);
@@ -11368,7 +11393,7 @@ ded Morse characters."));
               { tab_nanoCW = new Fl_Group(0, 75, 600, 315, _("nanoCW"));
                 tab_nanoCW->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 tab_nanoCW->hide();
-                { Fl_ComboBox* o = select_nanoCW_CommPort = new Fl_ComboBox(86, 85, 420, 23, _("Ser. Port"));
+                { Fl_ComboBox* o = select_nanoCW_CommPort = new Fl_ComboBox(70, 85, 435, 22, _("Ser. Port"));
                 select_nanoCW_CommPort->tooltip(_("nanoIO serial port"));
                 select_nanoCW_CommPort->box(FL_DOWN_BOX);
                 select_nanoCW_CommPort->color((Fl_Color)55);
@@ -11383,11 +11408,30 @@ ded Morse characters."));
                 o->value(progdefaults.nanoIO_serial_port_name.c_str());
                 select_nanoCW_CommPort->end();
                 } // Fl_ComboBox* select_nanoCW_CommPort
-                { btn_nanoCW_connect = new Fl_Light_Button(511, 85, 80, 23, _("Connect"));
+                { btn_nanoCW_connect = new Fl_Light_Button(511, 85, 80, 22, _("Connect"));
                 btn_nanoCW_connect->tooltip(_("Connect / Disconnect from nanoIO"));
                 btn_nanoCW_connect->callback((Fl_Callback*)cb_btn_nanoCW_connect);
                 } // Fl_Light_Button* btn_nanoCW_connect
-                { FTextView* o = txt_nano_CW_io = new FTextView(4, 180, 590, 205, _("USB serial I/O"));
+                { btn_cwfsk_save = new Fl_Button(511, 138, 80, 22, _("Save"));
+                btn_cwfsk_save->tooltip(_("Write state of nanoIO to Arduino EEPROM"));
+                btn_cwfsk_save->callback((Fl_Callback*)cb_btn_cwfsk_save);
+                } // Fl_Button* btn_cwfsk_save
+                { btn_cwfsk_query = new Fl_Button(511, 165, 80, 22, _("Status"));
+                btn_cwfsk_query->tooltip(_("Query state of nanoIO"));
+                btn_cwfsk_query->callback((Fl_Callback*)cb_btn_cwfsk_query);
+                } // Fl_Button* btn_cwfsk_query
+                { Fl_Counter* o = cntr_nanoCW_paddle_WPM = new Fl_Counter(70, 113, 110, 22, _("Paddle"));
+                cntr_nanoCW_paddle_WPM->tooltip(_("CW wpm using paddle keyer"));
+                cntr_nanoCW_paddle_WPM->minimum(5);
+                cntr_nanoCW_paddle_WPM->maximum(100);
+                cntr_nanoCW_paddle_WPM->step(1);
+                cntr_nanoCW_paddle_WPM->value(20);
+                cntr_nanoCW_paddle_WPM->callback((Fl_Callback*)cb_cntr_nanoCW_paddle_WPM);
+                cntr_nanoCW_paddle_WPM->align(Fl_Align(FL_ALIGN_LEFT));
+                o->value(progdefaults.CW_keyspeed);
+                o->lstep(5);
+                } // Fl_Counter* cntr_nanoCW_paddle_WPM
+                { FTextView* o = txt_nano_CW_io = new FTextView(4, 210, 590, 175, _("USB serial I/O"));
                 txt_nano_CW_io->box(FL_DOWN_FRAME);
                 txt_nano_CW_io->color(FL_BACKGROUND2_COLOR);
                 txt_nano_CW_io->selection_color(FL_SELECTION_COLOR);
@@ -11400,7 +11444,7 @@ ded Morse characters."));
                 o->setFont(progdefaults.RxFontnbr);
                 o->setFontSize(12);
                 } // FTextView* txt_nano_CW_io
-                { Fl_Counter* o = cntr_nanoCW_WPM = new Fl_Counter(96, 113, 120, 23, _("Comp\' WPM"));
+                { Fl_Counter* o = cntr_nanoCW_WPM = new Fl_Counter(70, 139, 110, 22, _("Comp\'"));
                 cntr_nanoCW_WPM->tooltip(_("CW wpm keyboard strings"));
                 cntr_nanoCW_WPM->minimum(5);
                 cntr_nanoCW_WPM->maximum(100);
@@ -11411,7 +11455,7 @@ ded Morse characters."));
                 o->value(progdefaults.CWspeed);
                 o->lstep(5);
                 } // Fl_Counter* cntr_nanoCW_WPM
-                { Fl_Counter2* o = cnt_nanoCWdash2dot = new Fl_Counter2(291, 113, 75, 23, _("Dash/Dot"));
+                { Fl_Counter2* o = cnt_nanoCWdash2dot = new Fl_Counter2(87, 165, 75, 22, _("Dash/Dot"));
                 cnt_nanoCWdash2dot->tooltip(_("Dash to dot ratio"));
                 cnt_nanoCWdash2dot->type(1);
                 cnt_nanoCWdash2dot->box(FL_UP_BOX);
@@ -11430,41 +11474,7 @@ ded Morse characters."));
                 o->value(progdefaults.CWdash2dot);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cnt_nanoCWdash2dot
-                { Fl_Counter* o = cntr_nanoCW_paddle_WPM = new Fl_Counter(96, 141, 120, 23, _("Paddle WPM"));
-                cntr_nanoCW_paddle_WPM->tooltip(_("CW wpm using paddle keyer"));
-                cntr_nanoCW_paddle_WPM->minimum(5);
-                cntr_nanoCW_paddle_WPM->maximum(100);
-                cntr_nanoCW_paddle_WPM->step(1);
-                cntr_nanoCW_paddle_WPM->value(20);
-                cntr_nanoCW_paddle_WPM->callback((Fl_Callback*)cb_cntr_nanoCW_paddle_WPM);
-                cntr_nanoCW_paddle_WPM->align(Fl_Align(FL_ALIGN_LEFT));
-                o->value(progdefaults.CW_keyspeed);
-                o->lstep(5);
-                } // Fl_Counter* cntr_nanoCW_paddle_WPM
-                { btn_cwfsk_save = new Fl_Button(511, 112, 80, 23, _("Save"));
-                btn_cwfsk_save->tooltip(_("Write state of nanoIO to Arduino EEPROM"));
-                btn_cwfsk_save->callback((Fl_Callback*)cb_btn_cwfsk_save);
-                } // Fl_Button* btn_cwfsk_save
-                { btn_cwfsk_query = new Fl_Button(511, 140, 80, 23, _("Status"));
-                btn_cwfsk_query->tooltip(_("Query state of nanoIO"));
-                btn_cwfsk_query->callback((Fl_Callback*)cb_btn_cwfsk_query);
-                } // Fl_Button* btn_cwfsk_query
-                { Fl_ListBox* o = listbox_incr = new Fl_ListBox(446, 113, 60, 23, _("Incr"));
-                listbox_incr->box(FL_DOWN_BOX);
-                listbox_incr->color(FL_BACKGROUND2_COLOR);
-                listbox_incr->selection_color(FL_BACKGROUND_COLOR);
-                listbox_incr->labeltype(FL_NORMAL_LABEL);
-                listbox_incr->labelfont(0);
-                listbox_incr->labelsize(14);
-                listbox_incr->labelcolor(FL_FOREGROUND_COLOR);
-                listbox_incr->callback((Fl_Callback*)cb_listbox_incr);
-                listbox_incr->align(Fl_Align(FL_ALIGN_LEFT));
-                listbox_incr->when(FL_WHEN_RELEASE);
-                o->add("1|2|3|4|5");
-                o->index(progdefaults.nanoIO_CW_incr - '1');
-                listbox_incr->end();
-                } // Fl_ListBox* listbox_incr
-                { Fl_ListBox* o = listbox_nano_keyer = new Fl_ListBox(266, 141, 100, 23, _("Keyer"));
+                { Fl_ListBox* o = listbox_nano_keyer = new Fl_ListBox(395, 113, 110, 22, _("Keyer"));
                 listbox_nano_keyer->box(FL_DOWN_BOX);
                 listbox_nano_keyer->color(FL_BACKGROUND2_COLOR);
                 listbox_nano_keyer->selection_color(FL_BACKGROUND_COLOR);
@@ -11479,12 +11489,61 @@ ded Morse characters."));
                 o->index(progdefaults.nanoIO_CW_keyer);
                 listbox_nano_keyer->end();
                 } // Fl_ListBox* listbox_nano_keyer
-                { Fl_Check_Button* o = btn_disable_CW_PTT = new Fl_Check_Button(387, 145, 70, 15, _("disable PTT"));
-                btn_disable_CW_PTT->tooltip(_("Do not send CAT PTT signal"));
+                { Fl_ListBox* o = listbox_incr = new Fl_ListBox(445, 138, 60, 22, _("Incr\'"));
+                listbox_incr->box(FL_DOWN_BOX);
+                listbox_incr->color(FL_BACKGROUND2_COLOR);
+                listbox_incr->selection_color(FL_BACKGROUND_COLOR);
+                listbox_incr->labeltype(FL_NORMAL_LABEL);
+                listbox_incr->labelfont(0);
+                listbox_incr->labelsize(14);
+                listbox_incr->labelcolor(FL_FOREGROUND_COLOR);
+                listbox_incr->callback((Fl_Callback*)cb_listbox_incr);
+                listbox_incr->align(Fl_Align(FL_ALIGN_LEFT));
+                listbox_incr->when(FL_WHEN_RELEASE);
+                o->add("1|2|3|4|5");
+                o->index(progdefaults.nanoIO_CW_incr - '1');
+                listbox_incr->end();
+                } // Fl_ListBox* listbox_incr
+                { Fl_Check_Button* o = btn_disable_CW_PTT = new Fl_Check_Button(435, 165, 70, 22, _("PTT off"));
+                btn_disable_CW_PTT->tooltip(_("Disable PTT"));
                 btn_disable_CW_PTT->down_box(FL_DOWN_BOX);
                 btn_disable_CW_PTT->callback((Fl_Callback*)cb_btn_disable_CW_PTT);
                 o->value(progdefaults.disable_CW_PTT);
                 } // Fl_Check_Button* btn_disable_CW_PTT
+                { Fl_Group* o = new Fl_Group(185, 110, 164, 85);
+                o->box(FL_ENGRAVED_FRAME);
+                { Fl_Check_Button* o = btn_nanoIO_pot = new Fl_Check_Button(312, 113, 21, 22, _("Use WPM pot\'"));
+                btn_nanoIO_pot->tooltip(_("WPM pot update to nanoIO required"));
+                btn_nanoIO_pot->down_box(FL_DOWN_BOX);
+                btn_nanoIO_pot->callback((Fl_Callback*)cb_btn_nanoIO_pot);
+                btn_nanoIO_pot->align(Fl_Align(FL_ALIGN_LEFT));
+                btn_nanoIO_pot->deactivate();
+                o->value(progdefaults.nanoIO_speed_pot);
+                } // Fl_Check_Button* btn_nanoIO_pot
+                { cntr_nanoIO_min_wpm = new Fl_Counter(257, 139, 75, 22, _("Min WPM"));
+                cntr_nanoIO_min_wpm->tooltip(_("Minimum WPM setting\ndefault = 10"));
+                cntr_nanoIO_min_wpm->type(1);
+                cntr_nanoIO_min_wpm->minimum(10);
+                cntr_nanoIO_min_wpm->maximum(30);
+                cntr_nanoIO_min_wpm->step(1);
+                cntr_nanoIO_min_wpm->value(10);
+                cntr_nanoIO_min_wpm->callback((Fl_Callback*)cb_cntr_nanoIO_min_wpm);
+                cntr_nanoIO_min_wpm->align(Fl_Align(FL_ALIGN_LEFT));
+                cntr_nanoIO_min_wpm->deactivate();
+                } // Fl_Counter* cntr_nanoIO_min_wpm
+                { cntr_nanoIO_rng_wpm = new Fl_Counter(257, 165, 75, 22, _("Rng WPM"));
+                cntr_nanoIO_rng_wpm->tooltip(_("Range WPM setting\ndefault = 20"));
+                cntr_nanoIO_rng_wpm->type(1);
+                cntr_nanoIO_rng_wpm->minimum(10);
+                cntr_nanoIO_rng_wpm->maximum(40);
+                cntr_nanoIO_rng_wpm->step(1);
+                cntr_nanoIO_rng_wpm->value(20);
+                cntr_nanoIO_rng_wpm->callback((Fl_Callback*)cb_cntr_nanoIO_rng_wpm);
+                cntr_nanoIO_rng_wpm->align(Fl_Align(FL_ALIGN_LEFT));
+                cntr_nanoIO_rng_wpm->deactivate();
+                } // Fl_Counter* cntr_nanoIO_rng_wpm
+                o->end();
+                } // Fl_Group* o
                 tab_nanoCW->end();
               } // Fl_Group* tab_nanoCW
               tabsCW->end();

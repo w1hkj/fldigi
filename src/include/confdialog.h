@@ -419,16 +419,19 @@ extern Fl_Group *tab_nanoCW;
 #include "nanoIO.h"
 extern Fl_ComboBox *select_nanoCW_CommPort;
 extern Fl_Light_Button *btn_nanoCW_connect;
+extern Fl_Button *btn_cwfsk_save;
+extern Fl_Button *btn_cwfsk_query;
+extern Fl_Counter *cntr_nanoCW_paddle_WPM;
 #include "FTextRXTX.h"
 extern FTextView *txt_nano_CW_io;
 extern Fl_Counter *cntr_nanoCW_WPM;
 extern Fl_Counter2 *cnt_nanoCWdash2dot;
-extern Fl_Counter *cntr_nanoCW_paddle_WPM;
-extern Fl_Button *btn_cwfsk_save;
-extern Fl_Button *btn_cwfsk_query;
-extern Fl_ListBox *listbox_incr;
 extern Fl_ListBox *listbox_nano_keyer;
+extern Fl_ListBox *listbox_incr;
 extern Fl_Check_Button *btn_disable_CW_PTT;
+extern Fl_Check_Button *btn_nanoIO_pot;
+extern Fl_Counter *cntr_nanoIO_min_wpm;
+extern Fl_Counter *cntr_nanoIO_rng_wpm;
 extern Fl_Group *tabDomEX;
 extern Fl_Input2 *txtSecondary;
 extern Fl_Check_Button *valDominoEX_FILTER;
