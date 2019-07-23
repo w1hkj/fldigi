@@ -1,8 +1,16 @@
 
 
-=Version 4.1.05=
+=Version 4.1.06=
 
-2019-06-23  David Freese  <w1hkj@bellsouth.net>
+2019-07-10  David Freese  <w1hkj@bellsouth.net>
+
+	e7a984ae3: nanoIO
+	2e98f532e: FD server disconnect
+	f37b133c5: Calendar
+	1d3a06f83: Warnings etal
+
+
+=Version 4.1.05=
 
 	a593ddbb8: LoTW fllog
 	1a42952e4: Modem macro
