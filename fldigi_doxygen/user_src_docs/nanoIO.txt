@@ -53,9 +53,11 @@ MORTTY is an inexpensive minimalist solution that depends upon the configuration
 and control features incorporated in the computer program. It has only two inputs, 
 a USB serial port interface to the computer, and a CW paddle.<br>
 
-Version 1 of MORTTY has two outputs, a PTT signal line, and a shared 
+Version 3 of MORTTY has two outputs, a PTT signal line, and a shared 
 CW/FSK signalling line.  The CW/FSK signal needs to be manually switched
-between the transceivers CW and FSK input ports.
+between the transceivers CW and FSK input ports.  Version 3 also includes
+a speed potentiometer.  The fldigi interface can set and read the speed range of
+the potentiometer.
 </li><br>
 
 <li>homebrew nanoIO circuit: \ref nanoIO_diagram "Circuit Diagram"<br>
