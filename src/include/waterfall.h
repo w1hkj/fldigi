@@ -162,7 +162,6 @@ public:
 	void setPrefilter(int v);
 	void setcolors();
 	double dFreq() {return dfreq;}
-	void redrawCursor();
 	void defaultColors();
 
 private:

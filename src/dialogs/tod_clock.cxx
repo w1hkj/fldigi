@@ -183,19 +183,6 @@ void update_tx_timer()
 	service_deadman();
 }
 
-void init_ztime()
-{
-	struct tm tm;
-	time_t t_temp;
-
-	t_temp=(time_t)now_val.tv_sec;
-	gmtime_r(&t_temp, &tm);
-	if (!strftime(ztbuf, sizeof(ztbuf), "%Y%m%d %H%M%S", &tm))
-		memset(ztbuf, 0, sizeof(ztbuf));
-	else
-		ztbuf[8] = '\0';
-}
-
 //void ztimer(void *)
 static void ztimer()
 {
@@ -223,19 +210,6 @@ static void ztimer()
 }
 
 //======================================================================
-// Use TOD loop for periodically redrawing the waterfall
-//======================================================================
-extern pthread_mutex_t draw_mutex;
-//void wf_update(void *)
-void wf_update()
-{
-	{
-		guard_lock dlock(&draw_mutex);
-		wf->redraw();
-	}
-}
-
-//======================================================================
 // TOD Thread loop
 //======================================================================
 static bool first_call = true;
@@ -243,39 +217,20 @@ static bool first_call = true;
 void *TOD_loop(void *args)
 {
 	SET_THREAD_ID(TOD_TID);
-
-#define LOOP1 8  // update waterfall every 80 msec
-#define LOOP2 5  // update clock every 50 msec
-#define LOOP3 50 // update nanoIO pot reading every 500 msec
-	int loop_nbr = 1;
+#define LOOP  250
+	int cnt = 0;
 	while(1) {
 
 		if (TOD_exit) break;
 
-		if (first_call) {
+		if (++cnt == 4) {
 			guard_lock tmlock(&time_mutex);
 			gettimeofday(&now_val, NULL);
-			start_val = now_val;
-			init_ztime();
-			first_call = false;
-		} else {
-			if (loop_nbr % LOOP2 == 0) {
-				guard_lock tmlock(&time_mutex);
-				gettimeofday(&now_val, NULL);
-				REQ(ztimer);
-//				Fl::awake(ztimer);
-			}
+			REQ(ztimer);
+			cnt = 0;
 		}
-		if (loop_nbr % LOOP1 == 0)
-			REQ(wf_update);
-//			Fl::awake(wf_update);
-		if (loop_nbr % LOOP3 == 0)
-			REQ(nanoIO_read_pot);
-
-		if (loop_nbr == (LOOP1 * LOOP2 * LOOP3)) loop_nbr = 0;
-		loop_nbr++;
-
-		MilliSleep(10);
+		REQ(nanoIO_read_pot);
+		MilliSleep(LOOP);
 	}
 
 // exit the TOD thread
