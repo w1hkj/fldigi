@@ -58,8 +58,6 @@
 
 LOG_FILE_SOURCE(debug::LOG_FD);
 
-#define TX_TIMEOUT 60 //*5		// 5 minute timeout
-
 using namespace std;
 
 static pthread_t TOD_thread;

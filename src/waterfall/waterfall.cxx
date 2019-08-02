@@ -525,7 +525,7 @@ void WFdisp::processFFT() {
 
 	wf_fft_type scale = ( 1.0 * SC_SMPLRATE / srate ) * ( FFT_LEN / 8000.0);
 
-	if ((dispcnt -= dispdec) <= 0) {
+	if ((wfspeed != PAUSE) && ((dispcnt -= dispdec) <= 0)) {
 		static const int log2disp100 = log2disp(-100);
 		double vscale = 2.0 / FFT_LEN;
 
@@ -571,10 +571,6 @@ void WFdisp::processFFT() {
 		if (wfspeed == NORMAL) dispcnt *= NORMAL;
 		if (wfspeed == SLOW) dispcnt *= progdefaults.drop_speed;
 	}
-	if (wfspeed == PAUSE)
-		dispdec = 0;
-	else
-		dispdec = 1.0 * WFBLOCKSIZE / srate;
 	redraw();
 }
 
@@ -588,8 +584,6 @@ void WFdisp::process_analog (wf_fft_type *sig, int len) {
 // clear the signal display area
 	sigy = 0;
 	sigpixel = IMAGE_WIDTH*h2;
-//FL_LOCK();
-FL_LOCK_D();
 	memset (sig_img, 0, sig_image_area);
 	memset (&sig_img[h1*IMAGE_WIDTH], 160, IMAGE_WIDTH);
 	memset (&sig_img[h2*IMAGE_WIDTH], 255, IMAGE_WIDTH);
@@ -605,14 +599,7 @@ FL_LOCK_D();
 		sig_img[sigpixel++] = graylevel;
 	}
 	redraw();
-FL_UNLOCK_D();
 }
-
-//void WFdisp::redrawCursor()
-//{
-//	redraw();
-//	Fl::flush();
-//}
 
 //----------------------------------------------------------------------
 // queue audio_blocks used to separate audio stream process timing
@@ -776,7 +763,6 @@ void WFdisp::carrier(int cf) {
 	if (cf >= bandwidth / 2 && cf < (IMAGE_WIDTH - bandwidth / 2)) {
 		carrierfreq = cf;
 		makeMarker();
-//		redrawCursor();
 	}
 }
 
@@ -1376,10 +1362,8 @@ void rate_cb(Fl_Widget *w, void *v) {
 void xmtrcv_cb(Fl_Widget *w, void *vi)
 {
 	if (!active_modem) return;
-	FL_LOCK_D();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
-	FL_UNLOCK_D();
 	if (!(active_modem->get_cap() & modem::CAP_TX)) {
 		b->value(0);
 		restoreFocus();		return;
@@ -1430,23 +1414,19 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 void xmtlock_cb(Fl_Widget *w, void *vi)
 {
 	if (!active_modem) return;
-	FL_LOCK_D();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
-	FL_UNLOCK_D();
 	active_modem->set_freqlock(v ? true : false );
 	restoreFocus();
 }
 
 void waterfall::set_XmtRcvBtn(bool val)
 {
-	FL_LOCK_D();
 	xmtrcv->value(val);
 	if (!val && btnTune->value()) {
 		btnTune->value(0);
 		btnTune->labelcolor(FL_FOREGROUND_COLOR);
 	}
-	FL_UNLOCK_D();
 }
 
 void set_wf_mode(void)
@@ -1482,19 +1462,15 @@ void mode_cb(Fl_Widget* w, void*)
 }
 
 void reflevel_cb(Fl_Widget *w, void *v) {
-	FL_LOCK_D();
 	waterfall *wf = (waterfall *)w->parent();
 	double val = wf->wfRefLevel->value();
-	FL_UNLOCK_D();
 	progdefaults.wfRefLevel = val;
 	restoreFocus();
 }
 
 void ampspan_cb(Fl_Widget *w, void *v) {
-	FL_LOCK_D();
 	waterfall *wf = (waterfall *)w->parent();
 	double val = wf->wfAmpSpan->value();
-	FL_UNLOCK_D();
 	wf->wfdisp->Ampspan(val);
 	progdefaults.wfAmpSpan = val;
 	restoreFocus();
@@ -1503,11 +1479,9 @@ void ampspan_cb(Fl_Widget *w, void *v) {
 void btnRev_cb(Fl_Widget *w, void *v)
 {
 	if (!active_modem) return;
-	FL_LOCK_D();
 	waterfall *wf = (waterfall *)w->parent();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	wf->Reverse(b->value());
-	FL_UNLOCK_D();
 	active_modem->set_reverse(wf->Reverse());
 	progdefaults.rtty_reverse = b->value();
 	progdefaults.changed = true;
@@ -1619,17 +1593,13 @@ void waterfall::opmode() {
 		progdefaults.HighFreqCutoff - val / 2));
 
 	wfdisp->Bandwidth( val );
-	FL_LOCK_D();
 	wfcarrier->range(progdefaults.LowFreqCutoff + val/2, progdefaults.HighFreqCutoff - val/2);
-	FL_UNLOCK_D();
 }
 
 void waterfall::carrier(int f) {
 	wfdisp->carrier(f);
-	FL_LOCK_D();
 	wfcarrier->value(f);
 	wfcarrier->damage(FL_DAMAGE_ALL);
-	FL_UNLOCK_D();
 }
 
 int waterfall::Speed() {
@@ -1666,13 +1636,11 @@ int waterfall::Mag() {
 }
 
 void waterfall::Mag(int m) {
-	FL_LOCK_D();
 	wfdisp->Mag(m);
 	if (m == MAG_1) x1->label("x1");
 	if (m == MAG_2) x1->label("x2");
 	if (m == MAG_4) x1->label("x4");
 	x1->redraw_label();
-	FL_UNLOCK_D();
 }
 
 int waterfall::Offset() {
@@ -1680,9 +1648,7 @@ int waterfall::Offset() {
 }
 
 void waterfall::Offset(int v) {
-	FL_LOCK_D();
 	wfdisp->Offset(v);
-	FL_UNLOCK_D();
 }
 
 int waterfall::Carrier()
@@ -1704,16 +1670,12 @@ long long waterfall::rfcarrier() {
 }
 
 void waterfall::setRefLevel() {
-	FL_LOCK_D();
 	wfRefLevel->value(progdefaults.wfRefLevel);
-	FL_UNLOCK_D();
 }
 
 void waterfall::setAmpSpan() {
-	FL_LOCK_D();
 	wfAmpSpan->value(progdefaults.wfAmpSpan);
 	wfdisp->Ampspan(progdefaults.wfAmpSpan);
-	FL_UNLOCK_D();
 }
 
 void waterfall::USB(bool b) {
@@ -2074,7 +2036,6 @@ int WFdisp::handle(int event)
 		wantcursor = true;
 		cursorpos = xpos;
 		makeMarker();
-//		redrawCursor();
 		break;
 	case FL_DRAG: case FL_PUSH:
 		stopMacroTimer();
@@ -2136,18 +2097,13 @@ int WFdisp::handle(int event)
 				if (!(Fl::event_state() & FL_SHIFT))
 					active_modem->set_sigsearch(SIGSEARCH);
 			}
-//			redrawCursor();
 			restoreFocus();
 			break;
 		case FL_MIDDLE_MOUSE:
 			if (event == FL_DRAG)
 				break;
-//			if (Fl::event_state() & FL_CTRL)
-//				viewer_paste_freq(cursorFreq(xpos));
-//			else {
-				btnAFC->value(!btnAFC->value());
-				btnAFC->do_callback();
-//			}
+			btnAFC->value(!btnAFC->value());
+			btnAFC->do_callback();
 		}
 		break;
 	case FL_RELEASE:
@@ -2155,7 +2111,6 @@ int WFdisp::handle(int event)
 		case FL_RIGHT_MOUSE:
 			tmp_carrier = false;
 			if (active_modem) active_modem->set_freq(oldcarrier);
-//			redrawCursor();
 			restoreFocus();
 			// fall through
 		case FL_LEFT_MOUSE:
@@ -2221,7 +2176,6 @@ int WFdisp::handle(int event)
 					progdefaults.HighFreqCutoff - active_modem->get_bandwidth() / 2);
 				active_modem->set_freq(newcarrier);
 			}
-//			redrawCursor();
 			break;
 		case FL_Tab:
 			restoreFocus();
@@ -2250,7 +2204,6 @@ int WFdisp::handle(int event)
 			window()->cursor(cursor = FL_CURSOR_DEFAULT);
 		wantcursor = false;
 		makeMarker();
-		// restoreFocus();
 		break;
 
 	}

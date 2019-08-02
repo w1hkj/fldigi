@@ -50,7 +50,6 @@
 
 #include "fl_digi.h"
 #include "trx.h"
-#include "fl_lock.h"
 #include "wefax_map.h"
 #include "debug.h"
 #include "timeops.h"
@@ -81,10 +80,8 @@ wefax_map::~wefax_map()
 void wefax_map::video(unsigned char const *data, int len )
 {
 	if (len > bufsize) return;
-	FL_LOCK_D();
 	memcpy( vidbuf, data, len );
 	redraw();
-	FL_UNLOCK_D();
 }
 
 unsigned char wefax_map::pixel(int pos)
@@ -95,10 +92,8 @@ unsigned char wefax_map::pixel(int pos)
 
 void wefax_map::clear()
 {
-	FL_LOCK_D();
 	memset(vidbuf, background, bufsize);
 	redraw();
-	FL_UNLOCK_D();
 }
 
 
@@ -117,7 +112,6 @@ void wefax_map::resize_zoom(int x, int y, int w, int h)
 
 void wefax_map::resize(int x, int y, int w, int h)
 {
-	FL_LOCK_D();
 	width = w;
 	height = h;
 	delete [] vidbuf;
@@ -125,8 +119,6 @@ void wefax_map::resize(int x, int y, int w, int h)
 	vidbuf = new unsigned char[bufsize];
 	memset( vidbuf, background, bufsize );
 	resize_zoom(x,y,w,h);
-
-	FL_UNLOCK_D();
 }
 
 /// No data destruction. Used when the received image grows more than expected.

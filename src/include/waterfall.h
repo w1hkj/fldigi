@@ -120,7 +120,10 @@ public:
     double AudioPeak() { return peakaudio; }
 
 	WFspeed Speed() { return wfspeed;}
-	void Speed(WFspeed rate) { wfspeed = rate;}
+	void Speed(WFspeed rate) { 
+		wfspeed = rate;
+		dispcnt = 1.0 * WFBLOCKSIZE / SC_SMPLRATE;
+	}
 
 	int Mag() { return mag;}
 	void Mag(int m) { setMag(m);}

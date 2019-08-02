@@ -39,7 +39,6 @@
 #include "globals.h"
 #include "status.h"
 #include "fileselect.h"
-#include "fl_lock.h"
 #include "fl_digi.h"
 #include "main.h"
 #include "gettext.h"

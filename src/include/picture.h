@@ -61,11 +61,9 @@ public:
 		if (pos < 0 || pos >= bufsize) {
 			return ;
 		}
-		FL_LOCK_D();
 		vidbuf[pos] = data;
 		if (pos % (width * depth) == 0)
 			redraw();
-		FL_UNLOCK_D();
 	}
 	unsigned char	pixel(int);
 	int		handle(int);

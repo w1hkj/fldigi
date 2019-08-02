@@ -57,18 +57,15 @@ void updateRxPic(unsigned char data, int pos)
 
 void createRxViewer()
 {
-	FL_LOCK_D();
 	picRxWin = new Fl_Double_Window(200, 140);
 	picRxWin->xclass(PACKAGE_NAME);
 	picRxWin->begin();
 	picRx = new picture(2, 2, 136, 104);
 	picRxWin->end();
-	FL_UNLOCK_D();
 }
 
 void showRxViewer(int W, int H)
 {
-	FL_LOCK_E();
 	if (!picRxWin) createRxViewer();
 	int winW, winH;
 	int picX, picY;
@@ -80,7 +77,6 @@ void showRxViewer(int W, int H)
 	picRx->resize(picX, picY, W, H);
 	picRx->clear();
 	picRxWin->show();
-	FL_UNLOCK_E();
 }
 
 int load_image(const char *n) {
@@ -138,7 +134,6 @@ int load_image(const char *n) {
 	free(label);
 	picTxBox->label(0);
 // load the picture widget with the rgb image
-	FL_LOCK_D();
 	picTx->show();
 	picTx->clear();
 	picTxWin->redraw();
@@ -151,7 +146,6 @@ int load_image(const char *n) {
 		txgry_tooltip, sizeof(txgry_tooltip), _("Time needed: ")) > 0)
 		btnpicTxSendGrey->tooltip(txgry_tooltip);
 	btnpicTxSendGrey->activate();
-	FL_UNLOCK_D();
 	return 1;
 }
 
@@ -188,9 +182,7 @@ void cb_picTxLoad(Fl_Widget *, void *)
 
 void cb_picTxClose( Fl_Widget *w, void *)
 {
-	FL_LOCK_D();
 	picTxWin->hide();
-	FL_UNLOCK_D();
 }
 
 void pic_TxSendColor()
@@ -219,7 +211,6 @@ void pic_TxSendColor()
 	serviceme->col = 0;
 	serviceme->row = 0;
 	serviceme->pixelnbr = 0;
-	FL_LOCK_D();
 	btnpicTxSPP->hide();
 	btnpicTxSendColor->hide();
 	btnpicTxSendGrey->hide();
@@ -227,7 +218,6 @@ void pic_TxSendColor()
 	btnpicTxClose->hide();
 	btnpicTxSendAbort->show();
 	picTx->clear();
-	FL_UNLOCK_D();
 	if (!picTxWin->visible())
 		picTxWin->show();
 // start the transmission
@@ -261,7 +251,6 @@ void pic_TxSendGrey()
 	serviceme->col = 0;
 	serviceme->row = 0;
 	serviceme->pixelnbr = 0;
-	FL_LOCK_D();
 	btnpicTxSPP->hide();
 	btnpicTxSendColor->hide();
 	btnpicTxSendGrey->hide();
@@ -269,7 +258,6 @@ void pic_TxSendGrey()
 	btnpicTxClose->hide();
 	btnpicTxSendAbort->show();
 	picTx->clear();
-	FL_UNLOCK_D();
 // start the transmission
 	if (!picTxWin->visible())
 		picTxWin->show();
@@ -289,9 +277,7 @@ void cb_picTxSendAbort( Fl_Widget *w, void *)
 
 	serviceme->abortxmt = true;
 // reload the picture widget with the rgb image
-	FL_LOCK_D();
 	picTx->video(xmtimg, TxImg->w() * TxImg->h() * 3);
-	FL_UNLOCK_D();
 }
 
 void cb_picTxSPP( Fl_Widget *w, void *)
@@ -323,7 +309,6 @@ void cb_picTxSPP( Fl_Widget *w, void *)
 
 void createTxViewer()
 {
-	FL_LOCK_D();
 	picTxWin = new Fl_Double_Window(290, 180, _("Send image"));
 	picTxWin->xclass(PACKAGE_NAME);
 	picTxWin->begin();
@@ -358,7 +343,6 @@ void createTxViewer()
 	btnpicTxSendGrey->deactivate();
 
 	picTxWin->end();
-	FL_UNLOCK_D();
 }
 
 void TxViewerResize(int W, int H)
@@ -369,7 +353,6 @@ void TxViewerResize(int W, int H)
 	winH = H < 180 ? 210 : H + 30;
 	picX = (winW - W) / 2;
 	picY = (winH - 26 - H) / 2;
-	FL_LOCK_D();
 	picTxWin->size(winW, winH);
 	picTx->resize(picX, picY, W, H);
 	picTx->clear();
@@ -380,7 +363,6 @@ void TxViewerResize(int W, int H)
 	btnpicTxSendAbort->resize(winW/2 - 61, winH - 26, 122, 24);
 	btnpicTxLoad->resize(winW/2 + 20, winH - 26, 60, 24);
 	btnpicTxClose->resize(winW/2 + 80, winH - 26, 60, 24);
-	FL_UNLOCK_D();
 }
 
 void showTxViewer(int W, int H)
@@ -396,7 +378,6 @@ void showTxViewer(int W, int H)
 	winH = H < 180 ? 180 : H + 30;
 	picX = (winW - W) / 2;
 	picY = (winH - 26 - H) / 2;
-	FL_LOCK_D();
 	picTxWin->size(winW, winH);
 	picTx->resize(picX, picY, W, H);
 	btnpicTxSPP->resize(winW/2 - 140, winH - 26, 40, 24);
@@ -412,7 +393,6 @@ void showTxViewer(int W, int H)
 	btnpicTxClose->show();
 	btnpicTxSendAbort->hide();
 	picTxWin->show();
-	FL_UNLOCK_D();
 }
 
 void deleteTxViewer()

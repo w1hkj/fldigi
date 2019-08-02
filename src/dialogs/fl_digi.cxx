@@ -2268,14 +2268,12 @@ void colorize_macro(int i)
 
 void colorize_macros()
 {
-	FL_LOCK_D();
 	for (int i = 0; i < NUMMACKEYS * NUMKEYROWS; i++) colorize_macro(i);
 	for (int i = 0; i < 48; i++) colorize_48macros(i);
 	btnAltMacros1->labelsize(progdefaults.MacroBtnFontsize);
 	btnAltMacros1->redraw_label();
 	btnAltMacros2->labelsize(progdefaults.MacroBtnFontsize);
 	btnAltMacros2->redraw_label();
-	FL_UNLOCK_D();
 }
 
 void altmacro_cb(Fl_Widget *w, void *v)
@@ -4269,19 +4267,15 @@ void status_cb(Fl_Widget *b, void *arg)
 
 void cbAFC(Fl_Widget *w, void *vi)
 {
-	FL_LOCK_D();
 	Fl_Button *b = (Fl_Button *)w;
 	int v = b->value();
-	FL_UNLOCK_D();
 	progStatus.afconoff = v;
 }
 
 void cbSQL(Fl_Widget *w, void *vi)
 {
-	FL_LOCK_D();
 	Fl_Button *b = (Fl_Button *)w;
 	int v = b->value();
-	FL_UNLOCK_D();
 	progStatus.sqlonoff = v ? true : false;
 }
 
@@ -4289,22 +4283,20 @@ extern void set_wf_mode(void);
 
 void cbPwrSQL(Fl_Widget *w, void *vi)
 {
-		FL_LOCK_D();
-		Fl_Button *b = (Fl_Button *)w;
-		int v = b->value();
-		if(!v) {
-			sldrSquelch->value(progStatus.sldrSquelchValue);
-			progStatus.kpsql_enabled = false;
-			progdefaults.kpsql_enabled = false;
-			b->clear();
-		} else {
-			sldrSquelch->value(progStatus.sldrPwrSquelchValue);
-			progStatus.kpsql_enabled = true;
-			progdefaults.kpsql_enabled = true;
-			set_wf_mode();
-			b->set();
-		}
-		FL_UNLOCK_D();
+	Fl_Button *b = (Fl_Button *)w;
+	int v = b->value();
+	if(!v) {
+		sldrSquelch->value(progStatus.sldrSquelchValue);
+		progStatus.kpsql_enabled = false;
+		progdefaults.kpsql_enabled = false;
+		b->clear();
+	} else {
+		sldrSquelch->value(progStatus.sldrPwrSquelchValue);
+		progStatus.kpsql_enabled = true;
+		progdefaults.kpsql_enabled = true;
+		set_wf_mode();
+		b->set();
+	}
 }
 
 void startMacroTimer()
@@ -8351,11 +8343,8 @@ void put_cwRcvWPM(double wpm)
 	int U = progdefaults.CWupperlimit;
 	int L = progdefaults.CWlowerlimit;
 	double dWPM = 100.0*(wpm - L)/(U - L);
-	FL_LOCK_D();
 	REQ_DROP(static_cast<void (Fl_Progress::*)(float)>(&Fl_Progress::value), prgsCWrcvWPM, dWPM);
 	REQ_DROP(static_cast<int (Fl_Value_Output::*)(double)>(&Fl_Value_Output::value), valCWrcvWPM, (int)wpm);
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
 void set_scope_mode(Digiscope::scope_mode md)
@@ -8782,7 +8771,6 @@ void put_Status1(const char *msg, double timeout, status_timeout action)
 
 void put_WARNstatus(double val)
 {
-	FL_LOCK_D();
 	if (val < 0.05)
 		WARNstatus->color(progdefaults.LowSignal);
 	if (val >= 0.05)
@@ -8792,29 +8780,23 @@ void put_WARNstatus(double val)
 	if (val >= 0.98)
 		WARNstatus->color(progdefaults.OverSignal);
 	WARNstatus->redraw();
-	FL_UNLOCK_D();
 }
 
 
 void set_CWwpm()
 {
-	FL_LOCK_D();
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
 	cntCW_WPM->value(progdefaults.CWspeed);
 	if (use_nanoIO) set_nanoWPM(progdefaults.CWspeed);
-	FL_UNLOCK_D();
 }
 
 void clear_StatusMessages()
 {
-	FL_LOCK_D();
 	StatusBar->label("");
 	Status1->label("");
 	Status2->label("");
 	info1msg = "";
 	info2msg = "";
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
 void put_MODEstatus(const char* fmt, ...)

@@ -52,7 +52,6 @@
 
 #include "fl_digi.h"
 #include "trx.h"
-#include "fl_lock.h"
 #include "picture.h"
 #include "debug.h"
 #include "timeops.h"

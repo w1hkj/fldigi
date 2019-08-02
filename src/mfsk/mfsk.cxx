@@ -1169,7 +1169,6 @@ int mfsk::tx_process()
 
 			txstate = TX_STATE_DATA;
 			put_status("Tx pic: done");
-			FL_LOCK_E();
 			btnpicTxSendAbort->hide();
 			btnpicTxSPP->show();
 			btnpicTxSendColor->show();
@@ -1182,7 +1181,6 @@ int mfsk::tx_process()
 			rxstate = RX_STATE_DATA;
 			memset(picheader, ' ', PICHEADER - 1);
 			picheader[PICHEADER -1] = 0;
-			FL_UNLOCK_E();
 			break;
 	}
 

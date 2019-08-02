@@ -75,8 +75,7 @@ void Digiscope::video(double *data, int len , bool dir)
 	
 	if (data == NULL || len == 0)
 		return;
-	
-	FL_LOCK_D();
+
 	int W = w() - 4;
 	int H = h() - 4;
 	for (int i = 0; i < W; i++) 
@@ -102,8 +101,6 @@ void Digiscope::video(double *data, int len , bool dir)
 	}
 
 	REQ_DROP(&Digiscope::redraw, this);
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
 void Digiscope::zdata(cmplx *zarray, int len )
@@ -113,14 +110,11 @@ void Digiscope::zdata(cmplx *zarray, int len )
 	if (zarray == NULL || len == 0)
 		return;
 	
-	FL_LOCK_D();
 	for (int i = 0; i < len; i++) {
 		_zdata[_zptr++] = zarray[i];
 		if (_zptr == MAX_ZLEN) _zptr = 0;
 	}
 	REQ_DROP(&Digiscope::redraw, this);
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
 void Digiscope::data(double *data, int len, bool scale)
@@ -134,7 +128,6 @@ void Digiscope::data(double *data, int len, bool scale)
 	}
 	if (len == 0)
 		return;
-	FL_LOCK_D();
 	if (len > MAX_LEN) _len = MAX_LEN;
 	else _len = len;
 	memcpy(_buf, data, len * sizeof(double));
@@ -151,34 +144,26 @@ void Digiscope::data(double *data, int len, bool scale)
 			_buf[i] = (_buf[i] - min) / (max - min);
 	}
 	REQ_DROP(&Digiscope::redraw, this);
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
 void Digiscope::phase(double ph, double ql, bool hl)
 {
 	if (active_modem->HistoryON()) return;
 	
-	FL_LOCK_D();
 	_phase = ph;
 	_quality = ql;
 	_highlight = hl;
 	REQ_DROP(&Digiscope::redraw, this);
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
 void Digiscope::rtty(double flo, double fhi, double amp)
 {
 	if (active_modem->HistoryON()) return;
 	
-	FL_LOCK_D();
 	_flo = flo;
 	_fhi = fhi;
 	_amp = amp;
 	REQ_DROP(&Digiscope::redraw, this);
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
 
@@ -192,7 +177,6 @@ void Digiscope::mode(scope_mode md)
 	}
 	int W = w() - 4;
 	int H = h() - 4;
-	FL_LOCK_D();
 	_mode = md;
 	memset(_buf, 0, MAX_LEN * sizeof(double));
 	linecnt = 0;
@@ -204,8 +188,6 @@ void Digiscope::mode(scope_mode md)
 	for (int i = 0; i < H; i++)
 		memcpy(&vidbuf[3*W*i], vidline, 3*W*sizeof(unsigned char) );
 	REQ_DROP(&Digiscope::redraw, this);
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
 void Digiscope::draw_phase()
