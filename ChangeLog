@@ -1,9 +1,16 @@
 
 
+=Version 4.1.07=
+
+2019-08-02  David Freese  <w1hkj@bellsouth.net>
+
+	49a54ceba: FL_LOCK
+	a1a46b2c2: wf mods
+
+
 =Version 4.1.06=
 
-2019-07-10  David Freese  <w1hkj@bellsouth.net>
-
+	d2ff6783c: Documentation update
 	e7a984ae3: nanoIO
 	2e98f532e: FD server disconnect
 	f37b133c5: Calendar
