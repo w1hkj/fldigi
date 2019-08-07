@@ -945,6 +945,8 @@ int main(int argc, char ** argv)
 	set_terminate(diediedie);
 	setup_signal_handlers();
 
+	setlocale(LC_ALL, "");
+
 #ifndef ENABLE_NLS
 	setlocale(LC_TIME, "");
 #endif

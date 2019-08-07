@@ -2052,6 +2052,7 @@ static void send_log_data()
 {
 	send_call(rec.getField(CALL));
 	send_band(strip(n3fjp_opband()));
+	send_freq(n3fjp_freq());
 	send_mode(n3fjp_opmode());
 	n3fjp_sendRSTS(rec.getField(RST_SENT));
 	n3fjp_sendRSTR(rec.getField(RST_RCVD));
