@@ -757,7 +757,7 @@ extern Fl_Check_Button *chkRSidWideSearch;
 extern Fl_Check_Button *chkRSidMark;
 extern Fl_Check_Button *chkRSidAutoDisable;
 extern Fl_ListBox *listbox_rsid_errors;
-extern Fl_Value_Slider2 *sldrRSIDsquelch;
+extern Fl_Counter *val_RSIDsquelch;
 extern Fl_Check_Button *chkRSidShowAlert;
 extern Fl_Check_Button *chkRetainFreqLock;
 extern Fl_Check_Button *chkDisableFreqChange;

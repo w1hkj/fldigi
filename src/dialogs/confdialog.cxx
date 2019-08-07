@@ -6625,9 +6625,9 @@ static void cb_listbox_rsid_errors(Fl_ListBox* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Value_Slider2 *sldrRSIDsquelch=(Fl_Value_Slider2 *)0;
+Fl_Counter *val_RSIDsquelch=(Fl_Counter *)0;
 
-static void cb_sldrRSIDsquelch(Fl_Value_Slider2* o, void*) {
+static void cb_val_RSIDsquelch(Fl_Counter* o, void*) {
   progdefaults.rsid_squelch = (int)o->value();
 progdefaults.changed = true;
 }
@@ -14889,25 +14889,16 @@ d frequency"));
                 o->labelsize(FL_NORMAL_SIZE);
                 listbox_rsid_errors->end();
               } // Fl_ListBox* listbox_rsid_errors
-              { Fl_Value_Slider2* o = sldrRSIDsquelch = new Fl_Value_Slider2(276, 233, 145, 22, _("Squelch open (sec)"));
-                sldrRSIDsquelch->tooltip(_("Open squelch for nn sec if RSID detected"));
-                sldrRSIDsquelch->type(1);
-                sldrRSIDsquelch->box(FL_DOWN_BOX);
-                sldrRSIDsquelch->color(FL_BACKGROUND_COLOR);
-                sldrRSIDsquelch->selection_color(FL_BACKGROUND_COLOR);
-                sldrRSIDsquelch->labeltype(FL_NORMAL_LABEL);
-                sldrRSIDsquelch->labelfont(0);
-                sldrRSIDsquelch->labelsize(14);
-                sldrRSIDsquelch->labelcolor(FL_FOREGROUND_COLOR);
-                sldrRSIDsquelch->maximum(20);
-                sldrRSIDsquelch->step(1);
-                sldrRSIDsquelch->textsize(14);
-                sldrRSIDsquelch->callback((Fl_Callback*)cb_sldrRSIDsquelch);
-                sldrRSIDsquelch->align(Fl_Align(FL_ALIGN_RIGHT));
-                sldrRSIDsquelch->when(FL_WHEN_CHANGED);
+              { Fl_Counter* o = val_RSIDsquelch = new Fl_Counter(260, 234, 140, 21, _("Squelch open (sec)"));
+                val_RSIDsquelch->tooltip(_("Use for triggering amplifier carrier detect"));
+                val_RSIDsquelch->minimum(0);
+                val_RSIDsquelch->maximum(300);
+                val_RSIDsquelch->step(1);
+                val_RSIDsquelch->callback((Fl_Callback*)cb_val_RSIDsquelch);
+                val_RSIDsquelch->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->value(progdefaults.rsid_squelch);
-                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
-              } // Fl_Value_Slider2* sldrRSIDsquelch
+                o->lstep(10.0);
+              } // Fl_Counter* val_RSIDsquelch
               { Fl_Check_Button* o = chkRSidShowAlert = new Fl_Check_Button(276, 143, 203, 20, _("Disable alert dialog"));
                 chkRSidShowAlert->tooltip(_("Do not show RsID alert dialog box"));
                 chkRSidShowAlert->down_box(FL_DOWN_BOX);

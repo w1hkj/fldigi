@@ -534,7 +534,7 @@ int process_rsid_allow_errors(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
  ***********************************************************/
 int process_rsid_sql_open(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
 {
-	return assign_integer(sldrRSIDsquelch, sp, sc);
+	return assign_integer(val_RSIDsquelch, sp, sc);
 }
 
 /** ********************************************************

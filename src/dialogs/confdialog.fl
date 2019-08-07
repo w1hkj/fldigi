@@ -8146,7 +8146,7 @@ progdefaults.RSID_ALERT_MENU = o->value();} open
         }
       }
       Fl_Group tabID {
-        label ID
+        label ID open
         xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsID {open
@@ -8223,14 +8223,13 @@ High = 2 errors} xywh {40 233 100 22} box DOWN_BOX color 7 align 8
                 code2 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
-              Fl_Value_Slider sldrRSIDsquelch {
+              Fl_Counter val_RSIDsquelch {
                 label {Squelch open (sec)}
                 callback {progdefaults.rsid_squelch = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {Open squelch for nn sec if RSID detected} xywh {276 233 145 22} type Horizontal align 8 maximum 20 step 1 textsize 14
+                tooltip {Use for triggering amplifier carrier detect} xywh {260 234 140 21} align 8 minimum 0 maximum 300 step 1
                 code0 {o->value(progdefaults.rsid_squelch);}
-                code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-                class Fl_Value_Slider2
+                code1 {o->lstep(10.0);}
               }
               Fl_Check_Button chkRSidShowAlert {
                 label {Disable alert dialog}

@@ -488,7 +488,7 @@ static int create_default_script(char *file_name)
 	if(add_command(fd, (char *)CMD_ID_RSID_TX_FREQ_LOCK,  (bool)   chkRetainFreqLock->value(),    2)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_ID_RSID_FREQ_CHANGE,   (bool)   chkDisableFreqChange->value(), 2)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_ID_RSID_ALLOW_ERRORS,  (char *) listbox_rsid_errors->value(),  2)) return fclose(fd);
-	if(add_command(fd, (char *)CMD_ID_RSID_SQL_OPEN,      (int)    sldrRSIDsquelch->value(),      2)) return fclose(fd);
+	if(add_command(fd, (char *)CMD_ID_RSID_SQL_OPEN,      (int)    val_RSIDsquelch->value(),      2)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_ID_RSID_PRETONE,       (double) val_pretone->value(),          2)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_ID_RSID_END_XMT_ID,    (bool)   btn_post_rsid->value(),        2)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_END_CMD,               1)) return fclose(fd);
