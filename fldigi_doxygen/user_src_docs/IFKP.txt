@@ -301,8 +301,8 @@ This selection opens up the Send Image dialog
 shown with a 160x120 color image loaded and ready to transmit.
 
 Transmission begins when you press the "Xmt" button.  fldigi will insert the text
-preamble and immediately begin the image transmission.  fldigi returns to the receive
-mode when the image transmission is completed.
+preamble and immediately begin the image transmission.  fldigi remains in transmit
+mode when the image transmission is completed and the deadman timer is started.
 
 <center>
 \image html ifkp-WF-image-mode.png "Image Mode Waterfall"

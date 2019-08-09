@@ -673,7 +673,7 @@ Sending to a single recipient or to allcall is accomplished as described above. 
 send to multiple addresses you must add their callsigns to the Tx panel, separated 
 by spaces and with a trailing space.  Then press the Xmt button on the Tx Image dialog.
 
-fldigi returns to the receive mode at the conclusion of the image transfer.
+fldigi remains in transmit mode when the image transmission is completed and the deadman timer is started.
 
 \section fsq_rsid Disable RxID
 
