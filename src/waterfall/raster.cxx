@@ -163,6 +163,8 @@ void Raster::resize(int x, int y, int w, int h)
 {
 	guard_lock raster_lock(&raster_mutex);
 
+	if (w < 14) w = 14;
+	if (h < (4 + rhs)) h = 4 + rhs;
 	int Wdest = w - 4;
 	int Hdest = h - 4;
 	int Ndest = 0;
