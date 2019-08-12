@@ -29,7 +29,7 @@ will probably discover that the default colors and the gtk+ UI scheme
 are to be preferred.
 <br>
 
-Fldigi has internationalization files for French, Italian and
+Fldigi has internationalization files for French, Italian, Polish and
 Spanish. These control the contents of various menu items and
 labels. Linux users should build and install fldigi from source
 to gain access to these. Windows users should select the language
@@ -47,6 +47,20 @@ stressful. Select this option to print all of this text in lower
 case
 <br>
 
+fldigi's deadman timer can be set from 0 to 60 minutes in 1 minute intervals.
+Zero disables the deadman timer.  If enabled the deadman timer will be shown
+on the fldigi menu bar.  The timer is restarted whenever one of these events
+occurs
+<ul>
+<li>machine state changes to Tx</li>
+<li>machine state changes to Tune</li>
+<li>a macro character is transmited</li>
+<li>an xmlrpc text character is transmited</li>
+<li>an ARQ character is transmitted</li>
+<li>a TX panel character is transmitted</li>
+<li>at end of all image transmissions, deadman stopped at start of image</li>
+</ul>
+<br>
 Select the configuration items to allow prompting when exiting the
 program. Note that the prompts are only active if the menu item
 File/Exit is used.
