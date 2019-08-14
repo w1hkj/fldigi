@@ -45,6 +45,11 @@
 
 using namespace std;
 
+static pthread_mutex_t logfile_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+size_t ptr, ptr2;
+string sbuff;
+
 #ifdef __WOE32__
 static const char *szEOL = "\r\n";
 #else
@@ -263,6 +268,8 @@ char * cAdifIO::fillfield (int recnbr, int fieldnum, char *buff)
 
 void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 {
+	guard_lock lock(&logfile_mutex);
+
 	int found;
 	static char szmsg[500];
 
@@ -276,130 +283,114 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 		LOG_ERROR("Could not open %s", fname);
 		return;
 	}
-
-	struct timespec t0, t1;
+/*
+	struct timespec t0, t1, t2;
 #ifdef _POSIX_MONOTONIC_CLOCK
 	clock_gettime(CLOCK_MONOTONIC, &t0);
 #else
 	clock_gettime(CLOCK_REALTIME, &t0);
 #endif
-
+*/
 	char buff[16384];
-	string sbuff;
+	sbuff.clear();
 	memset(buff, 0, 16384);
 	int retnbr = fread(buff, 1, 16384, adiFile);
-	if (retnbr) sbuff.assign(buff, retnbr);
+	while (retnbr) {
+		sbuff.append(buff, retnbr);
+		retnbr = fread(buff, 1, 16384, adiFile);
+	}
+	fclose(adiFile);
 
-	size_t p = sbuff.find("<EOH>");
+	size_t p;//, ptr, ptr2;
+
+	p = sbuff.find("<EOH>");
 	if (p == std::string::npos) p = sbuff.find("<eoh>");
 	if (p == std::string::npos) {
 		LOG_ERROR("Could not find <EOH> in %s", fname);
 		return;
 	}
-
-	sbuff.erase(0, p + 5);
-// skip over cr/lf pairs
-	while (sbuff.length() && (sbuff[0] == '\r' || sbuff[0] == '\n'))
-		sbuff.erase(0,1);
-
-	p = sbuff.find("<EOR>");
-	if (p == std::string::npos) p = sbuff.find("<eor>");
-
-	while (!feof(adiFile) && (p == std::string::npos)) {
-		retnbr = fread(buff, 1, 16384, adiFile);
-		if (retnbr) sbuff.append(buff, retnbr);
-		p = sbuff.find("<EOR>");
-		if (p == std::string::npos) p = sbuff.find("<eor>");
-	}
-	if (p == std::string::npos) {
-		LOG_ERROR("Could not find any records in %s", fname);
-		return;
+	if ((sbuff.find("<EOR>") == std::string::npos) &&
+		(sbuff.find("<eor>") == std::string::npos)) {
+			LOG_ERROR("Empty log file %s", fname);
+			return;
 	}
 
-	char *ptr = 0, *ptr2 = 0;
+size_t recend;
+
 	int recnbr = 0;
 
+	p = sbuff.find('<', p + 1);
+
 	while (p != std::string::npos) {
+		recend = sbuff.find("<EOR>", p);
+		if (recend == string::npos) recend = sbuff.find("<eor>", p);
+		if (recend == string::npos)
+			break;
 
-		ptr = strchr((char *)sbuff.c_str(),'<');
-
+		ptr = p;
 		adifqso = 0;
-		while (ptr) {
-			found = findfield(ptr+1);
+		while (ptr != std::string::npos) {
+			ptr2 = sbuff.find('<', ptr + 1);
+			if (ptr2 == string::npos)
+				break;
+			found = findfield( &sbuff[ptr + 1] );
 			if (found > -1) {
 				if (!adifqso) adifqso = db->newrec(); // need new record in db
-				ptr2 = fillfield (recnbr, found, ptr+1);
+				fillfield (recnbr, found, &sbuff[ptr + 1]);
 			} else if (found == -1) { // <eor> reached;
 				break;
-			} else {
-				ptr2 = ptr + 1;
 			}
-			if ((ptr2 != NULL) && (unsigned)(ptr2 - ptr) <= p)
-				ptr = strchr(ptr2,'<');
-			else
+			ptr = ptr2;
+			if (ptr == std::string::npos)
 				break; // corrupt record
 		}
 		recnbr++;
-
-		sbuff.erase(0, p + 5);
-		while (sbuff.length() && (sbuff[0] == '\r' || sbuff[0] == '\n'))
-			sbuff.erase(0,1);
-
-		p = sbuff.find("<EOR>");
-		if (p == std::string::npos) p = sbuff.find("<eor>");
-
-		while (!feof(adiFile) && (p == std::string::npos)) {
-			retnbr = fread(buff, 1, 16384, adiFile);
-			if (retnbr) sbuff.append(buff, retnbr);
-			p = sbuff.find("<EOR>");
-			if (p == std::string::npos) p = sbuff.find("<eor>");
-		}
+		p = sbuff.find('<', recend + 1);
 	}
-
+/*
 #ifdef _POSIX_MONOTONIC_CLOCK
-	clock_gettime(CLOCK_MONOTONIC, &t1);
+	clock_gettime(CLOCK_MONOTONIC, &t2);
 #else
-	clock_gettime(CLOCK_REALTIME, &t1);
+	clock_gettime(CLOCK_REALTIME, &t2);
 #endif
 
 	float t = t1.tv_sec - t0.tv_sec + (t1.tv_nsec - t0.tv_nsec)/1e9;
+	float tp = t2.tv_sec - t1.tv_sec + (t2.tv_nsec - t1.tv_nsec)/1e9;
 
-
-	if (!feof(adiFile))
-		snprintf(szmsg, sizeof(szmsg), "\
-================================================\n\
-ERROR reading logbook %s\n\
-      read %d records in %4.1f seconds\n\
-================================================\n", fname, db->nbrRecs(), t);
-	else {
-		snprintf(szmsg, sizeof(szmsg), "\
+	snprintf(szmsg, sizeof(szmsg), "\n\
 ================================================\n\
 Read Logbook: %s\n\
-      read %d records in %4.1f seconds\n\
-================================================\n", fname, db->nbrRecs(), t);
-		LOG_INFO("logfile: %s, read %d records in %4.1f seconds", fname, db->nbrRecs(), t);
-		if (num_read_errors) {
-			if (!read_errors.empty()) {
-				read_errors.append("\n");
-				read_errors.append(szmsg);
-			} else
-				read_errors.assign(szmsg);
-			snprintf(szmsg, sizeof(szmsg),
-				"Corrected %d errors.  Save logbook and then reload\n",
-				num_read_errors);
-			read_errors.append("\
+  read %d records in %4.1f seconds\n\
+  parsed in %4.1f seconds\n\
+================================================\n",
+fname, db->nbrRecs(), t, tp);
+*/
+	snprintf(szmsg, sizeof(szmsg), "\n\
+================================================\n\
+Read Logbook: %s\n\
+  %d records\n\
+================================================\n",
+fname, db->nbrRecs());
+	REQ(write_rxtext, szmsg);
+	LOG_INFO("%s", szmsg);
+	if (num_read_errors) {
+		if (!read_errors.empty()) {
+			read_errors.append("\n");
+			read_errors.append(szmsg);
+		} else
+			read_errors.assign(szmsg);
+		snprintf(szmsg, sizeof(szmsg),
+			"Corrected %d errors.  Save logbook and then reload\n",
+			num_read_errors);
+		read_errors.append("\n\
 ================================================\n").append(szmsg);
 			read_errors.append("\
 ================================================\n");
-			if (db == &qsodb) REQ(write_rxtext, read_errors.c_str());
-		} else if (progdefaults.DisplayLogbookRead && (db == &qsodb))
-			REQ(write_rxtext, szmsg);
+		if (db == &qsodb) REQ(write_rxtext, read_errors.c_str());
 	}
 
 	if (db == &qsodb)
 		REQ(adif_read_OK);
-
-	fclose(adiFile);
 }
 
 static const char *adifmt = "<%s:%d>";
@@ -408,6 +399,8 @@ static const char *adifmt = "<%s:%d>";
 
 int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 {
+	guard_lock lock(&logfile_mutex);
+
 	string ADIFHEADER;
 	ADIFHEADER = "File: %s";
 	ADIFHEADER.append(szEOL);
@@ -496,7 +489,6 @@ static string adif_file_name;
 static string records;
 static string record;
 static char recfield[200];
-static int nrecs;
 
 static bool ADIF_READ = false;
 static bool ADIF_WRITE = false;
@@ -602,6 +594,8 @@ int cAdifIO::writeLog (const char *fname, cQsoDb *db, bool immediate) {
 
 void cAdifIO::do_writelog()
 {
+	guard_lock lock(&logfile_mutex);
+
 	string ADIFHEADER;
 	ADIFHEADER = "File: %s";
 	ADIFHEADER.append(szEOL);
@@ -625,24 +619,19 @@ void cAdifIO::do_writelog()
 
 	cQsoRec *rec;
 
-	records.clear();
-
-	for (int i = 0; i < adifdb->nbrRecs(); i++) {
-		rec = adifdb->getRec(i);
-		records.append(adif_record(rec));
-		if (wrdb)
-			adifdb->qsoUpdRec(i, rec);
-	}
-	nrecs = adifdb->nbrRecs();
-
-	fprintf (adiFile, ADIFHEADER.c_str(),
+	fprintf ( adiFile, ADIFHEADER.c_str(),
 		 fl_filename_name(adif_file_name.c_str()),
 		 strlen(ADIF_VERS), ADIF_VERS,
 		 strlen(PACKAGE_NAME), PACKAGE_NAME,
-		 strlen(PACKAGE_VERSION), PACKAGE_VERSION
-		);
-	fprintf (adiFile, "%s", records.c_str());
+		 strlen(PACKAGE_VERSION), PACKAGE_VERSION );
 
+	for (int i = 0; i < adifdb->nbrRecs(); i++) {
+		rec = adifdb->getRec(i);
+		fprintf (adiFile, "%s", adif_record(rec).c_str());
+		if (wrdb) adifdb->qsoUpdRec(i, rec);
+	}
+
+	fflush (adiFile);
 	fclose (adiFile);
 
 	if (wrdb) delete wrdb;
@@ -685,9 +674,11 @@ static void *ADIF_RW_loop(void *args)
 		if (ADIF_RW_EXIT)
 			return NULL;
 		if (ADIF_WRITE && adifIO) {
+LOG_INFO("ADIF_WRITE: adifIO->do_writelog()");
 			adifIO->do_writelog();
 			ADIF_WRITE = false;
 		} else if (ADIF_READ && adifIO) {
+LOG_INFO("ADIF_READ: adifIO->do_readfile(%s)", adif_file_name.c_str());
 			adifIO->do_readfile(adif_file_name.c_str(), adif_db);
 			ADIF_READ = false;
 		}
@@ -726,5 +717,9 @@ static void ADIF_RW_init()
 		LOG_PERROR("pthread_create");
 		return;
 	}
+#ifdef __WIN32__
+	MilliSleep(100);
+#else
 	MilliSleep(10);
+#endif
 }

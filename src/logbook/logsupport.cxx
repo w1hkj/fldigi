@@ -376,7 +376,7 @@ static void dxcc_entity_cache_rm(cQsoRec* r);
 static void dxcc_entity_cache_add(cQsoDb& db);
 
 void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
-	saveLogbook();
+	saveLogbook(true);
 
 	string title = _("Create new logbook file");
 	string filter;
@@ -429,6 +429,7 @@ void adif_read_OK()
 		adifFile.writeFile(logbook_filename.c_str(), &qsodb);
 	dxcc_entity_cache_clear();
 	dxcc_entity_cache_add(qsodb);
+	qsodb.isdirty(0);
 	restore_sort();
 	activateButtons();
 	loadBrowser();
@@ -450,7 +451,8 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 	if (!p) return;
 	if (!*p) return;
 
-	saveLogbook();
+	saveLogbook(true);
+
 	qsodb.deleteRecs();
 
 	logbook_filename = p;
@@ -674,6 +676,7 @@ static void *merge_thread(void *args)
 	clock_gettime(CLOCK_REALTIME, &t0);
 #endif
 
+LOG_INFO("MERGE: adifFile.do_readfile(%s)", mrg_fname.c_str());
 	adifFile.do_readfile (mrg_fname.c_str(), mrgdb);
 
 #ifdef _POSIX_MONOTONIC_CLOCK
@@ -963,6 +966,7 @@ extern Fl_Button *btn_view_unmatched;
 void verify_lotw(void *)
 {
 	lotw_db = new cQsoDb;
+LOG_INFO("VERIFY_LOTW: adifFile.do_readfile(%s", lotw_download_name.c_str());
 	adifFile.do_readfile (lotw_download_name.c_str(), lotw_db);
 
 	stringstream ss_note;
@@ -1082,9 +1086,6 @@ void cb_btn_verify_lotw(Fl_Button *, void *) {
 
 	ifstream f(deffname.c_str());
 
-//	const char* p = FSEL::select(_("LoTW download file"), "ADIF\t*.{adi,adif}", deffname.c_str());
-
-//	if (!p || !*p) {
 	if (!f) {
 		std::string alert = _("\
 Could not find LoTW report file.\n\n\
@@ -1097,7 +1098,7 @@ naming the file 'lotwreport.adi'");
 		REQ(show_notifier, alert_window);
 		return;
 	}
-//	lotw_download_name = p;
+
 	f.close();
 	lotw_download_name = deffname;
 	Fl::awake(verify_lotw);
@@ -1427,8 +1428,6 @@ void SearchLastQSO(const char *callsign)
 		inpQTH->value(inpQth_log->value());
 		inpLoc1->value(inpLoc_log->value());
 		inpLoc1->position (0);
-//		inpLoc2->value(inpLoc_log->value());
-//		inpLoc2->position (0);
 		inpState->value(inpState_log->value());
 		inpState->position (0);
 		inpVEprov->value(inpVE_Prov_log->value ());
@@ -1543,8 +1542,6 @@ void cb_btnRetrieve(Fl_Button* b, void* d)
 	inpQTH->value (qsoPtr->getField(QTH));
 	inpLoc1->value (qsoPtr->getField(GRIDSQUARE));
 	inpLoc1->position (0);
-//	inpLoc2->value (qsoPtr->getField(GRIDSQUARE));
-//	inpLoc2->position (0);
 	inpNotes->value (qsoPtr->getField(NOTES));
 
 	wBrowser->take_focus();
@@ -1801,9 +1798,6 @@ void updateRecord() {
 	qsodb.qsoUpdRec (editNbr, &rec);
 	dxcc_entity_cache_add(&rec);
 
-//	cQsoDb::reverse = false;
-//	qsodb.SortByDate(progdefaults.sort_date_time_off);
-
 	qsodb.isdirty(0);
 	restore_sort();
 
@@ -1820,9 +1814,6 @@ void deleteRecord () {
 
 	dxcc_entity_cache_rm(qsodb.getRec(editNbr));
 	qsodb.qsoDelRec(editNbr);
-
-//	cQsoDb::reverse = false;
-//	qsodb.SortByDate(progdefaults.sort_date_time_off);
 
 	qsodb.isdirty(0);
 	restore_sort();
@@ -2510,6 +2501,7 @@ static cQsoDb *eqsl_db = 0;
 void verify_eqsl(void *)
 {
 	eqsl_db = new cQsoDb;
+LOG_INFO("VERIFY_EQSL: adifFile.do_readfile(%s)", eqsl_download_name.c_str());
 	adifFile.do_readfile (eqsl_download_name.c_str(), eqsl_db);
 
 	if (eqsl_db->nbrRecs() == 0) {

@@ -50,8 +50,9 @@ void start_logbook ()
 
 	qsodb.deleteRecs();
 
-	adifFile.readFile (logbook_filename.c_str(), &qsodb);
 	rotate_log(logbook_filename);
+
+	adifFile.readFile (logbook_filename.c_str(), &qsodb);
 
 	string label = "Logbook - ";
 	label.append(fl_filename_name(logbook_filename.c_str()));
@@ -59,28 +60,12 @@ void start_logbook ()
 	txtLogFile->value(logbook_filename.c_str());
 	txtLogFile->redraw();
 
-	restore_sort();
-	loadBrowser();
-
-	qsodb.isdirty(0);
-	MilliSleep(100);
-
 	return;
 }
 
 void close_logbook()
 {
-/* DISABLE CONSTRAINTS - ATTEMPT TO THWART WINDOWS FAILURE TO WRITE LOG ON EXIT
-	if (!qsodb.isdirty()) return;
-	if (progdefaults.NagMe)
-		if (!fl_choice2(_("Save changed Logbook?"), _("No"), _("Yes"), NULL))
-			return;
-	cQsoDb::reverse = false;
-	qsodb.SortByDate(progdefaults.sort_date_time_off);
-*/
-
 // force immediate write to logbook adif file
-
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb, true);
 
 }

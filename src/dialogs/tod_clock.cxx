@@ -68,7 +68,6 @@ static char ztbuf[20] = "20120602 123000";
 
 static struct timeval tx_start_val;
 static struct timeval tx_last_val;
-static struct timeval start_val;
 static struct timeval now_val;
 
 extern void xmtrcv_cb(Fl_Widget *, void *);
@@ -210,8 +209,6 @@ static void ztimer()
 //======================================================================
 // TOD Thread loop
 //======================================================================
-static bool first_call = true;
-
 void *TOD_loop(void *args)
 {
 	SET_THREAD_ID(TOD_TID);
