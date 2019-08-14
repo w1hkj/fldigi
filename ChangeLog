@@ -1,8 +1,26 @@
 
 
-=Version 4.1.07=
+=Version 4.1.08=
 
-2019-08-02  David Freese  <w1hkj@bellsouth.net>
+2019-08-14  David Freese  <w1hkj@bellsouth.net>
+
+	c5eb44d5b: Logbook
+	93f3320d7: xmlrpc <vector>
+	357df508e: Documentation
+	ddbaec17f: Raster init values
+	aaa08576a: Image transmit docs
+
+2019-08-08  Diane Bruce  <db@db.net>
+
+	55e96d18c: BSD soundcard
+
+2019-08-07  David Freese  <w1hkj@bellsouth.net>
+
+	7a55d6ddb: RsID squelch open time
+	fe19ac89f: N3FJP ACL
+
+
+=Version 4.1.07=
 
 	49a54ceba: FL_LOCK
 	a1a46b2c2: wf mods
