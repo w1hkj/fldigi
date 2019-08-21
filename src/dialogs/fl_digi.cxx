@@ -2818,25 +2818,25 @@ void cb_mnuOnLineDOCS(Fl_Widget *, void *)
 }
 
 inline int version_check(string v1, string v2) {
-	long v1a, v1b, v1c, v1d = 0;
-	long v2a, v2b, v2c, v2d = 0;
+	long v1a, v1b, v1c;
+	long v2a, v2b, v2c;
 	size_t p;
-	p = v1.find("."); v1a = atol(v1.substr(0, p).c_str()); v1.erase(0, p+1);
-	p = v1.find("."); v1b = atol(v1.substr(0,p).c_str()); v1.erase(0, p+1);
-	p = v1.find("."); v1c = atol(v1.c_str()); v1.erase(0, p+1);
-	if (!v1.empty()) v1d = atol(v1.c_str());
-	p = v2.find("."); v2a = atol(v2.substr(0, p).c_str()); v2.erase(0, p+1);
-	p = v2.find("."); v2b = atol(v2.substr(0,p).c_str()); v2.erase(0, p+1);
-	p = v2.find("."); v2c = atol(v2.c_str()); v2.erase(0, p+1);
-	if (!v2.empty()) v2d = atol(v2.c_str());
+
+	v1a = atol(v1.c_str()); p = v1.find("."); v1.erase(0, p + 1);
+	v1b = atol(v1.c_str()); p = v1.find("."); v1.erase(0, p + 1);
+	v1c = atol(v1.c_str()); p = v1.find("."); v1.erase(0, p + 1);
+
+	v2a = atol(v2.c_str()); p = v2.find("."); v2.erase(0, p + 1);
+	v2b = atol(v2.c_str()); p = v2.find("."); v2.erase(0, p + 1);
+	v2c = atol(v2.c_str()); p = v2.find("."); v2.erase(0, p + 1);
+
 	if (v1a < v2a) return -1;
 	if (v1a > v2a) return 1;
 	if (v1b < v2b) return -1;
 	if (v1b > v2b) return 1;
 	if (v1c < v2c) return -1;
 	if (v1c > v2c) return 1;
-	if (v1d < v2d) return -1;
-	if (v1d > v2d) return 1;
+	if (v1.length()) return 1;
 	return 0;
 }
 
