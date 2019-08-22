@@ -670,13 +670,11 @@ void WFdisp::handle_sig_data()
 		}
 		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 
-//{
-//	guard_lock dlock(&draw_mutex);
 		if (mode == SCOPE)
 			process_analog(circbuff, FFT_LEN);
 		else
 			processFFT();
-//}
+
 		put_WARNstatus(peakaudio);
 
 		static char szFrequency[14];

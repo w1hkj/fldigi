@@ -432,7 +432,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {438 155 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {490 148 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 675 390} color 50 selection_color 50
@@ -3591,7 +3591,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group tabsCW_general {
                 label General
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -3755,7 +3755,7 @@ progdefaults.changed = true;}
               }
               Fl_Group tabsCW_timing {
                 label {Timing and QSK}
-                xywh {0 75 600 315} align 5 hide
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {
                   label Timing open
@@ -6296,7 +6296,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group tabNavtex {
                 label Nav
-                xywh {0 75 600 315} hide
+                xywh {0 75 600 315}
               } {
                 Fl_Check_Button btnNvtxAdifLog {
                   label {Log Navtex messages to Adif file}
@@ -6314,19 +6314,12 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group tabWefax {
-                label WFx
-                xywh {0 75 600 315}
+                label WFx open
+                xywh {0 75 600 315} hide
               } {
                 Fl_Group {} {open
-                  xywh {2 79 598 285}
+                  xywh {4 79 592 301}
                 } {
-                  Fl_Check_Button btnWefaxAdifLog {
-                    label {Log Wefax messages to Adif file}
-                    callback {progdefaults.WEFAX_AdifLog=o->value();
-progdefaults.changed = true;}
-                    tooltip {Sent and received faxes are logged to Adif file.} xywh {99 155 235 30} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.WEFAX_AdifLog);}
-                  }
                   Fl_Check_Button btnWefaxEmbeddedGui {
                     label {Embedded Wefax Gui}
                     callback {progdefaults.WEFAX_EmbeddedGui=o->value();
@@ -6335,23 +6328,43 @@ progdefaults.changed = true;}
 Change requires restart of fldigi} xywh {99 92 235 30} down_box DOWN_BOX
                     code0 {o->value(progdefaults.WEFAX_EmbeddedGui);}
                   }
-                  Fl_Input btnWefaxShift {
-                    label {Frequency shift (800 Hz)}
-                    callback {if( o->value() > 900 ) { o->value(900); return; }
-if( o->value() < 750 ) { o->value(750); return; }
-progdefaults.WEFAX_Shift=o->value();
+                  Fl_Check_Button btnWefaxHideTx {
+                    label {Hide Transmission window}
+                    callback {progdefaults.WEFAX_HideTx=o->value();
 progdefaults.changed = true;}
-                    tooltip {Default 800 Hz. Deutsche Wetterdienst 850Hz} xywh {99 195 80 20} type Int align 8
-                    code0 {o->value(progdefaults.WEFAX_Shift);}
-                    class Fl_Value_Input2
+                    tooltip {Hide transmission window by default.} xywh {99 128 235 30} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WEFAX_HideTx);}
                   }
-                  Fl_Input btnWefaxMaxRows {
+                  Fl_Check_Button btnWefaxAdifLog {
+                    label {Log Wefax messages to Adif file}
+                    callback {progdefaults.WEFAX_AdifLog=o->value();
+progdefaults.changed = true;}
+                    tooltip {Sent and received faxes are logged to Adif file.} xywh {99 165 235 30} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WEFAX_AdifLog);}
+                  }
+                  Fl_Counter cntrWEFAX_Shift {
+                    label {Frequency shift (800 Hz)}
+                    callback {progdefaults.WEFAX_Shift=o->value();
+progdefaults.changed = true;}
+                    xywh {100 201 120 24} align 8 minimum 750 maximum 900 step 10 value 800
+                    code0 {o->value(progdefaults.WEFAX_Shift);}
+                    code1 {o->lstep(100.0);}
+                  }
+                  Fl_Counter cntrWEFAX_Center {
+                    label {Center freq (1500 Hz)}
+                    callback {progdefaults.WEFAX_Center=o->value();
+progdefaults.changed = true;}
+                    xywh {100 232 120 24} align 8 minimum 1000 maximum 2000 step 10 value 1500
+                    code0 {o->value(progdefaults.WEFAX_Center);}
+                    code1 {o->lstep(100.0);}
+                  }
+                  Fl_Input inpWefaxMaxRows {
                     label {Received fax maximum rows number (5000)}
                     callback {if(o->value() > 10000 ) { o->value(10000); return ; }
 if(o->value() < 1000 ) { o->value(1000); return ; }
 progdefaults.WEFAX_MaxRows=o->value();
 progdefaults.changed = true;}
-                    tooltip {Maximum row number for a received fax image.} xywh {99 235 85 20} type Int align 8
+                    tooltip {Maximum row number for a received fax image.} xywh {99 262 85 24} type Int align 8
                     code0 {o->value(progdefaults.WEFAX_MaxRows);}
                     class Fl_Value_Input2
                   }
@@ -6359,7 +6372,7 @@ progdefaults.changed = true;}
                     label {Fax images destination directory}
                     callback {progdefaults.wefax_save_dir=o->value();
 progdefaults.changed = true;}
-                    xywh {99 285 310 20} align 5
+                    xywh {99 310 310 24} align 5
                     code0 {o->value(progdefaults.wefax_save_dir.c_str());}
                   }
                   Fl_Button btnSelectFaxDestDir {
@@ -6367,20 +6380,13 @@ progdefaults.changed = true;}
                     callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
 fc->callback(WefaxDestDirSet);
 fc->show();}
-                    xywh {429 285 80 20}
-                  }
-                  Fl_Check_Button btnWefaxHideTx {
-                    label {Hide Transmission window}
-                    callback {progdefaults.WEFAX_HideTx=o->value();
-progdefaults.changed = true;}
-                    tooltip {Hide transmission window by default.} xywh {99 125 235 30} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.WEFAX_HideTx);}
+                    xywh {429 310 80 24}
                   }
                   Fl_Check_Button btnWefaxSaveMonochrome {
                     label {Save image as monochrome file}
                     callback {progdefaults.WEFAX_SaveMonochrome=o->value();
 progdefaults.changed = true;}
-                    tooltip {Save the fax image as a gray-level PNG file.} xywh {99 315 235 30} down_box DOWN_BOX
+                    tooltip {Save the fax image as a gray-level PNG file.} xywh {99 337 235 30} down_box DOWN_BOX
                     code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
                   }
                 }

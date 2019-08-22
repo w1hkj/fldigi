@@ -2290,6 +2290,9 @@
        ELEM_(int, WEFAX_Shift, "WEFAXSHIFT",                                            \
              "Shift (Standard 800Hz)",                                                  \
              800 )                                                                      \
+       ELEM_(int, WEFAX_Center, "WEFAXCENTER",                                          \
+             "Signal centered on freq (Standard 1500Hz)",                               \
+             1500 )                                                                     \
        ELEM_(int, WEFAX_MaxRows, "WEFAXMAXROWS",                                        \
              "Received fax maximum number of rows",                                     \
              2900 )                                                                     \

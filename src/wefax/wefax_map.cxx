@@ -445,35 +445,31 @@ static FILE* open_file(const char* name, const char* suffix)
 {
 	FILE* fp;
 
-	size_t flen = strlen(name);
-	if (name[flen - 1] == '/') {
+	std::string fname = name;
+
+	if (fname[fname.length() - 1] == '/') {
 		// if the name ends in a slash we will generate
 		// a timestamped name in the following  format:
-		const char t[] = "pic_YYYY-MM-DD_HHMMSSz";
-
-		size_t newlen = flen + sizeof(t);
-		if (suffix)
-			newlen += 5;
-		char* newfn = new char[newlen];
-		memcpy(newfn, name, flen);
-
+		char stamp[50];
 		time_t time_sec = time(0);
 		struct tm ztime;
 		(void)gmtime_r(&time_sec, &ztime);
 
 		size_t sz;
-		if ((sz = strftime(newfn + flen, newlen - flen, "pic_%Y-%m-%d_%H%M%Sz", &ztime)) > 0) {
-			strncpy(newfn + flen + sz, suffix, newlen - flen - sz);
-			newfn[newlen - 1] = '\0';
+		if ((sz = strftime(stamp, sizeof(stamp), "pic_%Y-%m-%d_%H%M%Sz", &ztime)) > 0) {
+			fname.append(stamp);
+			fname.append(suffix);
 			mkdir(name, 0777);
-			fp = fopen(newfn, "wb");
+			fp = fopen(fname.c_str(), "wb");
 		}
 		else
 			fp = NULL;
-		delete [] newfn;
 	}
-	else
-		fp = fopen(name, "wb");
+	else {
+		if (fname.find(suffix) == std::string::npos)
+			fname.append(suffix);
+		fp = fopen(fname.c_str(), "wb");
+	}
 
 	return fp;
 }

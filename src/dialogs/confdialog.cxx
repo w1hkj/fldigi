@@ -5039,13 +5039,6 @@ progdefaults.changed = true;
 
 Fl_Group *tabWefax=(Fl_Group *)0;
 
-Fl_Check_Button *btnWefaxAdifLog=(Fl_Check_Button *)0;
-
-static void cb_btnWefaxAdifLog(Fl_Check_Button* o, void*) {
-  progdefaults.WEFAX_AdifLog=o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *btnWefaxEmbeddedGui=(Fl_Check_Button *)0;
 
 static void cb_btnWefaxEmbeddedGui(Fl_Check_Button* o, void*) {
@@ -5053,18 +5046,37 @@ static void cb_btnWefaxEmbeddedGui(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Value_Input2 *btnWefaxShift=(Fl_Value_Input2 *)0;
+Fl_Check_Button *btnWefaxHideTx=(Fl_Check_Button *)0;
 
-static void cb_btnWefaxShift(Fl_Value_Input2* o, void*) {
-  if( o->value() > 900 ) { o->value(900); return; }
-if( o->value() < 750 ) { o->value(750); return; }
-progdefaults.WEFAX_Shift=o->value();
+static void cb_btnWefaxHideTx(Fl_Check_Button* o, void*) {
+  progdefaults.WEFAX_HideTx=o->value();
 progdefaults.changed = true;
 }
 
-Fl_Value_Input2 *btnWefaxMaxRows=(Fl_Value_Input2 *)0;
+Fl_Check_Button *btnWefaxAdifLog=(Fl_Check_Button *)0;
 
-static void cb_btnWefaxMaxRows(Fl_Value_Input2* o, void*) {
+static void cb_btnWefaxAdifLog(Fl_Check_Button* o, void*) {
+  progdefaults.WEFAX_AdifLog=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntrWEFAX_Shift=(Fl_Counter *)0;
+
+static void cb_cntrWEFAX_Shift(Fl_Counter* o, void*) {
+  progdefaults.WEFAX_Shift=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntrWEFAX_Center=(Fl_Counter *)0;
+
+static void cb_cntrWEFAX_Center(Fl_Counter* o, void*) {
+  progdefaults.WEFAX_Center=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Input2 *inpWefaxMaxRows=(Fl_Value_Input2 *)0;
+
+static void cb_inpWefaxMaxRows(Fl_Value_Input2* o, void*) {
   if(o->value() > 10000 ) { o->value(10000); return ; }
 if(o->value() < 1000 ) { o->value(1000); return ; }
 progdefaults.WEFAX_MaxRows=o->value();
@@ -5084,13 +5096,6 @@ static void cb_btnSelectFaxDestDir(Fl_Button*, void*) {
   Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
 fc->callback(WefaxDestDirSet);
 fc->show();
-}
-
-Fl_Check_Button *btnWefaxHideTx=(Fl_Check_Button *)0;
-
-static void cb_btnWefaxHideTx(Fl_Check_Button* o, void*) {
-  progdefaults.WEFAX_HideTx=o->value();
-progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnWefaxSaveMonochrome=(Fl_Check_Button *)0;
@@ -10410,6 +10415,7 @@ i on a\ntouch screen device such as a tablet."));
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tabsCW_general->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10647,7 +10653,6 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Group* tabsCW_general
               { tabsCW_timing = new Fl_Group(0, 75, 600, 315, _("Timing and QSK"));
                 tabsCW_timing->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tabsCW_timing->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 585, 120, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -13400,7 +13405,6 @@ le Earth)"));
             tabOther->hide();
             { tabsOther = new Fl_Tabs(0, 50, 600, 340);
               { tabNavtex = new Fl_Group(0, 75, 600, 315, _("Nav"));
-                tabNavtex->hide();
                 { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(181, 109, 235, 30, _("Log Navtex messages to Adif file"));
                 btnNvtxAdifLog->down_box(FL_DOWN_BOX);
                 btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
@@ -13415,64 +13419,70 @@ le Earth)"));
                 tabNavtex->end();
               } // Fl_Group* tabNavtex
               { tabWefax = new Fl_Group(0, 75, 600, 315, _("WFx"));
-                { Fl_Group* o = new Fl_Group(2, 79, 598, 285);
-                { Fl_Check_Button* o = btnWefaxAdifLog = new Fl_Check_Button(99, 155, 235, 30, _("Log Wefax messages to Adif file"));
-                btnWefaxAdifLog->tooltip(_("Sent and received faxes are logged to Adif file."));
-                btnWefaxAdifLog->down_box(FL_DOWN_BOX);
-                btnWefaxAdifLog->callback((Fl_Callback*)cb_btnWefaxAdifLog);
-                o->value(progdefaults.WEFAX_AdifLog);
-                } // Fl_Check_Button* btnWefaxAdifLog
+                tabWefax->hide();
+                { Fl_Group* o = new Fl_Group(4, 79, 592, 301);
                 { Fl_Check_Button* o = btnWefaxEmbeddedGui = new Fl_Check_Button(99, 92, 235, 30, _("Embedded Wefax Gui"));
                 btnWefaxEmbeddedGui->tooltip(_("Display tx and rx in main fldigi window.\nChange requires restart of fldigi"));
                 btnWefaxEmbeddedGui->down_box(FL_DOWN_BOX);
                 btnWefaxEmbeddedGui->callback((Fl_Callback*)cb_btnWefaxEmbeddedGui);
                 o->value(progdefaults.WEFAX_EmbeddedGui);
                 } // Fl_Check_Button* btnWefaxEmbeddedGui
-                { Fl_Value_Input2* o = btnWefaxShift = new Fl_Value_Input2(99, 195, 80, 20, _("Frequency shift (800 Hz)"));
-                btnWefaxShift->tooltip(_("Default 800 Hz. Deutsche Wetterdienst 850Hz"));
-                btnWefaxShift->type(2);
-                btnWefaxShift->box(FL_DOWN_BOX);
-                btnWefaxShift->color(FL_BACKGROUND2_COLOR);
-                btnWefaxShift->selection_color(FL_SELECTION_COLOR);
-                btnWefaxShift->labeltype(FL_NORMAL_LABEL);
-                btnWefaxShift->labelfont(0);
-                btnWefaxShift->labelsize(14);
-                btnWefaxShift->labelcolor(FL_FOREGROUND_COLOR);
-                btnWefaxShift->callback((Fl_Callback*)cb_btnWefaxShift);
-                btnWefaxShift->align(Fl_Align(FL_ALIGN_RIGHT));
-                btnWefaxShift->when(FL_WHEN_RELEASE);
-                o->value(progdefaults.WEFAX_Shift);
-                } // Fl_Value_Input2* btnWefaxShift
-                { Fl_Value_Input2* o = btnWefaxMaxRows = new Fl_Value_Input2(99, 235, 85, 20, _("Received fax maximum rows number (5000)"));
-                btnWefaxMaxRows->tooltip(_("Maximum row number for a received fax image."));
-                btnWefaxMaxRows->type(2);
-                btnWefaxMaxRows->box(FL_DOWN_BOX);
-                btnWefaxMaxRows->color(FL_BACKGROUND2_COLOR);
-                btnWefaxMaxRows->selection_color(FL_SELECTION_COLOR);
-                btnWefaxMaxRows->labeltype(FL_NORMAL_LABEL);
-                btnWefaxMaxRows->labelfont(0);
-                btnWefaxMaxRows->labelsize(14);
-                btnWefaxMaxRows->labelcolor(FL_FOREGROUND_COLOR);
-                btnWefaxMaxRows->callback((Fl_Callback*)cb_btnWefaxMaxRows);
-                btnWefaxMaxRows->align(Fl_Align(FL_ALIGN_RIGHT));
-                btnWefaxMaxRows->when(FL_WHEN_RELEASE);
-                o->value(progdefaults.WEFAX_MaxRows);
-                } // Fl_Value_Input2* btnWefaxMaxRows
-                { Fl_Input* o = btnWefaxSaveDir = new Fl_Input(99, 285, 310, 20, _("Fax images destination directory"));
-                btnWefaxSaveDir->callback((Fl_Callback*)cb_btnWefaxSaveDir);
-                btnWefaxSaveDir->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->value(progdefaults.wefax_save_dir.c_str());
-                } // Fl_Input* btnWefaxSaveDir
-                { btnSelectFaxDestDir = new Fl_Button(429, 285, 80, 20, _("Directory..."));
-                btnSelectFaxDestDir->callback((Fl_Callback*)cb_btnSelectFaxDestDir);
-                } // Fl_Button* btnSelectFaxDestDir
-                { Fl_Check_Button* o = btnWefaxHideTx = new Fl_Check_Button(99, 125, 235, 30, _("Hide Transmission window"));
+                { Fl_Check_Button* o = btnWefaxHideTx = new Fl_Check_Button(99, 128, 235, 30, _("Hide Transmission window"));
                 btnWefaxHideTx->tooltip(_("Hide transmission window by default."));
                 btnWefaxHideTx->down_box(FL_DOWN_BOX);
                 btnWefaxHideTx->callback((Fl_Callback*)cb_btnWefaxHideTx);
                 o->value(progdefaults.WEFAX_HideTx);
                 } // Fl_Check_Button* btnWefaxHideTx
-                { Fl_Check_Button* o = btnWefaxSaveMonochrome = new Fl_Check_Button(99, 315, 235, 30, _("Save image as monochrome file"));
+                { Fl_Check_Button* o = btnWefaxAdifLog = new Fl_Check_Button(99, 165, 235, 30, _("Log Wefax messages to Adif file"));
+                btnWefaxAdifLog->tooltip(_("Sent and received faxes are logged to Adif file."));
+                btnWefaxAdifLog->down_box(FL_DOWN_BOX);
+                btnWefaxAdifLog->callback((Fl_Callback*)cb_btnWefaxAdifLog);
+                o->value(progdefaults.WEFAX_AdifLog);
+                } // Fl_Check_Button* btnWefaxAdifLog
+                { Fl_Counter* o = cntrWEFAX_Shift = new Fl_Counter(100, 201, 120, 24, _("Frequency shift (800 Hz)"));
+                cntrWEFAX_Shift->minimum(750);
+                cntrWEFAX_Shift->maximum(900);
+                cntrWEFAX_Shift->step(10);
+                cntrWEFAX_Shift->value(800);
+                cntrWEFAX_Shift->callback((Fl_Callback*)cb_cntrWEFAX_Shift);
+                cntrWEFAX_Shift->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.WEFAX_Shift);
+                o->lstep(100.0);
+                } // Fl_Counter* cntrWEFAX_Shift
+                { Fl_Counter* o = cntrWEFAX_Center = new Fl_Counter(100, 232, 120, 24, _("Center freq (1500 Hz)"));
+                cntrWEFAX_Center->minimum(1000);
+                cntrWEFAX_Center->maximum(2000);
+                cntrWEFAX_Center->step(10);
+                cntrWEFAX_Center->value(1500);
+                cntrWEFAX_Center->callback((Fl_Callback*)cb_cntrWEFAX_Center);
+                cntrWEFAX_Center->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.WEFAX_Center);
+                o->lstep(100.0);
+                } // Fl_Counter* cntrWEFAX_Center
+                { Fl_Value_Input2* o = inpWefaxMaxRows = new Fl_Value_Input2(99, 262, 85, 24, _("Received fax maximum rows number (5000)"));
+                inpWefaxMaxRows->tooltip(_("Maximum row number for a received fax image."));
+                inpWefaxMaxRows->type(2);
+                inpWefaxMaxRows->box(FL_DOWN_BOX);
+                inpWefaxMaxRows->color(FL_BACKGROUND2_COLOR);
+                inpWefaxMaxRows->selection_color(FL_SELECTION_COLOR);
+                inpWefaxMaxRows->labeltype(FL_NORMAL_LABEL);
+                inpWefaxMaxRows->labelfont(0);
+                inpWefaxMaxRows->labelsize(14);
+                inpWefaxMaxRows->labelcolor(FL_FOREGROUND_COLOR);
+                inpWefaxMaxRows->callback((Fl_Callback*)cb_inpWefaxMaxRows);
+                inpWefaxMaxRows->align(Fl_Align(FL_ALIGN_RIGHT));
+                inpWefaxMaxRows->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.WEFAX_MaxRows);
+                } // Fl_Value_Input2* inpWefaxMaxRows
+                { Fl_Input* o = btnWefaxSaveDir = new Fl_Input(99, 310, 310, 24, _("Fax images destination directory"));
+                btnWefaxSaveDir->callback((Fl_Callback*)cb_btnWefaxSaveDir);
+                btnWefaxSaveDir->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->value(progdefaults.wefax_save_dir.c_str());
+                } // Fl_Input* btnWefaxSaveDir
+                { btnSelectFaxDestDir = new Fl_Button(429, 310, 80, 24, _("Directory..."));
+                btnSelectFaxDestDir->callback((Fl_Callback*)cb_btnSelectFaxDestDir);
+                } // Fl_Button* btnSelectFaxDestDir
+                { Fl_Check_Button* o = btnWefaxSaveMonochrome = new Fl_Check_Button(99, 337, 235, 30, _("Save image as monochrome file"));
                 btnWefaxSaveMonochrome->tooltip(_("Save the fax image as a gray-level PNG file."));
                 btnWefaxSaveMonochrome->down_box(FL_DOWN_BOX);
                 btnWefaxSaveMonochrome->callback((Fl_Callback*)cb_btnWefaxSaveMonochrome);
