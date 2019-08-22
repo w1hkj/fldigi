@@ -1184,11 +1184,16 @@ int main(int argc, char ** argv)
 // the main window will not be restored at its exact saved position if
 // we move it *after* it has been shown.
 #ifndef __APPLE__
-	fl_digi_main->show(argc, argv);
 	progStatus.initLastState();
+	fl_digi_main->show(argc, argv);
 #else
+#  if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 4
+	fl_digi_main->show(argc, argv);
+	progStatus.initLastState();
+#  else
 	progStatus.initLastState();
 	fl_digi_main->show(argc, argv);
+#  endif
 #endif
 
 	if (iconified)
