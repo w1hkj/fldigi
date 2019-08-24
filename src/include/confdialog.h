@@ -609,7 +609,7 @@ extern Fl_Check_Button *btnWefaxHideTx;
 extern Fl_Check_Button *btnWefaxAdifLog;
 extern Fl_Counter *cntrWEFAX_Shift;
 extern Fl_Counter *cntrWEFAX_Center;
-extern Fl_Value_Input2 *inpWefaxMaxRows;
+extern Fl_Counter *cntrWEFAX_MaxRows;
 extern Fl_Input *btnWefaxSaveDir;
 extern Fl_Button *btnSelectFaxDestDir;
 extern Fl_Check_Button *btnWefaxSaveMonochrome;
