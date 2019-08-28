@@ -48,6 +48,7 @@ Argentina;ARG;518.0;O;L2P;Mar del Plata;38 03 S;57 32 W;VI;EE
 Argentina;ARG;518.0;R;L2B;Buenos Aires;34 27 S;58 37 W;VI;EE
 Azores;AZR;518.0;F;CTH;Horta;38 32 N;28 38 W;II;EE
 Bahrain;BHR;518.0;B;A9M;Amala;26 13 N;50 39 E;IX;EE
+Belgium;BEL;490.0;B;OST;Oostende;51 11 N;02 48 E;I;DD
 Belgium;BEL;518.0;M;OST;Oostende (Thames);51 11 N;02 48 E;I;EE
 Belgium;BEL;518.0;T;OST;Oostende;51 11 N;02 48 E;I;EE
 Bermuda;BER;518.0;B;ZBM;Bermuda Harbour;32 23 N;64 41 W;IV;EE
@@ -96,7 +97,7 @@ Estonia;EST;518.0;U;ESA;Tallinn;59 30 N;24 30 E;I;EE
 Faroes;FRO;518.0;D;OXJ;Torshavn;62 00 N;06 47 W;I;EE
 France;FRA;518.0;A;FRC;CROSS Corsen;48 24 N;05 03 W;II;EE
 France;FRA;518.0;W;FRL;CROSS La Garde;43 06 N;05 59 E;III;EE
-Germany;DEU;518.0;L;DEU;Germany;53 43 N;09 55 E;I;EE
+Germany;DEU;518.0;L;DDH47;Pinneberg;53 43 N;09 55 E;I;EE
 Greece;GRC;518.0;H;SVH;Irakleio (Crete);35 20 N;25 07 E;III;EE/GK
 Greece;GRC;518.0;K;SVK;Kerkyra;39 45 N;19 52 E;III;EE/GK
 Greece;GRC;518.0;L;SVL;Limnos;39 52 N;25 04 E;III;EE/GK
