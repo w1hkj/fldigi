@@ -1249,7 +1249,7 @@ device name = %s\n\
 		mode == O_RDONLY ? sd[0].device.c_str() : "unknown",
 		sd[0].params.channelCount,
 		sd[1].params.channelCount );
-	LOG_VERBOSE( "%s", pa_open_str);
+	LOG_INFO( "%s", pa_open_str);
 
 	return ret;
 }
@@ -1781,6 +1781,19 @@ void SoundPort::start_stream(unsigned dir)
 	PaStreamParameters* sp[2];
 	sp[dir] = &sd[dir].params;
 	sp[!dir] = NULL;
+
+LOG_INFO("\n\
+open pa stream for %s:\n\
+  samplerate    : %.0f\n\
+  device number : %d\n\
+  # channels    : %d\n\
+  latency       : %f\n\
+  sample Format : paFloat32",
+(dir == 1 ? "write" : "read"),
+sd[dir].dev_sample_rate,
+sp[dir]->device,
+sp[dir]->channelCount,
+sp[dir]->suggestedLatency);
 
 	err = Pa_OpenStream(&sd[dir].stream, sp[0], sp[1],
 			sd[dir].dev_sample_rate, sd[dir].frames_per_buffer,

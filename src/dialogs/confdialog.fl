@@ -432,15 +432,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {531 25 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {131 41 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 675 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 600 365} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 600 365} when 1 hide
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -7524,14 +7524,14 @@ progdefaults.changed=true;}
       }
       Fl_Group tabSoundCard {
         label Audio open
-        xywh {0 25 600 365} hide
+        xywh {0 25 600 365}
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabAudio {
             label Devices open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group AudioOSS {open
               xywh {55 65 490 45} box ENGRAVED_FRAME
@@ -7548,12 +7548,12 @@ resetSoundCard();}
                 callback {scDevice[0] = scDevice[1] = progdefaults.OSSdevice = o->value();
 resetSoundCard();
 progdefaults.changed = true;} open
-                tooltip {Select device} xywh {424 75 110 25}
+                tooltip {Select device} xywh {370 75 165 25}
                 code0 {o->value(progdefaults.OSSdevice.c_str());}
               } {}
             }
             Fl_Group AudioPort {open
-              xywh {55 110 490 80} box ENGRAVED_FRAME
+              xywh {55 110 490 79} box ENGRAVED_FRAME
             } {
               Fl_Round_Button {btnAudioIO[1]} {
                 label PortAudio
@@ -7568,7 +7568,7 @@ resetSoundCard();}
 progdefaults.PortInIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 resetSoundCard();
 progdefaults.changed = true;} open
-                tooltip {Audio input device} xywh {244 121 290 25} down_box BORDER_BOX
+                tooltip {Audio input device} xywh {225 121 310 25} down_box BORDER_BOX
               } {}
               Fl_Choice menuPortOutDev {
                 label {Playback:}
@@ -7576,7 +7576,7 @@ progdefaults.changed = true;} open
 progdefaults.PortOutIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 resetSoundCard();
 progdefaults.changed = true;} open
-                tooltip {Audio output device} xywh {244 156 290 25} down_box BORDER_BOX
+                tooltip {Audio output device} xywh {225 156 310 25} down_box BORDER_BOX
               } {}
             }
             Fl_Group AudioPulse {open
@@ -7612,15 +7612,27 @@ resetSoundCard();}
                 tooltip {NO AUDIO DEVICE AVAILABLE (or testing)} xywh {66 245 100 25} down_box DOWN_BOX selection_color 1
               }
             }
+            Fl_Group AudioAlerts {
+              label Alerts open
+              xywh {55 280 490 45} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Choice menuAlertsDev {
+                label Playback
+                callback {progdefaults.AlertDevice = o->text();
+progdefaults.AlertIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
+progdefaults.changed = true;} open
+                tooltip {Audio output device} xywh {225 291 310 25} down_box BORDER_BOX
+              } {}
+            }
             Fl_Group AudioDuplex {open
-              xywh {55 280 490 45} box ENGRAVED_FRAME
+              xywh {55 325 490 45} box ENGRAVED_FRAME
             } {
               Fl_Round_Button btn_is_full_duplex {
                 label {Device supports full duplex}
                 callback {progdefaults.is_full_duplex = o->value();
 progdefaults.changed = true;
 resetSoundCard();}
-                tooltip {NO AUDIO DEVICE AVAILABLE (or testing)} xywh {66 290 223 25} down_box DOWN_BOX value 1 selection_color 1
+                tooltip {NO AUDIO DEVICE AVAILABLE (or testing)} xywh {66 335 223 25} down_box DOWN_BOX value 1 selection_color 1
                 code0 {o->value(progdefaults.is_full_duplex);}
               }
             }
@@ -7837,7 +7849,7 @@ progdefaults.changed=true;}
           }
           Fl_Group tabAlerts {
             label Alerts open
-            xywh {0 50 600 340} color 50 selection_color 50 hide
+            xywh {0 50 600 340} color 50 selection_color 50
           } {
             Fl_Group {} {
               label {Regex Match in Browser} open
@@ -7882,12 +7894,13 @@ switch ( fnfc.show() ) {
     case 6 : progdefaults.BWSR_REGEX_MATCH = "beeboo"; break;
     case 7 : progdefaults.BWSR_REGEX_MATCH = "phone"; break;
     case 8 : progdefaults.BWSR_REGEX_MATCH = "dinner_bell"; break;
+    case 9 : progdefaults.BWSR_REGEX_MATCH = "standard_tone"; break;
   }
   inp_wav_fname_regex->value(progdefaults.BWSR_REGEX_MATCH.c_str());
 }
 progdefaults.REGEX_ALERT_MENU = o->value();} open
                 xywh {380 91 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
-                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");}
+                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
                 code1 {o->value(progdefaults.REGEX_ALERT_MENU);}
               } {}
               Fl_Check_Button btn_enable_regex_match_wa {
@@ -7945,12 +7958,13 @@ switch ( fnfc.show() ) {
     case 6 : progdefaults.BWSR_MYCALL_MATCH = "beeboo"; break;
     case 7 : progdefaults.BWSR_MYCALL_MATCH = "phone"; break;
     case 8 : progdefaults.BWSR_MYCALL_MATCH = "dinner_bell"; break;
+    case 9 : progdefaults.BWSR_MYCALL_MATCH = "standard_tone"; break;
   }
   inp_wav_fname_mycall->value(progdefaults.BWSR_MYCALL_MATCH.c_str());
 }
 progdefaults.MYCALL_ALERT_MENU = o->value();} open
                 xywh {380 158 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
-                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");}
+                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
                 code1 {o->value(progdefaults.MYCALL_ALERT_MENU);}
               } {}
               Fl_Check_Button btn_enable_mycall_match_wav {
@@ -8007,12 +8021,13 @@ switch ( fnfc.show() ) {
     case 6 : progdefaults.RX_EXTRACT_MSG_RCVD = "beeboo"; break;
     case 7 : progdefaults.RX_EXTRACT_MSG_RCVD = "phone"; break;
     case 8 : progdefaults.RX_EXTRACT_MSG_RCVD = "dinner_bell"; break;
+    case 9 : progdefaults.RX_EXTRACT_MSG_RCVD = "standard_tone"; break;
   }
   inp_wav_flmsg_rcvd->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
 }
 progdefaults.RX_EXTRACT_ALERT_MENU = o->value();} open
                 xywh {380 225 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
-                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");}
+                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
                 code1 {o->value(progdefaults.RX_EXTRACT_ALERT_MENU);}
               } {}
               Fl_Check_Button btn_enable_flmsg_wav {
@@ -8064,12 +8079,13 @@ switch ( fnfc.show() ) {
     case 6 : progdefaults.RX_EXTRACT_TIMED_OUT = "beeboo"; break;
     case 7 : progdefaults.RX_EXTRACT_TIMED_OUT = "phone"; break;
     case 8 : progdefaults.RX_EXTRACT_TIMED_OUT = "dinner_bell"; break;
+    case 9 : progdefaults.RX_EXTRACT_TIMED_OUT = "standard_tone"; break;
   }
   inp_wav_flmsg_timed_out->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
 }
 progdefaults.TIMED_OUT_ALERT_MENU = o->value();} open
                 xywh {380 281 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
-                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");}
+                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
                 code1 {o->value(progdefaults.TIMED_OUT_ALERT_MENU);}
               } {}
               Fl_Button btn_test_rx_extract_timed_out {
@@ -8126,12 +8142,13 @@ switch ( fnfc.show() ) {
     case 6 : progdefaults.RSID_MATCH = "beeboo"; break;
     case 7 : progdefaults.RSID_MATCH = "phone"; break;
     case 8 : progdefaults.RSID_MATCH = "dinner_bell"; break;
+    case 9 : progdefaults.RSID_MATCH = "standard_tone"; break;
   }
   inp_wav_fname_rsid->value(progdefaults.RSID_MATCH.c_str());
 }
-progdefaults.RSID_ALERT_MENU = o->value();} open
+progdefaults.RSID_ALERT_MENU = o->value();} open selected
                 xywh {380 349 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
-                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");}
+                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
                 code1 {o->value(progdefaults.RSID_ALERT_MENU);}
               } {}
               Fl_Check_Button btn_enable_rsid_match_wav {

@@ -6131,6 +6131,16 @@ progdefaults.changed = true;
 resetSoundCard();
 }
 
+Fl_Group *AudioAlerts=(Fl_Group *)0;
+
+Fl_Choice *menuAlertsDev=(Fl_Choice *)0;
+
+static void cb_menuAlertsDev(Fl_Choice* o, void*) {
+  progdefaults.AlertDevice = o->text();
+progdefaults.AlertIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
+progdefaults.changed = true;
+}
+
 Fl_Group *AudioDuplex=(Fl_Group *)0;
 
 Fl_Round_Button *btn_is_full_duplex=(Fl_Round_Button *)0;
@@ -6330,6 +6340,7 @@ static void cb_mnu_regex_alert_menu(Fl_Choice* o, void*) {
     case 6 : progdefaults.BWSR_REGEX_MATCH = "beeboo"; break;
     case 7 : progdefaults.BWSR_REGEX_MATCH = "phone"; break;
     case 8 : progdefaults.BWSR_REGEX_MATCH = "dinner_bell"; break;
+    case 9 : progdefaults.BWSR_REGEX_MATCH = "standard_tone"; break;
   }
   inp_wav_fname_regex->value(progdefaults.BWSR_REGEX_MATCH.c_str());
 }
@@ -6385,6 +6396,7 @@ static void cb_mnu_mycall_alert_menu(Fl_Choice* o, void*) {
     case 6 : progdefaults.BWSR_MYCALL_MATCH = "beeboo"; break;
     case 7 : progdefaults.BWSR_MYCALL_MATCH = "phone"; break;
     case 8 : progdefaults.BWSR_MYCALL_MATCH = "dinner_bell"; break;
+    case 9 : progdefaults.BWSR_MYCALL_MATCH = "standard_tone"; break;
   }
   inp_wav_fname_mycall->value(progdefaults.BWSR_MYCALL_MATCH.c_str());
 }
@@ -6440,6 +6452,7 @@ static void cb_mnu_rx_extract_alert_menu(Fl_Choice* o, void*) {
     case 6 : progdefaults.RX_EXTRACT_MSG_RCVD = "beeboo"; break;
     case 7 : progdefaults.RX_EXTRACT_MSG_RCVD = "phone"; break;
     case 8 : progdefaults.RX_EXTRACT_MSG_RCVD = "dinner_bell"; break;
+    case 9 : progdefaults.RX_EXTRACT_MSG_RCVD = "standard_tone"; break;
   }
   inp_wav_flmsg_rcvd->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
 }
@@ -6495,6 +6508,7 @@ static void cb_mnu_rx_timed_out_alert_menu(Fl_Choice* o, void*) {
     case 6 : progdefaults.RX_EXTRACT_TIMED_OUT = "beeboo"; break;
     case 7 : progdefaults.RX_EXTRACT_TIMED_OUT = "phone"; break;
     case 8 : progdefaults.RX_EXTRACT_TIMED_OUT = "dinner_bell"; break;
+    case 9 : progdefaults.RX_EXTRACT_TIMED_OUT = "standard_tone"; break;
   }
   inp_wav_flmsg_timed_out->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
 }
@@ -6550,6 +6564,7 @@ static void cb_mnu_rsid_alert_menu(Fl_Choice* o, void*) {
     case 6 : progdefaults.RSID_MATCH = "beeboo"; break;
     case 7 : progdefaults.RSID_MATCH = "phone"; break;
     case 8 : progdefaults.RSID_MATCH = "dinner_bell"; break;
+    case 9 : progdefaults.RSID_MATCH = "standard_tone"; break;
   }
   inp_wav_fname_rsid->value(progdefaults.RSID_MATCH.c_str());
 }
@@ -8227,6 +8242,7 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 590, 285, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -14404,10 +14420,10 @@ i.e. localhost"));
         tabRig->end();
       } // Fl_Group* tabRig
       { tabSoundCard = new Fl_Group(0, 25, 600, 365, _("Audio"));
-        tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 600, 365);
           tabsSoundCard->selection_color(FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 600, 340, _("Devices"));
+            tabAudio->hide();
             { AudioOSS = new Fl_Group(55, 65, 490, 45);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(65, 75, 53, 25, _("OSS"));
@@ -14416,14 +14432,14 @@ i.e. localhost"));
                 btnAudioIO[0]->selection_color((Fl_Color)1);
                 btnAudioIO[0]->callback((Fl_Callback*)cb_btnAudioIO);
               } // Fl_Round_Button* btnAudioIO[0]
-              { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(424, 75, 110, 25, _("Device:"));
+              { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(370, 75, 165, 25, _("Device:"));
                 menuOSSDev->tooltip(_("Select device"));
                 menuOSSDev->callback((Fl_Callback*)cb_menuOSSDev);
                 o->value(progdefaults.OSSdevice.c_str());
               } // Fl_Input_Choice* menuOSSDev
               AudioOSS->end();
             } // Fl_Group* AudioOSS
-            { AudioPort = new Fl_Group(55, 110, 490, 80);
+            { AudioPort = new Fl_Group(55, 110, 490, 79);
               AudioPort->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[1] = new Fl_Round_Button(65, 138, 95, 25, _("PortAudio"));
                 btnAudioIO[1]->tooltip(_("Use Port Audio server"));
@@ -14431,12 +14447,12 @@ i.e. localhost"));
                 btnAudioIO[1]->selection_color((Fl_Color)1);
                 btnAudioIO[1]->callback((Fl_Callback*)cb_btnAudioIO1);
               } // Fl_Round_Button* btnAudioIO[1]
-              { menuPortInDev = new Fl_Choice(244, 121, 290, 25, _("Capture:"));
+              { menuPortInDev = new Fl_Choice(225, 121, 310, 25, _("Capture:"));
                 menuPortInDev->tooltip(_("Audio input device"));
                 menuPortInDev->down_box(FL_BORDER_BOX);
                 menuPortInDev->callback((Fl_Callback*)cb_menuPortInDev);
               } // Fl_Choice* menuPortInDev
-              { menuPortOutDev = new Fl_Choice(244, 156, 290, 25, _("Playback:"));
+              { menuPortOutDev = new Fl_Choice(225, 156, 310, 25, _("Playback:"));
                 menuPortOutDev->tooltip(_("Audio output device"));
                 menuPortOutDev->down_box(FL_BORDER_BOX);
                 menuPortOutDev->callback((Fl_Callback*)cb_menuPortOutDev);
@@ -14478,9 +14494,19 @@ i.e. localhost"));
               } // Fl_Round_Button* btnAudioIO[3]
               AudioNull->end();
             } // Fl_Group* AudioNull
-            { AudioDuplex = new Fl_Group(55, 280, 490, 45);
+            { AudioAlerts = new Fl_Group(55, 280, 490, 45, _("Alerts"));
+              AudioAlerts->box(FL_ENGRAVED_FRAME);
+              AudioAlerts->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { menuAlertsDev = new Fl_Choice(225, 291, 310, 25, _("Playback"));
+                menuAlertsDev->tooltip(_("Audio output device"));
+                menuAlertsDev->down_box(FL_BORDER_BOX);
+                menuAlertsDev->callback((Fl_Callback*)cb_menuAlertsDev);
+              } // Fl_Choice* menuAlertsDev
+              AudioAlerts->end();
+            } // Fl_Group* AudioAlerts
+            { AudioDuplex = new Fl_Group(55, 325, 490, 45);
               AudioDuplex->box(FL_ENGRAVED_FRAME);
-              { Fl_Round_Button* o = btn_is_full_duplex = new Fl_Round_Button(66, 290, 223, 25, _("Device supports full duplex"));
+              { Fl_Round_Button* o = btn_is_full_duplex = new Fl_Round_Button(66, 335, 223, 25, _("Device supports full duplex"));
                 btn_is_full_duplex->tooltip(_("NO AUDIO DEVICE AVAILABLE (or testing)"));
                 btn_is_full_duplex->down_box(FL_DOWN_BOX);
                 btn_is_full_duplex->value(1);
@@ -14691,7 +14717,6 @@ nce.\nYou may change the state from either location.\n..."));
           { tabAlerts = new Fl_Group(0, 50, 600, 340, _("Alerts"));
             tabAlerts->color(FL_LIGHT1);
             tabAlerts->selection_color(FL_LIGHT1);
-            tabAlerts->hide();
             { Fl_Group* o = new Fl_Group(5, 56, 590, 66, _("Regex Match in Browser"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
@@ -14708,7 +14733,7 @@ nce.\nYou may change the state from either location.\n..."));
                 mnu_regex_alert_menu->color((Fl_Color)53);
                 mnu_regex_alert_menu->callback((Fl_Callback*)cb_mnu_regex_alert_menu);
                 mnu_regex_alert_menu->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");
+                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");
                 o->value(progdefaults.REGEX_ALERT_MENU);
               } // Fl_Choice* mnu_regex_alert_menu
               { Fl_Check_Button* o = btn_enable_regex_match_wa = new Fl_Check_Button(514, 69, 70, 15, _("Enable"));
@@ -14737,7 +14762,7 @@ nce.\nYou may change the state from either location.\n..."));
                 mnu_mycall_alert_menu->color((Fl_Color)53);
                 mnu_mycall_alert_menu->callback((Fl_Callback*)cb_mnu_mycall_alert_menu);
                 mnu_mycall_alert_menu->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");
+                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");
                 o->value(progdefaults.MYCALL_ALERT_MENU);
               } // Fl_Choice* mnu_mycall_alert_menu
               { Fl_Check_Button* o = btn_enable_mycall_match_wav = new Fl_Check_Button(514, 136, 70, 15, _("Enable"));
@@ -14766,7 +14791,7 @@ nce.\nYou may change the state from either location.\n..."));
                 mnu_rx_extract_alert_menu->color((Fl_Color)53);
                 mnu_rx_extract_alert_menu->callback((Fl_Callback*)cb_mnu_rx_extract_alert_menu);
                 mnu_rx_extract_alert_menu->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");
+                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");
                 o->value(progdefaults.RX_EXTRACT_ALERT_MENU);
               } // Fl_Choice* mnu_rx_extract_alert_menu
               { Fl_Check_Button* o = btn_enable_flmsg_wav = new Fl_Check_Button(514, 203, 70, 15, _("Enable"));
@@ -14790,7 +14815,7 @@ nce.\nYou may change the state from either location.\n..."));
                 mnu_rx_timed_out_alert_menu->color((Fl_Color)53);
                 mnu_rx_timed_out_alert_menu->callback((Fl_Callback*)cb_mnu_rx_timed_out_alert_menu);
                 mnu_rx_timed_out_alert_menu->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");
+                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");
                 o->value(progdefaults.TIMED_OUT_ALERT_MENU);
               } // Fl_Choice* mnu_rx_timed_out_alert_menu
               { btn_test_rx_extract_timed_out = new Fl_Button(518, 281, 60, 24, _("Test"));
@@ -14819,7 +14844,7 @@ nce.\nYou may change the state from either location.\n..."));
                 mnu_rsid_alert_menu->color((Fl_Color)53);
                 mnu_rsid_alert_menu->callback((Fl_Callback*)cb_mnu_rsid_alert_menu);
                 mnu_rsid_alert_menu->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");
+                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");
                 o->value(progdefaults.RSID_ALERT_MENU);
               } // Fl_Choice* mnu_rsid_alert_menu
               { Fl_Check_Button* o = btn_enable_rsid_match_wav = new Fl_Check_Button(514, 327, 70, 15, _("Enable"));

@@ -1439,10 +1439,16 @@
               "PortAudio input device index",                                           \
               -1)                                                                       \
         ELEM_(std::string, PortOutDevice, "PORTOUTDEVICE",                              \
-              "PortAudio input device name",                                            \
+              "PortAudio output device name",                                           \
               "")                                                                       \
         ELEM_(int, PortOutIndex, "PORTOUTINDEX",                                        \
               "PortAudio input device index",                                           \
+              -1)                                                                       \
+        ELEM_(std::string, AlertDevice, "ALERTDEVICE",                                  \
+              "PortAudio alert device name",                                            \
+              "")                                                                       \
+        ELEM_(int, AlertIndex, "ALERTINDEX",                                            \
+              "Alert output device index",                                              \
               -1)                                                                       \
         ELEM_(int, PortFramesPerBuffer, "", "",  0)                                     \
         ELEM_(std::string, PulseServer, "PULSESERVER",                                  \

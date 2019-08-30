@@ -205,7 +205,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<DTMF:[Wn:][Ln:]chrs>\t[Wait][Len](ms)"));
 
 	w->add(LINE_SEP);
-	w->add(_("<ALERT:[bark][checkout][doesnot][phone][beeboo][diesel][steam_train][dinner_bell]>"));
+	w->add(_("<ALERT:[bark][checkout][doesnot][phone][beeboo][diesel][steam_train][dinner_bell][standard_tone]>"));
 	w->add(_("<ALERT:>\talert using external wav file"));
 
 	w->add(LINE_SEP);

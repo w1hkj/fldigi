@@ -224,10 +224,12 @@ static void init_portaudio(void)
 			menuPortInDev->add(menu_item.c_str(), 0, NULL,
 							   reinterpret_cast<void *>(ilist->idx), 0);
 
-		if (ilist->dev->maxOutputChannels > 0)
+		if (ilist->dev->maxOutputChannels > 0) {
 			menuPortOutDev->add(menu_item.c_str(), 0, NULL,
 								reinterpret_cast<void *>(ilist->idx), 0);
-
+			menuAlertsDev->add(menu_item.c_str(), 0, NULL,
+								reinterpret_cast<void *>(ilist->idx), 0);
+		}
 	}
 
 	if (progdefaults.PortInDevice.length() == 0) {
@@ -254,9 +256,19 @@ static void init_portaudio(void)
 			progdefaults.PortOutDevice = progdefaults.PAdevice;
 	}
 
+	if (progdefaults.AlertDevice.length() == 0) {
+		PaDeviceIndex def = get_default_portaudio_device(1);
+		if (def != paNoDevice) {
+			progdefaults.AlertDevice = (*(SoundPort::devices().begin() + def))->name;
+			progdefaults.AlertIndex = def;
+		}
+	}
+
 	// select the correct menu items
 	pa_set_dev(menuPortInDev,  progdefaults.PortInDevice,  progdefaults.PortInIndex);
 	pa_set_dev(menuPortOutDev, progdefaults.PortOutDevice, progdefaults.PortOutIndex);
+
+	pa_set_dev(menuAlertsDev, progdefaults.AlertDevice, progdefaults.AlertIndex);
 }
 
 int pa_set_dev(Fl_Choice *loc_choice, std::string loc_dev_name, int loc_dev_index)

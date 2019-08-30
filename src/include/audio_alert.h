@@ -47,6 +47,7 @@ public:
 	void beeboo();
 	void phone();
 	void dinner_bell();
+	void standard_tone();
 	void file(std::string sndfile);
 
 	void alert(std::string s) {
@@ -59,6 +60,7 @@ public:
 		else if (s == "beeboo") beeboo();
 		else if (s == "phone") phone();
 		else if (s == "dinner_bell") dinner_bell();
+		else if (s == "standard_tone") standard_tone();
 		else file(s);
 	}
 

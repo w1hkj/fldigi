@@ -54,17 +54,21 @@ protected:
 };
 
 class c_portaudio {
-#define NUMSAMPLES 2048
+#define NUM_CHANNELS 2
+#define FRAMES_PER_BUFFER 1024
 #define SCRATE 8000
 
 friend void process_alert();
 
-private:
+public:
 
 	int		paError;
-	float	sndbuff[ 2 * NUMSAMPLES ];
+	float	data_frames[ FRAMES_PER_BUFFER * NUM_CHANNELS ];
 	int		ptr;
-	int		sr;
+	double	sr;
+	int		data_ptr;
+	int		num_frames;
+	int		state;
 
 	PaStream *stream;
 	PaStreamParameters paStreamParameters;
@@ -78,7 +82,7 @@ public:
 	c_portaudio();
 	~c_portaudio();
 
-	void	open(int samplerate);
+	int 	open(void *);
 	void	close();
 
 	void	play_buffer(float *buffer, int len, int _sr);

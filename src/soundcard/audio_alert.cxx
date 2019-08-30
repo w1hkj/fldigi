@@ -82,6 +82,26 @@ void Caudio_alert::dinner_bell()
 	}
 }
 
+void Caudio_alert::standard_tone()
+{
+	try{
+		float st[16000];
+		float mod;
+		for (int i = 0; i < 16000; i++) {
+			mod = i < 800 ? sin(M_PI*i/1600.0) :
+				  i > 15200 ? (cos(M_PI*(i - 15200)/1600.0)) : 1.0;
+			st[i] = 0.9 * mod * sin(2.0*M_PI*i*440.0/8000.0);
+		}
+//FILE *orig = fopen("orig.txt","w");
+//for (int n = 0; n < 16000; n++)
+//  fprintf(orig, "%d,%f\n", n, st[n]);
+//fclose(orig);
+		sc_audio->play_sound(st, 16000, 8000.0);
+	} catch (...) {
+		throw;
+	}
+}
+
 void Caudio_alert::file(std::string sndfile)
 {
 	try {
