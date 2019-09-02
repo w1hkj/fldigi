@@ -438,6 +438,90 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 	return r;
 }
 
+//----------------------------------------------------------------------
+// Audio
+// Adds ability to transmit an audio file using new macro tag:
+//   <AUDIO:path-filename>
+//   macro editor opens an OS select file dialog when the tag is
+//   selected from the pick list.
+//   suggested use:
+//     <MODEM:NULL><TX>
+//     <AUDIO:path-filename-1>
+//     <AUDIO:path-filename-2>
+//     <RX><@MODEM:BPSK31>
+//   or modem type of choice
+//   Audio file must be wav format, either mono or stereo any sample rate
+//   Returning to Rx stops current and any pending audio playback.  Post
+//   Tx macro tags are then executed.
+//   T/R button or Escape key will abort the playback.
+// Please use responsibly - know and understand your license limitations
+// for transmitting audio files, especially music and/or copyrighted
+// material.
+//----------------------------------------------------------------------
+int SoundBase::Audio(std::string fname)
+{
+	SNDFILE *playback;
+	play_info.frames = 0;
+	play_info.samplerate = 0;
+	play_info.channels = 0;
+	play_info.format = 0;
+	play_info.sections = 0;
+	play_info.seekable = 0;
+
+	if ((playback = sf_open(fname.c_str(), SFM_READ, &play_info)) == NULL) {
+		LOG_ERROR("Could not open %s", fname.c_str());
+		return 0;
+	}
+	LOG_INFO("\
+\nAudio file: %s\
+\nframes:     %ld\
+\nsamplerate: %d\
+\nchannels:   %d",
+fname.c_str(), (long)play_info.frames, play_info.samplerate, play_info.channels);
+
+	int ch = play_info.channels;
+
+	if (ch > 2) return 0;
+
+	int fsize = play_info.frames * 2;
+
+	float *buffer = new float[fsize];
+	memset(buffer, 0, fsize * sizeof(*buffer));
+
+	int ret = sf_readf_float( playback, buffer, play_info.frames);
+	if (!ret) {
+		sf_close(playback);
+		delete [] buffer;
+		return 0;
+	}
+
+	double save_sample_rate = req_sample_rate;
+	req_sample_rate = play_info.samplerate;
+	if (ch == 1) {
+		for (long int n = play_info.frames - 1; n >= 0; n--)
+			buffer[2 * n] = buffer[2 * n + 1] = buffer[n];
+	}
+
+	unsigned int n = 0;
+	int incr = SCBLOCKSIZE;
+	while (n < play_info.frames) {
+		if (active_modem->get_stopflag())  {
+			Rx_queue_execute();
+			break;
+		}
+		if (n + incr < play_info.frames)
+			resample_write(&buffer[n*2], incr);
+		else
+			resample_write(&buffer[n*2], play_info.frames - n);
+		n += incr;
+	}
+
+	sf_close(playback);
+	delete [] buffer;
+	req_sample_rate = save_sample_rate;
+	return play_info.frames;
+}
+
 // ---------------------------------------------------------------------
 // write_file
 // All sound buffer data is resampled to a specified sample rate
@@ -914,6 +998,14 @@ size_t SoundOSS::Write(double *buf, size_t count)
 	return retval;
 }
 
+size_t SoundOSS::resample_write(float *buf, size_t count)
+{
+	double *samples = new double[2*count];
+	Write(samples, count);
+	delete [] samples;
+	return 0;
+}
+
 size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 {
 	int retval;
@@ -1066,8 +1158,10 @@ const vector<double>& SoundPort::get_supported_rates(const string& name, unsigne
 }
 
 
-SoundPort::SoundPort(const char *in_dev, const char *out_dev) : req_sample_rate(0)
+SoundPort::SoundPort(const char *in_dev, const char *out_dev)
 {
+	req_sample_rate = 0;
+
 	sd[0].device = in_dev;
 	sd[0].params.channelCount = 2; // init_stream can change this to 0 or 1
 	sd[0].stream = 0;
@@ -1565,6 +1659,8 @@ size_t SoundPort::resample_write(float* buf, size_t count)
 		pa_perror(3, "Portaudio write error #3");
 		throw SndException("Portaudio write error 3");
 	}
+	if (active_modem->get_stopflag()) return count;
+
 	sd[1].rb->write(wbuf, sd[1].params.channelCount * count);
 
 	return count;
@@ -2216,6 +2312,8 @@ size_t SoundPulse::resample_write(float* buf, size_t count)
 		wbuf = tx_src_data->data_out;
 		count = tx_src_data->output_frames_gen;
 	}
+
+	if (active_modem->get_stopflag()) return count;
 
 	if (pa_simple_write(sd[1].stream, wbuf, count * sd[1].stream_params.channels * sizeof(float), &err) == -1)
 		throw SndPulseException(err);

@@ -59,7 +59,7 @@ void ssb::restart()
 ssb::ssb()
 {
 	mode = MODE_SSB;
-	samplerate = 8000;
+	samplerate = 44100;
 	cap &= ~CAP_TX;
 	restart();
 }

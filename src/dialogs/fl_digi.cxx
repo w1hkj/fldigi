@@ -9066,6 +9066,9 @@ int get_tx_char(void)
 				while(que_waiting) { MilliSleep(10); Fl::awake(); }
 				return(GET_TX_CHAR_ETX);
 			} else {
+				if (active_modem->get_stopflag()) {
+					return (GET_TX_CHAR_NODATA);
+				}
 				REQ(do_que_execute, (void*)0);
 				while(que_waiting) { MilliSleep(10); Fl::awake(); }
 				return (GET_TX_CHAR_NODATA);

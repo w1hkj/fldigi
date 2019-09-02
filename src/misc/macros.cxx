@@ -135,6 +135,7 @@ void rx_que_continue(void *);
 
 static void postQueue(std::string s)
 {
+	s.append("\n");
 	if (!progdefaults.macro_post) return;
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_rx_text->addstr(s, FTextBase::CTRL);
@@ -1851,6 +1852,26 @@ static void pALERT(std::string &s, size_t &i, size_t endbracket)
 		} catch (...) {
 		}
 	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doAUDIO(std::string s)
+{
+	s.erase(0, 16);
+	active_modem->Audio_filename(s);
+	que_ok = true;
+}
+
+static void pAUDIO(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	std::string acmd = "Xmt audio file: ";
+	acmd.append(s.substr(i + 7, endbracket - (i + 7)));
+	CMDS cmd = {acmd, doAUDIO};
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void pPAUSE(std::string &s, size_t &i, size_t endbracket)
@@ -4072,6 +4093,13 @@ bool queue_must_rx()
 int time_out = 400;
 void Rx_queue_execution(void *)
 {
+	if (!Tx_cmds.empty()) {
+		Fl::remove_timeout(post_queue_execute);
+		Fl::remove_timeout(queue_execute_after_rx);
+		Fl::remove_timeout(doneIDLE);
+		Fl::remove_timeout(doneWAIT);
+		while (!Tx_cmds.empty()) Tx_cmds.pop();
+	}
 	if (trx_state != STATE_RX) {
 		if (time_out-- == 0) {
 			while (!Rx_cmds.empty()) Rx_cmds.pop();
@@ -4241,6 +4269,7 @@ static const MTAGS mtags[] = {
 	{"<PUSH",		pPUSH},
 	{"<DIGI>",		pDIGI},
 	{"<ALERT:",		pALERT},
+	{"<AUDIO:",		pAUDIO},
 #ifdef __WIN32__
 	{"<TALK:",		pTALK},
 #endif

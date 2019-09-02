@@ -205,6 +205,9 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<DTMF:[Wn:][Ln:]chrs>\t[Wait][Len](ms)"));
 
 	w->add(LINE_SEP);
+	w->add(_("<AUDIO:>\tXmt audio wav file"));
+
+	w->add(LINE_SEP);
 	w->add(_("<ALERT:[bark][checkout][doesnot][phone][beeboo][diesel][steam_train][dinner_bell][standard_tone]>"));
 	w->add(_("<ALERT:>\talert using external wav file"));
 
@@ -408,6 +411,16 @@ void cbInsertMacro(Fl_Widget *, void *)
 		} else
 			text = "";
 	} else if (text == "<ALERT:>") {
+		string filters = "Wav file\t*.wav";
+		const char* p = FSEL::select(
+			_("Select wav file"),
+			filters.c_str(),
+			HomeDir.c_str());
+		if (p && *p) {
+			text.insert(7, p);
+		} else
+			text = "";
+	} else if (text == "<AUDIO:>") {
 		string filters = "Wav file\t*.wav";
 		const char* p = FSEL::select(
 			_("Select wav file"),

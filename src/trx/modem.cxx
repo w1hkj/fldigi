@@ -582,6 +582,24 @@ void modem::ModulateStereo(double *left, double *right, int len, bool sample_fla
 }
 
 //------------------------------------------------------------------------------
+// tx process
+//------------------------------------------------------------------------------
+int  modem::tx_process ()
+{
+	if (!macro_video_text.empty()) {
+		wfid_text(macro_video_text);
+		macro_video_text.clear();
+	}
+	if (play_audio) {
+		disable_modem = true;
+		TXscard->Audio(audio_filename);
+		play_audio = false;
+		disable_modem = false;
+	}
+	return 0;
+}
+
+//------------------------------------------------------------------------------
 // modulate video signal
 //------------------------------------------------------------------------------
 void modem::ModulateVideoStereo(double *left, double *right, int len, bool sample_flag)

@@ -90,6 +90,9 @@ protected:
 
 	unsigned cap;
 
+// Audio output
+	std::string audio_filename;
+	bool play_audio;
 public:
 	modem();
 	virtual ~modem(){};
@@ -100,15 +103,10 @@ public:
 	virtual void rx_init () = 0;
 	virtual void restart () = 0;
 	virtual void rx_flush() {};
-	virtual int  tx_process ()// = 0;
-	{
-		if (!macro_video_text.empty()) {
-			wfid_text(macro_video_text);
-			macro_video_text.clear();
-		}
-		return 0;
-	}
+	virtual int  tx_process ();
 	virtual int  rx_process (const double *, int len) = 0;
+	virtual void Audio_filename(std::string nm) { audio_filename = nm; play_audio = true; }
+
 	virtual void shutdown(){};
 	virtual void set1(int, int){};
 	virtual void set2(int, int){};
