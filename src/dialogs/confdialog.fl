@@ -432,15 +432,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {131 41 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {636 41 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 675 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 600 365} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 600 365} when 1
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -7524,14 +7524,14 @@ progdefaults.changed=true;}
       }
       Fl_Group tabSoundCard {
         label Audio open
-        xywh {0 25 600 365}
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabAudio {
             label Devices open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group AudioOSS {open
               xywh {55 65 490 45} box ENGRAVED_FRAME
@@ -7849,7 +7849,7 @@ progdefaults.changed=true;}
           }
           Fl_Group tabAlerts {
             label Alerts open
-            xywh {0 50 600 340} color 50 selection_color 50
+            xywh {0 50 600 340} color 50 selection_color 50 hide
           } {
             Fl_Group {} {
               label {Regex Match in Browser} open
@@ -7865,7 +7865,7 @@ progdefaults.changed=true;}
                 callback {Fl_Native_File_Chooser fnfc;
 fnfc.title("Pick a file");
 fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-fnfc.filter("wav files\\t*.wav\\n");
+fnfc.filter("wav files\\t*.{mp3,wav}\\n");
 fnfc.directory("./");           // default directory to use
 // Show native chooser
 switch ( fnfc.show() ) {
@@ -7930,7 +7930,7 @@ progdefaults.REGEX_ALERT_MENU = o->value();} open
                 callback {Fl_Native_File_Chooser fnfc;
 fnfc.title("Pick a file");
 fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-fnfc.filter("wav files\\t*.wav\\n");
+fnfc.filter("wav files\\t*.{mp3,wav}\\n");
 fnfc.directory("./");           // default directory to use
 // Show native chooser
 switch ( fnfc.show() ) {
@@ -7993,7 +7993,7 @@ progdefaults.MYCALL_ALERT_MENU = o->value();} open
                 callback {Fl_Native_File_Chooser fnfc;
 fnfc.title("Pick a file");
 fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-fnfc.filter("wav files\\t*.wav\\n");
+fnfc.filter("wav files\\t*.{mp3,wav}\\n");
 fnfc.directory("./");           // default directory to use
 // Show native chooser
 switch ( fnfc.show() ) {
@@ -8051,7 +8051,7 @@ progdefaults.RX_EXTRACT_ALERT_MENU = o->value();} open
                 callback {Fl_Native_File_Chooser fnfc;
 fnfc.title("Pick a file");
 fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-fnfc.filter("wav files\\t*.wav\\n");
+fnfc.filter("wav files\\t*.{mp3,wav}\\n");
 fnfc.directory("./");           // default directory to use
 // Show native chooser
 switch ( fnfc.show() ) {
@@ -8114,7 +8114,7 @@ progdefaults.TIMED_OUT_ALERT_MENU = o->value();} open
                 callback {Fl_Native_File_Chooser fnfc;
 fnfc.title("Pick a file");
 fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-fnfc.filter("wav files\\t*.wav\\n");
+fnfc.filter("wav files\\t*.{mp3,wav}\\n");
 fnfc.directory("./");           // default directory to use
 // Show native chooser
 switch ( fnfc.show() ) {
@@ -8146,7 +8146,7 @@ switch ( fnfc.show() ) {
   }
   inp_wav_fname_rsid->value(progdefaults.RSID_MATCH.c_str());
 }
-progdefaults.RSID_ALERT_MENU = o->value();} open selected
+progdefaults.RSID_ALERT_MENU = o->value();} open
                 xywh {380 349 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
                 code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
                 code1 {o->value(progdefaults.RSID_ALERT_MENU);}

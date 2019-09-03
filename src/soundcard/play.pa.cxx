@@ -11,6 +11,9 @@
 #include "fl_digi.h"
 #include "qrunner.h"
 
+#define DR_MP3_IMPLEMENTATION
+#include "dr_mp3.h"
+
 #define CALLBACK 1
 //#define PLAYBACK_SAMPLERATE 44100
 
@@ -452,8 +455,41 @@ void c_portaudio::silence(float secs, int _sr)
 	play_sound(nosound, len, _sr);
 }
 
+void c_portaudio::play_mp3(std::string fname)
+{
+	if (fname.empty()) return;
+
+	drmp3_config config;
+	drmp3_uint64 frame_count;
+
+	float* buffer =  drmp3_open_file_and_read_f32(
+						fname.c_str(), &config, &frame_count );
+	LOG_VERBOSE("\n\
+MP3 parameters\n\
+      channels: %d\n\
+   sample rate: %d\n\
+       decoded: %s",
+       config.outputChannels,
+       config.outputSampleRate,
+       (buffer ? "YES" : "NO"));
+
+	if (buffer) {
+		if (config.outputChannels == 2)
+			play_buffer(buffer, config.outputChannels * frame_count, config.outputSampleRate);
+		else
+			play_sound(buffer, frame_count, config.outputSampleRate);
+		drmp3_free(buffer);
+	} else
+		LOG_ERROR("File must be mp3 float format");
+}
+
 void c_portaudio::play_file(std::string fname)
 {
+	if ((fname.find(".mp3") != std::string::npos) ||
+		(fname.find(".MP3") != std::string::npos)) {
+		return play_mp3(fname);
+	}
+
 	playinfo.frames = 0;
 	playinfo.samplerate = 0;
 	playinfo.channels = 0;

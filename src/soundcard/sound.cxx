@@ -76,6 +76,8 @@
 
 #include "estrings.h"
 
+#include "dr_mp3.h"
+
 #define SND_BUF_LEN	 65536
 #define SND_RW_LEN	(8 * SND_BUF_LEN)
 
@@ -167,8 +169,11 @@ SoundBase::~SoundBase()
 #if USE_SNDFILE
 void SoundBase::get_file_params(std::string def_fname, std::string &fname, int &format)
 {
-	std::string filters = _("Waveform Audio Format\t*.wav\n");
-	filters.append(_("AU\t*.{au,snd}\n"));
+	std::string filters;
+	if (def_fname.find("playback") != std::string::npos)
+		filters = _("Waveform Audio Format]\t*.{mp3,wav}\n");
+	else
+		filters = _("Waveform Audio Format\t*.wav\n");
 	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16)) {
 		filters.append(_("Free Lossless Audio Codec\t*.flac"));
 	}
@@ -450,7 +455,8 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 //     <AUDIO:path-filename-2>
 //     <RX><@MODEM:BPSK31>
 //   or modem type of choice
-//   Audio file must be wav format, either mono or stereo any sample rate
+//   Audio file may be either wav or mp3 format, either mono or stereo 
+//   any sample rate
 //   Returning to Rx stops current and any pending audio playback.  Post
 //   Tx macro tags are then executed.
 //   T/R button or Escape key will abort the playback.
@@ -458,7 +464,77 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 // for transmitting audio files, especially music and/or copyrighted
 // material.
 //----------------------------------------------------------------------
-int SoundBase::Audio(std::string fname)
+int SoundBase::AudioMP3(std::string fname)
+{
+	drmp3_config config;
+	drmp3_uint64 frame_count;
+
+	float* mp3_buffer =  drmp3_open_file_and_read_f32(
+						fname.c_str(), &config, &frame_count );
+
+	if (!mp3_buffer) {
+		LOG_ERROR("File must be mp3 float format");
+		return 0;
+	}
+
+	LOG_VERBOSE("\n\
+MP3 parameters\n\
+      channels: %d\n\
+   sample rate: %d\n\
+   frame count: %ld\n\
+       decoded: %s", 
+       config.outputChannels,
+       config.outputSampleRate,
+       frame_count,
+       (mp3_buffer ? "YES" : "NO"));
+
+	float *buffer = new float[2 * frame_count];
+	if (!buffer) {
+		LOG_ERROR("Could not allocate audio buffer");
+		drmp3_free(mp3_buffer);
+		return 0;
+	}
+	if (config.outputChannels == 2) {
+		float maxval = 1.0;
+		for (unsigned int n = 0; n < frame_count; n++) {
+			buffer[2 * n] = mp3_buffer[2 * n] + mp3_buffer[2 * n + 1];
+			buffer[2 * n + 1] = 0;
+			if (fabs(buffer[2 * n]) > maxval) maxval = fabs(buffer[ 2 * n]);
+		}
+		for (unsigned int n = 0; n < frame_count; n++)
+			buffer[2 * n] /= maxval;
+	} else {
+		for (unsigned int n = frame_count - 1; n >= 0; n--) {
+			buffer[2 * n] = mp3_buffer[n];
+			buffer[2 * n + 1] = 0;
+		}
+	}
+	drmp3_free(mp3_buffer);
+
+	double save_sample_rate = req_sample_rate;
+	req_sample_rate = config.outputSampleRate;
+
+	unsigned int n = 0;
+	int incr = SCBLOCKSIZE;
+	while (n < frame_count) {
+		if (active_modem->get_stopflag())  {
+			Rx_queue_execute();
+			break;
+		}
+		if (n + incr < frame_count)
+			resample_write(&buffer[n*2], incr);
+		else
+			resample_write(&buffer[n*2], frame_count - n);
+		n += incr;
+	}
+
+	delete [] buffer;
+	req_sample_rate = save_sample_rate;
+	return n;
+
+}
+
+int SoundBase::AudioWAV(std::string fname)
 {
 	SNDFILE *playback;
 	play_info.frames = 0;
@@ -486,6 +562,8 @@ fname.c_str(), (long)play_info.frames, play_info.samplerate, play_info.channels)
 	int fsize = play_info.frames * 2;
 
 	float *buffer = new float[fsize];
+	if (!buffer)
+		return 0;
 	memset(buffer, 0, fsize * sizeof(*buffer));
 
 	int ret = sf_readf_float( playback, buffer, play_info.frames);
@@ -498,8 +576,19 @@ fname.c_str(), (long)play_info.frames, play_info.samplerate, play_info.channels)
 	double save_sample_rate = req_sample_rate;
 	req_sample_rate = play_info.samplerate;
 	if (ch == 1) {
-		for (long int n = play_info.frames - 1; n >= 0; n--)
-			buffer[2 * n] = buffer[2 * n + 1] = buffer[n];
+		for (long int n = play_info.frames - 1; n >= 0; n--) {
+			buffer[2 * n] = buffer[n];
+			buffer[2 * n + 1] = 0;
+		}
+	} else {
+		float maxval = 1.0;
+		for (long int n = play_info.frames - 1; n >= 0; n--) {
+			buffer[2 * n] = buffer[2 * n] + buffer[2 * n + 1];
+			buffer[2 * n + 1] = 0;
+			if (fabs(buffer[2*n] > maxval)) maxval = fabs(buffer[2*n]);
+		}
+		for (long int n = 0; n < play_info.frames; n++)
+			buffer[2*n] /= maxval;
 	}
 
 	unsigned int n = 0;
@@ -522,6 +611,16 @@ fname.c_str(), (long)play_info.frames, play_info.samplerate, play_info.channels)
 	return play_info.frames;
 }
 
+int SoundBase::Audio(std::string fname)
+{
+	if (fname.empty())
+		return 0;
+	if ((fname.find("mp3") != std::string::npos) || 
+		(fname.find("MP3") != std::string::npos ))
+		return AudioMP3(fname);
+	else
+		return AudioWAV(fname);
+}
 // ---------------------------------------------------------------------
 // write_file
 // All sound buffer data is resampled to a specified sample rate

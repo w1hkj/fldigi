@@ -136,6 +136,8 @@ public:
 	int		Capture(bool val);
 	int		Playback(bool val);
 	int		Generate(bool val);
+	int		AudioMP3(std::string fname);
+	int		AudioWAV(std::string fname);
 	int		Audio(std::string fname);
 #endif
 };

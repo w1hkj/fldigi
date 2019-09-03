@@ -413,9 +413,9 @@ void cbInsertMacro(Fl_Widget *, void *)
 		} else
 			text = "";
 	} else if (text == "<ALERT:>") {
-		string filters = "Wav file\t*.wav";
+		string filters = "Audio file\t*.{mp3,wav}";
 		const char* p = FSEL::select(
-			_("Select wav file"),
+			_("Select audio file"),
 			filters.c_str(),
 			HomeDir.c_str());
 		if (p && *p) {
@@ -423,9 +423,9 @@ void cbInsertMacro(Fl_Widget *, void *)
 		} else
 			text = "";
 	} else if (text == "<AUDIO:>") {
-		string filters = "Wav file\t*.wav";
+		string filters = "Audio file\t*.{mp3,wav}";
 		const char* p = FSEL::select(
-			_("Select wav file"),
+			_("Select audio file"),
 			filters.c_str(),
 			HomeDir.c_str());
 		if (p && *p) {
