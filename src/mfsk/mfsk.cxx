@@ -1135,7 +1135,6 @@ int mfsk::tx_process()
 			rxstate = RX_STATE_DATA;
 			txstate = TX_STATE_PREAMBLE;
 			stopflag = false;
-			cwid();
 			return -1;
 
 		case TX_STATE_PICTURE_START:

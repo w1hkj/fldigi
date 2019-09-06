@@ -74,6 +74,8 @@ extern void xmtrcv_cb(Fl_Widget *, void *);
 
 static int tx_timeout = 0;
 
+static int macro_time = -1;
+
 void kill_tx(void *)
 {
 	wf->xmtrcv->value(0);
@@ -102,6 +104,17 @@ void stop_deadman()
 	tx_timeout = 0;
 }
 
+void start_macro_time()
+{
+//	std::cout << "RESET MACRO TIME" << std::endl;
+	macro_time = 0;
+}
+
+int stop_macro_time()
+{
+//	std::cout << "STOP MACRO TIME @ " << macro_time << std::endl;
+	return macro_time;
+}
 
 const unsigned long zmsec(void)
 {
@@ -178,6 +191,7 @@ void update_tx_timer()
 	tx_last_val = now_val;
 	show_tx_timer();
 	service_deadman();
+	macro_time++;
 }
 
 //void ztimer(void *)

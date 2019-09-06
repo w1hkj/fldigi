@@ -128,7 +128,6 @@ int mt63::tx_process()
 		for (int i = 0; i < Tx->Comb.Output.Len; i++)
 			buff[i] = Tx->Comb.Output.Data[i] * 1.0 / maxval;
 		ModulateXmtr(buff,Tx->Comb.Output.Len);
-		cwid();
 		return -1;	/* we're done */
 	}
 

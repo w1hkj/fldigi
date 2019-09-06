@@ -196,7 +196,6 @@ int contestia::tx_process()
 	}
 
 	if (!Tx->Running()) {
-		cwid();
 		stopflag = false;
 		return -1;
 	}

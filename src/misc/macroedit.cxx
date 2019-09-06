@@ -189,7 +189,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<TUNE:NN>\ttune signal for NN sec"));
 	w->add(_("<WAIT:NN.n>\tdelay xmt for NN.n sec"));
 	w->add(_("<REPEAT>\trepeat macro continuously"));
-	w->add(_("<SKED:hhmm[ss][:YYYYMMDD]>\tschedule execution"));
+	w->add(_("<SKED:hhmm[ss][:YYYYMMDD]>\tschedule execution for"));
+	w->add(_("<UNTIL:hhmm[ss][:YYYYMMDD]>\tend execution at"));
 
 	w->add(LINE_SEP);
 	w->add(_("<TXATTEN:nn.n>\t set xmt attenuator"));
@@ -231,7 +232,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<SAVE>\tsave current macro file"));
 
 	w->add(LINE_SEP);
-	w->add(_("<COMMENT:comment text>\tignore all comment text"));
+	w->add(_("<COMMENT:comment text>\tignore comment text"));
+	w->add(_("<#comments>\t ignore comments"));
 
 	w->add(LINE_SEP);
 	w->add(_("<CPS_TEST:nn>\tmodem char/sec test on nn chars"));

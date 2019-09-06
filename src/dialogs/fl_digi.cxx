@@ -2186,6 +2186,7 @@ void macro_cb(Fl_Widget *w, void *v)
 	if (mouse == FL_LEFT_MOUSE && !macros.text[b].empty()) {
 		if (progStatus.timer) return;
 		stopMacroTimer();
+		progStatus.skip_sked_macro = false;
 		macros.execute(b);
 	}
 	else if (mouse == FL_RIGHT_MOUSE)
@@ -9027,6 +9028,7 @@ int get_tx_char(void)
 			TransmitText->pause();
 			break;
 		case 'r':
+			active_modem->set_CW_EOT();
 			if (active_modem->get_mode() == MODE_IFKP)
 				REQ(&FTextTX::clear, ifkp_tx_text);
 			else
@@ -9035,6 +9037,7 @@ int get_tx_char(void)
 			return(GET_TX_CHAR_ETX);
 			break;
 		case 'R':
+			active_modem->set_CW_EOT();
 			if (active_modem->get_mode() == MODE_IFKP) {
 				if (ifkp_tx_text->eot()) {
 					REQ(&FTextTX::clear, ifkp_tx_text);

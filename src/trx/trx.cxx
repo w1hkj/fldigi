@@ -424,9 +424,11 @@ void trx_trx_transmit_loop()
 				try {
 					if (!progdefaults.DTMFstr.empty())
 						dtmf->send();
-					if (active_modem->tx_process() < 0)
+					if (active_modem->tx_process() < 0) {
+						active_modem->cwid();
 						if (trx_state != STATE_ABORT)
 							trx_state = STATE_RX;
+					}
 				}
 				catch (const SndException& e) {
 					if (TXscard) TXscard->Close();

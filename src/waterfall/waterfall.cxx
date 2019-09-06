@@ -1244,12 +1244,17 @@ void center_cb(Fl_Widget *w, void *v) {
 	restoreFocus();
 }
 
+void killMacroTimer()
+{
+	stopMacroTimer();
+}
+
 void carrier_cb(Fl_Widget *w, void *v) {
 	Fl_Counter *cntr = (Fl_Counter *)w;
 	waterfall *wf = (waterfall *)w->parent();
 	int selfreq = (int) cntr->value();
 	if (selfreq > progdefaults.HighFreqCutoff) selfreq = progdefaults.HighFreqCutoff - wf->wfdisp->Bandwidth() / 2;
-	stopMacroTimer();
+	killMacroTimer();
 	if (active_modem) active_modem->set_freq(selfreq);
 	wf->wfdisp->carrier(selfreq);
 	restoreFocus();
@@ -1367,7 +1372,7 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 		restoreFocus();		return;
 	}
 	if (v == 1) {
-		stopMacroTimer();
+		killMacroTimer();
 		active_modem->set_stopflag(false);
 
 		if (progdefaults.show_psm_btn && progStatus.kpsql_enabled)
@@ -1399,8 +1404,9 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 			if(kiss_text_available)
 				flush_kiss_tx_buffer();
 
-			if (progStatus.timer)
+			if (progStatus.timer) {
 				progStatus.timer = 0;
+			}
 
 			queue_reset();
 			active_modem->set_stopflag(true);
@@ -2036,7 +2042,7 @@ int WFdisp::handle(int event)
 		makeMarker();
 		break;
 	case FL_DRAG: case FL_PUSH:
-		stopMacroTimer();
+		killMacroTimer();
 
 		switch (eb = Fl::event_button()) {
 		case FL_RIGHT_MOUSE:
@@ -2133,7 +2139,7 @@ int WFdisp::handle(int event)
 
 	case FL_MOUSEWHEEL:
 	{
-		stopMacroTimer();
+		killMacroTimer();
 
 		int d;
 		if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
@@ -2159,7 +2165,7 @@ int WFdisp::handle(int event)
 		break;
 	case FL_KEYBOARD:
 	{
-		stopMacroTimer();
+		killMacroTimer();
 
 		int d = (Fl::event_state() & FL_CTRL) ? 10 : 1;
 		int k = Fl::event_key();

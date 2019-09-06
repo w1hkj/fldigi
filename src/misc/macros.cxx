@@ -56,6 +56,7 @@
 #include "xmlrpc.h"
 #include "rigio.h"
 #include "strutil.h"
+#include "threads.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -66,6 +67,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <string>
+#include <sstream>
 #include <fstream>
 #include <queue>
 #include <stack>
@@ -81,9 +83,13 @@
 
 //using namespace std;
 
+static pthread_mutex_t	exec_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 struct CMDS { std::string cmd; void (*fp)(std::string); };
 static queue<CMDS> Tx_cmds;
 static queue<CMDS> Rx_cmds;
+
+bool txque_wait = false;
 
 // following used for debugging and development
 void push_txcmd(CMDS cmd)
@@ -107,6 +113,8 @@ std::string qso_exchange = "";
 std::string exec_date = "";
 std::string exec_time = "";
 std::string exec_string = "";
+std::string until_date = "";
+std::string until_time = "";
 std::string info1msg = "";
 std::string info2msg = "";
 std::string text2repeat = "";
@@ -129,6 +137,7 @@ static bool save_xchg;
 static bool expand;
 static bool GET = false;
 static bool timed_exec = false;
+static bool run_until = false;
 static bool within_exec = false;
 
 void rx_que_continue(void *);
@@ -732,15 +741,39 @@ static void pFILE(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 }
 
-static void pTIMER(std::string &s, size_t &i, size_t endbracket)
+static notify_dialog *macro_alert_dialog = 0;
+
+static void doTIMER(std::string s)
 {
 	int number;
-	std::string sTime = s.substr(i+7, endbracket - i - 7);
-	if (sTime.length() > 0 && !within_exec) {
+	std::string sTime = s.substr(7);
+	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
-		progStatus.timer = number;
-		progStatus.timerMacro = mNbr;
+		int mtime = stop_macro_time();
+		if (mtime >= number) {
+			if (!macro_alert_dialog) macro_alert_dialog = new notify_dialog;
+			ostringstream comment;
+			comment << "Macro timer must be > macro duration of " << mtime << " secs";
+			macro_alert_dialog->notify(comment.str().c_str(), 5.0);
+			REQ(show_notifier, macro_alert_dialog);
+			progStatus.skip_sked_macro = false;
+		} else {
+			progStatus.timer = number - mtime;
+			progStatus.timerMacro = mNbr;
+			progStatus.skip_sked_macro = true;
+		}
 	}
+	que_ok = true;
+}
+
+static void pTIMER(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTIMER };
+	push_rxcmd(cmd);
 	s.replace(i, endbracket - i + 1, "");
 }
 
@@ -1227,17 +1260,17 @@ static int idle_count = 0;
 static void doneIDLE(void *)
 {
 	idle_count++;
-	if ((idle_count % 100) == 0)
-		REQ(postQueue, "|");
-	else if ((idle_count % 50) == 0)
-		REQ(postQueue, ":");
-	else if ((idle_count % 10) == 0)
-		REQ(postQueue, ".");
+//	if ((idle_count % 100) == 0)
+//		REQ(postQueue, "|");
+//	else if ((idle_count % 50) == 0)
+//		REQ(postQueue, ":");
+//	else if ((idle_count % 10) == 0)
+//		REQ(postQueue, ".");
 	if (idle_count == idle_time) {
 		Qidle_time = 0;
 		que_ok = true;
 		idle_time = idle_count = 0;
-		REQ(postQueue, " done\n");
+//		REQ(postQueue, " done\n");
 		return;
 	}
 	Fl::repeat_timeout(0.1, doneIDLE);
@@ -1269,23 +1302,39 @@ static void pTxQueIDLE(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
-static bool useTune = false;
-static float  tuneTime = 0;
+static void doTUNE(std::string s)
+{
+	int number;
+	std::string sTime = s.substr(7, s.length() - 8);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		trx_tune();
+		number *= 1000/100;
+		while (number) {
+			if (trx_state != STATE_TUNE) break;
+			number--;
+			MilliSleep(100);
+			Fl::awake();
+		}
+		trx_transmit();
+	}
+	que_ok = true;
+}
 
-static void pTUNE(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueTUNE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	int number;
-	std::string sTime = s.substr(i+6, endbracket - i - 6);
-	if (sTime.length() > 0) {
-		sscanf(sTime.c_str(), "%d", &number);
-		useTune = true;
-		tuneTime = number;
-	}
-	s.replace(i, endbracket - i + 1, "");
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTUNE };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pTUNE(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void pQSONBR(std::string &s, size_t &i, size_t endbracket)
@@ -1807,14 +1856,21 @@ static void pTEXT(std::string &s, size_t &i, size_t endbracket)
 	s.replace( i, 6, "");
 }
 
+static void doCWID(std::string s)
+{
+	progdefaults.macroCWid = true;
+	que_ok = true;
+}
+
 static void pCWID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	progdefaults.macroCWid = true;
-	s.replace( i, 6, "");
+	CMDS cmd = {s.substr(i, endbracket - i + 1), doCWID};
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void doDTMF(std::string s)
@@ -1901,8 +1957,10 @@ static void pTX(std::string &s, size_t &i, size_t endbracket)
 	s.erase(i, 4);
 	if (rx_only)
 		TransmitON = false;
-	else
+	else {
+		start_macro_time();
 		TransmitON = true;
+	}
 }
 
 static void pTXRX(std::string &s, size_t &i, size_t endbracket)
@@ -3766,11 +3824,6 @@ void set_macro_env(void)
 
 	string temp;
 	size_t pch;
-//	for (size_t j = 0; j < ENV_SIZE; j++) {
-//		temp = env[j].val;
-//		while ((pch = temp.find("\n")) != string::npos) temp[pch] = ';';
-//		setenv(env[j].var, temp.c_str(), 1);
-//	}
 	for (size_t j = 0; j < sizeof(env) / sizeof (*env); j++) {
 		temp = env[j].val;
 		while ((pch = temp.find("\n")) != string::npos) temp[pch] = ';';
@@ -4023,7 +4076,7 @@ static void pCONT(std::string &s, size_t &i, size_t endbracket)
 
 static void pSKED(std::string &s, size_t &i, size_t endbracket)
 {
-	if (within_exec) {
+	if (within_exec || progStatus.skip_sked_macro) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
@@ -4042,6 +4095,30 @@ static void pSKED(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static void pUNTIL(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	std::string data = s.substr(i+7, endbracket - i - 7);
+	size_t p = data.find(":");
+	if (p == std::string::npos) {
+		until_date = zdate();
+		until_time = data;
+	} else {
+		until_time = data.substr(0, p);
+		until_date = data.substr(p+1);
+	}
+	if (until_time.empty()) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	if (until_time.length() == 4) until_time.append("00");
+	run_until = true;
+	s.replace(i, endbracket - i + 1, "");
+}
+
 void queue_reset()
 {
 	if (!Tx_cmds.empty()) {
@@ -4056,7 +4133,9 @@ void queue_reset()
 	Qwait_time = 0;
 	Qidle_time = 0;
 	que_ok = true;
+	run_until = false;
 	tx_queue_done = true;
+	progStatus.skip_sked_macro = false;
 }
 
 // execute an in-line macro tag
@@ -4154,6 +4233,7 @@ static const MTAGS mtags[] = {
 	{"<WAV_TEST",	pWAV_TEST},
 
 	{"<COMMENT:",	pCOMMENT},
+	{"<#",			pCOMMENT},
 	{"<CALL>",		pCALL},
 	{"<FREQ>",		pFREQ},
 	{"<BAND>",		pBAND},
@@ -4264,6 +4344,7 @@ static const MTAGS mtags[] = {
 	{"<MAPIT>",		pMAPIT},
 	{"<REPEAT>",	pREPEAT},
 	{"<SKED:",		pSKED},
+	{"<UNTIL:",		pUNTIL},
 	{"<TXATTEN:",	pTXATTEN},
 	{"<POP>",		pPOP},
 	{"<PUSH",		pPUSH},
@@ -4300,6 +4381,8 @@ static const MTAGS mtags[] = {
 	{"<!POP>",		pTxQuePOP},
 	{"<!DIGI>",		pTxDIGI},
 	{"<!FREQ>",		pTxFREQ},
+	{"<!TUNE:",		pTxQueTUNE},
+	
 // Rx After action
 	{"<@MODEM:",	pRxQueMODEM},
 	{"<@RIGCAT:",	pRxQueRIGCAT},
@@ -4525,7 +4608,7 @@ std::string MACROTEXT::expandMacro(std::string &s, bool recurse = false)
 	text2repeat.clear();
 	idleTime = 0;
 	waitTime = 0;
-	tuneTime = 0;
+//	tuneTime = 0;
 
 	while ((idx = expanded.find('<', idx)) != std::string::npos) {
 		size_t endbracket = expanded.find('>',idx);
@@ -4602,37 +4685,10 @@ void idleTimer(void *)
 	macro_idle_on = false;
 }
 
-static void continueMacro(void *)
-{
-	if (rx_only) TransmitON = false;
-	else if ( TransmitON) {
-		active_modem->set_stopflag(false);
-		if (macro_idle_on && idleTime > 0)
-			Fl::add_timeout(idleTime, idleTimer);
-		start_tx();
-		TransmitON = false;
-	}
-	text2send.clear();
-}
-
-static void finishTune(void *)
-{
-	trx_receive();
-	// delay to allow tx/rx loop to change state
-	Fl::add_timeout(0.5, continueMacro);
-}
-
 static void finishWait(void *)
 {
 	if (rx_only) {
 		TransmitON = false;
-		useTune = false;
-		return;
-	}
-	if (useTune && tuneTime > 0) {
-		trx_tune();
-		Fl::add_timeout(tuneTime, finishTune);
-		useTune = false;
 		return;
 	}
 	if ( TransmitON ) {
@@ -4661,6 +4717,7 @@ void MACROTEXT::timed_execute()
 		TransmitText->clear();
 	if (!rx_only) {
 		text2send = expandMacro(exec_string);
+		progStatus.skip_sked_macro = true;
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_tx_text->add_text(text2send);
 		else if (active_modem->get_mode() == MODE_FSQ)
@@ -4673,22 +4730,24 @@ void MACROTEXT::timed_execute()
 	}
 }
 
-bool wait_execute = false;
-
 void MACROTEXT::execute(int n)
 {
-	while (wait_execute) { MilliSleep(10); }
-	wait_execute = true;
+	guard_lock exec(&exec_mutex);
+
+	if (run_until && zdate() >= until_date && ztime() >= until_time) {
+		stopMacroTimer();
+		queue_reset();
+		return;
+	}
 
 	mNbr = n;
 	text2send = expandMacro(text[n]);
 
-	if (timed_exec) {
+	if (timed_exec && !progStatus.skip_sked_macro) {
 		progStatus.repeatMacro = -1;
 		exec_string = text[n];
 		timed_exec = false;
 		startTimedExecute(name[n]);
-		wait_execute = false;
 		return;
 	}
 
@@ -4727,36 +4786,26 @@ void MACROTEXT::execute(int n)
 				Fl::add_timeout(idleTime, idleTimer);
 		} else
 			REQ(set_button, wf->xmtrcv, false);
-		wait_execute = false;
 		return;
 	}
 	if (useWait && waitTime > 0) {
 		Fl::add_timeout(waitTime, finishWait);
 		useWait = false;
-		wait_execute = false;
-		return;
-	}
-	if (useTune && tuneTime > 0) {
-		trx_tune();
-		Fl::add_timeout(tuneTime, finishTune);
-		useTune = false;
-		wait_execute = false;
 		return;
 	}
 	if ( TransmitON ) {
 		if (macro_idle_on && idleTime > 0)
 			Fl::add_timeout(idleTime, idleTimer);
-
 		active_modem->set_stopflag(false);
 		start_tx();
 		TransmitON = false;
 	}
-	wait_execute = false;
 }
 
 void MACROTEXT::repeat(int n)
 {
 	expandMacro(text[n]);
+	progStatus.skip_sked_macro = true;
 	LOG_WARN("%s",text2repeat.c_str());
 	macro_idle_on = false;
 	if (idleTime) progStatus.repeatIdleTime = idleTime;

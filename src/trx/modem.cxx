@@ -273,6 +273,8 @@ modem::modem()
 	s2n_valid = false;
 
 	bandwidth = 0.0;
+
+	CW_EOT = false;
 }
 
 // modem types CW and RTTY do not use the base init()
@@ -864,12 +866,13 @@ void modem::cwid_sendtext (const string& s)
 
 void modem::cwid()
 {
-	if (progdefaults.cwid_modes.test(mode) &&
-		(progdefaults.CWid == true || progdefaults.macroCWid == true)) {
+	if ((CW_EOT && progdefaults.cwid_modes.test(mode) &&
+		progdefaults.CWid == true) || progdefaults.macroCWid == true) {
 		string tosend = " DE ";
 		tosend += progdefaults.myCall;
 		cwid_sendtext(tosend);
 		progdefaults.macroCWid = false;
+		CW_EOT = false;
 	}
 }
 

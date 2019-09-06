@@ -93,6 +93,9 @@ protected:
 // Audio output
 	std::string audio_filename;
 	bool play_audio;
+
+// CWID
+	bool CW_EOT;
 public:
 	modem();
 	virtual ~modem(){};
@@ -220,6 +223,8 @@ public:
 	void	cwid_send_ch(int ch);
 	void	cwid_sendtext (const std::string& s);
 	void	cwid();
+	void	set_CW_EOT() { CW_EOT = true; }
+	void	clear_CW_EOT() { CW_EOT = false; }
 
 // for fft scan modem
 public:

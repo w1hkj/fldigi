@@ -143,6 +143,7 @@ status progStatus = {
 	0,					// float	repeatIdleTime;
 	0,					// int timer
 	0,					// int timerMacro
+	false,				// bool skip_sked_macro
 	"macros.mdf",		// string LastMacroFile;
 	0,					// int n_rsids
 	false,				// bool spot_recv
