@@ -54,7 +54,7 @@ msgstr "RX/TX Text aufzeichnen"
 
 #: src/dialogs/fl_digi.cxx:186 src/misc/debug.cxx:101
 msgid "Rig control"
-msgstr "Radio Steuerung"
+msgstr "TRX Steuerung"
 
 #: src/dialogs/fl_digi.cxx:187 src/dialogs/fl_digi.cxx:8147
 msgid "Op &Mode"
@@ -145,7 +145,7 @@ msgstr "Mit Server verbinden"
 #: src/dialogs/fl_digi.cxx:8162 src/dialogs/fl_digi.cxx:8206
 #: src/dialogs/fl_digi.cxx:8251
 msgid "Custom..."
-msgstr "Individuell"
+msgstr "Individuell..."
 
 #: src/dialogs/fl_digi.cxx:1339 src/dialogs/fl_digi.cxx:3690
 msgid "Save changed macros?"
@@ -203,7 +203,7 @@ msgstr "Kein Dateiname angegeben"
 
 #: src/dialogs/fl_digi.cxx:2515
 msgid "Unsupported format"
-msgstr "Nicht unterstützes Format"
+msgstr "Nicht unterstütztes Format"
 
 #: src/dialogs/fl_digi.cxx:2518
 msgid "channels != 1"
@@ -211,7 +211,7 @@ msgstr "Kanäle =! 1"
 
 #: src/dialogs/fl_digi.cxx:2521
 msgid "unknown wave file error"
-msgstr "Unbekannter wave file Fehler"
+msgstr "Unbekannter wave Datei Fehler"
 
 #: src/dialogs/fl_digi.cxx:2528
 msgid "Spotting disabled"
@@ -247,7 +247,7 @@ msgstr "Überprüfe auf verfügbare Updates..."
 
 #: src/dialogs/fl_digi.cxx:2652
 msgid "Update site not available"
-msgstr ""
+msgstr "Update Seite nicht verfügbar"
 
 #: src/dialogs/fl_digi.cxx:2664
 msgid "You are running the latest version"
@@ -321,7 +321,7 @@ msgstr "Beenden bestätigen"
 #: src/dialogs/fl_digi.cxx:3734
 #, fuzzy
 msgid "Confirm quit?"
-msgstr "Beenden bestätigen"
+msgstr "Beenden bestätigen?"
 
 #: src/dialogs/fl_digi.cxx:4708 src/dialogs/fl_digi.cxx:8143
 msgid "&File"
@@ -728,11 +728,11 @@ msgstr ""
 
 #: src/dialogs/fl_digi.cxx:6516
 msgid "Done"
-msgstr ""
+msgstr "Fertig"
 
 #: src/dialogs/fl_digi.cxx:6517
 msgid "Return to Smeter / Pmeter"
-msgstr ""
+msgstr "Zurück zu Smeter / Pmeter"
 
 #: src/dialogs/fl_digi.cxx:6617
 msgid "Toggle smeter / combo controls"
@@ -786,7 +786,7 @@ msgstr "Frequenz kHz"
 
 #: src/dialogs/fl_digi.cxx:6772 src/dialogs/fl_digi.cxx:7100
 msgid "On"
-msgstr "On"
+msgstr "An"
 
 #: src/dialogs/fl_digi.cxx:6773
 msgid "Press to update QSO start time"
@@ -818,11 +818,11 @@ msgstr "Aus"
 #: src/widgets/FTextRXTX.cxx:135 src/logbook/lgbook.cxx:576
 #: src/logbook/lgbook.cxx:765 src/logbook/lgbook.cxx:1460
 msgid "Call"
-msgstr "Call"
+msgstr "Rufzeichen"
 
 #: src/dialogs/fl_digi.cxx:6803
 msgid "call sign"
-msgstr "Call"
+msgstr "Rufzeichen"
 
 #: src/dialogs/fl_digi.cxx:6809
 msgid "Op"
@@ -1166,7 +1166,7 @@ msgstr "ADIF Dateien zusammenführen"
 
 #: src/logbook/logsupport.cxx:958
 msgid "No records in lotw download file"
-msgstr ""
+msgstr "Keine Einträge in lotw Datei"
 
 #: src/logbook/logsupport.cxx:1037
 msgid "Unmatched LoTW Records"
@@ -1202,7 +1202,7 @@ msgstr "Cabrillo Report erzeugen"
 
 #: src/logbook/logsupport.cxx:2474
 msgid "LoTW download file"
-msgstr ""
+msgstr "LoTW download Datei"
 
 #: src/logger/rx_extract.cxx:57
 msgid ""
