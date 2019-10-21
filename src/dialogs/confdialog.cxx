@@ -3192,13 +3192,6 @@ static void cb_i_listbox_test_char(Fl_ListBox* o, void*) {
 
 Fl_Group *tabsCW_prosigns=(Fl_Group *)0;
 
-Fl_Check_Button *btnCW_use_paren=(Fl_Check_Button *)0;
-
-static void cb_btnCW_use_paren(Fl_Check_Button* o, void*) {
-  progdefaults.CW_use_paren=o->value();
-progdefaults.changed = true;
-}
-
 static void cb_listbox_prosign(Fl_ListBox* o, void*) {
   int c = o->index();
 for (int i = 0; i < 9; i++)
@@ -3315,6 +3308,20 @@ for (int i = 0; i < 9; i++)
 o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[8] = ps[c];
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCW_use_paren=(Fl_Check_Button *)0;
+
+static void cb_btnCW_use_paren(Fl_Check_Button* o, void*) {
+  progdefaults.CW_use_paren=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCW_prosign_display=(Fl_Check_Button *)0;
+
+static void cb_btnCW_prosign_display(Fl_Check_Button* o, void*) {
+  progdefaults.CW_prosign_display=o->value();
 progdefaults.changed = true;
 }
 
@@ -10499,6 +10506,7 @@ i on a\ntouch screen device such as a tablet."));
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tabsCW_general->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10925,14 +10933,8 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Group* tabsCW_timing
               { tabsCW_prosigns = new Fl_Group(0, 75, 600, 315, _("Prosigns"));
                 tabsCW_prosigns->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tabsCW_prosigns->hide();
-                { Fl_Group* o = new Fl_Group(35, 85, 530, 283);
+                { Fl_Group* o = new Fl_Group(35, 85, 530, 298);
                 o->box(FL_ENGRAVED_FRAME);
-                { Fl_Check_Button* o = btnCW_use_paren = new Fl_Check_Button(161, 244, 68, 15, _("Use \'(\' paren not KN"));
-                btnCW_use_paren->down_box(FL_DOWN_BOX);
-                btnCW_use_paren->callback((Fl_Callback*)cb_btnCW_use_paren);
-                o->value(progdefaults.CW_use_paren);
-                } // Fl_Check_Button* btnCW_use_paren
                 { Fl_Group* o = new Fl_Group(362, 96, 182, 262, _("Use these for WinKeyer\nand nanoCW"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
@@ -10971,9 +10973,7 @@ i on a\ntouch screen device such as a tablet."));
                 } // Fl_Box* o
                 o->end();
                 } // Fl_Group* o
-                o->end();
-                } // Fl_Group* o
-                { Fl_ListBox* o = listbox_prosign[0] = new Fl_ListBox(106, 102, 47, 22, _("<BT>"));
+                { Fl_ListBox* o = listbox_prosign[0] = new Fl_ListBox(111, 107, 47, 22, _("<BT>"));
                 listbox_prosign[0]->box(FL_DOWN_BOX);
                 listbox_prosign[0]->color(FL_BACKGROUND2_COLOR);
                 listbox_prosign[0]->selection_color(FL_BACKGROUND_COLOR);
@@ -10990,7 +10990,7 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_prosign[0]->end();
                 } // Fl_ListBox* listbox_prosign[0]
-                { Fl_ListBox* o = listbox_prosign[1] = new Fl_ListBox(106, 129, 47, 22, _("<AA>"));
+                { Fl_ListBox* o = listbox_prosign[1] = new Fl_ListBox(111, 134, 47, 22, _("<AA>"));
                 listbox_prosign[1]->box(FL_DOWN_BOX);
                 listbox_prosign[1]->color(FL_BACKGROUND2_COLOR);
                 listbox_prosign[1]->selection_color(FL_BACKGROUND_COLOR);
@@ -11007,7 +11007,7 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_prosign[1]->end();
                 } // Fl_ListBox* listbox_prosign[1]
-                { Fl_ListBox* o = listbox_prosign[2] = new Fl_ListBox(106, 157, 47, 22, _("<AS>"));
+                { Fl_ListBox* o = listbox_prosign[2] = new Fl_ListBox(111, 162, 47, 22, _("<AS>"));
                 listbox_prosign[2]->box(FL_DOWN_BOX);
                 listbox_prosign[2]->color(FL_BACKGROUND2_COLOR);
                 listbox_prosign[2]->selection_color(FL_BACKGROUND_COLOR);
@@ -11024,7 +11024,7 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_prosign[2]->end();
                 } // Fl_ListBox* listbox_prosign[2]
-                { Fl_ListBox* o = listbox_prosign[3] = new Fl_ListBox(106, 184, 47, 22, _("<AR>"));
+                { Fl_ListBox* o = listbox_prosign[3] = new Fl_ListBox(111, 189, 47, 22, _("<AR>"));
                 listbox_prosign[3]->box(FL_DOWN_BOX);
                 listbox_prosign[3]->color(FL_BACKGROUND2_COLOR);
                 listbox_prosign[3]->selection_color(FL_BACKGROUND_COLOR);
@@ -11040,7 +11040,7 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(s);
                 listbox_prosign[3]->end();
                 } // Fl_ListBox* listbox_prosign[3]
-                { Fl_ListBox* o = listbox_prosign[4] = new Fl_ListBox(106, 212, 47, 22, _("<SK>"));
+                { Fl_ListBox* o = listbox_prosign[4] = new Fl_ListBox(111, 217, 47, 22, _("<SK>"));
                 listbox_prosign[4]->box(FL_DOWN_BOX);
                 listbox_prosign[4]->color(FL_BACKGROUND2_COLOR);
                 listbox_prosign[4]->selection_color(FL_BACKGROUND_COLOR);
@@ -11057,7 +11057,7 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_prosign[4]->end();
                 } // Fl_ListBox* listbox_prosign[4]
-                { Fl_ListBox* o = listbox_prosign[5] = new Fl_ListBox(106, 240, 47, 22, _("<KN>"));
+                { Fl_ListBox* o = listbox_prosign[5] = new Fl_ListBox(111, 245, 47, 22, _("<KN>"));
                 listbox_prosign[5]->box(FL_DOWN_BOX);
                 listbox_prosign[5]->color(FL_BACKGROUND2_COLOR);
                 listbox_prosign[5]->selection_color(FL_BACKGROUND_COLOR);
@@ -11074,7 +11074,7 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_prosign[5]->end();
                 } // Fl_ListBox* listbox_prosign[5]
-                { Fl_ListBox* o = listbox_prosign[6] = new Fl_ListBox(106, 267, 47, 22, _("<INT>"));
+                { Fl_ListBox* o = listbox_prosign[6] = new Fl_ListBox(111, 272, 47, 22, _("<INT>"));
                 listbox_prosign[6]->box(FL_DOWN_BOX);
                 listbox_prosign[6]->color(FL_BACKGROUND2_COLOR);
                 listbox_prosign[6]->selection_color(FL_BACKGROUND_COLOR);
@@ -11091,7 +11091,7 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_prosign[6]->end();
                 } // Fl_ListBox* listbox_prosign[6]
-                { Fl_ListBox* o = listbox_prosign[7] = new Fl_ListBox(106, 295, 47, 22, _("<HM>"));
+                { Fl_ListBox* o = listbox_prosign[7] = new Fl_ListBox(111, 300, 47, 22, _("<HM>"));
                 listbox_prosign[7]->box(FL_DOWN_BOX);
                 listbox_prosign[7]->color(FL_BACKGROUND2_COLOR);
                 listbox_prosign[7]->selection_color(FL_BACKGROUND_COLOR);
@@ -11108,7 +11108,7 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_prosign[7]->end();
                 } // Fl_ListBox* listbox_prosign[7]
-                { Fl_ListBox* o = listbox_prosign[8] = new Fl_ListBox(106, 323, 47, 22, _("<VE>"));
+                { Fl_ListBox* o = listbox_prosign[8] = new Fl_ListBox(111, 328, 47, 22, _("<VE>"));
                 listbox_prosign[8]->box(FL_DOWN_BOX);
                 listbox_prosign[8]->color(FL_BACKGROUND2_COLOR);
                 listbox_prosign[8]->selection_color(FL_BACKGROUND_COLOR);
@@ -11125,6 +11125,19 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_prosign[8]->end();
                 } // Fl_ListBox* listbox_prosign[8]
+                { Fl_Check_Button* o = btnCW_use_paren = new Fl_Check_Button(161, 244, 68, 15, _("Use \'(\' paren not KN"));
+                btnCW_use_paren->down_box(FL_DOWN_BOX);
+                btnCW_use_paren->callback((Fl_Callback*)cb_btnCW_use_paren);
+                o->value(progdefaults.CW_use_paren);
+                } // Fl_Check_Button* btnCW_use_paren
+                { Fl_Check_Button* o = btnCW_prosign_display = new Fl_Check_Button(111, 358, 68, 15, _("Display decoded as assigned key"));
+                btnCW_prosign_display->tooltip(_("Display the decoded prosign in the RX text using the short cut key"));
+                btnCW_prosign_display->down_box(FL_DOWN_BOX);
+                btnCW_prosign_display->callback((Fl_Callback*)cb_btnCW_prosign_display);
+                o->value(progdefaults.CW_prosign_display);
+                } // Fl_Check_Button* btnCW_prosign_display
+                o->end();
+                } // Fl_Group* o
                 tabsCW_prosigns->end();
               } // Fl_Group* tabsCW_prosigns
               { tabsCW_winkeyer = new Fl_Group(0, 75, 600, 315, _("WinKeyer"));

@@ -232,6 +232,8 @@ std::string cMorse::rx_lookup(std::string rx)
 	for (int i = 0; cw_table[i].rpr.length(); i++) {
 		if (rx == cw_table[i].rpr) {
 			if (cw_table[i].enabled) {
+				if (progdefaults.CW_prosign_display)
+					return cw_table[i].chr;
 				return cw_table[i].prt;
 			}
 		}

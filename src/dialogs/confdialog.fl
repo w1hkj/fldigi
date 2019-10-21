@@ -3576,7 +3576,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabModems {
-        label Modems open selected
+        label Modems open
         xywh {0 25 609 365}
       } {
         Fl_Tabs tabsModems {open
@@ -3591,7 +3591,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group tabsCW_general {
                 label General
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -3880,22 +3880,15 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group tabsCW_prosigns {
-                label Prosigns
-                xywh {0 75 600 315} align 5 hide
+                label Prosigns open
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {open
-                  xywh {35 85 530 283} box ENGRAVED_FRAME
+                  xywh {35 85 530 298} box ENGRAVED_FRAME
                 } {
-                  Fl_Check_Button btnCW_use_paren {
-                    label {Use '(' paren not KN}
-                    callback {progdefaults.CW_use_paren=o->value();
-progdefaults.changed = true;}
-                    xywh {161 244 68 15} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.CW_use_paren);}
-                  }
                   Fl_Group {} {
                     label {Use these for WinKeyer
-and nanoCW} open
+and nanoCW}
                     xywh {362 96 182 262} box ENGRAVED_FRAME align 17
                   } {
                     Fl_Box {} {
@@ -3943,10 +3936,9 @@ and nanoCW} open
                       tooltip {.--.-.} xywh {422 320 59 22}
                     }
                   }
-                }
-                Fl_Group {listbox_prosign[0]} {
-                  label {<BT>}
-                  callback {int c = o->index();
+                  Fl_Group {listbox_prosign[0]} {
+                    label {<BT>}
+                    callback {int c = o->index();
 for (int i = 0; i < 9; i++)
   if (listbox_prosign[i]->index() == c) {
     listbox_prosign[i]->index(12);
@@ -3956,16 +3948,16 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[0] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {106 102 47 22} box DOWN_BOX color 7 align 4
-                  code0 {o->add(szProsigns);}
-                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[0];}
-                  code2 {o->value(s);
+                    xywh {111 107 47 22} box DOWN_BOX color 7 align 4
+                    code0 {o->add(szProsigns);}
+                    code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[0];}
+                    code2 {o->value(s);
                        o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group {listbox_prosign[1]} {
-                  label {<AA>}
-                  callback {int c = o->index();
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group {listbox_prosign[1]} {
+                    label {<AA>}
+                    callback {int c = o->index();
 for (int i = 0; i < 9; i++)
   if (listbox_prosign[i]->index() == c) {
     listbox_prosign[i]->index(12);
@@ -3975,16 +3967,16 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[1] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {106 129 47 22} box DOWN_BOX color 7 align 4
-                  code0 {o->add(szProsigns);}
-                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[1];}
-                  code2 {o->value(s);
+                    xywh {111 134 47 22} box DOWN_BOX color 7 align 4
+                    code0 {o->add(szProsigns);}
+                    code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[1];}
+                    code2 {o->value(s);
                        o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group {listbox_prosign[2]} {
-                  label {<AS>}
-                  callback {int c = o->index();
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group {listbox_prosign[2]} {
+                    label {<AS>}
+                    callback {int c = o->index();
 for (int i = 0; i < 9; i++)
   if (listbox_prosign[i]->index() == c) {
     listbox_prosign[i]->index(12);
@@ -3994,16 +3986,16 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[2] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {106 157 47 22} box DOWN_BOX color 7 align 4
-                  code0 {o->add(szProsigns);}
-                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[2];}
-                  code2 {o->value(s);
+                    xywh {111 162 47 22} box DOWN_BOX color 7 align 4
+                    code0 {o->add(szProsigns);}
+                    code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[2];}
+                    code2 {o->value(s);
                        o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group {listbox_prosign[3]} {
-                  label {<AR>}
-                  callback {int c = o->index();
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group {listbox_prosign[3]} {
+                    label {<AR>}
+                    callback {int c = o->index();
 for (int i = 0; i < 9; i++)
   if (listbox_prosign[i]->index() == c) {
     listbox_prosign[i]->index(12);
@@ -4013,15 +4005,15 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[3] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {106 184 47 22} box DOWN_BOX color 7 align 4
-                  code0 {o->add(szProsigns);}
-                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[3];}
-                  code2 {o->value(s);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group {listbox_prosign[4]} {
-                  label {<SK>}
-                  callback {int c = o->index();
+                    xywh {111 189 47 22} box DOWN_BOX color 7 align 4
+                    code0 {o->add(szProsigns);}
+                    code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[3];}
+                    code2 {o->value(s);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group {listbox_prosign[4]} {
+                    label {<SK>}
+                    callback {int c = o->index();
 for (int i = 0; i < 9; i++)
   if (listbox_prosign[i]->index() == c) {
     listbox_prosign[i]->index(12);
@@ -4031,16 +4023,16 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[4] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {106 212 47 22} box DOWN_BOX color 7 align 4
-                  code0 {o->add(szProsigns);}
-                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[4];}
-                  code2 {o->value(s);
+                    xywh {111 217 47 22} box DOWN_BOX color 7 align 4
+                    code0 {o->add(szProsigns);}
+                    code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[4];}
+                    code2 {o->value(s);
                        o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group {listbox_prosign[5]} {
-                  label {<KN>}
-                  callback {int c = o->index();
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group {listbox_prosign[5]} {
+                    label {<KN>}
+                    callback {int c = o->index();
 for (int i = 0; i < 9; i++)
   if (listbox_prosign[i]->index() == c) {
     listbox_prosign[i]->index(12);
@@ -4050,16 +4042,16 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[5] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {106 240 47 22} box DOWN_BOX color 7 align 4
-                  code0 {o->add(szProsigns);}
-                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[5];}
-                  code2 {o->value(s);
+                    xywh {111 245 47 22} box DOWN_BOX color 7 align 4
+                    code0 {o->add(szProsigns);}
+                    code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[5];}
+                    code2 {o->value(s);
                        o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group {listbox_prosign[6]} {
-                  label {<INT>}
-                  callback {int c = o->index();
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group {listbox_prosign[6]} {
+                    label {<INT>}
+                    callback {int c = o->index();
 for (int i = 0; i < 9; i++)
   if (listbox_prosign[i]->index() == c) {
     listbox_prosign[i]->index(12);
@@ -4069,16 +4061,16 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[6] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {106 267 47 22} box DOWN_BOX color 7 align 4
-                  code0 {o->add(szProsigns);}
-                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[6];}
-                  code2 {o->value(s);
+                    xywh {111 272 47 22} box DOWN_BOX color 7 align 4
+                    code0 {o->add(szProsigns);}
+                    code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[6];}
+                    code2 {o->value(s);
                        o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group {listbox_prosign[7]} {
-                  label {<HM>}
-                  callback {int c = o->index();
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group {listbox_prosign[7]} {
+                    label {<HM>}
+                    callback {int c = o->index();
 for (int i = 0; i < 9; i++)
   if (listbox_prosign[i]->index() == c) {
     listbox_prosign[i]->index(12);
@@ -4088,16 +4080,16 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[7] = ps[c];
 progdefaults.changed = true;;} open
-                  xywh {106 295 47 22} box DOWN_BOX color 7 align 4
-                  code0 {o->add(szProsigns);}
-                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[7];}
-                  code2 {o->value(s);
+                    xywh {111 300 47 22} box DOWN_BOX color 7 align 4
+                    code0 {o->add(szProsigns);}
+                    code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[7];}
+                    code2 {o->value(s);
                        o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group {listbox_prosign[8]} {
-                  label {<VE>}
-                  callback {int c = o->index();
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group {listbox_prosign[8]} {
+                    label {<VE>}
+                    callback {int c = o->index();
 for (int i = 0; i < 9; i++)
   if (listbox_prosign[i]->index() == c) {
     listbox_prosign[i]->index(12);
@@ -4107,13 +4099,28 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[8] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {106 323 47 22} box DOWN_BOX color 7 align 4
-                  code0 {o->add(szProsigns);}
-                  code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[8];}
-                  code2 {o->value(s);
+                    xywh {111 328 47 22} box DOWN_BOX color 7 align 4
+                    code0 {o->add(szProsigns);}
+                    code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[8];}
+                    code2 {o->value(s);
                        o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Check_Button btnCW_use_paren {
+                    label {Use '(' paren not KN}
+                    callback {progdefaults.CW_use_paren=o->value();
+progdefaults.changed = true;}
+                    xywh {161 244 68 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.CW_use_paren);}
+                  }
+                  Fl_Check_Button btnCW_prosign_display {
+                    label {Display decoded as assigned key}
+                    callback {progdefaults.CW_prosign_display=o->value();
+progdefaults.changed = true;} selected
+                    tooltip {Display the decoded prosign in the RX text using the short cut key} xywh {111 358 68 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.CW_prosign_display);}
+                  }
+                }
               }
               Fl_Group tabsCW_winkeyer {
                 label WinKeyer

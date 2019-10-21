@@ -491,6 +491,9 @@
         ELEM_(std::string, CW_prosigns, "CWPROSIGNS",                                   \
               "CW prosigns BT AA AS AR SK KN INT HM VE",                                \
               "=~<>%+&{}")                                                              \
+        ELEM_(bool, CW_prosign_display, "CW_prosign_display",                           \
+              "Display decoded prosign as assigned short cut key",                      \
+              false)                                                                    \
         ELEM_(bool, A_umlaut, "A_umlaut",                                               \
               "Use Ä extended CW character",                                            \
               true)                                                                     \

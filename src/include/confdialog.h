@@ -361,8 +361,9 @@ extern Fl_Check_Button *btnQSKadjust;
 extern char szTestChar[];
 extern Fl_ListBox *i_listbox_test_char;
 extern Fl_Group *tabsCW_prosigns;
-extern Fl_Check_Button *btnCW_use_paren;
 extern Fl_ListBox *listbox_prosign[9];
+extern Fl_Check_Button *btnCW_use_paren;
+extern Fl_Check_Button *btnCW_prosign_display;
 extern Fl_Group *tabsCW_winkeyer;
 #include "combo.h"
 #include "winkeyer.h"
