@@ -485,7 +485,7 @@ MP3 parameters\n\
        decoded: %s", 
        config.outputChannels,
        config.outputSampleRate,
-       frame_count,
+       long(frame_count),
        (mp3_buffer ? "YES" : "NO"));
 
 	float *buffer = new float[2 * frame_count];

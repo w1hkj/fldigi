@@ -14,7 +14,7 @@
 #define DR_MP3_IMPLEMENTATION
 #include "dr_mp3.h"
 
-#define CALLBACK 1
+#define PAPLAY_CALLBACK 1
 //#define PLAYBACK_SAMPLERATE 44100
 
 static pthread_t       alert_pthread;
@@ -139,7 +139,7 @@ void process_alert()
 		}
 
 		int paError = 0;
-#ifdef CALLBACK
+#ifdef PAPLAY_CALLBACK
 		int terminate = (plist->bufflen/2)/plist->cpa->sr;
 		terminate *= 10;
 		terminate += 10;
@@ -312,7 +312,7 @@ open pa stream:\n\
 
 	state = paContinue;
 
-#ifdef CALLBACK
+#ifdef PAPLAY_CALLBACK
 	paError = Pa_OpenStream(
 		&stream,
 		NULL, &paStreamParameters,

@@ -59,6 +59,8 @@ extern const char *sztid[];
 #  define QRUNNER_READ(fd__, buf__, len__) read(fd__, buf__, len__)
 #  define QRUNNER_WRITE(fd__, buf__, len__) write(fd__, buf__, len__)
 #else
+#  undef _WINSOCKAPI_
+#  include <winsock2.h>
 #  define QRUNNER_READ(fd__, buf__, len__) recv(fd__, (char*)buf__, len__, 0)
 #  define QRUNNER_WRITE(fd__, buf__, len__) send(fd__, (const char*)buf__, len__, 0)
 #endif
