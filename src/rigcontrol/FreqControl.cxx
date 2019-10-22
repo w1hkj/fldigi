@@ -525,7 +525,7 @@ int cFreqControl::handle(int event)
 		for (int i = 0; i < nD; i++) {
 			if (Fl::event_inside(Digit[i])) {
 				d > 0 ? DecFreq(i) : IncFreq(i);
-				break;
+				return 1;//break;
 			}
 		}
 		break;

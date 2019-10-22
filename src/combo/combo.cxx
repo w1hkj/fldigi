@@ -60,6 +60,7 @@ int Fl_PopBrowser::handle(int event)
 		pophide();
 		return 1;
  	}
+
 	if (event == FL_KEYDOWN) {
 		int kbd = Fl::event_key();
 		int key = Fl::event_text()[0];
@@ -322,6 +323,24 @@ int Fl_ComboBox::handle(int event)
 		int  kbd = Fl::event_key();
 		if (kbd == FL_Down) {
 			fl_popbrwsr (this);
+			return 1;
+		}
+	}
+	if (event == FL_MOUSEWHEEL) {
+		int d = Fl::event_dy();
+		if (d) {
+			if (d > 0) idx ++;
+			else idx--;
+			if (idx < 0) idx = 0;
+			if (idx >= listsize) idx = listsize - 1;
+			if (type_ == LISTBOX) {
+				valbox->label(datalist[idx]->s);
+				valbox->redraw_label();
+			} else {
+				val->value( datalist[idx]->s);
+				val->redraw();
+			}
+			Fl_Group::do_callback();
 			return 1;
 		}
 	}

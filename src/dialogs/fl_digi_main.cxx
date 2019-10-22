@@ -198,6 +198,7 @@ void create_fl_digi_main_primary() {
 								progdefaults.FDbackground.G,
 								progdefaults.FDbackground.B));
 			qsoFreqDisp1->value(0);
+			qsoFreqDisp1->end();
 
 			pwrmeter = new PWRmeter(
 				qsoFreqDisp1->x(), qsoFreqDisp1->y() + qsoFreqDisp1->h() + pad,
