@@ -4,6 +4,12 @@
 
 #include "audio_alert.h"
 
+#define PHONERING 15000
+int Caudio_alert::int_phone_ring[PHONERING];
+
+#define BEEBOO 48000
+int Caudio_alert::int_audio_beeboo[BEEBOO];
+
 void Caudio_alert::bark()
 {
 	try {
@@ -65,9 +71,9 @@ void Caudio_alert::beeboo()
 void Caudio_alert::phone()
 {
 	try {
-		sc_audio->play_sound(phonering, PHONERING, SCRATE);
+		sc_audio->play_sound(int_phone_ring, PHONERING, SCRATE);
 		sc_audio->silence(1.0, SCRATE);
-		sc_audio->play_sound(phonering, PHONERING, SCRATE);
+		sc_audio->play_sound(int_phone_ring, PHONERING, SCRATE);
 	} catch (...) {
 		throw;
 	}
@@ -77,6 +83,15 @@ void Caudio_alert::dinner_bell()
 {
 	try {
 		sc_audio->play_sound(int_dinner_bell, DINNER_BELL, SCRATE);
+	} catch (...) {
+		throw;
+	}
+}
+
+void Caudio_alert::tty_bell()
+{
+	try {
+		sc_audio->play_sound(int_tty_bell, TTY_BELL, SCRATE);
 	} catch (...) {
 		throw;
 	}
@@ -92,10 +107,6 @@ void Caudio_alert::standard_tone()
 				  i > 15200 ? (cos(M_PI*(i - 15200)/1600.0)) : 1.0;
 			st[i] = 0.9 * mod * sin(2.0*M_PI*i*440.0/8000.0);
 		}
-//FILE *orig = fopen("orig.txt","w");
-//for (int n = 0; n < 16000; n++)
-//  fprintf(orig, "%d,%f\n", n, st[n]);
-//fclose(orig);
 		sc_audio->play_sound(st, 16000, 8000.0);
 	} catch (...) {
 		throw;
@@ -128,25 +139,45 @@ void Caudio_alert::create_beeboo()
 
 void Caudio_alert::create_phonering()
 {
-	int attack = 40;
 	int ntones = 60;
-	float freq = 480;
+	float freq = 500;
 	float sr = 8000;
-	int duration = PHONERING/ntones;
-	float val;
-	float modulation[duration];
-	for (int i = 0; i < duration; i++) {
-		val = 1.0;
-		if (i < attack) val *= (1.0 * i / attack);
-		if (i > duration - attack) val *= (1.0 * (duration - i) / attack);
-		modulation[i] = val;
+	int mod = PHONERING/ntones;
+	memset(int_phone_ring, 0, sizeof(int_phone_ring));
+	for (int i = 0; i <= (PHONERING - mod); i++)
+		int_phone_ring[i] = 32000 * fabs(sin(M_PI * i / mod)) * sin(2.0 * M_PI * freq * i / sr);;
+}
+
+void Caudio_alert::alert(std::string s)
+{
+	if (s.empty()) return;
+	if (s == "bark") bark();
+	else if (s == "checkout") checkout();
+	else if (s == "doesnot" ) doesnot();
+	else if (s == "diesel" ) diesel();
+	else if (s == "steam_train") steam_train();
+	else if (s == "beeboo") beeboo();
+	else if (s == "phone") phone();
+	else if (s == "dinner_bell") dinner_bell();
+	else if (s == "rtty_bell") tty_bell();
+	else if (s == "standard_tone") standard_tone();
+	else file(s);
+}
+
+Caudio_alert::Caudio_alert()
+{
+	try {
+		sc_audio = new c_portaudio;
+		create_phonering();
+		create_beeboo();
+	} catch (...) {
+		throw;
 	}
-	for (int i = 0; i < ntones; i++) {
-		for (int j = 0; j < duration; j++) {
-			val = modulation[j] * sin(2.0 * M_PI * freq * (duration * i + j) / sr);
-			phonering[duration * i + j] = 32500 * val;
-		}
-	}
+}
+
+Caudio_alert::~Caudio_alert()
+{
+	delete sc_audio;
 }
 
 Caudio_alert *audio_alert = 0;

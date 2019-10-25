@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0304
+version 1.0305
 i18n_type 1
 i18n_include "gettext.h"
 i18n_function _
@@ -432,15 +432,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {636 41 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {969 47 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 675 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 600 365} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 600 365} when 1 hide
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -3576,15 +3576,15 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabModems {
-        label Modems open
-        xywh {0 25 609 365} hide
+        label Modems open selected
+        xywh {0 25 609 365}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 609 365} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 340} selection_color 50
@@ -5562,24 +5562,24 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label TTY open
-            xywh {0 50 609 340} hide
+            xywh {0 50 609 340}
           } {
             Fl_Tabs tabsRTTY {open
               xywh {0 50 609 340} selection_color 50
             } {
               Fl_Group tab_Rx_TTY {
-                label Rx
-                xywh {0 75 600 315} align 5 hide
+                label Rx open
+                xywh {0 75 605 315} align 5
               } {
                 Fl_Group {} {
                   label Receive open
-                  xywh {32 101 535 69} box ENGRAVED_FRAME align 21
+                  xywh {5 84 590 51} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Group i_listbox_rtty_afc_speed {
                     label {AFC speed}
                     callback {progdefaults.rtty_afcspeed = o->index();
 progdefaults.changed = true;} open
-                    tooltip {AFC tracking speed} xywh {107 128 90 22} box DOWN_BOX color 7
+                    tooltip {AFC tracking speed} xywh {107 107 90 22} box DOWN_BOX color 7
                     code0 {o->add("Slow"); o->add("Normal"); o->add("Fast");}
                     code1 {o->index(progdefaults.rtty_afcspeed);}
                     code2 {o->labelsize(FL_NORMAL_SIZE);}
@@ -5589,7 +5589,7 @@ progdefaults.changed = true;} open
                     label {RX - unshift on space}
                     callback {progdefaults.UOSrx=o->value();
 progdefaults.changed = true;}
-                    tooltip {Revert to unshifted char's on a space} xywh {211 128 63 22} down_box DOWN_BOX
+                    tooltip {Revert to unshifted char's on a space} xywh {211 107 63 22} down_box DOWN_BOX
                     code0 {o->value(progdefaults.UOSrx);}
                   }
                   Fl_Value_Input rtty_rx_shape {
@@ -5600,13 +5600,13 @@ progdefaults.changed = true;}
                     tooltip {rcos timing coefficient:
 1.0 ... 2.0
 W1HKJ best 1.275
-DO2SMF best 1.500} xywh {445 126 48 25} align 1 minimum 1 maximum 2 step 0.001 value 1.25 hide
+DO2SMF best 1.500} xywh {445 110 48 25} align 1 minimum 1 maximum 2 step 0.001 value 1.25 hide
                     code0 {o->value(progdefaults.rtty_filter);}
                   }
                 }
                 Fl_Group {} {
                   label {Decode (CWI suppression)} open
-                  xywh {32 171 535 55} box ENGRAVED_FRAME align 21
+                  xywh {5 136 590 50} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button {btnRxTones[0]} {
                     label {Mark-Space}
@@ -5615,7 +5615,7 @@ DO2SMF best 1.500} xywh {445 126 48 25} align 1 minimum 1 maximum 2 step 0.001 v
   btnRxTones[2]->value(0);
   progdefaults.rtty_cwi = 0;
 }}
-                    xywh {120 198 70 15} down_box DOWN_BOX
+                    xywh {102 161 77 13} down_box DOWN_BOX
                     code0 {o->value(progdefaults.rtty_cwi == 0);}
                   }
                   Fl_Check_Button {btnRxTones[1]} {
@@ -5625,7 +5625,7 @@ DO2SMF best 1.500} xywh {445 126 48 25} align 1 minimum 1 maximum 2 step 0.001 v
   btnRxTones[2]->value(0);
   progdefaults.rtty_cwi = 1;
 }}
-                    xywh {253 198 70 15} down_box DOWN_BOX
+                    xywh {249 161 77 13} down_box DOWN_BOX
                     code0 {o->value(progdefaults.rtty_cwi == 1);}
                   }
                   Fl_Check_Button {btnRxTones[2]} {
@@ -5635,19 +5635,19 @@ DO2SMF best 1.500} xywh {445 126 48 25} align 1 minimum 1 maximum 2 step 0.001 v
   btnRxTones[0]->value(0);
   progdefaults.rtty_cwi = 2;
 }}
-                    xywh {387 198 70 15} down_box DOWN_BOX
+                    xywh {396 161 78 13} down_box DOWN_BOX
                     code0 {o->value(progdefaults.rtty_cwi == 2);}
                   }
                 }
                 Fl_Group {} {
                   label {RTTY Scope Display} open
-                  xywh {32 228 535 55} box ENGRAVED_FRAME align 21
+                  xywh {5 188 590 50} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button btnPreferXhairScope {
                     label {Use cross hair scope}
                     callback {progdefaults.PreferXhairScope=o->value();
 progdefaults.changed = true;}
-                    tooltip {Default to cross hair digiscope} xywh {120 250 165 22} down_box DOWN_BOX
+                    tooltip {Default to cross hair digiscope} xywh {102 210 182 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.PreferXhairScope);}
                   }
                   Fl_Check_Button chk_true_scope {
@@ -5655,20 +5655,20 @@ progdefaults.changed = true;}
                     callback {progdefaults.true_scope=o->value();
 progdefaults.changed = true;}
                     tooltip {Enabled - use Mark/Space filter outputs
-Disabled - use pseudo signals} xywh {340 250 70 22} down_box DOWN_BOX
+Disabled - use pseudo signals} xywh {345 210 77 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.true_scope);}
                   }
                 }
                 Fl_Group {} {
                   label {Log RTTY frequency} open
-                  xywh {32 285 535 65} box ENGRAVED_FRAME align 21
+                  xywh {5 240 590 50} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button chk_useMARKfreq {
                     label {Use MARK freq'}
                     callback {progdefaults.useMARKfreq=o->value();
 progdefaults.changed = true;}
                     tooltip {Enabled - log QSO using Mark frequency
-Disabled - log QSO using center frequency} xywh {120 311 146 22} down_box DOWN_BOX value 1
+Disabled - log QSO using center frequency} xywh {102 263 161 17} down_box DOWN_BOX value 1
                     code0 {o->value(progdefaults.useMARKfreq);}
                   }
                   Fl_Button btnRTTY_mark_color {
@@ -5682,8 +5682,82 @@ o->redraw();
 wf->redraw_marker();
 progdefaults.changed = true;
 }}
-                    tooltip {Color of Mark Track} xywh {340 311 41 18} color 2 align 8
+                    tooltip {Color of Mark Track} xywh {345 260 45 20} color 2 align 8
                     code0 {o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));}
+                  }
+                }
+                Fl_Group {} {
+                  label {RTTY Bell} open
+                  xywh {5 293 590 91} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Check_Button chk_audibleBELL {
+                    label {Audible BELL}
+                    callback {progdefaults.audibleBELL=o->value();
+progdefaults.changed = true;}
+                    tooltip {Enabled - log QSO using Mark frequency
+Disabled - log QSO using center frequency} xywh {102 303 161 22} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.audibleBELL);}
+                  }
+                  Fl_Check_Button chk_visibleBELL {
+                    label {Visible BELL}
+                    callback {progdefaults.visibleBELL=o->value();
+progdefaults.changed = true;}
+                    tooltip {Enabled - log QSO using Mark frequency
+Disabled - log QSO using center frequency} xywh {345 303 161 22} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.visibleBELL);}
+                  }
+                  Fl_File_Input inp_wav_fname_bell_ring {
+                    label {RTTY Bell audio wav}
+                    xywh {17 345 301 35} align 5
+                    code0 {o->value(progdefaults.BELL_RING.c_str());}
+                  }
+                  Fl_Button btn_select_bell_ring_wav {
+                    label Select
+                    callback {Fl_Native_File_Chooser fnfc;
+fnfc.title("Pick a file");
+fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+fnfc.filter("wav files\\t*.{mp3,wav}\\n");
+fnfc.directory("./");           // default directory to use
+// Show native chooser
+switch ( fnfc.show() ) {
+  case -1: break; // ERROR
+  case  1: break; // CANCEL
+  default: {
+  	progdefaults.BELL_RING = fnfc.filename();
+  	inp_wav_fname_bell_ring->value(progdefaults.BELL_RING.c_str());
+  	progdefaults.BELL_RING_MENU = 0;
+  	mnu_bell_ring_menu->value(progdefaults.BELL_RING_MENU);
+  	break; // FILE CHOSEN
+  }
+}}
+                    xywh {320 356 59 24}
+                  }
+                  Fl_Choice mnu_bell_ring_menu {
+                    label {Sound:}
+                    callback {if (o->value() > 0) {
+  switch (o->value()) {
+    case 1 : progdefaults.BELL_RING = "bark"; break;
+    case 2 : progdefaults.BELL_RING = "checkout"; break;
+    case 3 : progdefaults.BELL_RING = "diesel"; break;
+    case 4 : progdefaults.BELL_RING = "steam_train"; break;
+    case 5 : progdefaults.BELL_RING = "doesnot"; break;
+    case 6 : progdefaults.BELL_RING = "beeboo"; break;
+    case 7 : progdefaults.BELL_RING = "phone"; break;
+    case 8 : progdefaults.BELL_RING = "dinner_bell"; break;
+    case 9 : progdefaults.BELL_RING = "rtty_bell"; break;
+    case 10 : progdefaults.BELL_RING = "standard_tone"; break;
+  }
+  inp_wav_fname_bell_ring->value(progdefaults.BELL_RING.c_str());
+}
+progdefaults.BELL_RING_MENU = o->value();} open
+                    xywh {383 356 134 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
+                    code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");}
+                    code1 {o->value(progdefaults.BELL_RING_MENU);}
+                  } {}
+                  Fl_Button btn_test_bell_ring_wav {
+                    label Test
+                    callback {audio_alert->alert(progdefaults.BELL_RING.c_str());}
+                    xywh {522 356 59 24}
                   }
                 }
               }
@@ -6088,7 +6162,7 @@ progdefaults.changed = true;}
               }
               Fl_Group tab_WKFSK {
                 label {Winkeyer 3} open
-                xywh {0 75 609 315} align 5
+                xywh {0 75 609 315} align 5 hide
                 code0 {\#include "winkeyer.h"}
               } {
                 Fl_Group {} {
@@ -7531,7 +7605,7 @@ progdefaults.changed=true;}
         } {
           Fl_Group tabAudio {
             label Devices open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group AudioOSS {open
               xywh {55 65 490 45} box ENGRAVED_FRAME
@@ -7847,17 +7921,16 @@ progdefaults.changed=true;}
               code0 {o->value(progdefaults.record_both_channels);}
             }
           }
-          Fl_Group tabAlerts {
-            label Alerts open
-            xywh {0 50 600 340} color 50 selection_color 50 hide
+          Fl_Group tabAlerts1 {
+            label {Alerts 1} open
+            xywh {0 50 600 340} color 50 selection_color 50
           } {
-            Fl_Group {} {
-              label {Regex Match in Browser} open
-              xywh {5 56 590 66} box ENGRAVED_BOX align 17
+            Fl_Group {} {open
+              xywh {5 55 590 66} box ENGRAVED_BOX align 17
             } {
               Fl_File_Input inp_wav_fname_regex {
                 label {REGEX detected wav}
-                xywh {10 80 304 35} align 5
+                xywh {10 79 304 35} align 5
                 code0 {o->value(progdefaults.BWSR_REGEX_MATCH.c_str());}
               }
               Fl_Button btn_select_regex_wav {
@@ -7879,7 +7952,7 @@ switch ( fnfc.show() ) {
   	break; // FILE CHOSEN
   }
 }}
-                xywh {316 91 60 24}
+                xywh {316 90 60 24}
                 code0 {\#include <FL/Fl_Native_File_Chooser.H>}
               }
               Fl_Choice mnu_regex_alert_menu {
@@ -7894,31 +7967,31 @@ switch ( fnfc.show() ) {
     case 6 : progdefaults.BWSR_REGEX_MATCH = "beeboo"; break;
     case 7 : progdefaults.BWSR_REGEX_MATCH = "phone"; break;
     case 8 : progdefaults.BWSR_REGEX_MATCH = "dinner_bell"; break;
-    case 9 : progdefaults.BWSR_REGEX_MATCH = "standard_tone"; break;
+    case 9 : progdefaults.BWSR_REGEX_MATCH = "rtty_bell"; break;
+    case 10 : progdefaults.BWSR_REGEX_MATCH = "standard_tone"; break;
   }
   inp_wav_fname_regex->value(progdefaults.BWSR_REGEX_MATCH.c_str());
 }
 progdefaults.REGEX_ALERT_MENU = o->value();} open
-                xywh {380 91 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
-                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
+                xywh {380 90 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
+                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");}
                 code1 {o->value(progdefaults.REGEX_ALERT_MENU);}
               } {}
               Fl_Check_Button btn_enable_regex_match_wa {
                 label Enable
                 callback {progdefaults.ENABLE_BWSR_REGEX_MATCH=o->value();}
-                xywh {514 69 70 15} down_box DOWN_BOX
+                xywh {520 69 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.ENABLE_BWSR_REGEX_MATCH);}
               }
               Fl_Button btn_test_regex_wav {
                 label Test
                 callback {audio_alert->alert(progdefaults.BWSR_REGEX_MATCH.c_str());}
-                xywh {518 91 60 24}
+                xywh {520 90 60 24}
                 code0 {\#include "audio_alert.h"}
               }
             }
-            Fl_Group {} {
-              label {MYCALL Match in Browser} open
-              xywh {5 123 590 66} box ENGRAVED_BOX align 17
+            Fl_Group {} {open
+              xywh {5 124 590 66} box ENGRAVED_BOX align 17
             } {
               Fl_File_Input inp_wav_fname_mycall {
                 label {MYCALL detected wav}
@@ -7958,155 +8031,34 @@ switch ( fnfc.show() ) {
     case 6 : progdefaults.BWSR_MYCALL_MATCH = "beeboo"; break;
     case 7 : progdefaults.BWSR_MYCALL_MATCH = "phone"; break;
     case 8 : progdefaults.BWSR_MYCALL_MATCH = "dinner_bell"; break;
-    case 9 : progdefaults.BWSR_MYCALL_MATCH = "standard_tone"; break;
+    case 9 : progdefaults.BWSR_MYCALL_MATCH = "rtty_bell"; break;
+    case 10 : progdefaults.BWSR_MYCALL_MATCH = "standard_tone"; break;
   }
   inp_wav_fname_mycall->value(progdefaults.BWSR_MYCALL_MATCH.c_str());
 }
 progdefaults.MYCALL_ALERT_MENU = o->value();} open
                 xywh {380 158 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
-                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
+                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");}
                 code1 {o->value(progdefaults.MYCALL_ALERT_MENU);}
               } {}
               Fl_Check_Button btn_enable_mycall_match_wav {
                 label Enable
                 callback {progdefaults.ENABLE_BWSR_MYCALL_MATCH=o->value();}
-                xywh {514 136 70 15} down_box DOWN_BOX
+                xywh {520 136 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.ENABLE_BWSR_MYCALL_MATCH);}
               }
               Fl_Button btn_test_mycall_wav {
                 label Test
                 callback {audio_alert->alert(progdefaults.BWSR_MYCALL_MATCH.c_str());}
-                xywh {518 158 60 24}
+                xywh {520 158 60 24}
               }
             }
-            Fl_Group {} {
-              label {flmsg interface} open
-              xywh {5 190 590 122} box ENGRAVED_BOX align 17
-            } {
-              Fl_File_Input inp_wav_flmsg_rcvd {
-                label {flmsg received wav}
-                xywh {10 214 304 35} align 5
-                code0 {o->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());}
-              }
-              Fl_Button btn_select_rx_extract_msg {
-                label Select
-                callback {Fl_Native_File_Chooser fnfc;
-fnfc.title("Pick a file");
-fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-fnfc.filter("wav files\\t*.{mp3,wav}\\n");
-fnfc.directory("./");           // default directory to use
-// Show native chooser
-switch ( fnfc.show() ) {
-  case -1: break; // ERROR
-  case  1: break; // CANCEL
-  default: {
-  	progdefaults.RX_EXTRACT_MSG_RCVD = fnfc.filename();
-  	inp_wav_flmsg_rcvd->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
-  	progdefaults.RX_EXTRACT_ALERT_MENU = 0;
-  	mnu_rx_extract_alert_menu->value(progdefaults.RX_EXTRACT_ALERT_MENU);
-  	break; // FILE CHOSEN
-  }
-}}
-                xywh {316 225 60 24}
-              }
-              Fl_Choice mnu_rx_extract_alert_menu {
-                label {Sound:}
-                callback {if (o->value() > 0) {
-  switch (o->value()) {
-    case 1 : progdefaults.RX_EXTRACT_MSG_RCVD = "bark"; break;
-    case 2 : progdefaults.RX_EXTRACT_MSG_RCVD = "checkout"; break;
-    case 3 : progdefaults.RX_EXTRACT_MSG_RCVD = "diesel"; break;
-    case 4 : progdefaults.RX_EXTRACT_MSG_RCVD = "steam_train"; break;
-    case 5 : progdefaults.RX_EXTRACT_MSG_RCVD = "doesnot"; break;
-    case 6 : progdefaults.RX_EXTRACT_MSG_RCVD = "beeboo"; break;
-    case 7 : progdefaults.RX_EXTRACT_MSG_RCVD = "phone"; break;
-    case 8 : progdefaults.RX_EXTRACT_MSG_RCVD = "dinner_bell"; break;
-    case 9 : progdefaults.RX_EXTRACT_MSG_RCVD = "standard_tone"; break;
-  }
-  inp_wav_flmsg_rcvd->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
-}
-progdefaults.RX_EXTRACT_ALERT_MENU = o->value();} open
-                xywh {380 225 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
-                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
-                code1 {o->value(progdefaults.RX_EXTRACT_ALERT_MENU);}
-              } {}
-              Fl_Check_Button btn_enable_flmsg_wav {
-                label Enable
-                callback {progdefaults.ENABLE_RX_EXTRACT_MSG_RCVD=o->value();}
-                xywh {514 203 70 15} down_box DOWN_BOX
-                code0 {o->value(progdefaults.ENABLE_RX_EXTRACT_MSG_RCVD);}
-              }
-              Fl_Button btn_test_flmsg_extract_wav {
-                label Test
-                callback {audio_alert->alert(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());}
-                xywh {518 225 60 24}
-              }
-              Fl_File_Input inp_wav_flmsg_timed_out {
-                label {flmsg timed out wav}
-                xywh {10 270 304 35} align 5
-                code0 {o->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());}
-              }
-              Fl_Button btn_select_rx_extract_timed_out {
-                label Select
-                callback {Fl_Native_File_Chooser fnfc;
-fnfc.title("Pick a file");
-fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-fnfc.filter("wav files\\t*.{mp3,wav}\\n");
-fnfc.directory("./");           // default directory to use
-// Show native chooser
-switch ( fnfc.show() ) {
-  case -1: break; // ERROR
-  case  1: break; // CANCEL
-  default: {
-  	progdefaults.RX_EXTRACT_TIMED_OUT = fnfc.filename();
-  	inp_wav_flmsg_timed_out->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
-  	progdefaults.TIMED_OUT_ALERT_MENU = 0;
-  	mnu_rx_timed_out_alert_menu->value(progdefaults.TIMED_OUT_ALERT_MENU);
-  	break; // FILE CHOSEN
-  }
-}}
-                xywh {316 281 60 24}
-              }
-              Fl_Choice mnu_rx_timed_out_alert_menu {
-                label {Sound:}
-                callback {if (o->value() > 0) {
-  switch (o->value()) {
-    case 1 : progdefaults.RX_EXTRACT_TIMED_OUT = "bark"; break;
-    case 2 : progdefaults.RX_EXTRACT_TIMED_OUT = "checkout"; break;
-    case 3 : progdefaults.RX_EXTRACT_TIMED_OUT = "diesel"; break;
-    case 4 : progdefaults.RX_EXTRACT_TIMED_OUT = "steam_train"; break;
-    case 5 : progdefaults.RX_EXTRACT_TIMED_OUT = "doesnot"; break;
-    case 6 : progdefaults.RX_EXTRACT_TIMED_OUT = "beeboo"; break;
-    case 7 : progdefaults.RX_EXTRACT_TIMED_OUT = "phone"; break;
-    case 8 : progdefaults.RX_EXTRACT_TIMED_OUT = "dinner_bell"; break;
-    case 9 : progdefaults.RX_EXTRACT_TIMED_OUT = "standard_tone"; break;
-  }
-  inp_wav_flmsg_timed_out->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
-}
-progdefaults.TIMED_OUT_ALERT_MENU = o->value();} open
-                xywh {380 281 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
-                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
-                code1 {o->value(progdefaults.TIMED_OUT_ALERT_MENU);}
-              } {}
-              Fl_Button btn_test_rx_extract_timed_out {
-                label Test
-                callback {audio_alert->alert(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());}
-                xywh {518 281 60 24}
-              }
-              Fl_Check_Button btn_enable_flmsg_time_out_wav {
-                label Enable
-                callback {progdefaults.ENABLE_RX_EXTRACT_TIMED_OUT=o->value();}
-                xywh {515 260 70 15} down_box DOWN_BOX
-                code0 {o->value(progdefaults.ENABLE_RX_EXTRACT_TIMED_OUT);}
-              }
-            }
-            Fl_Group {} {
-              label {RsID detection} open
-              xywh {5 314 590 66} box ENGRAVED_BOX align 17
+            Fl_Group {} {open
+              xywh {5 193 590 66} box ENGRAVED_BOX align 17
             } {
               Fl_File_Input inp_wav_fname_rsid {
                 label {RsID audio alert wav}
-                xywh {10 338 304 35} align 5
+                xywh {10 215 304 35} align 5
                 code0 {o->value(progdefaults.RSID_MATCH.c_str());}
               }
               Fl_Button btn_select_rsid_wav {
@@ -8128,7 +8080,7 @@ switch ( fnfc.show() ) {
   	break; // FILE CHOSEN
   }
 }}
-                xywh {316 349 60 24}
+                xywh {316 226 60 24}
               }
               Fl_Choice mnu_rsid_alert_menu {
                 label {Sound:}
@@ -8142,25 +8094,148 @@ switch ( fnfc.show() ) {
     case 6 : progdefaults.RSID_MATCH = "beeboo"; break;
     case 7 : progdefaults.RSID_MATCH = "phone"; break;
     case 8 : progdefaults.RSID_MATCH = "dinner_bell"; break;
-    case 9 : progdefaults.RSID_MATCH = "standard_tone"; break;
+    case 9 : progdefaults.RSID_MATCH = "rtty_bell"; break;
+    case 10 : progdefaults.RSID_MATCH = "standard_tone"; break;
   }
   inp_wav_fname_rsid->value(progdefaults.RSID_MATCH.c_str());
 }
 progdefaults.RSID_ALERT_MENU = o->value();} open
-                xywh {380 349 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
-                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|standard_tone");}
+                xywh {380 226 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
+                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");}
                 code1 {o->value(progdefaults.RSID_ALERT_MENU);}
               } {}
               Fl_Check_Button btn_enable_rsid_match_wav {
                 label Enable
                 callback {progdefaults.ENABLE_RSID_MATCH=o->value();}
-                xywh {514 327 70 15} down_box DOWN_BOX
+                xywh {520 205 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.ENABLE_RSID_MATCH);}
               }
               Fl_Button btn_test_rsid_wav {
                 label Test
                 callback {audio_alert->alert(progdefaults.RSID_MATCH.c_str());}
-                xywh {518 349 60 24}
+                xywh {520 226 60 24}
+              }
+            }
+            Fl_Group {} {open
+              xywh {5 261 590 124} box ENGRAVED_BOX align 17
+            } {
+              Fl_File_Input inp_wav_flmsg_rcvd {
+                label {flmsg received wav}
+                xywh {10 286 304 35} align 5
+                code0 {o->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());}
+              }
+              Fl_Button btn_select_rx_extract_msg {
+                label Select
+                callback {Fl_Native_File_Chooser fnfc;
+fnfc.title("Pick a file");
+fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+fnfc.filter("wav files\\t*.{mp3,wav}\\n");
+fnfc.directory("./");           // default directory to use
+// Show native chooser
+switch ( fnfc.show() ) {
+  case -1: break; // ERROR
+  case  1: break; // CANCEL
+  default: {
+  	progdefaults.RX_EXTRACT_MSG_RCVD = fnfc.filename();
+  	inp_wav_flmsg_rcvd->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
+  	progdefaults.RX_EXTRACT_ALERT_MENU = 0;
+  	mnu_rx_extract_alert_menu->value(progdefaults.RX_EXTRACT_ALERT_MENU);
+  	break; // FILE CHOSEN
+  }
+}}
+                xywh {316 297 60 24}
+              }
+              Fl_Choice mnu_rx_extract_alert_menu {
+                label {Sound:}
+                callback {if (o->value() > 0) {
+  switch (o->value()) {
+    case 1 : progdefaults.RX_EXTRACT_MSG_RCVD = "bark"; break;
+    case 2 : progdefaults.RX_EXTRACT_MSG_RCVD = "checkout"; break;
+    case 3 : progdefaults.RX_EXTRACT_MSG_RCVD = "diesel"; break;
+    case 4 : progdefaults.RX_EXTRACT_MSG_RCVD = "steam_train"; break;
+    case 5 : progdefaults.RX_EXTRACT_MSG_RCVD = "doesnot"; break;
+    case 6 : progdefaults.RX_EXTRACT_MSG_RCVD = "beeboo"; break;
+    case 7 : progdefaults.RX_EXTRACT_MSG_RCVD = "phone"; break;
+    case 8 : progdefaults.RX_EXTRACT_MSG_RCVD = "dinner_bell"; break;
+    case 9 : progdefaults.RX_EXTRACT_MSG_RCVD = "rtty_bell"; break;
+    case 10 : progdefaults.RX_EXTRACT_MSG_RCVD = "standard_tone"; break;
+  }
+  inp_wav_flmsg_rcvd->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
+}
+progdefaults.RX_EXTRACT_ALERT_MENU = o->value();} open
+                xywh {380 297 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
+                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");}
+                code1 {o->value(progdefaults.RX_EXTRACT_ALERT_MENU);}
+              } {}
+              Fl_Check_Button btn_enable_flmsg_wav {
+                label Enable
+                callback {progdefaults.ENABLE_RX_EXTRACT_MSG_RCVD=o->value();}
+                xywh {520 275 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.ENABLE_RX_EXTRACT_MSG_RCVD);}
+              }
+              Fl_Button btn_test_flmsg_extract_wav {
+                label Test
+                callback {audio_alert->alert(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());}
+                xywh {520 297 60 24}
+              }
+              Fl_File_Input inp_wav_flmsg_timed_out {
+                label {flmsg timed out wav}
+                xywh {10 345 304 35} align 5
+                code0 {o->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());}
+              }
+              Fl_Button btn_select_rx_extract_timed_out {
+                label Select
+                callback {Fl_Native_File_Chooser fnfc;
+fnfc.title("Pick a file");
+fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+fnfc.filter("wav files\\t*.{mp3,wav}\\n");
+fnfc.directory("./");           // default directory to use
+// Show native chooser
+switch ( fnfc.show() ) {
+  case -1: break; // ERROR
+  case  1: break; // CANCEL
+  default: {
+  	progdefaults.RX_EXTRACT_TIMED_OUT = fnfc.filename();
+  	inp_wav_flmsg_timed_out->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
+  	progdefaults.TIMED_OUT_ALERT_MENU = 0;
+  	mnu_rx_timed_out_alert_menu->value(progdefaults.TIMED_OUT_ALERT_MENU);
+  	break; // FILE CHOSEN
+  }
+}}
+                xywh {316 356 60 24}
+              }
+              Fl_Choice mnu_rx_timed_out_alert_menu {
+                label {Sound:}
+                callback {if (o->value() > 0) {
+  switch (o->value()) {
+    case 1 : progdefaults.RX_EXTRACT_TIMED_OUT = "bark"; break;
+    case 2 : progdefaults.RX_EXTRACT_TIMED_OUT = "checkout"; break;
+    case 3 : progdefaults.RX_EXTRACT_TIMED_OUT = "diesel"; break;
+    case 4 : progdefaults.RX_EXTRACT_TIMED_OUT = "steam_train"; break;
+    case 5 : progdefaults.RX_EXTRACT_TIMED_OUT = "doesnot"; break;
+    case 6 : progdefaults.RX_EXTRACT_TIMED_OUT = "beeboo"; break;
+    case 7 : progdefaults.RX_EXTRACT_TIMED_OUT = "phone"; break;
+    case 8 : progdefaults.RX_EXTRACT_TIMED_OUT = "dinner_bell"; break;
+    case 9 : progdefaults.RX_EXTRACT_TIMED_OUT = "rtty_bell"; break;
+    case 10 : progdefaults.RX_EXTRACT_TIMED_OUT = "standard_tone"; break;
+  }
+  inp_wav_flmsg_timed_out->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
+}
+progdefaults.TIMED_OUT_ALERT_MENU = o->value();} open
+                xywh {380 356 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
+                code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");}
+                code1 {o->value(progdefaults.TIMED_OUT_ALERT_MENU);}
+              } {}
+              Fl_Button btn_test_rx_extract_timed_out {
+                label Test
+                callback {audio_alert->alert(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());}
+                xywh {520 356 60 24}
+              }
+              Fl_Check_Button btn_enable_flmsg_time_out_wav {
+                label Enable
+                callback {progdefaults.ENABLE_RX_EXTRACT_TIMED_OUT=o->value();}
+                xywh {520 335 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.ENABLE_RX_EXTRACT_TIMED_OUT);}
               }
             }
           }

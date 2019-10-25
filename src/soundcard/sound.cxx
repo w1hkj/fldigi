@@ -477,16 +477,14 @@ int SoundBase::AudioMP3(std::string fname)
 		return 0;
 	}
 
-	LOG_VERBOSE("\n\
+	LOG_INFO("\n\
 MP3 parameters\n\
       channels: %d\n\
    sample rate: %d\n\
-   frame count: %ld\n\
-       decoded: %s", 
+   frame count: %ld\n", 
        config.outputChannels,
        config.outputSampleRate,
-       long(frame_count),
-       (mp3_buffer ? "YES" : "NO"));
+       long(frame_count));
 
 	float *buffer = new float[2 * frame_count];
 	if (!buffer) {

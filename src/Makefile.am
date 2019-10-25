@@ -650,6 +650,7 @@ fldigi_SOURCES += \
 	soundcard/soundconf.cxx \
 	soundcard/sound.cxx \
 	soundcard/steam_train.cxx \
+	soundcard/ttybell.cxx \
 	spot/notify.cxx \
 	spot/pskrep.cxx \
 	spot/spot.cxx \

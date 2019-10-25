@@ -8470,9 +8470,13 @@ static char rx_raw_chars[RAW_BUFF_LEN+1] = "";
 static char rx_raw_buff[RAW_BUFF_LEN+1] = "";
 static int  rx_raw_len = 0;
 
+static pthread_mutex_t rx_data_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 char *get_rx_data()
 {
-	ENSURE_THREAD(FLMAIN_TID);
+//	ENSURE_THREAD(FLMAIN_TID);
+	
+	guard_lock datalock(&rx_data_mutex);
 	memset(rx_raw_chars, 0, RAW_BUFF_LEN+1);
 	strcpy(rx_raw_chars, rx_raw_buff);
 	memset(rx_raw_buff, 0, RAW_BUFF_LEN+1);
@@ -8482,7 +8486,9 @@ char *get_rx_data()
 
 void add_rx_char(int data)
 {
-	ENSURE_THREAD(FLMAIN_TID);
+//	ENSURE_THREAD(FLMAIN_TID);
+
+	guard_lock datalock(&rx_data_mutex);
 	add_rxtx_char(data);
 	if (rx_raw_len == RAW_BUFF_LEN) {
 		memset(rx_raw_buff, 0, RAW_BUFF_LEN+1);
@@ -8518,13 +8524,22 @@ void add_tx_char(int data)
 }
 
 //======================================================================
-static void display_rx_data(const unsigned char data, int style) {
-	if (active_modem->get_mode() == MODE_FSQ)
-		fsq_rx_text->add(data,style);
-	else if (active_modem->get_mode() == MODE_IFKP)
-		ifkp_rx_text->add(data,style);
-	else
-		ReceiveText->add(data, style);
+static void TTY_bell()
+{
+	if (progdefaults.audibleBELL)
+		audio_alert->alert(progdefaults.BELL_RING);
+}
+
+static void display_rx_data(const unsigned char data, int style)
+{
+	if (data != '\r') {
+		if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add(data,style);
+		else if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add(data,style);
+		else
+			ReceiveText->add(data, style);
+	}
 
 	if (bWF_only) return;
 
@@ -8556,8 +8571,9 @@ static void rx_parser(const unsigned char data, int style)
 	// will therefore have the eight bit set and can not match either
 	// '\r' or '\n'.
 
-	static unsigned int lastdata = 0;
-
+//	static unsigned int lastdata = 0;
+	display_rx_data(data, style);
+/*
 	if (data == '\n' && lastdata == '\r');
 	else if (data == '\r') {
 //		add_rx_char('\n');
@@ -8566,13 +8582,12 @@ static void rx_parser(const unsigned char data, int style)
 //		add_rx_char(data);
 		display_rx_data(data, style);
 	}
-
-	lastdata = data;
+*/
+//	lastdata = data;
 
 	if (!(data < ' ' && iscntrl(data)) && progStatus.spot_recv)
 		spot_recv(data);
 }
-
 
 static void put_rx_char_flmain(unsigned int data, int style)
 {
@@ -8607,7 +8622,12 @@ static void put_rx_char_flmain(unsigned int data, int style)
 		rx_chd.rx((unsigned char *)ascii3[data & 0xFF]);
 
 	else if (mode == MODE_RTTY)
-		rx_chd.rx((unsigned char *)ascii[data & 0xFF]);
+		if (data == '\a') {
+			if (progdefaults.visibleBELL)
+				rx_chd.rx((unsigned char *)ascii2[7]);
+			REQ(TTY_bell);
+		} else
+			rx_chd.rx((unsigned char *)ascii[data & 0xFF]);
 	else
 		rx_chd.rx(data);
 
@@ -8724,50 +8744,70 @@ static void dim_status_cb(void* arg)
 {
 	reinterpret_cast<Fl_Box*>(arg)->deactivate();
 }
+
 static void (*const timeout_action[STATUS_NUM])(void*) = { clear_status_cb, dim_status_cb };
 
-static void put_status_msg(Fl_Box* status, const char* msg, double timeout, status_timeout action)
+struct PSM_STRUCT {
+	Fl_Widget *w;
+	double timeout;
+	status_timeout action;
+	char msg[100];
+};
+
+void put_status_msg(void *d)
 {
-	status->activate();
-	status->label(msg);
-	if (timeout > 0.0) {
-		Fl::remove_timeout(timeout_action[action], status);
-		Fl::add_timeout(timeout, timeout_action[action], status);
+	PSM_STRUCT *psm = (PSM_STRUCT *)d;
+
+	psm->w->activate();
+	psm->w->label(psm->msg);
+	if (psm->timeout > 0.0) {
+		Fl::remove_timeout(timeout_action[psm->action], psm->w);
+		Fl::add_timeout(psm->timeout, timeout_action[psm->action], psm->w);
 	}
 }
 
 void put_status(const char *msg, double timeout, status_timeout action)
 {
-	static char m[50];
-	strncpy(m, msg, sizeof(m));
-	m[sizeof(m) - 1] = '\0';
-
-	REQ(put_status_msg, StatusBar, m, timeout, action);
+	static PSM_STRUCT ps;
+	memset(ps.msg, 0, 100);
+	strcpy(ps.msg, msg);
+	ps.timeout = timeout;
+	ps.action = action;
+	ps.w = StatusBar;
+	Fl::awake(put_status_msg, (void *)&ps);
 }
 
 void put_Status2(const char *msg, double timeout, status_timeout action)
 {
-	static char m[60];
-	strncpy(m, msg, sizeof(m));
-	m[sizeof(m) - 1] = '\0';
+	static PSM_STRUCT ps;
+	memset(ps.msg, 0, 100);
+	strcpy(ps.msg, msg);
+	ps.timeout = timeout;
+	ps.action = action;
+	ps.w = Status2;
 
 	info2msg = msg;
 
-	REQ(put_status_msg, Status2, m, timeout, action);
+	Fl::awake(put_status_msg, (void *)&ps);
 }
 
 void put_Status1(const char *msg, double timeout, status_timeout action)
 {
-	static char m[60];
-	strncpy(m, msg, sizeof(m));
-	m[sizeof(m) - 1] = '\0';
+	static PSM_STRUCT ps;
+	memset(ps.msg, 0, 100);
+	strcpy(ps.msg, msg);
+	ps.timeout = timeout;
+	ps.action = action;
+	ps.w = Status1;
 
 	info1msg = msg;
+
 	if (!active_modem) return;
 	if (progStatus.NO_RIGLOG && active_modem->get_mode() != MODE_FSQ) return;
-	REQ(put_status_msg, Status1, m, timeout, action);
-}
 
+	Fl::awake(put_status_msg, (void *)&ps);
+
+}
 
 void put_WARNstatus(double val)
 {
@@ -9143,7 +9183,11 @@ void put_echo_char(unsigned int data, int style)
 	if (data == '\r' && lastdata == '\r') // reject multiple CRs
 		return;
 
-	if (asc == NULL)
+	if (data == '\a') {
+		if (progdefaults.visibleBELL)
+			echo_chd.rx((unsigned char *)ascii2[7]);
+		REQ(TTY_bell);
+	} else if (asc == NULL)
 		echo_chd.rx(data);
 	else
 		echo_chd.rx((unsigned char *)asc[data & 0xFF]);

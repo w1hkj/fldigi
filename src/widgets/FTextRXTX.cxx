@@ -2105,6 +2105,7 @@ int FTextTX::handle_key_shortcuts(int key)
 	case 'l': // add <MYLOC> for SC-l
 	case 'h': // add <MYQTH> for SC-h
 	case 'a': // add <ANTENNA> for SC-a
+	case 'g': // add <BEL> 0x07
 		if ((Fl::event_state() & FL_CTRL) && (Fl::event_state() & FL_SHIFT))
 //		if ((Fl::event_state() & (FL_CTRL | FL_SHIFT))) // investigate why this doesn't work...
 		{
@@ -2133,15 +2134,21 @@ int FTextTX::handle_key_shortcuts(int key)
 				break;
 			case 'a':
 				etag = progdefaults.myAntenna;
+				break;
+			case 'g':
+				etag = "\007";
+				break;
 			default:
 				break;
 			}
 
 			// Add text + space if length is > 0
-			if (etag.length())
-				add_text(etag + std::string(" "));
-
-			return 1;
+			if (etag.length()) {
+				add_text(etag);
+				if (etag != "\007")
+					add_text(" ");
+				return 1;
+			}
 		}
 		break;
 

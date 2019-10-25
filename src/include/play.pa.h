@@ -89,9 +89,11 @@ public:
 	void	play_sound(int *sndbuffer, int len, int _sr);
 	void	play_sound(float *sndbuffer, int len, int _sr);
 	void	silence(float secs, int _sr);
+	void	do_play_file(std::string fname);
 
 	void	play_file(std::string fname);
 	void	play_mp3(std::string fname);
+	void	play_wav(std::string fname);
 };
 
 #endif

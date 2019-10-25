@@ -378,6 +378,12 @@
         ELEM_(bool, useMARKfreq, "USEMARKFREQ",                                         \
               "Use MARK frequency for logging",                                         \
               true)                                                                     \
+        ELEM_(bool, visibleBELL, "visibleBELL",                                         \
+              "Show <BEL> in Rx panel when \a decoded",                                 \
+              true)                                                                     \
+        ELEM_(bool, audibleBELL, "audibleBELL",                                         \
+              "Ring TTY bell tone when \a decoded",                                     \
+              true)                                                                     \
         /* CW */                                                                        \
         ELEM_(bool, useCWkeylineRTS, "", "",  false)                                    \
         ELEM_(bool, useCWkeylineDTR, "", "",  false)                                    \
@@ -998,6 +1004,12 @@
         ELEM_(bool, ENABLE_RSID_MATCH, "ENABLE_RSID_MATCH",                             \
               "enable audio alert when RsID is detected",                               \
               false)                                                                    \
+        ELEM_(std::string, BELL_RING, "BELL_RING",                                      \
+              "RTTY bell ring audio clip name / file",                                  \
+              "rtty_bell")                                                              \
+        ELEM_(int, BELL_RING_MENU, "BELL_RING_MENU",                                    \
+              "menu selector",                                                          \
+              9)                                                                        \
         ELEM_(std::string, cty_dat_pathname, "CTYDAT_PATHNAME",                         \
               "Full pathname to the cty.dat data file",                                 \
               "")                                                                       \

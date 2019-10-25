@@ -1,6 +1,7 @@
 // Pulse Class
 
 #include <queue>
+#include <stack>
 #include <string>
 #include <samplerate.h>
 
@@ -14,20 +15,43 @@
 #define DR_MP3_IMPLEMENTATION
 #include "dr_mp3.h"
 
-#define PAPLAY_CALLBACK 1
-//#define PLAYBACK_SAMPLERATE 44100
+//#if __WIN32__
+//int PAPLAY_CALLBACK  = 0;
+//#else
+int PAPLAY_CALLBACK  = 1;
+//#endif
 
 static pthread_t       alert_pthread;
-static pthread_mutex_t alert_mutex;
+static pthread_mutex_t alert_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static pthread_t		filelist_pthread;
+static pthread_mutex_t	filelist_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static void start_alert_thread(void);
+static void start_filelist_thread(void);
+static void stop_alert_thread(void);
+static void stop_filelist_thread(void);
 
 bool alert_thread_running   = false;
 static bool alert_terminate_flag   = false;
 
 struct PLAYLIST { c_portaudio *cpa; float *fbuff; unsigned long int bufflen; unsigned long int data_ptr; std::string lname; };
 
+struct FILELIST { 
+	c_portaudio *cpa;
+	std::string fn;
+	FILELIST() { cpa = 0; fn = ""; }
+	FILELIST( c_portaudio *_cpa, std::string _fn ) {
+		cpa = _cpa; fn = _fn;
+	}
+	~FILELIST() {};
+};
+
 #define CHANNELS 2
 
 std::queue<PLAYLIST *> playlist;
+
+std::stack<FILELIST> filelist;
 
 /**********************************************************************************
  * AUDIO_ALERT process event.
@@ -52,8 +76,9 @@ static int paStatus;
 
 static void show_progress(unsigned long read_frames, unsigned long played)
 {
-	static char progress[10];
-	snprintf(progress, sizeof(progress), "%d %%", int(100 * played / read_frames));
+	static char progress[20];
+	if ( !read_frames ) return;
+	snprintf(progress, sizeof(progress), "%d %%", int(100.0 * played / read_frames));
 	put_status(progress, 2.0, STATUS_CLEAR);
 }
 
@@ -72,6 +97,7 @@ static int stream_process(
 	if (cpa->state == paAbort || cpa->state == paComplete) { // finished
 		return cpa->state;
 	}
+
 	if (pl->data_ptr == nbr_frames)
 		return (paStatus = paComplete);
 
@@ -102,44 +128,46 @@ static void StreamFinished( void* userData )
 
 void process_alert()
 {
-	guard_lock que_lock(&alert_mutex);
-
 	struct PLAYLIST *plist = playlist.front();
 
 	while (!playlist.empty()) {
 
-		if (plist->cpa == 0) {
+		{ // 	block to guard the play list queue
+			guard_lock que_lock(&alert_mutex);
+
+			if (plist->cpa == 0) {
 //LOG_INFO("%s", "plist->cpa == 0");
-			while (!playlist.empty()) {
-				plist = playlist.front();
-				delete [] plist->fbuff;
-				playlist.pop();
+				while (!playlist.empty()) {
+					plist = playlist.front();
+					delete [] plist->fbuff;
+					playlist.pop();
+				}
+				return;
 			}
-			return;
-		}
 
 // opening a stream creates a new service thread in port audio
-		if (!plist->cpa->open(plist)) {
-			LOG_ERROR("cannot open pa stream");
-			while (!playlist.empty()) {
-				plist = playlist.front();
-				delete [] plist->fbuff;
-				playlist.pop();
+			if (!plist->cpa->open(plist)) {
+				LOG_ERROR("cannot open pa stream");
+				while (!playlist.empty()) {
+					plist = playlist.front();
+					delete [] plist->fbuff;
+					playlist.pop();
+				}
+				return;
 			}
-			return;
-		}
-		if (!plist->cpa->stream) {
-			plist->cpa->close();
-			while (!playlist.empty()) {
-				plist = playlist.front();
-				delete [] plist->fbuff;
-				playlist.pop();
+			if (!plist->cpa->stream) {
+				plist->cpa->close();
+				while (!playlist.empty()) {
+					plist = playlist.front();
+					delete [] plist->fbuff;
+					playlist.pop();
+				}
+				return;
 			}
-			return;
 		}
 
 		int paError = 0;
-#ifdef PAPLAY_CALLBACK
+	if (PAPLAY_CALLBACK ) {
 		int terminate = (plist->bufflen/2)/plist->cpa->sr;
 		terminate *= 10;
 		terminate += 10;
@@ -160,8 +188,7 @@ void process_alert()
 
 // closing the stream terminates the service thread in port audio
 		paError = Pa_StopStream( plist->cpa->stream );
-
-#else
+	} else {
 /* send as a single block */
 		paError = Pa_StartStream( plist->cpa->stream );
 		if (paError != paNoError) goto err_exit;
@@ -169,14 +196,12 @@ void process_alert()
 		paError = Pa_WriteStream(plist->cpa->stream, plist->fbuff, plist->bufflen/2);
 		if (paError != paNoError)
 			goto err_exit;
-
-#endif
+	}
 
 err_exit:
 		if (paError != paNoError) {
 // closing the stream terminates the service thread in port audio
 			Pa_StopStream( plist->cpa->stream );
-std::cout << Pa_GetErrorText(paError) << std::endl;
 		}
 
 		plist->cpa->close();
@@ -204,7 +229,8 @@ static void * alert_loop(void *args)
 
 		if (alert_terminate_flag) break;
 
-		if (trx_state == STATE_RX && !playlist.empty())
+//		if (trx_state == STATE_RX && !playlist.empty())
+		if (!playlist.empty())
 			process_alert();
 
 	}
@@ -286,10 +312,12 @@ c_portaudio::c_portaudio()
 
 	stream = 0;
 	start_alert_thread();
+	start_filelist_thread();
 }
 
 c_portaudio::~c_portaudio()
 {
+	stop_filelist_thread();
 	stop_alert_thread();
 	Pa_Terminate();
 }
@@ -312,21 +340,21 @@ open pa stream:\n\
 
 	state = paContinue;
 
-#ifdef PAPLAY_CALLBACK
-	paError = Pa_OpenStream(
-		&stream,
-		NULL, &paStreamParameters,
-		sr,
-		FRAMES_PER_BUFFER, paClipOff,
-		stream_process, data);
-#else
-	paError = Pa_OpenStream(
-		&stream,
-		NULL, &paStreamParameters,
-		sr,
-		FRAMES_PER_BUFFER, paClipOff,
-		NULL, NULL);
-#endif
+	if (PAPLAY_CALLBACK) {
+		paError = Pa_OpenStream(
+			&stream,
+			NULL, &paStreamParameters,
+			sr,
+			FRAMES_PER_BUFFER, paClipOff,
+			stream_process, data);
+	} else {
+		paError = Pa_OpenStream(
+			&stream,
+			NULL, &paStreamParameters,
+			sr,
+			FRAMES_PER_BUFFER, paClipOff,
+			NULL, NULL);
+	}
 
 	if (paError != paNoError) {
 		LOG_ERROR("open pa stream failed: %s", Pa_GetErrorText(paError));
@@ -411,7 +439,6 @@ void c_portaudio::play_buffer(float *buffer, int len, int _sr)
 // play mono buffer
 void c_portaudio::play_sound(int *buffer, int len, int _sr)
 {
-//std::cout << "play_sound(int *, " << len << ", " << _sr << ")\n";
 	float *fbuff = new float[2];
 	try {
 		delete [] fbuff;
@@ -430,7 +457,6 @@ void c_portaudio::play_sound(int *buffer, int len, int _sr)
 // play mono buffer
 void c_portaudio::play_sound(float *buffer, int len, int _sr)
 {
-//std::cout << "play_sound(float *, " << len << ", " << _sr << ")\n";
 	float *fbuff = new float[2];
 	try {
 		delete [] fbuff;
@@ -462,34 +488,40 @@ void c_portaudio::play_mp3(std::string fname)
 	drmp3_config config;
 	drmp3_uint64 frame_count;
 
-	float* buffer =  drmp3_open_file_and_read_f32(
+	drmp3 mp3;
+    if (!drmp3_init_file(&mp3, fname.c_str(), NULL)) {
+        LOG_ERROR("Failed to open mp3 file");
+        return;
+    }
+	drmp3_uninit(&mp3);
+
+	float* mp3_buffer =  drmp3_open_file_and_read_f32(
 						fname.c_str(), &config, &frame_count );
-	LOG_VERBOSE("\n\
+
+	if (!mp3_buffer) {
+		LOG_ERROR("File must be mp3 float 32 format");
+		return;
+	}
+
+	LOG_INFO("\n\
 MP3 parameters\n\
       channels: %d\n\
    sample rate: %d\n\
-       decoded: %s",
+   frame count: %ld\n", 
        config.outputChannels,
        config.outputSampleRate,
-       (buffer ? "YES" : "NO"));
+       long(frame_count));
 
-	if (buffer) {
-		if (config.outputChannels == 2)
-			play_buffer(buffer, config.outputChannels * frame_count, config.outputSampleRate);
-		else
-			play_sound(buffer, frame_count, config.outputSampleRate);
-		drmp3_free(buffer);
-	} else
-		LOG_ERROR("File must be mp3 float format");
+	if (config.outputChannels == 2)
+		play_buffer(mp3_buffer, config.outputChannels * frame_count, config.outputSampleRate);
+	else
+		play_sound(mp3_buffer, frame_count, config.outputSampleRate);
+
+	drmp3_free(mp3_buffer);
 }
 
-void c_portaudio::play_file(std::string fname)
+void c_portaudio::play_wav(std::string fname)
 {
-	if ((fname.find(".mp3") != std::string::npos) ||
-		(fname.find(".MP3") != std::string::npos)) {
-		return play_mp3(fname);
-	}
-
 	playinfo.frames = 0;
 	playinfo.samplerate = 0;
 	playinfo.channels = 0;
@@ -518,3 +550,108 @@ void c_portaudio::play_file(std::string fname)
 	delete [] buffer;
 
 }
+
+void c_portaudio::do_play_file(std::string fname)
+{
+	if ((fname.find(".mp3") != std::string::npos) ||
+		(fname.find(".MP3") != std::string::npos)) {
+		return play_mp3(fname);
+	}
+	if ((fname.find(".wav") != std::string::npos) ||
+		(fname.find(".WAV") != std::string::npos)) {
+		return play_wav(fname);
+	}
+	LOG_ERROR("%s : Audio file format must be either wav or mp3", fname.c_str());
+}
+
+void c_portaudio::play_file(std::string fname)
+{
+	guard_lock filelock(&filelist_mutex);
+	filelist.push( FILELIST(this, fname));
+}
+
+
+/**********************************************************************************
+ * AUDIO FILELIST processing loop.
+ * syncs to requests for file / clip playback
+ **********************************************************************************/
+
+bool filelist_thread_running = false;
+bool filelist_terminate_flag = false;
+
+static void * filelist_loop(void *args)
+{
+//	SET_THREAD_ID(AUDIO_ALERT_TID);
+
+	alert_thread_running   = true;
+	alert_terminate_flag   = false;
+	FILELIST fl;
+	while(1) {
+		MilliSleep(50);
+
+		if (filelist_terminate_flag) break;
+
+		if (!filelist.empty()) {
+			{
+				guard_lock filelock(&filelist_mutex);
+				fl = filelist.top();
+				filelist.pop();
+			}
+			fl.cpa->do_play_file(fl.fn);
+		}
+
+	}
+	return (void *)0;
+}
+
+/**********************************************************************************
+ * Start FILELIST Thread
+ **********************************************************************************/
+static void start_filelist_thread(void)
+{
+	if(filelist_thread_running) return;
+
+	memset((void *) &filelist_pthread, 0, sizeof(filelist_pthread));
+	memset((void *) &filelist_mutex,   0, sizeof(filelist_mutex));
+
+	if(pthread_mutex_init(&filelist_mutex, NULL)) {
+		LOG_ERROR("AUDIO_ALERT thread create fail (pthread_mutex_init)");
+		return;
+	}
+
+	memset((void *) &filelist_pthread, 0, sizeof(filelist_pthread));
+
+	if (pthread_create(&filelist_pthread, NULL, filelist_loop, NULL) < 0) {
+		pthread_mutex_destroy(&filelist_mutex);
+		LOG_ERROR("AUDIO_ALERT thread create fail (pthread_create)");
+	}
+
+	LOG_VERBOSE("started audio alert thread");
+
+	MilliSleep(10);
+}
+
+/**********************************************************************************
+ * Stop AUDIO_ALERT Thread
+ **********************************************************************************/
+static void stop_filelist_thread(void)
+{
+	if(!filelist_thread_running) return;
+
+	filelist_terminate_flag = true;
+
+	MilliSleep(10);
+
+	pthread_join(filelist_pthread, NULL);
+
+	LOG_VERBOSE("%s", "pa filelist thread - stopped");
+
+	pthread_mutex_destroy(&filelist_mutex);
+
+	memset((void *) &filelist_pthread, 0, sizeof(filelist_pthread));
+	memset((void *) &filelist_mutex,   0, sizeof(filelist_mutex));
+
+	filelist_thread_running   = false;
+	filelist_terminate_flag   = false;
+}
+
