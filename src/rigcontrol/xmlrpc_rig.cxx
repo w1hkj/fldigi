@@ -102,7 +102,7 @@ static XmlRpcValue bws_result;
 static XmlRpcValue bw_result;
 static XmlRpcValue notch_result;
 
-static double timeout = 2.0;
+static double timeout = 5.0;
 
 static int wait_bws_timeout = 0;
 
