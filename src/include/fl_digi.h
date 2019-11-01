@@ -750,6 +750,7 @@ extern Fl_Input2	*inpSQSO_category2;
 
 extern Fl_Double_Window	*dxcluster_viewer;
 
+extern Fl_Double_Window *rxaudio_dialog;
 // TOD clock
 extern void  TOD_init();
 extern void  TOD_close();

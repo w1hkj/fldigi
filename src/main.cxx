@@ -1166,13 +1166,17 @@ int main(int argc, char ** argv)
 	}
 
 	dlgViewer = createViewer();
+
 	dxcluster_viewer = dxc_window();
+	dxcluster_viewer->hide();
+
 	if (!dlgLogbook)
 		create_logbook_dialogs();
 
-	dxcluster_viewer->hide();
-
 	LOGBOOK_colors_font();
+
+	rxaudio_dialog = make_rxaudio_dialog();
+	rxaudio_dialog->hide();
 
 	if( progdefaults.kml_save_dir.empty() ) {
 		progdefaults.kml_save_dir = KmlDir ;

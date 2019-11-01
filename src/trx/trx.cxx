@@ -49,10 +49,9 @@
 #include "macros.h"
 #include "rigsupport.h"
 #include "psm/psm.h"
-
 #include "icons.h"
-
 #include "fft-monitor.h"
+#include "audio_alert.h"
 
 extern fftmon *fft_modem;
 
@@ -330,6 +329,10 @@ void trx_trx_receive_loop()
 					fft_modem->rx_process(rbvec[0].buf, numread);
 
 				active_modem->rx_process(rbvec[0].buf, numread);
+
+				if (audio_alert && progdefaults.mon_xcvr_audio)
+					audio_alert->monitor(rbvec[0].buf, numread, current_RXsamplerate);
+
 				if (progdefaults.rsid)
 					ReedSolomon->receive(fbuf, numread);
 				dtmf->receive(fbuf, numread);

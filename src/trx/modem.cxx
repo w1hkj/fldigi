@@ -43,6 +43,7 @@
 
 #include "status.h"
 #include "debug.h"
+#include "audio_alert.h"
 
 using namespace std;
 
@@ -294,8 +295,13 @@ void modem::set_freq(double freq)
 		freq,
 		progdefaults.LowFreqCutoff + bandwidth / 2,
 		progdefaults.HighFreqCutoff - bandwidth / 2);
+
 	if (freqlock == false)
 		tx_frequency = frequency;
+
+	if (progdefaults.RxFilt_track_wf)
+		center_rxfilt_at_track();
+
 	REQ(put_freq, frequency);
 }
 

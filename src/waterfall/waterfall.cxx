@@ -1255,7 +1255,8 @@ void carrier_cb(Fl_Widget *w, void *v) {
 	int selfreq = (int) cntr->value();
 	if (selfreq > progdefaults.HighFreqCutoff) selfreq = progdefaults.HighFreqCutoff - wf->wfdisp->Bandwidth() / 2;
 	killMacroTimer();
-	if (active_modem) active_modem->set_freq(selfreq);
+	if (active_modem)
+		active_modem->set_freq(selfreq);
 	wf->wfdisp->carrier(selfreq);
 	restoreFocus();
 }

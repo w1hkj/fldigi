@@ -607,7 +607,7 @@ btnCabRSTrcvd->value(1);
 }
 
 void create_logbook_dialogs() {
-  { wExport = new Fl_Double_Window(809, 440, _("Export Setup"));
+  { wExport = new Fl_Double_Window(805, 440, _("Export Setup"));
     { Fl_Group* o = new Fl_Group(4, 4, 388, 430, _("Select Records to Export"));
       o->box(FL_ENGRAVED_FRAME);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));

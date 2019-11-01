@@ -95,12 +95,14 @@ protected:
 public:
 	C_FIR_filter ();
 	~C_FIR_filter ();
+
 	void init (int len, int dec, double *ifil, double *qfil);
 	void init_lowpass (int len, int dec, double freq );
 	void init_bandpass (int len, int dec, double freq1, double freq2);
 	void init_hilbert (int len, int dec);
 	double *bp_FIR(int len, int hilbert, double f1, double f2);
-	void dump();
+
+	void clear();
 	int run (const cmplx &in, cmplx &out);
 	int Irun (const double &in, double &out);
 	int Qrun (const double &in, double &out);

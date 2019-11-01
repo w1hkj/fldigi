@@ -1013,6 +1013,30 @@
         ELEM_(int, BELL_RING_MENU, "BELL_RING_MENU",                                    \
               "menu selector",                                                          \
               9)                                                                        \
+        ELEM_(int, mon_xcvr_audio, "mon_xcvr_audio",                                    \
+              "monitor transceiver audio on alert audio device",                        \
+              0)                                                                        \
+        ELEM_(int, mon_dsp_audio, "mon_dsp_audio",                                      \
+              "monitor dsp filter output for selected modem @ waterfall frequency",     \
+              0)                                                                        \
+        ELEM_(int, RxFilt_vol, "RxFilt_vol",                                            \
+              "Audio stream volume",                                                    \
+              50)                                                                       \
+        ELEM_(int, RxFilt_bw, "RxFilt_bw",                                              \
+              "DSP audio stream filter bandwidth",                                      \
+              500)                                                                      \
+        ELEM_(int, RxFilt_mid, "RxFilt_mid",                                            \
+              "DSP audio stream filter mid frequency",                                  \
+              1500)                                                                     \
+        ELEM_(int, RxFilt_low, "RxFilt_low",                                            \
+              "DSP audio stream filter low frequency cutoff",                           \
+              1250)                                                                     \
+        ELEM_(int, RxFilt_high, "RxFilt_high",                                          \
+              "DSP audio stream filter high frequency cutoff",                          \
+              1750)                                                                     \
+        ELEM_(int, RxFilt_track_wf, "RxFilt_track_wf",                                  \
+              "Rx filter tracks waterfall cursor movement",                             \
+              0)                                                                        \
         ELEM_(std::string, cty_dat_pathname, "CTYDAT_PATHNAME",                         \
               "Full pathname to the cty.dat data file",                                 \
               "")                                                                       \

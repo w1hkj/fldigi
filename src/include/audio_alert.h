@@ -29,6 +29,7 @@ extern int int_dinner_bell[];
 extern int int_tty_bell[];
 
 class Caudio_alert {
+
 private:
 	static int int_phone_ring[];
 	static int int_audio_beeboo[];
@@ -53,10 +54,19 @@ public:
 
 	void alert(std::string s);
 
+	void monitor(double *buffer, int len, int _sr);
+	void monitor(cmplx *z, int len, double wf, int _sr);
+
 	Caudio_alert();
 	~Caudio_alert();
+	
+	c_portaudio *pa() { return sc_audio; }
+	void init_filter() { sc_audio->init_filter(); }
+
 };
 
 extern Caudio_alert *audio_alert;
+
+extern void center_rxfilt_at_track();
 
 #endif

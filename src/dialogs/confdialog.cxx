@@ -8313,7 +8313,7 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(0, 0, 675, 390);
+    { tabsConfigure = new Fl_Tabs(0, 0, 675, 395);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
@@ -8475,6 +8475,7 @@ Fl_Double_Window* ConfigureDialog() {
         { tabsUI = new Fl_Tabs(0, 25, 604, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -8615,7 +8616,6 @@ Fl_Double_Window* ConfigureDialog() {
             tabBrowser->end();
           } // Fl_Group* tabBrowser
           { tabUserInterface = new Fl_Group(0, 50, 600, 340, _("General"));
-            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(5, 59, 590, 76);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(75, 72, 120, 20, _("Show tooltips"));
@@ -10071,7 +10071,6 @@ i on a\ntouch screen device such as a tablet."));
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Display"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(50, 63, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10457,6 +10456,7 @@ i on a\ntouch screen device such as a tablet."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Spectrum"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(10, 65, 580, 150, _("Spectrum Scope / Waterfall interaction"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
@@ -10497,16 +10497,15 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 609, 365, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 609, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 600, 340, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 600, 340);
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tabsCW_general->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10933,6 +10932,7 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Group* tabsCW_timing
               { tabsCW_prosigns = new Fl_Group(0, 75, 600, 315, _("Prosigns"));
                 tabsCW_prosigns->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tabsCW_prosigns->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 298);
                 o->box(FL_ENGRAVED_FRAME);
                 { Fl_Group* o = new Fl_Group(362, 96, 182, 262, _("Use these for WinKeyer\nand nanoCW"));
@@ -12572,6 +12572,7 @@ ded Morse characters."));
             tabPSK->end();
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 609, 340, _("TTY"));
+            tabRTTY->hide();
             { tabsRTTY = new Fl_Tabs(0, 50, 609, 340);
               tabsRTTY->selection_color(FL_LIGHT1);
               { tab_Rx_TTY = new Fl_Group(0, 75, 605, 315, _("Rx"));
@@ -14541,12 +14542,10 @@ i.e. localhost"));
         } // Fl_Tabs* tabsRig
         tabRig->end();
       } // Fl_Group* tabRig
-      { tabSoundCard = new Fl_Group(0, 25, 600, 365, _("Audio"));
-        tabSoundCard->hide();
-        { tabsSoundCard = new Fl_Tabs(0, 25, 600, 365);
+      { tabSoundCard = new Fl_Group(0, 25, 600, 370, _("Audio"));
+        { tabsSoundCard = new Fl_Tabs(0, 25, 600, 370);
           tabsSoundCard->selection_color(FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 600, 340, _("Devices"));
-            tabAudio->hide();
             { AudioOSS = new Fl_Group(55, 65, 490, 45);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(65, 75, 53, 25, _("OSS"));
@@ -14617,19 +14616,19 @@ i.e. localhost"));
               } // Fl_Round_Button* btnAudioIO[3]
               AudioNull->end();
             } // Fl_Group* AudioNull
-            { AudioAlerts = new Fl_Group(55, 280, 490, 45, _("Alerts"));
+            { AudioAlerts = new Fl_Group(55, 280, 490, 55, _("Alerts / Rx Audio"));
               AudioAlerts->box(FL_ENGRAVED_FRAME);
               AudioAlerts->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { menuAlertsDev = new Fl_Choice(225, 291, 310, 25, _("Playback"));
+              { menuAlertsDev = new Fl_Choice(225, 300, 310, 25, _("Playback"));
                 menuAlertsDev->tooltip(_("Audio output device"));
                 menuAlertsDev->down_box(FL_BORDER_BOX);
                 menuAlertsDev->callback((Fl_Callback*)cb_menuAlertsDev);
               } // Fl_Choice* menuAlertsDev
               AudioAlerts->end();
             } // Fl_Group* AudioAlerts
-            { AudioDuplex = new Fl_Group(55, 325, 490, 45);
+            { AudioDuplex = new Fl_Group(55, 336, 490, 45);
               AudioDuplex->box(FL_ENGRAVED_FRAME);
-              { Fl_Round_Button* o = btn_is_full_duplex = new Fl_Round_Button(66, 335, 223, 25, _("Device supports full duplex"));
+              { Fl_Round_Button* o = btn_is_full_duplex = new Fl_Round_Button(66, 346, 223, 25, _("Device supports full duplex"));
                 btn_is_full_duplex->tooltip(_("NO AUDIO DEVICE AVAILABLE (or testing)"));
                 btn_is_full_duplex->down_box(FL_DOWN_BOX);
                 btn_is_full_duplex->value(1);
@@ -14840,6 +14839,7 @@ nce.\nYou may change the state from either location.\n..."));
           { tabAlerts1 = new Fl_Group(0, 50, 600, 340, _("Alerts 1"));
             tabAlerts1->color(FL_LIGHT1);
             tabAlerts1->selection_color(FL_LIGHT1);
+            tabAlerts1->hide();
             { Fl_Group* o = new Fl_Group(5, 55, 590, 66);
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
@@ -17050,4 +17050,240 @@ void KmlDestDirSet(Fl_File_Chooser *w, void *userdata) {
   	btnKmlSaveDir->redraw();
   	cb_btnKmlSaveDir( btnKmlSaveDir, NULL );
   }
+}
+
+Fl_Check_Button *btn_mon_xcvr_audio=(Fl_Check_Button *)0;
+
+static void cb_btn_mon_xcvr_audio(Fl_Check_Button* o, void*) {
+  progdefaults.mon_xcvr_audio = o->value();
+}
+
+Fl_Value_Slider2 *sldrRxFilt_bw=(Fl_Value_Slider2 *)0;
+
+static void cb_sldrRxFilt_bw(Fl_Value_Slider2* o, void*) {
+  progdefaults.RxFilt_bw = o->value();
+
+int bw2 = progdefaults.RxFilt_bw / 2;
+progdefaults.RxFilt_low = progdefaults.RxFilt_mid - bw2;
+if (progdefaults.RxFilt_low < 100) progdefaults.RxFilt_low = 100;
+
+progdefaults.RxFilt_high = progdefaults.RxFilt_mid + bw2;
+if (progdefaults.RxFilt_high > 4000) progdefaults.RxFilt_high = 4000;
+
+sldrRxFilt_low->value(progdefaults.RxFilt_low);
+sldrRxFilt_low->redraw();
+sldrRxFilt_high->value(progdefaults.RxFilt_high);
+sldrRxFilt_high->redraw();
+
+progdefaults.changed = true;
+audio_alert->init_filter();
+}
+
+Fl_Value_Slider2 *sldrRxFilt_mid=(Fl_Value_Slider2 *)0;
+
+static void cb_sldrRxFilt_mid(Fl_Value_Slider2* o, void*) {
+  progdefaults.RxFilt_mid = o->value();
+
+int bw2 = progdefaults.RxFilt_bw / 2;
+progdefaults.RxFilt_low = progdefaults.RxFilt_mid - bw2;
+if (progdefaults.RxFilt_low < 100) progdefaults.RxFilt_low = 100;
+
+progdefaults.RxFilt_high = progdefaults.RxFilt_mid + bw2;
+if (progdefaults.RxFilt_high > 4000) progdefaults.RxFilt_high = 4000;
+
+sldrRxFilt_low->value(progdefaults.RxFilt_low);
+sldrRxFilt_low->redraw();
+sldrRxFilt_high->value(progdefaults.RxFilt_high);
+sldrRxFilt_high->redraw();
+
+progdefaults.changed = true;
+audio_alert->init_filter();
+}
+
+Fl_Value_Slider2 *sldrRxFilt_low=(Fl_Value_Slider2 *)0;
+
+static void cb_sldrRxFilt_low(Fl_Value_Slider2* o, void*) {
+  progdefaults.RxFilt_low = o->value();
+
+int bw = progdefaults.RxFilt_high - progdefaults.RxFilt_low;
+progdefaults.RxFilt_bw = bw;
+sldrRxFilt_bw->value(bw);
+sldrRxFilt_bw->redraw();
+
+int mid = (progdefaults.RxFilt_high + progdefaults.RxFilt_low) / 2;
+progdefaults.RxFilt_mid = mid;
+sldrRxFilt_mid->value(mid);
+sldrRxFilt_mid->redraw();
+
+progdefaults.changed = true;
+audio_alert->init_filter();
+}
+
+Fl_Value_Slider2 *sldrRxFilt_high=(Fl_Value_Slider2 *)0;
+
+static void cb_sldrRxFilt_high(Fl_Value_Slider2* o, void*) {
+  progdefaults.RxFilt_high = o->value();
+
+int bw = progdefaults.RxFilt_high - progdefaults.RxFilt_low;
+progdefaults.RxFilt_bw = bw;
+sldrRxFilt_bw->value(bw);
+sldrRxFilt_bw->redraw();
+
+int mid = (progdefaults.RxFilt_high + progdefaults.RxFilt_low) / 2;
+progdefaults.RxFilt_mid = mid;
+sldrRxFilt_mid->value(mid);
+sldrRxFilt_mid->redraw();
+
+progdefaults.changed = true;
+audio_alert->init_filter();
+}
+
+Fl_Check_Button *btn_RxFilt_at_track=(Fl_Check_Button *)0;
+
+static void cb_btn_RxFilt_at_track(Fl_Check_Button* o, void*) {
+  progdefaults.RxFilt_track_wf = o->value();
+
+if (o->value() == 1) center_rxfilt_at_track();
+}
+
+Fl_Value_Slider2 *sldrRxFilt_vol=(Fl_Value_Slider2 *)0;
+
+static void cb_sldrRxFilt_vol(Fl_Value_Slider2* o, void*) {
+  progdefaults.RxFilt_vol = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_mon_dsp_audio=(Fl_Check_Button *)0;
+
+static void cb_btn_mon_dsp_audio(Fl_Check_Button* o, void*) {
+  progdefaults.mon_dsp_audio = o->value();
+}
+
+Fl_Double_Window* make_rxaudio_dialog() {
+  Fl_Double_Window* w;
+  { Fl_Double_Window* o = new Fl_Double_Window(360, 230, _("Rx Audio Monitor"));
+    w = o; if (w) {/* empty */}
+    { Fl_Check_Button* o = btn_mon_xcvr_audio = new Fl_Check_Button(50, 7, 70, 18, _("Monitor ON"));
+      btn_mon_xcvr_audio->down_box(FL_DOWN_BOX);
+      btn_mon_xcvr_audio->callback((Fl_Callback*)cb_btn_mon_xcvr_audio);
+      o->value(progdefaults.mon_xcvr_audio);
+    } // Fl_Check_Button* btn_mon_xcvr_audio
+    { Fl_Group* o = new Fl_Group(5, 84, 350, 141, _("Filter Settings"));
+      o->box(FL_ENGRAVED_FRAME);
+      o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+      { Fl_Value_Slider2* o = sldrRxFilt_bw = new Fl_Value_Slider2(10, 118, 300, 20, _("BW"));
+        sldrRxFilt_bw->tooltip(_("My transmit CW WPM"));
+        sldrRxFilt_bw->type(5);
+        sldrRxFilt_bw->box(FL_DOWN_BOX);
+        sldrRxFilt_bw->color((Fl_Color)206);
+        sldrRxFilt_bw->selection_color((Fl_Color)2);
+        sldrRxFilt_bw->labeltype(FL_NORMAL_LABEL);
+        sldrRxFilt_bw->labelfont(0);
+        sldrRxFilt_bw->labelsize(14);
+        sldrRxFilt_bw->labelcolor(FL_FOREGROUND_COLOR);
+        sldrRxFilt_bw->minimum(50);
+        sldrRxFilt_bw->maximum(4000);
+        sldrRxFilt_bw->step(10);
+        sldrRxFilt_bw->value(500);
+        sldrRxFilt_bw->textsize(14);
+        sldrRxFilt_bw->callback((Fl_Callback*)cb_sldrRxFilt_bw);
+        sldrRxFilt_bw->align(Fl_Align(FL_ALIGN_RIGHT));
+        sldrRxFilt_bw->when(FL_WHEN_CHANGED);
+        o->value(progdefaults.RxFilt_bw);
+      } // Fl_Value_Slider2* sldrRxFilt_bw
+      { Fl_Value_Slider2* o = sldrRxFilt_mid = new Fl_Value_Slider2(10, 144, 300, 20, _("Mid"));
+        sldrRxFilt_mid->tooltip(_("My transmit CW WPM"));
+        sldrRxFilt_mid->type(5);
+        sldrRxFilt_mid->box(FL_DOWN_BOX);
+        sldrRxFilt_mid->color((Fl_Color)206);
+        sldrRxFilt_mid->selection_color((Fl_Color)2);
+        sldrRxFilt_mid->labeltype(FL_NORMAL_LABEL);
+        sldrRxFilt_mid->labelfont(0);
+        sldrRxFilt_mid->labelsize(14);
+        sldrRxFilt_mid->labelcolor(FL_FOREGROUND_COLOR);
+        sldrRxFilt_mid->minimum(400);
+        sldrRxFilt_mid->maximum(3500);
+        sldrRxFilt_mid->step(10);
+        sldrRxFilt_mid->value(1500);
+        sldrRxFilt_mid->textsize(14);
+        sldrRxFilt_mid->callback((Fl_Callback*)cb_sldrRxFilt_mid);
+        sldrRxFilt_mid->align(Fl_Align(FL_ALIGN_RIGHT));
+        sldrRxFilt_mid->when(FL_WHEN_CHANGED);
+        o->value(progdefaults.RxFilt_mid);
+      } // Fl_Value_Slider2* sldrRxFilt_mid
+      { Fl_Value_Slider2* o = sldrRxFilt_low = new Fl_Value_Slider2(10, 170, 300, 20, _("Low"));
+        sldrRxFilt_low->tooltip(_("My transmit CW WPM"));
+        sldrRxFilt_low->type(5);
+        sldrRxFilt_low->box(FL_DOWN_BOX);
+        sldrRxFilt_low->color((Fl_Color)206);
+        sldrRxFilt_low->selection_color((Fl_Color)2);
+        sldrRxFilt_low->labeltype(FL_NORMAL_LABEL);
+        sldrRxFilt_low->labelfont(0);
+        sldrRxFilt_low->labelsize(14);
+        sldrRxFilt_low->labelcolor(FL_FOREGROUND_COLOR);
+        sldrRxFilt_low->minimum(100);
+        sldrRxFilt_low->maximum(3000);
+        sldrRxFilt_low->step(10);
+        sldrRxFilt_low->value(500);
+        sldrRxFilt_low->textsize(14);
+        sldrRxFilt_low->callback((Fl_Callback*)cb_sldrRxFilt_low);
+        sldrRxFilt_low->align(Fl_Align(FL_ALIGN_RIGHT));
+        sldrRxFilt_low->when(FL_WHEN_CHANGED);
+        o->value(progdefaults.RxFilt_low);
+      } // Fl_Value_Slider2* sldrRxFilt_low
+      { Fl_Value_Slider2* o = sldrRxFilt_high = new Fl_Value_Slider2(10, 196, 300, 20, _("High"));
+        sldrRxFilt_high->tooltip(_("My transmit CW WPM"));
+        sldrRxFilt_high->type(5);
+        sldrRxFilt_high->box(FL_DOWN_BOX);
+        sldrRxFilt_high->color((Fl_Color)206);
+        sldrRxFilt_high->selection_color((Fl_Color)2);
+        sldrRxFilt_high->labeltype(FL_NORMAL_LABEL);
+        sldrRxFilt_high->labelfont(0);
+        sldrRxFilt_high->labelsize(14);
+        sldrRxFilt_high->labelcolor(FL_FOREGROUND_COLOR);
+        sldrRxFilt_high->minimum(500);
+        sldrRxFilt_high->maximum(4000);
+        sldrRxFilt_high->step(10);
+        sldrRxFilt_high->value(900);
+        sldrRxFilt_high->textsize(14);
+        sldrRxFilt_high->callback((Fl_Callback*)cb_sldrRxFilt_high);
+        sldrRxFilt_high->align(Fl_Align(FL_ALIGN_RIGHT));
+        sldrRxFilt_high->when(FL_WHEN_CHANGED);
+        o->value(progdefaults.RxFilt_high);
+      } // Fl_Value_Slider2* sldrRxFilt_high
+      { Fl_Check_Button* o = btn_RxFilt_at_track = new Fl_Check_Button(156, 93, 70, 15, _("track WF cursor"));
+        btn_RxFilt_at_track->down_box(FL_DOWN_BOX);
+        btn_RxFilt_at_track->callback((Fl_Callback*)cb_btn_RxFilt_at_track);
+        o->value(progdefaults.RxFilt_track_wf);
+      } // Fl_Check_Button* btn_RxFilt_at_track
+      o->end();
+    } // Fl_Group* o
+    { Fl_Value_Slider2* o = sldrRxFilt_vol = new Fl_Value_Slider2(10, 55, 300, 20, _("Vol\'"));
+      sldrRxFilt_vol->tooltip(_("My transmit CW WPM"));
+      sldrRxFilt_vol->type(5);
+      sldrRxFilt_vol->box(FL_DOWN_BOX);
+      sldrRxFilt_vol->color((Fl_Color)206);
+      sldrRxFilt_vol->selection_color((Fl_Color)2);
+      sldrRxFilt_vol->labeltype(FL_NORMAL_LABEL);
+      sldrRxFilt_vol->labelfont(0);
+      sldrRxFilt_vol->labelsize(14);
+      sldrRxFilt_vol->labelcolor(FL_FOREGROUND_COLOR);
+      sldrRxFilt_vol->maximum(100);
+      sldrRxFilt_vol->step(1);
+      sldrRxFilt_vol->value(50);
+      sldrRxFilt_vol->textsize(14);
+      sldrRxFilt_vol->callback((Fl_Callback*)cb_sldrRxFilt_vol);
+      sldrRxFilt_vol->align(Fl_Align(FL_ALIGN_RIGHT));
+      sldrRxFilt_vol->when(FL_WHEN_CHANGED);
+      o->value(progdefaults.RxFilt_vol);
+    } // Fl_Value_Slider2* sldrRxFilt_vol
+    { Fl_Check_Button* o = btn_mon_dsp_audio = new Fl_Check_Button(50, 29, 70, 18, _("Filtered audio"));
+      btn_mon_dsp_audio->tooltip(_("Set Mid point of filter at waterfall cursor"));
+      btn_mon_dsp_audio->down_box(FL_DOWN_BOX);
+      btn_mon_dsp_audio->callback((Fl_Callback*)cb_btn_mon_dsp_audio);
+      o->value(progdefaults.mon_dsp_audio);
+    } // Fl_Check_Button* btn_mon_dsp_audio
+    o->end();
+  } // Fl_Double_Window* o
+  return w;
 }

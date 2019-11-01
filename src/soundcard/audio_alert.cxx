@@ -3,6 +3,8 @@
 // play various canned play_sounds or wav file using port audio interface
 
 #include "audio_alert.h"
+#include "configuration.h"
+#include "confdialog.h"
 
 #define PHONERING 15000
 int Caudio_alert::int_phone_ring[PHONERING];
@@ -164,6 +166,11 @@ void Caudio_alert::alert(std::string s)
 	else file(s);
 }
 
+void Caudio_alert::monitor(double *buffer, int len, int _sr)
+{
+	sc_audio->mon_write(buffer, len, _sr);
+}
+
 Caudio_alert::Caudio_alert()
 {
 	try {
@@ -181,3 +188,29 @@ Caudio_alert::~Caudio_alert()
 }
 
 Caudio_alert *audio_alert = 0;
+
+void center_rxfilt_at_track()
+{
+	progdefaults.RxFilt_mid = active_modem->get_freq();
+
+	int bw2 = progdefaults.RxFilt_bw / 2;
+	progdefaults.RxFilt_low = progdefaults.RxFilt_mid - bw2;
+	if (progdefaults.RxFilt_low < 100) progdefaults.RxFilt_low = 100;
+
+	progdefaults.RxFilt_high = progdefaults.RxFilt_mid + bw2;
+	if (progdefaults.RxFilt_high > 4000) progdefaults.RxFilt_high = 4000;
+
+	sldrRxFilt_mid->value(progdefaults.RxFilt_mid);
+	sldrRxFilt_mid->redraw();
+
+	sldrRxFilt_low->value(progdefaults.RxFilt_low);
+	sldrRxFilt_low->redraw();
+
+	sldrRxFilt_high->value(progdefaults.RxFilt_high);
+	sldrRxFilt_high->redraw();
+
+	progdefaults.changed = true;
+
+	if (audio_alert)
+		audio_alert->init_filter();
+}

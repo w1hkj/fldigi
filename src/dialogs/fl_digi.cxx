@@ -250,6 +250,8 @@ Fl_Double_Window	*field_day_viewer  = (Fl_Double_Window *)0;
 
 Fl_Double_Window	*dxcluster_viewer  = (Fl_Double_Window *)0;
 
+Fl_Double_Window	*rxaudio_dialog = (Fl_Double_Window *)0;
+
 static Fl_Group		*mnuFrame;
 Fl_Menu_Bar 		*mnu;
 
@@ -1653,6 +1655,11 @@ LOG_INFO("Deleting %s", "fsqMonitor");
 LOG_INFO("Deleting %s", "dxcluster_viewer");
 		dxcluster_viewer->hide();
 		delete dxcluster_viewer;
+	}
+	if (rxaudio_dialog) {
+LOG_INFO("Deleting %s", "rxaudio_dialog");
+		rxaudio_dialog->hide();
+		delete rxaudio_dialog;
 	}
 	if (test_signal_window) {
 LOG_INFO("Deleting %s", "test signal window");
@@ -3120,6 +3127,11 @@ void toggleRSID()
 {
 	progdefaults.rsid = !progdefaults.rsid;
 	cbRSID(NULL, NULL);
+}
+
+void cb_mnuRxAudioDialog(Fl_Menu_ *w, void *d) {
+	if (rxaudio_dialog)
+		rxaudio_dialog->show();
 }
 
 void cb_mnuDigiscope(Fl_Menu_ *w, void *d) {
@@ -6176,6 +6188,8 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ icons::make_icon_label(_("Rx Audio Dialog")), 'a', (Fl_Callback*)cb_mnuRxAudioDialog, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("View/Hide Channels")), 'c', (Fl_Callback*)cb_view_hide_channels, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Signal browser")), 'b', (Fl_Callback*)cb_mnuViewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},

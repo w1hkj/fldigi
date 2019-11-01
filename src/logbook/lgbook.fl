@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0304
+version 1.0305
 i18n_type 1
 i18n_include "gettext.h"
 i18n_function _
@@ -37,7 +37,7 @@ Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
     label {Export Setup} open
-    xywh {489 51 809 440} type Double visible
+    xywh {489 51 805 440} type Double visible
   } {
     Fl_Group {} {
       label {Select Records to Export}

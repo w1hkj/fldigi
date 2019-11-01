@@ -3,7 +3,6 @@
 #include <queue>
 #include <stack>
 #include <string>
-#include <samplerate.h>
 
 #include "play.pa.h"
 #include "misc.h"
@@ -11,18 +10,18 @@
 #include "configuration.h"
 #include "fl_digi.h"
 #include "qrunner.h"
+#include "confdialog.h"
 
 #define DR_MP3_IMPLEMENTATION
 #include "dr_mp3.h"
 
-//#if __WIN32__
-//int PAPLAY_CALLBACK  = 0;
-//#else
-int PAPLAY_CALLBACK  = 1;
-//#endif
+#define FRAMES_PER_BUFFER 64  // not to exceed MAX_FRAMES_PER_BUFFER / 2
 
 static pthread_t       alert_pthread;
+static pthread_cond_t  alert_cond;
 static pthread_mutex_t alert_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static pthread_mutex_t	filter_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static pthread_t		filelist_pthread;
 static pthread_mutex_t	filelist_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -32,10 +31,23 @@ static void start_filelist_thread(void);
 static void stop_alert_thread(void);
 static void stop_filelist_thread(void);
 
-bool alert_thread_running   = false;
+static bool alert_thread_running   = false;
 static bool alert_terminate_flag   = false;
+static bool alert_process_flag     = false;
 
-struct PLAYLIST { c_portaudio *cpa; float *fbuff; unsigned long int bufflen; unsigned long int data_ptr; std::string lname; };
+static int  alert_pending = c_portaudio::MONITOR;
+
+#define CHANNELS 2
+
+struct PLAYLIST {
+	c_portaudio *cpa;
+	float *fbuff;
+	unsigned long int bufflen;
+	unsigned long int data_ptr;
+	int src;
+};
+
+std::queue<PLAYLIST *> playlist;
 
 struct FILELIST { 
 	c_portaudio *cpa;
@@ -47,15 +59,12 @@ struct FILELIST {
 	~FILELIST() {};
 };
 
-#define CHANNELS 2
-
-std::queue<PLAYLIST *> playlist;
-
 std::stack<FILELIST> filelist;
 
 /**********************************************************************************
  * AUDIO_ALERT process event.
  **********************************************************************************/
+int csinc = 1;// 0 - best, 1 - medium, 2 - fastest, 3 - zoh, 4 - linear
 static sf_count_t
 rate_convert (float *inbuff, int len, float *outbuff, int outlen, double src_ratio, int channels)
 {
@@ -67,7 +76,7 @@ rate_convert (float *inbuff, int len, float *outbuff, int outlen, double src_rat
 	src_data.output_frames	= outlen / channels;	// Maximum number of frames pointed to by data_out.
 	src_data.src_ratio		= src_ratio;			// output_sample_rate / input_sample_rate.
 
-	int error = src_simple (&src_data, SRC_SINC_FASTEST, channels) ;
+	int error = src_simple (&src_data, csinc, channels) ;
 
 	return error;
 }
@@ -82,42 +91,56 @@ static void show_progress(unsigned long read_frames, unsigned long played)
 	put_status(progress, 2.0, STATUS_CLEAR);
 }
 
-static int stream_process(
+static PLAYLIST *plist = 0;
+
+int stream_process(
 			const void* in, void* out, unsigned long nframes,
 			const PaStreamCallbackTimeInfo *time_info,
 			PaStreamCallbackFlags flags, void* data)
 {
 
-	PLAYLIST* pl = reinterpret_cast<PLAYLIST *>(data);
-	c_portaudio* cpa = pl->cpa;
-	int chcnt = cpa->paStreamParameters.channelCount;
-	unsigned long int nbr_frames = pl->bufflen / chcnt;
-	float *data_frames = pl->fbuff;
-
-	if (cpa->state == paAbort || cpa->state == paComplete) { // finished
-		return cpa->state;
-	}
-
-	if (pl->data_ptr == nbr_frames)
-		return (paStatus = paComplete);
-
 	float* outf = reinterpret_cast<float*>(out);
-	memset(outf, 0, chcnt * sizeof(float));
+	memset(outf, 0, nframes * 2 * sizeof(float));
 
-	if (nbr_frames - pl->data_ptr > nframes) {
-		for (unsigned long int n = 0; n < nframes; n++) {
-			outf[n * chcnt] = data_frames[ (pl->data_ptr + n) * chcnt ];
-			outf[n * chcnt + 1] = data_frames[ (pl->data_ptr + n) * chcnt  + 1];
-		}
-		pl->data_ptr += nframes;
-	} else {
-		for (unsigned long int n = 0; n < (nbr_frames - pl->data_ptr); n++) {
-			outf[n] = data_frames[ chcnt * (pl->data_ptr + n) ];
-			outf[n + 1] = data_frames[ chcnt * (pl->data_ptr + n)  + 1];
-		}
-		pl->data_ptr = nbr_frames;
+	if (!plist && playlist.empty()) {
+		c_portaudio *cpa = (c_portaudio *)data;
+		cpa->mon_read((float *)out, nframes);
+		return paContinue;
 	}
-	show_progress(nbr_frames, pl->data_ptr);
+
+	if ( !plist && !playlist.empty() ) { // 	block to guard the play list queue
+		guard_lock que_lock(&alert_mutex);
+		plist = playlist.front();
+		playlist.pop();
+	}
+
+	c_portaudio* cpa = plist->cpa;
+	int chcnt = cpa->paStreamParameters.channelCount;
+	unsigned long int nbr_frames = plist->bufflen / chcnt;
+	float *data_frames = plist->fbuff;
+
+	unsigned int remain = nbr_frames - plist->data_ptr;
+	if (remain > nframes) {
+		for (unsigned long int n = 0; n < nframes; n++) {
+			outf[n * chcnt] = data_frames[ (plist->data_ptr + n) * chcnt ];
+			outf[n * chcnt + 1] = data_frames[ (plist->data_ptr + n) * chcnt  + 1];
+		}
+		plist->data_ptr += nframes;
+	} else {
+		for (unsigned long int n = 0; n < remain; n++) {
+			outf[n * chcnt] = data_frames[ (plist->data_ptr + n) * chcnt ];
+			outf[n * chcnt + 1] = data_frames[ (plist->data_ptr + n) * chcnt + 1];
+		}
+		plist->data_ptr += remain;
+	}
+	
+	if (plist->src == c_portaudio::ALERT)
+		show_progress(nbr_frames, plist->data_ptr);
+
+	if (plist->data_ptr >= nbr_frames) {
+		plist = NULL;
+	}
+
 	return paContinue;
 }
 
@@ -128,95 +151,15 @@ static void StreamFinished( void* userData )
 
 void process_alert()
 {
-	struct PLAYLIST *plist = playlist.front();
-
-	while (!playlist.empty()) {
-
-		{ // 	block to guard the play list queue
-			guard_lock que_lock(&alert_mutex);
-
-			if (plist->cpa == 0) {
-//LOG_INFO("%s", "plist->cpa == 0");
-				while (!playlist.empty()) {
-					plist = playlist.front();
-					delete [] plist->fbuff;
-					playlist.pop();
-				}
-				return;
-			}
-
-// opening a stream creates a new service thread in port audio
-			if (!plist->cpa->open(plist)) {
-				LOG_ERROR("cannot open pa stream");
-				while (!playlist.empty()) {
-					plist = playlist.front();
-					delete [] plist->fbuff;
-					playlist.pop();
-				}
-				return;
-			}
-			if (!plist->cpa->stream) {
-				plist->cpa->close();
-				while (!playlist.empty()) {
-					plist = playlist.front();
-					delete [] plist->fbuff;
-					playlist.pop();
-				}
-				return;
-			}
-		}
-
-		int paError = 0;
-	if (PAPLAY_CALLBACK ) {
-		int terminate = (plist->bufflen/2)/plist->cpa->sr;
-		terminate *= 10;
-		terminate += 10;
-
-		paStatus = paContinue;
-
-		paError = Pa_SetStreamFinishedCallback( plist->cpa->stream, &StreamFinished );
-		if (paError != paNoError) goto err_exit;
-
-		paError = Pa_StartStream( plist->cpa->stream );
-		if (paError != paNoError) goto err_exit;
-
-		while ( paStatus != paComplete && terminate 
-				&& (Pa_IsStreamActive(plist->cpa->stream) == 1)) {
-			MilliSleep(100);
-			terminate--;
-		}
-
-// closing the stream terminates the service thread in port audio
-		paError = Pa_StopStream( plist->cpa->stream );
-	} else {
-/* send as a single block */
-		paError = Pa_StartStream( plist->cpa->stream );
-		if (paError != paNoError) goto err_exit;
-
-		paError = Pa_WriteStream(plist->cpa->stream, plist->fbuff, plist->bufflen/2);
-		if (paError != paNoError)
-			goto err_exit;
-	}
-
-err_exit:
-		if (paError != paNoError) {
-// closing the stream terminates the service thread in port audio
-			Pa_StopStream( plist->cpa->stream );
-		}
-
-		plist->cpa->close();
-		delete [] plist->fbuff;
-		playlist.pop();
-		plist = playlist.front();
-	}
 	return;
-
 }
 
 /**********************************************************************************
  * AUDIO_ALERT processing loop.
  * syncs to requests for audio alert output
  **********************************************************************************/
+static c_portaudio *requester = 0;
+
 static void * alert_loop(void *args)
 {
 	SET_THREAD_ID(AUDIO_ALERT_TID);
@@ -225,14 +168,16 @@ static void * alert_loop(void *args)
 	alert_terminate_flag   = false;
 
 	while(1) {
-		MilliSleep(50);
+		pthread_mutex_lock(&alert_mutex);
+		pthread_cond_wait(&alert_cond, &alert_mutex);
+		pthread_mutex_unlock(&alert_mutex);
 
 		if (alert_terminate_flag) break;
-
-//		if (trx_state == STATE_RX && !playlist.empty())
-		if (!playlist.empty())
-			process_alert();
-
+// execute a single request for audio stream processing
+		if (requester) {
+			requester->process_mon();
+			requester = 0;
+		}
 	}
 	return (void *)0;
 }
@@ -246,13 +191,17 @@ static void start_alert_thread(void)
 
 	memset((void *) &alert_pthread, 0, sizeof(alert_pthread));
 	memset((void *) &alert_mutex,   0, sizeof(alert_mutex));
+	memset((void *) &alert_cond,    0, sizeof(alert_cond));
+
+	if(pthread_cond_init(&alert_cond, NULL)) {
+		LOG_ERROR("Alert thread create fail (pthread_cond_init)");
+		return;
+	}
 
 	if(pthread_mutex_init(&alert_mutex, NULL)) {
 		LOG_ERROR("AUDIO_ALERT thread create fail (pthread_mutex_init)");
 		return;
 	}
-
-	memset((void *) &alert_pthread, 0, sizeof(alert_pthread));
 
 	if (pthread_create(&alert_pthread, NULL, alert_loop, NULL) < 0) {
 		pthread_mutex_destroy(&alert_mutex);
@@ -271,7 +220,15 @@ static void stop_alert_thread(void)
 {
 	if(!alert_thread_running) return;
 
+	struct PLAYLIST *plist = 0;
+	while (!playlist.empty()) {
+		plist = playlist.front();
+		delete [] plist->fbuff;
+		playlist.pop();
+	}
+
 	alert_terminate_flag = true;
+	pthread_cond_signal(&alert_cond);
 
 	MilliSleep(10);
 
@@ -280,6 +237,7 @@ static void stop_alert_thread(void)
 	LOG_VERBOSE("%s", "audio alert thread - stopped");
 
 	pthread_mutex_destroy(&alert_mutex);
+	pthread_cond_destroy(&alert_cond);
 
 	memset((void *) &alert_pthread, 0, sizeof(alert_pthread));
 	memset((void *) &alert_mutex,   0, sizeof(alert_mutex));
@@ -288,7 +246,7 @@ static void stop_alert_thread(void)
 	alert_terminate_flag   = false;
 }
 
-static void add_alert(c_portaudio * _cpa, float *buffer, int len)
+static void add_alert(c_portaudio * _cpa, float *buffer, int len, int src)
 {
 	if(alert_thread_running) {
 		struct PLAYLIST *plist = new PLAYLIST;
@@ -296,6 +254,8 @@ static void add_alert(c_portaudio * _cpa, float *buffer, int len)
 		plist->bufflen = len; // # floats 
 		plist->cpa = _cpa;
 		plist->data_ptr = 0;
+
+		alert_pending = src;
 
 		guard_lock que_lock(&alert_mutex);
 		playlist.push(plist);
@@ -311,19 +271,82 @@ c_portaudio::c_portaudio()
 		throw cPA_exception(paError);
 
 	stream = 0;
+	fbuffer = 0;
+	nubuffer = 0;
+	sr = SCRATE;
+	b_sr = SCRATE;
+	b_len = 0;
+	rc = src_new (1, 2, &rc_error) ;
+	monitor_rb = new ringbuffer<float>(8192);
 	start_alert_thread();
 	start_filelist_thread();
+	open(NULL);
+
+	bpfilt = 0;
+	init_filter();
 }
 
 c_portaudio::~c_portaudio()
 {
+	close();
 	stop_filelist_thread();
 	stop_alert_thread();
+	delete monitor_rb;
+	delete [] fbuffer;
+	delete [] nubuffer;
+	src_delete(rc);
+	delete bpfilt;
 	Pa_Terminate();
+}
+
+void c_portaudio::init_filter()
+{
+	guard_lock filter_lock(&filter_mutex);
+
+//	if (bpfilt) delete bpfilt;
+//	bpfilt = new C_FIR_filter();
+
+	if (!bpfilt) bpfilt = new C_FIR_filter();
+
+	flo = 1.0 * progdefaults.RxFilt_low / sr;
+	fhi = 1.0 * progdefaults.RxFilt_high / sr;
+	bpfilt->init_bandpass (511, 1, flo, fhi);
+
+	double fmid = progdefaults.RxFilt_mid / sr;
+	double amp = 0;
+	double sum_in = 0, sum_out = 0;
+	double inp = 0;
+	for (int i = 0; i <  100 / fmid; i++) {
+		inp = cos (TWOPI * i * fmid);
+		if (bpfilt->Irun( inp, amp ) ) {
+			sum_in += fabs(inp);
+			sum_out += fabs(amp);
+		}
+	}
+	gain = 0.98 * sum_in / sum_out;
+	for (int i = 0; i < 256; i++) bpfilt->Irun(0.0, amp);
+/*
+std::cout << "############################################" << std::endl;
+std::cout << "Sampling rate: " << sr << std::endl;
+std::cout << "BW : " << progdefaults.RxFilt_bw << " : [ " << progdefaults.RxFilt_low << 
+             " | " << progdefaults.RxFilt_mid << 
+             " | " << progdefaults.RxFilt_high << " ]" <<
+             std::endl;
+std::cout << "bpfilt :       " << flo << " | " << fhi << std::endl;
+std::cout << "gain :         " << gain << std::endl;
+std::cout << "############################################" << std::endl;
+*/
 }
 
 int c_portaudio::open(void *data)
 {
+	paStreamParameters.device = progdefaults.AlertIndex;
+	sr = Pa_GetDeviceInfo(paStreamParameters.device)->defaultSampleRate;
+	paStreamParameters.channelCount = CHANNELS;
+	paStreamParameters.sampleFormat = paFloat32;
+	paStreamParameters.suggestedLatency = Pa_GetDeviceInfo(paStreamParameters.device)->defaultLowOutputLatency;
+	paStreamParameters.hostApiSpecificStreamInfo = NULL;
+
 	LOG_VERBOSE("\n\
 open pa stream:\n\
   samplerate         : %.0f\n\
@@ -340,32 +363,37 @@ open pa stream:\n\
 
 	state = paContinue;
 
-	if (PAPLAY_CALLBACK) {
-		paError = Pa_OpenStream(
-			&stream,
-			NULL, &paStreamParameters,
-			sr,
-			FRAMES_PER_BUFFER, paClipOff,
-			stream_process, data);
-	} else {
-		paError = Pa_OpenStream(
-			&stream,
-			NULL, &paStreamParameters,
-			sr,
-			FRAMES_PER_BUFFER, paClipOff,
-			NULL, NULL);
-	}
-
+	paError = Pa_OpenStream(
+		&stream,
+		NULL, &paStreamParameters,
+		sr,
+		FRAMES_PER_BUFFER, paClipOff,
+		stream_process, this);
 	if (paError != paNoError) {
-		LOG_ERROR("open pa stream failed: %s", Pa_GetErrorText(paError));
+		LOG_ERROR("%s", Pa_GetErrorText(paError));
 		return 0;
 	}
-//LOG_INFO("opened pa stream %p @ %f samples/sec", stream, sr);
+
+	paError = Pa_SetStreamFinishedCallback( stream, StreamFinished );
+	if (paError != paNoError) {
+		LOG_ERROR("%s", Pa_GetErrorText(paError));
+		return 0;
+	}
+
+	paError = Pa_StartStream(stream );
+	if (paError != paNoError) {
+		LOG_ERROR("%s", Pa_GetErrorText(paError));
+		return 0;
+	}
+
+LOG_INFO("opened pa stream %p @ %f samples/sec", stream, sr);
+
 	return 1;
 }
 
 void c_portaudio::close()
 {
+	paError = Pa_StopStream(stream );
 	paError = Pa_CloseStream(stream);
 	if (paError != paNoError) {
 		LOG_ERROR("pa close failed");
@@ -377,19 +405,8 @@ void c_portaudio::close()
 
 // Play 2 channel buffer
 
-void c_portaudio::play_buffer(float *buffer, int len, int _sr)
+void c_portaudio::play_buffer(float *buffer, int len, int _sr, int src)
 {
-	paStreamParameters.device = progdefaults.AlertIndex;
-#ifdef PLAYBACK_SAMPLERATE
-	sr = PLAYBACK_SAMPLERATE;
-#else
-	sr = Pa_GetDeviceInfo(paStreamParameters.device)->defaultSampleRate;
-#endif
-	paStreamParameters.channelCount = CHANNELS;
-	paStreamParameters.sampleFormat = paFloat32;
-	paStreamParameters.suggestedLatency = Pa_GetDeviceInfo(paStreamParameters.device)->defaultLowOutputLatency;
-	paStreamParameters.hostApiSpecificStreamInfo = NULL;
-
 	data_ptr = 0;
 
 // do not delete [] nubuffer
@@ -417,21 +434,7 @@ void c_portaudio::play_buffer(float *buffer, int len, int _sr)
 		}
 	}
 
-// test for values exceeding |1.0|
-	double max = 1.0;
-	for (int i = 0; i < nusize / 2; i++) {
-		if (fabs(nubuffer[2 * i]) > max) max = fabs(nubuffer[2 * i]);
-		if (fabs(nubuffer[2 * i + 1]) > max) max = fabs(nubuffer[2 * i + 1]);
-	}
-	if (max > 1.0) {
-		max *= 1.01;
-		for (int i = 0; i < nusize / 2; i++) {
-			nubuffer[2 * i] /= max;
-			nubuffer[2 * i + 1] /= max;
-		}
-	}
-
-	add_alert(this, nubuffer, nusize);
+	add_alert(this, nubuffer, nusize, src);
 
 	return;
 }
@@ -444,8 +447,8 @@ void c_portaudio::play_sound(int *buffer, int len, int _sr)
 		delete [] fbuff;
 		fbuff = new float[2*len];
 		for (int i = 0; i < len; i++)
-			fbuff[2*i] = fbuff[2*i+1] = buffer[i] / 32768.0;
-		play_buffer(fbuff, 2*len, _sr);
+			fbuff[2*i] = fbuff[2*i+1] = buffer[i] / 33000.0; //32768.0;
+		play_buffer(fbuff, 2*len, _sr, ALERT);
 	} catch (...) {
 		delete [] fbuff;
 		throw;
@@ -464,7 +467,7 @@ void c_portaudio::play_sound(float *buffer, int len, int _sr)
 		for (int i = 0; i < len; i++) {
 			fbuff[2*i] = fbuff[2*i+1] = buffer[i];
 		}
-		play_buffer(fbuff, 2 * len, _sr);
+		play_buffer(fbuff, 2 * len, _sr, ALERT);
 	} catch (...) {
 		delete [] fbuff;
 		throw;
@@ -503,7 +506,7 @@ void c_portaudio::play_mp3(std::string fname)
 		return;
 	}
 
-	LOG_INFO("\n\
+	LOG_VERBOSE("\n\
 MP3 parameters\n\
       channels: %d\n\
    sample rate: %d\n\
@@ -570,6 +573,95 @@ void c_portaudio::play_file(std::string fname)
 	filelist.push( FILELIST(this, fname));
 }
 
+// =====================================================================
+// Modem monitor
+// play current unprocessed Rx audio stream
+// play current post filtered Rx audio stream
+// =====================================================================
+
+// write len elements from monophonic audio stream to ring buffer
+
+void c_portaudio::process_mon()
+{
+	if (nubuffer) delete [] nubuffer;
+	nubuffer = 0;
+
+	try {
+		guard_lock filter_lock(&filter_mutex);
+
+// do not resample if sample rate is default
+		if (sr == b_sr) {
+			if (progdefaults.mon_dsp_audio) {
+				double out;
+				for (int n = 0; n < b_len; n++) {
+					if (bpfilt->Irun(fbuffer[2*n], out)) {
+						fbuffer[2*n] = fbuffer[2*n+1] = gain * out; 
+					}
+				}
+			}
+			monitor_rb->write(fbuffer, 2 * b_len);	
+		} else {
+			double src_ratio = 1.0 * sr / b_sr;
+			int    nusize  = b_len * src_ratio;
+
+			nubuffer = new float[2 * nusize];
+			memset(nubuffer, 0, 2 * nusize * sizeof(float));
+
+			rcdata.data_in		 = fbuffer;	// pointer to the input data samples.
+			rcdata.input_frames	 = b_len;      // number of frames of data pointed to by data_in.
+			rcdata.data_out		 = nubuffer; // pointer to the output data samples.
+			rcdata.output_frames = nusize;	// Maximum number of frames pointed to by data_out.
+			rcdata.src_ratio	 = src_ratio;	// output_sample_rate / input_sample_rate.
+
+			if (src_process (rc, &rcdata) != 0) {
+				LOG_ERROR("rate converter failed");
+				throw;
+			}
+			if (progdefaults.mon_dsp_audio) {
+				double out;
+				for (int n = 0; n < nusize; n++) {
+					if (bpfilt->Irun(nubuffer[2*n], out)) {
+						nubuffer[2*n] = nubuffer[2*n+1] = gain * out; 
+					}
+				}
+			}
+			monitor_rb->write(nubuffer, 2 * rcdata.output_frames_gen);
+		}
+
+	} catch (...) {
+		delete [] nubuffer;
+		nubuffer = 0;
+		alert_process_flag = false;
+		throw;
+	}
+	delete [] nubuffer;
+	nubuffer = 0;
+	alert_process_flag = false;
+
+	return;
+}
+
+void c_portaudio::mon_write(double *buffer, int len, int mon_sr)
+{
+	if (!fbuffer)
+		fbuffer = new float[2 * len];
+	for (int i = 0; i < len; i++)
+		fbuffer[2*i] = fbuffer[2*i+1] = 0.01 * progdefaults.RxFilt_vol * buffer[i];
+	
+	b_len = len;
+	b_sr = mon_sr;
+
+	alert_process_flag = true;
+	requester = this;
+	pthread_cond_signal(&alert_cond);
+}
+
+// read len elements of 2 channel audio from ring buffer
+size_t c_portaudio::mon_read(float *buffer, int len)
+{
+	size_t ret = monitor_rb->read(buffer, 2*len);
+	return ret;
+}
 
 /**********************************************************************************
  * AUDIO FILELIST processing loop.
