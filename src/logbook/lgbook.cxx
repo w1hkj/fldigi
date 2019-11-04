@@ -245,6 +245,7 @@ btnSelectSection->value(1);
 btnSelect_cwss_serno->value(1);
 btnSelect_cwss_prec->value(1);
 btnSelect_cwss_check->value(1);
+btnSelect_cwss_section->value(1);
 btnSelect_1010->value(1);
 }
 

@@ -193,7 +193,7 @@ chkExportBrowser->check_all();}
         xywh {536 240 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectLOTWrcvd {
-        label {LoTW rcvd date} selected
+        label {LoTW rcvd date}
         xywh {536 262 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectLOTWsent {
@@ -379,7 +379,8 @@ btnSelectSection->value(1);
 btnSelect_cwss_serno->value(1);
 btnSelect_cwss_prec->value(1);
 btnSelect_cwss_check->value(1);
-btnSelect_1010->value(1);}
+btnSelect_cwss_section->value(1);
+btnSelect_1010->value(1);} selected
         xywh {507 373 85 20}
       }
       Fl_Button btnSetFieldDefaults {
