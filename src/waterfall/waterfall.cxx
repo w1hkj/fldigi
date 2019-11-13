@@ -902,14 +902,20 @@ void WFdisp::drawScale() {
 
 void WFdisp::drawMarker() {
 	if (mode == SCOPE) return;
+	int msize = RGBsize * scale_width;
+	int psize = scale_width * WFMARKER;
 	uchar *pixmap = (uchar *)(markerimage + (int)(offset));
-	uchar map[RGBsize * scale_width];
+	uchar map[msize];
+	memset(map, 0, sizeof(map));
 	int y1 = y() + WFSCALE + WFTEXT;
 	for (int yp = 0; yp < WFMARKER; yp++) {
 		for (int xp = 0; xp < scale_width; xp++) {
-			map[RGBsize * xp] = pixmap[RGBsize * (yp * scale_width + xp * step)];
-			map[RGBsize * xp + 1] = pixmap[RGBsize * (yp * scale_width + xp * step) + 1];
-			map[RGBsize * xp + 2] = pixmap[RGBsize * (yp * scale_width + xp * step) + 2];
+			if ((RGBsize * xp + 2 < msize) && 
+				(RGBsize * (yp * scale_width + xp * step + 2) < psize)) {
+				map[RGBsize * xp] = pixmap[RGBsize * (yp * scale_width + xp * step)];
+				map[RGBsize * xp + 1] = pixmap[RGBsize * (yp * scale_width + xp * step) + 1];
+				map[RGBsize * xp + 2] = pixmap[RGBsize * (yp * scale_width + xp * step) + 2];
+			}
 		}
 		fl_draw_image((const uchar *)map, x(), y1 + yp, w(), 1, RGBsize, 0);
 	}
