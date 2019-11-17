@@ -712,8 +712,6 @@ Available Parameters: 8000, 11025, 16000, 22050, 24000, 44100, 48000
 <br>
 \section ss_rig_hrdwr_ptt Hardware PTT Option Commands
 
-See \ref rig_config
-
 \subsection ss_hrdwr_ptt PTT tone on right audio channel
 
 PTT RT CHAN:\<ENABLE | DISABLE\>

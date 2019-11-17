@@ -43,8 +43,8 @@ cITALIAN
 };
 
 struct CONTESTS {
-	string name;
-	string notes;
+	std::string name;
+	std::string notes;
 };
 
 // Contest, ST, TEST, rRST , rST, rCY, rSERNO, rXCHG, rNAME, rCAT, rSTCTY, Notes

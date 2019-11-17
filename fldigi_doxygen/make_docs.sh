@@ -2,7 +2,7 @@
 #
 # A simple script for creating/archiving doxygen documentation for FLDigi
 
-PRG_NAME="FLDigi"
+PRG_NAME="fldigi"
 
 LATEX="0"
 DOXY="0"
@@ -36,10 +36,10 @@ doc_version()
 
 	VER_STR=`grep -e "PROJECT_NUMBER*=*" $1`
 
-	if [ -z $VER_STR ]; then
-		VER_NUM="UNKNOWN_VERSION"
-		return
-	fi
+#	if [ -z $VER_STR ]; then
+#		VER_NUM="UNKNOWN_VERSION"
+#		return
+#	fi
 
 	VER_NUM="${VER_STR#*=}"
 	VER_NUM="${VER_NUM#"${VER_NUM%%[![:space:]]*}"}"
@@ -321,7 +321,8 @@ if [ -f "$SCRIPT_PATH" ]; then
 	make_dir "prog_docs/latex"
 	make_dir "prog_docs/html"
 
-	( cd doxygen; copy_files )
+#	( cd doxygen; copy_files )
+	copy_files
 
 else
 	echo "***********************************************************************"
@@ -336,8 +337,8 @@ if [ $BUILD_USER_DOCS -eq "1" ]; then
 	cd user_src_docs
 	doc_version "${PWD}/Doxyfile"
 	check_doxy
-	( compress_html "${PRG_NAME}_${VER_NUM}_Users_Manual" "user_docs")
-	pdf_docs "../user_docs/latex" "../../pdf/${PRG_NAME}_${VER_NUM}_Users_Manual.pdf"
+	( compress_html "${PRG_NAME}_${VER_NUM}-help" "user_docs")
+	pdf_docs "../user_docs/latex" "../../pdf/${PRG_NAME}_${VER_NUM}-help.pdf"
 )
 fi
 

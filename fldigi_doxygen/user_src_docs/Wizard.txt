@@ -30,19 +30,17 @@ See \ref operator_configuration_page "Operator Configuration"
 See \ref sound_card_configuration_page "Sound Card Configuration"
 <br>
 
-\image html wizard-page_4-txControl-RigCat.png "Transceiver Configuration"
-\image latex wizard-page_4-txControl-RigCat.png "Transceiver Configuration" width=5.0in
+\image html wizard-page_4-txControl-RigFlrig.png "Flrig Configuration"
+\image latex wizard-page_4-txControl-RigFlrig.png "Flrig Configuration" width=5.0in
+<br>
+\image html wizard-page_5-txControl-RigCat.png "RigCat Configuration"
+\image latex wizard-page_5-txControl-RigCat.png "RigCat Configuration" width=5.0in
+<br>
+\image html wizard-page_6-txControl-RigHamlib.png "Hamlib Configuration"
+\image latex wizard-page_6-txControl-RigHamlib.png "Hamlib Configuration" width=5.0in
 <br>
 
 See \ref rig_control_page "Transceiver Configuration"
-<br>
-
-\image html wizard-page_5-Tabular-Data.png "Tabular Configuration"
-\image latex wizard-page_5-Tabular-Data.png "Tabular Configuration" width=5.0in
-<br>
-
-See \ref supporting_data_files_page "Tabular Data"
-
 </center>
 
 <br>

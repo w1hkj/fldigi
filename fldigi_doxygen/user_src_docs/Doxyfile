@@ -14,7 +14,7 @@
 # input used in their production; they are not affected by this license.
 
 PROJECT_NAME         = "Fldigi Users Manual"
-PROJECT_NUMBER       = 4.1.00
+PROJECT_NUMBER       = 4.1.08
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = NO
@@ -51,6 +51,7 @@ INPUT                = \
 	colorsandfonts.txt \
 	audio-adjust.txt \
 	audio_alerts.txt \
+	rx_monitor.txt \
 	configAutostart.txt \
 	configcallsigndb.txt \
 	configContestia.txt configCW.txt \
@@ -87,6 +88,7 @@ INPUT                = \
 	maclogger.txt \
 	n3fjp_logs.txt \
 	LogExports.txt \
+	Contest-How-To.txt \
 	lotw_interface.txt \
 	working_logs.txt \
 	Macros.txt \
@@ -155,13 +157,13 @@ OUTPUT_DIRECTORY     = ../user_docs
 OUTPUT_LANGUAGE      = English
 PDF_HYPERLINKS       = YES
 PERL_PATH            = /usr/bin/perl
-QUIET                = NO
+QUIET                = YES
 RECURSIVE            = NO
 SEARCHENGINE         = NO
 STRIP_CODE_COMMENTS  = NO
 TAGFILES             =
 USE_PDFLATEX         = YES
-WARNINGS             = YES
+WARNINGS             = NO
 HTML_EXTRA_STYLESHEET = custom.css
 
 

@@ -31,8 +31,8 @@ such as "CQ CQ".
 \image latex CQ_CQ_alert.png "CQ CQ regex" width=2.5in
 </center>
 
-The regex detection defaults to red text.  The detection of <MYCALL> is an integral
-part of the browser code.  A <MYCALL> detection causes the text to turn green.
+The regex detection defaults to red text.  The detection of \<MYCALL\> is an integral
+part of the browser code.  A \<MYCALL\> detection causes the text to turn green.
 
 Both of these events can trigger an audio alert.  
 

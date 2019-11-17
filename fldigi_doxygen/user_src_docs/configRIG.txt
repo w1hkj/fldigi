@@ -116,17 +116,14 @@ frequency display.
 <br>
 
 \section xml_rpc_cat External program XmlRpc control
-<br>
-
-\image html config-rig-xmlrpc.png "Xml-Rpc CAT Control"
-\image latex config-rig-xmlrpc.png "Xml-Rpc CAT Control" width=5.0in
-<br>
 
 Xml-Rpc allows third party software to control various aspects of fldigi
-operation including but not limited to rig control.  If you are using a 
-third party interface such as DxKeeper Bridge you might
-be instructed to select this method of CAT.
-<br>
+operation including but not limited to rig control.  fldigi's xmlrpc server
+is always executing.  External programs can concurrently provide rig control
+using the fldigi recognized xmlrpc commands.  This control can be concurrent
+with other control methods, i.e flrig, fldigi and an xmlrpc client can 
+simultaneously control the transceiver.  Only one can be used to send and receive
+transceiver commands via it's serial i/o stream.
 
 \section hardware_ptt  Use hardware PTT only
 

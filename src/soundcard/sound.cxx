@@ -2410,6 +2410,8 @@ size_t SoundPulse::resample_write(float* buf, size_t count)
 		count = tx_src_data->output_frames_gen;
 	}
 
+	if (!active_modem) return count;
+
 	if (active_modem->get_stopflag()) return count;
 
 	if (pa_simple_write(sd[1].stream, wbuf, count * sd[1].stream_params.channels * sizeof(float), &err) == -1)

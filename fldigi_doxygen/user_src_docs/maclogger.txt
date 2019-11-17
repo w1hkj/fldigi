@@ -8,11 +8,8 @@
 This logbook interface only applies to OS X users who want fldigi to connect
 to and share data with the application MacLogger.
 <br>
-Select the Maclogger configure item from the fldigi config menu:
-\image html Config_menu_N3FJP.png ""
-\image latex Config_menu_N3FJP.png "" width=1.5in
+Open the configuration dialog and select the Maclogger configure item from the tree menu.
 
-This will open the configuration dialog to the Maclogger tab.
 \image html maclogger.png ""
 \image latex maclogger.png "" width=4.5in
 

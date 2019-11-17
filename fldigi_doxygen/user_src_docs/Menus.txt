@@ -397,26 +397,8 @@ Additional information:
 <HR>
 \subsection s_configure Configure
 <center>
-<table>
-	<tr><td>
 \image html config_menu_1.png ""
 \image latex config_menu_1.png "" width=1.5in
-	</td>
-	<td>
-\image html config_menu_2.png ""
-\image latex config_menu_2.png "" width=1.5in
-	</td>
-	</tr>
-	<tr><td>
-\image html config_menu_3.png ""
-\image latex config_menu_4.png "" width=1.5in
-	</td>
-	<td>
-\image html config_menu_4.png ""
-\image latex config_menu_4.png "" width=1.5in
-	</td>
-	</tr>
-</table>
 </center>
 <br>
 

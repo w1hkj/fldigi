@@ -883,6 +883,7 @@ EXTRA_fldigi_SOURCES += \
 	include/status.h \
 	include/strutil.h \
 	include/synop.h \
+	include/tabdefs.h \
 	include/table.h \
 	include/testmodem.h \
 	include/test_signal.h \

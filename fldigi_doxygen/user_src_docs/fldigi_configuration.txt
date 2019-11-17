@@ -16,6 +16,11 @@ state that it was last used.<br>
 
 \section ui_configuation User Interface configuration
 
+\image html config-dialog.png "Operator-Station"
+\image latex config-dialog.png "Operator-Station" width=6.0in
+
+The tree menu is used to access configuration categories as "leaves" of the tree.
+ 
 You should initially configure the following:
 <br>
 
@@ -47,6 +52,7 @@ program:
 	<li> \subpage callsign_db_configuration_page </li>
 	<li> \subpage colors_and_fonts_page </li>
 	<li> \subpage audio_alerts_page </li>
+	<li> \subpage rx_monitor_page </li>
 	<li> \subpage autostart_configuration_page </li>
 	<li> \subpage id_configuration_page </li>
 	<li> \subpage psk_mail_configuation_page </li>

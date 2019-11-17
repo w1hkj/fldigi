@@ -30,8 +30,6 @@ modifications:
 \subsubsection rx_text RX text
 
 This widget is read-only and ignores shortcuts that would modify its contents.
-See \ref qso_log_book_page "logbook" for details on the Rx right click
-popup menu system.
 <br>
 
 \subsubsection tx_text TX text

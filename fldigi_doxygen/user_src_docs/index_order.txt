@@ -11,6 +11,7 @@ audio-adjust.txt \
 configcallsigndb.txt \
 configRIG.txt \
 audio_alerts.txt \
+rx_monitor.txt \
 configAutostart.txt \
 configContestia.txt \
 configCW.txt \

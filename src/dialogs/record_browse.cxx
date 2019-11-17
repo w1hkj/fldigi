@@ -25,9 +25,9 @@ Fl_Double_Window* make_record_loader_window() {
   { Fl_Double_Window* o = new Fl_Double_Window(540, 280, _("Data files sources"));
     w = o; if (w) {/* empty */}
     o->tooltip(_("Data files update"));
-    { tabDataFiles = new Fl_Group(5, 25, 570, 275);
+    { tabDataFiles = new Fl_Group(3, 18, 535, 255);
       tabDataFiles->tooltip(_("Tabular data sources"));
-      { DerivedRecordLst* o = new DerivedRecordLst(6, 25, 529, 217, _("Data files sources"));
+      { DerivedRecordLst* o = new DerivedRecordLst(4, 18, 529, 217, _("Data files sources"));
         o->box(FL_THIN_DOWN_FRAME);
         o->color(FL_BACKGROUND_COLOR);
         o->selection_color(FL_BACKGROUND_COLOR);
@@ -40,15 +40,15 @@ Fl_Double_Window* make_record_loader_window() {
         o->end();
         Fl_Group::current()->resizable(o);
       } // DerivedRecordLst* o
-      { inpDataSources = new Fl_Input_Choice(6, 254, 284, 21, _("Data source"));
+      { inpDataSources = new Fl_Input_Choice(4, 247, 284, 21, _("Data source"));
         inpDataSources->tooltip(_("Data files repository"));
         inpDataSources->align(Fl_Align(FL_ALIGN_RIGHT));
       } // Fl_Input_Choice* inpDataSources
-      { btnDataSourceUpdate = new Fl_Light_Button(387, 254, 74, 20, _("Update"));
+      { btnDataSourceUpdate = new Fl_Light_Button(385, 247, 74, 20, _("Update"));
         btnDataSourceUpdate->tooltip(_("Update selected local data files with repository content"));
         btnDataSourceUpdate->callback((Fl_Callback*)cb_btnDataSourceUpdate);
       } // Fl_Light_Button* btnDataSourceUpdate
-      { btnDataSourceReset = new Fl_Button(465, 254, 70, 20, _("Reset"));
+      { btnDataSourceReset = new Fl_Button(463, 247, 70, 20, _("Reset"));
         btnDataSourceReset->tooltip(_("Delete local data files if selected."));
         btnDataSourceReset->callback((Fl_Callback*)cb_btnDataSourceReset);
       } // Fl_Button* btnDataSourceReset

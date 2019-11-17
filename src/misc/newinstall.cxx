@@ -31,7 +31,9 @@
 #include "configuration.h"
 #include "confdialog.h"
 #include "record_browse.h"
+#include "record_loader.h"
 #include "logger.h"
+#include "tabdefs.h"
 
 #include <string>
 #include <ctime>
@@ -345,7 +347,7 @@ public:
 	};
 
 	Wizard(int w, int h, const char* l = 0)
-		: Fl_Window(w, h, l), pad(4)
+		: Fl_Window(w, h, l)
 	{ create_wizard(); }
 
 	~Wizard() { destroy_wizard(); }
@@ -354,27 +356,26 @@ private:
 	void create_wizard(void);
 	Fl_Group* make_intro(void);
 	void destroy_wizard(void);
-	void place_buttons(void);
 
 	static void wizard_cb(Fl_Widget* w, void* arg);
 
-	int pad;
 	Fl_Wizard *wizard;
-	Fl_Button *cancel, *prev, *next, *done;
+	Fl_Button *prev, *next, *done;
 	typedef vector<wizard_tab> tab_t;
 	tab_t tabs;
-	Fl_Group* header;
-	Fl_Box* title;
 };
+
+static int btn_h = 22;
+static int pad = 4;
 
 void Wizard::create_wizard(void)
 {
+	createRecordLoader();
+
 	callback(wizard_cb, this);
 	xclass(PACKAGE_TARNAME);
 
-	int btn_w = 100, btn_h = 22, icon_pad = 16;
-
-	wizard = new Fl_Wizard(0, 0, w(), h() - btn_h - 2 * pad);
+	wizard = new Fl_Wizard(0, 0, w(), h());
 	wizard->end();
 
 	// create the buttons
@@ -382,25 +383,24 @@ void Wizard::create_wizard(void)
 	struct {
 		Fl_Button** button;
 		const char* label;
-		int align;
 	} buttons[] = {
-		{ &done, icons::make_icon_label(_("Finish"), apply_icon), FL_ALIGN_LEFT },
-		{ &next, icons::make_icon_label(_("Next"), right_arrow_icon), FL_ALIGN_RIGHT },
-		{ &prev, icons::make_icon_label(_("Back"), left_arrow_icon), FL_ALIGN_LEFT },
-		// { &cancel, icons::make_icon_label(_("Cancel"), process_stop_icon), FL_ALIGN_LEFT }
-		{ &cancel, icons::make_icon_label(_("Close"), close_icon), FL_ALIGN_LEFT }
+		{ &done, _("Finish") },
+		{ &next, _("Next") },
+		{ &prev, _("Back") },
 	};
+	int x = w() - 10;
+	int bw = 0;
 	for (size_t i = 0; i < sizeof(buttons)/sizeof(*buttons); i++) {
-		Fl_Button* b = *buttons[i].button = new Fl_Button(0, wizard->y() + wizard->h() + pad,
-								  btn_w, btn_h, buttons[i].label);
+		bw = fl_width(buttons[i].label) + 10;
+		Fl_Button* b = *buttons[i].button = new Fl_Button(
+						(x = x - bw - 10), wizard->y() + grpOperator->h() + pad,
+						bw, btn_h,
+						buttons[i].label);
 		b->callback(wizard_cb, this);
-		icons::set_icon_label(b);
-		b->align(buttons[i].align | FL_ALIGN_INSIDE);
-		b->size(static_cast<int>(fl_width(icons::get_icon_label_text(b)) + icon_pad * 2), b->h());
 	}
-	icons::set_active(prev, false);
-	done->hide();
-	place_buttons();
+	done->activate();
+	prev->deactivate();
+	next->activate();
 
 	end();
 	position(MAX(0, fl_digi_main->x() + (fl_digi_main->w() - w()) / 2),
@@ -409,10 +409,11 @@ void Wizard::create_wizard(void)
 	// populate the Fl_Wizard group
 	struct wizard_tab tabs_[] = {
 		{ NULL },
-		{ tabOperator },
-		{ tabSoundCard },
-		{ tabRig },
-		{ tabDataFiles },
+		{ grpOperator },
+		{ grpSoundDevices },
+		{ grpRigFlrig },
+		{ grpRigCat },
+		{ grpRigHamlib }
 	};
 
 	tabs.resize(sizeof(tabs_)/sizeof(*tabs_));
@@ -428,8 +429,13 @@ void Wizard::create_wizard(void)
 	}
 
 	tabs[0].tab = make_intro();
-	for (tab_t::iterator i = tabs.begin(); i != tabs.end(); ++i)
+	tabs[0].w = grpOperator->w();
+	tabs[0].h = grpOperator->h();
+
+	for (tab_t::iterator i = tabs.begin(); i != tabs.end(); ++i) {
+		i->tab->resize(0, 0, grpOperator->w(), grpOperator->h());
 		wizard->add(i->tab);
+	}
 	wizard->value(tabs[0].tab);
 }
 
@@ -442,29 +448,17 @@ void Wizard::destroy_wizard(void)
 		i->parent->init_sizes();
 	}
 
-	Fl_Button* b[] = { cancel, prev, next, done };
+	Fl_Button* b[] = { prev, next, done };
 	for (size_t i = 0; i < sizeof(b)/sizeof(*b); i++)
-		icons::free_icon_label(b[i]);
+		delete b[i];
 
-	header->parent()->remove(header);
-	delete header;
-}
-
-void Wizard::place_buttons(void)
-{
-	Fl_Button* buttons[] = { next->visible() ? next : done, prev, cancel };
-	int x = wizard->x() + wizard->w();
-	for (size_t i = 0; i < sizeof(buttons)/sizeof(*buttons); i++) {
-		buttons[i]->position(x - buttons[i]->w() - pad, buttons[i]->y());
-		x = buttons[i]->x();
-	}
 }
 
 void Wizard::wizard_cb(Fl_Widget* w, void* arg)
 {
 	Wizard* wiz = static_cast<Wizard*>(arg);
 
-	if (w == wiz || w == wiz->cancel || w == wiz->done) {
+	if (w == wiz || w == wiz->done) {
 		delete wiz;
 		return;
 	}
@@ -476,56 +470,46 @@ void Wizard::wizard_cb(Fl_Widget* w, void* arg)
 
 	Fl_Group* cur = static_cast<Fl_Group*>(wiz->wizard->value());
 
-	// insert header group in current tab, relabel title
-	cur->insert(*wiz->header, 0);
-	const char* text = cur->tooltip();
-	if (!text || !*text)
-		text = cur->label();
-	wiz->title->label(text);
-
-	// modify buttons
-	if (cur == wiz->tabs[0].tab)
-		icons::set_active(wiz->prev, false);
-	else if (cur == wiz->tabs[1].tab)
-		icons::set_active(wiz->prev, true);
-	else if (cur == wiz->tabs.back().tab) {
-		wiz->done->show();
-		wiz->next->hide();
-		wiz->place_buttons();
+// modify buttons
+	if (cur == wiz->tabs[0].tab) {
+		wiz->prev->deactivate();
+		wiz->next->activate();
+		wiz->done->activate();
+	} else if (cur == wiz->tabs.back().tab) {
+		wiz->prev->activate();
+		wiz->next->deactivate();
+		wiz->done->activate();
+	} else {
+		wiz->prev->activate();
+		wiz->next->activate();
+		wiz->done->activate();
 	}
-	else {
-		wiz->done->hide();
-		wiz->next->show();
-		wiz->place_buttons();
-	}
+	wiz->prev->show();
+	wiz->next->show();
+	wiz->done->show();
+	wiz->prev->redraw();
+	wiz->next->redraw();
+	wiz->done->redraw();
 }
 
 Fl_Group* Wizard::make_intro(void)
 {
-	int hdr_h = 20, ttl_w = 300, ttl_y = 2, hlp_h = 200;
-
-	Fl_Group* intro = new Fl_Group(wizard->x(), wizard->y(),
-				       wizard->w(), wizard->h(), label());
-
-	header = new Fl_Group(0, 0, wizard->w(), hdr_h);
-	title = new Fl_Box(0, ttl_y, ttl_w, header->h());
-	title->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
-	title->labelfont(FL_HELVETICA_BOLD);
-	title->labelsize(FL_NORMAL_SIZE + 1);
-	title->label(intro->label());
-	header->end();
+	Fl_Group* intro = new Fl_Group(
+					0, 0,
+					grpOperator->w(), grpOperator->h(),
+					"");
 
 	ostringstream help_;
-	help_ << '\n' << _("The wizard will guide you through the basic fldigi settings") << ":\n\n";
-	help_ << "\t- Operator\n";
-	help_ << "\t- Sound Card Interface\n";
-	help_ << "\t- Transceiver control\n";
-	help_ << "\t- Miscellaneous Data Files\n";
-	help_ << '\n' << _("Feel free to skip any pages or exit the wizard at any time") << ". "
-	      << _("All settings shown here can be changed later via the Configure menu") << '.';
+	help_ << "\n" << 
+_("The wizard will guide you through the basic fldigi settings:") << "\n\n\t- " <<
+_("Operator")                 << "\n\t- " <<
+_("Sound Card Interface")     << "\n\t- " <<
+_("Transceiver control, flrig/rigcat/hamlib")      << "\n\n" <<
+_("Feel free to skip any pages or exit the wizard at any time") << ". " <<
+_("All settings shown here can be changed later via the Configure menu") << '.';
 
-	Fl_Box* help = new Fl_Box(pad, header->y() + header->h() + pad,
-				  intro->w() - 2 * pad, hlp_h);
+	Fl_Box* help = new Fl_Box(20, intro->y() + intro->h() / 4,
+				  intro->w() - 40, 3 * intro->h()/ 4);
 	help->align(FL_ALIGN_TOP_LEFT | FL_ALIGN_INSIDE | FL_ALIGN_WRAP);
 	help->copy_label(help_.str().c_str());
 
@@ -537,7 +521,7 @@ Fl_Group* Wizard::make_intro(void)
 
 void show_wizard(int argc, char** argv)
 {
-	Wizard* w = new Wizard(dlgConfig->w(), dlgConfig->h(), _("Fldigi configuration wizard"));
+	Wizard* w = new Wizard(grpOperator->w(), grpOperator->h() + (btn_h + 2 * pad), _("Fldigi configuration wizard"));
 
 	if (argc && argv)
 		w->show(argc, argv);

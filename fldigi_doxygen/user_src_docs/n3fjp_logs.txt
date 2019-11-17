@@ -18,13 +18,7 @@ You should exit fldigi before exiting the logging program.
 
 <b>Setting up fldigi for use with ACL</b>
 
-Select the N3FJP_logger from the fldigi config menu:
-
-\image html Config_menu_N3FJP.png ""
-\image latex Config_menu_N3FJP.png "" width=1.5in
-<br>
-
-This will open the configuration dialog to the N3FJP logger tab.
+Open the configuration dialog and select the N3FJP_logger from tree menu:
 
 \image html N3FJP_logs_configuration.png ""
 \image latex N3FJP_logs_configuration.png "" width=5.0in
@@ -45,10 +39,10 @@ Port 1100 corresponds to the Port setting in the above dialog.
 Enable the “Connect” check box and fldigi should find ACL and begin data 
 exchanges.
 
-The command pair <CWCOMPORTKEYDOWN> ... <CWCOMPORTKEYUP> is sent to change
+The command pair \<CWCOMPORTKEYDOWN\> ... \<CWCOMPORTKEYUP\> is sent to change
 the PTT state if the N3FJP software is used for transceiver control.  You
-can change this to <RIGTX> ... <RIGRX> by enabling the check box control,
-"PTT via <RIGTX> and <RIGRX>."
+can change this to \<RIGTX\> ... \<RIGRX\> by enabling the check box control,
+"PTT via \<RIGTX\> and \<RIGRX\>."
 
 <b>Capturing Rx text in fldigi</b>
 

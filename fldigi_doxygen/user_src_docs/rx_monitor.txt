@@ -1,0 +1,34 @@
+/**
+\page rx_monitor_page Rx Audio Monotor
+
+\tableofcontents
+
+\section rx_audio_monitor_dialog Rx Monitor Control Dialog
+
+fldigi allows the user to monitor the receive audio stream.  The monitor includes a band pass filter
+implemented using a FIR digital filter.  Open the monitor dialog using the menu item on the "View" menu.
+
+<center>
+\image html rx_monitor.png ""
+\image latex rx_monitor.png "" width=3.0in
+</center>
+
+The rx monitor shares the the audio output device with the "audio alert" system.  The rx monitor volume
+can be independently controlled.  Enable "Monitor ON" to listen to the rx audio on the audio-alert sound device.  
+Insert the DSP filter by enabling "Filtered audio".
+
+The DSP center frequency, bandwidth, low cutoff, and high cutoff can be controlled.  These four controls interact.  You
+will probably find it most convenient to use the bandwidth, BW, and center frequency, Mid, controls.  Change any one of the four 
+controls and the other three will track.  You can also elect to have the center frequency track the waterfall cursor.<br>
+<ul>
+<li>Bandwidth is adjustable from 50 to 4000 Hz in 10 Hz steps</li>
+<li>Center frequency is adjustable from 400 to 3500 in 10 Hz steps</li>
+<li>Low frequency is adjustable from 100 to 3500 in 10 Hz steps</li>
+<li>High frequency is adjustable from 500 to 4000 in 10 Hz steps</li>
+</ul>
+<br>
+\ref rx_monitor_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

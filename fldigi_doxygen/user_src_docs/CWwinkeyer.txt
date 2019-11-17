@@ -19,13 +19,9 @@ CW signal and set my transceiver accordingly.  You must also set the fldigi
 CW sweetspot to the same value to insure that QSY, DXcluster spotting and other RF/AF
 functions to operate correctly in fldigi.<br>
 
-Click on the Configure WinKeyer menu item to open the configuration
-dialog.
+Open the configuration dialog and click on the CW/WinKeyer item in the tree menu.
 
 <center>
-\image html config_menu_2.png ""
-\image latex config_menu_2.png "" width=1.5in
-<br>
 \image html config-cw-winkeyer.png ""
 \image latex config-cw-winkeyer.png "" width=5.0in
 </center>

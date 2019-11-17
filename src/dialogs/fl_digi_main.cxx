@@ -3190,6 +3190,7 @@ Logging_frame->resizable(NFtabs);
 	fsqMonitor = create_fsqMonitor();
 
 	createConfig();
+
 	createRecordLoader();
 
 	switch (progdefaults.mbar_scheme) {
