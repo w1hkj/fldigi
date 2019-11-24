@@ -274,6 +274,9 @@ const int cRsId::rsid_ids_size1 = sizeof(rsid_ids_1)/sizeof(*rsid_ids_1) - 1;
                                                         \
         ELEM2_(687, MFSK31, MODE_MFSK31)                \
                                                         \
+        ELEM2_(691, DOMINOEX_MICRO, MODE_DOMINOEXMICRO) \
+        ELEM2_(693, THOR_MICRO, MODE_THORMICRO)         \
+                                                        \
         ELEM2_(1026, MFSK64L, MODE_MFSK64L)             \
         ELEM2_(1029, MFSK128L, MODE_MFSK128L)           \
                                                         \
