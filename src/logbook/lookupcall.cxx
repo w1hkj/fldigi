@@ -724,12 +724,12 @@ void CALLOOKquery()
 // Hamcall specific functions
 // ---------------------------------------------------------------------
 
-#define HAMCALL_CALL   "181"
-#define HAMCALL_FIRST  "184"
-#define HAMCALL_CITY   "191"
-#define HAMCALL_STATE  "192"
-#define HAMCALL_GRID   "202"
-#define HAMCALL_DOB    "194"
+#define HAMCALL_CALL   (char)181
+#define HAMCALL_FIRST  (char)184
+#define HAMCALL_CITY   (char)191
+#define HAMCALL_STATE  (char)192
+#define HAMCALL_GRID   (char)202
+#define HAMCALL_DOB    (char)194
 
 void parse_html(const string& htmlpage)
 {
@@ -738,41 +738,45 @@ void parse_html(const string& htmlpage)
 	size_t p;
 
 	clear_Lookup();
-
 	if ((p = htmlpage.find(HAMCALL_FIRST)) != string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length() )
-			lookup_fname += htmlpage[p++];
+			lookup_fname.append(1, htmlpage[p++]);
 		camel_case(lookup_fname);
 	}
 	if ((p = htmlpage.find(HAMCALL_CITY)) != string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
-			lookup_qth += htmlpage[p++];
+			lookup_qth.append(1, htmlpage[p++]);
 	}
 	if ((p = htmlpage.find(HAMCALL_STATE)) != string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
-			lookup_state += htmlpage[p++];
+			lookup_state.append(1, htmlpage[p++]);
 	}
 	if ((p = htmlpage.find(HAMCALL_GRID)) != string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
-			lookup_grid += htmlpage[p++];
+			lookup_grid.append(1, htmlpage[p++]);
 	}
 	if ((p = htmlpage.find(HAMCALL_DOB)) != string::npos) {
 		p++;
-		lookup_notes = "DOB: ";
+		lookup_notes.append("DOB: ");
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
-			lookup_notes += htmlpage[p++];
+			lookup_notes.append(1, htmlpage[p++]);
 	}
 }
 
 bool HAMCALLget(string& htmlpage)
 {
-	string html = "http://";
-	html.append(progdefaults.hamcallurl);
-	html.append("  /call?username=");
+        string html;
+	size_t p1;
+
+	html.assign(progdefaults.hamcallurl);
+	if ((p1 = html.find("https")) != std::string::npos)
+		html.erase(p1+4,1);
+	if (html[html.length()-1] != '/') html += '/';
+	html.append("/call?username=");
 	html.append(progdefaults.QRZusername);
 	html.append("&password=");
 	html.append(progdefaults.QRZuserpassword);

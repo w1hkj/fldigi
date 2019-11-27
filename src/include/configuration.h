@@ -1058,7 +1058,7 @@
               QRZXMLNONE)                                                               \
         ELEM_(std::string, hamcallurl, "HAMCALLURL",                                    \
               "web address of hamcall",                                                 \
-              "http://www.hamcall.net/")                                                \
+              "https://www.hamcall.net/")                                                \
         ELEM_(std::string, hamqthurl, "HAMQTHURL",                                      \
               "web address of hamqth",                                                  \
               "https://www.hamqth.com/")                                                \
