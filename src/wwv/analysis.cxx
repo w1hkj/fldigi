@@ -229,9 +229,9 @@ int anal::rx_process(const double *buf, int len)
 				set_scope(pipe, PIPE_LEN, false);
 
 				if (wf->USB())
-					snprintf(msg1, sizeof(msg1), "%12.2f", wf->rfcarrier() + frequency + fout );
+					snprintf(msg1, sizeof(msg1), "%13.3f", wf->rfcarrier() + frequency + fout );
 				else
-					snprintf(msg1, sizeof(msg1), "%12.2f", wf->rfcarrier() - frequency - fout );
+					snprintf(msg1, sizeof(msg1), "%13.3f", wf->rfcarrier() - frequency - fout );
 				put_Status2(msg1, 2.0);
 				writeFile();
 			}
