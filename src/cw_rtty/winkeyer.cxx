@@ -447,7 +447,7 @@ void WK_show_speed_change(void *d)
 	string cmd = SET_WPM;
 	cmd += progdefaults.CWspeed;
 
-LOG_WKEY("SET_WPM %d : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 
 	WK_send_command(cmd);
 }
@@ -463,7 +463,7 @@ void WK_set_wpm()
 	string cmd = SET_WPM;
 	cmd += progdefaults.CWspeed;
 
-LOG_WKEY("SET_WPM %d : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 
 	WK_send_command(cmd);
 }
@@ -483,7 +483,7 @@ LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 		progdefaults.CWspeed = cntCW_WPM->value();
 		cmd += progdefaults.CWspeed;
 
-LOG_WKEY("SET_WPM %d : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 
 		WK_send_command(cmd);
 	}
@@ -529,7 +529,7 @@ void load_defaults()
 
 LOG_WKEY("\n\
       mode register .... %0x\n\
-      CW speed ......... %d\n\
+      CW speed ......... %.1f\n\
       side tone ........ %d\n\
       weight ........... %d\n\
       lead in time ..... %d\n\
@@ -578,7 +578,7 @@ LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 	} else {
 		string cmd = SET_WPM;
 		cmd += progdefaults.CWspeed;
-LOG_WKEY("SETWPM %d : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+LOG_WKEY("SETWPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 		WK_send_command(cmd);
 
 	}
@@ -606,7 +606,7 @@ LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 
 	cmd = SET_WPM;
 	cmd += progdefaults.CWspeed;
-LOG_WKEY("SET_WPM %d : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 	WK_send_command(cmd);
 
 	cmd = SET_SPEED_POT;

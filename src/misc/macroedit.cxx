@@ -216,7 +216,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<POST:+/-nn.n>\tCW QSK post-timing"));
 	w->add(_("<PRE:nn.n>\tCW QSK pre-timing"));
 	w->add(_("<RISE:nn.n>\tCW rise time"));
-	w->add(_("<WPM:NN:FF>\tCW WPM:Farnsworth"));
+	w->add(_("<WPM:NN.nn:FF.nn>\tCW WPM:Farnsworth (7.5:15.0)"));
 
 	w->add(LINE_SEP);
 	w->add(_("<RIGCAT:[\"text\"][hex ...]:ret>\tsend CAT cmd"));

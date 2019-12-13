@@ -245,6 +245,25 @@ bool  Cserial::IOselect ()
 	return true;
 }
 
+///////////////////////////////////////////////////////
+// Function name	: Cserial::ReadByte
+// Description		: Reads 1 char from the selected port
+// Return type		: 1 - success, 0 - failure
+// Argument			: reference to character
+///////////////////////////////////////////////////////
+bool Cserial::ReadByte(unsigned char &c)
+{
+	static char ch[2];
+	c = ch[0] = ch[1] = 0;
+	if (fd < 0) return 0;
+	if (!IOselect())
+		return 0;
+
+	if (read (fd, (void *)ch, 1) < 0)
+		return 0;
+	c = ch[0];
+	return 1;
+}
 
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::ReadBuffer

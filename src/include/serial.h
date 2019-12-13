@@ -74,6 +74,7 @@ public:
 	void Stopbits(int n) { stopbits = n; }
 	int  Stopbits() { return stopbits;}
 
+	bool ReadByte(unsigned char &resp);
 	int  ReadBuffer (unsigned char *b, int nbr);
 	int  WriteBuffer(unsigned char *str, int nbr);
 	void FlushBuffer();

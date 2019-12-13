@@ -55,7 +55,7 @@ extern bool open_nanoCW();
 
 extern void close_nanoIO();
 
-extern bool nano_read_byte(unsigned char &byte);
+extern char nano_read_byte(int &);
 extern std::string nano_readString();
 
 extern void nano_send_char(int c);
@@ -87,7 +87,10 @@ extern void nanoIO_use_pot();
 extern void set_nanoIO_min_max();
 extern void nanoIO_read_pot();
 extern void set_paddle_WPM(int);
+extern void nanoIO_correction();
 
 extern void nano_serial_flush();
+
+extern void nanoIO_wpm_cal();
 
 #endif

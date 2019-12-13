@@ -51,12 +51,20 @@
 extern fre_t seek_re;
 
 extern Fl_Double_Window *fl_digi_main;
-//extern dropwin			*fl_digi_main;
-
 extern Fl_Double_Window *scopeview;
-//extern Fl_Double_Window *opBrowserView;
-
 extern Fl_Double_Window *dlgRecordLoader;
+extern Fl_Double_Window	*dxcluster_viewer;
+extern Fl_Double_Window *rxaudio_dialog;
+extern Fl_Double_Window	*fsqMonitor;
+extern Fl_Double_Window	*fsqDebug;
+extern Fl_Double_Window	*fsqpicRxWin;
+extern Fl_Double_Window	*fsqpicTxWin;
+extern Fl_Double_Window	*ifkppicRxWin;
+extern Fl_Double_Window	*ifkppicTxWin;
+extern Fl_Double_Window *notify_window;
+extern Fl_Double_Window *dxcc_window;
+extern Fl_Double_Window	*dxcluster_viewer;
+extern Fl_Double_Window *rxaudio_dialog;
 
 extern bool first_use;
 extern bool bEXITING;
@@ -93,6 +101,7 @@ extern Fl_Button 		*btnMacro[];
 extern Fl_Button		*btnAltMacros1;
 extern Fl_Button		*btnAltMacros2;
 extern Fl_Button		*btnDockMacro[];
+extern Fl_Button		*btnMacroTimer;
 extern Fl_Group			*macroFrame1;
 extern Fl_Group			*macroFrame2;
 extern Fl_Input2		*inpFreq;
@@ -179,14 +188,12 @@ extern FTextRX			*fsq_rx_text;
 extern FTextTX			*fsq_tx_text;
 extern Fl_Browser		*fsq_heard;
 
-extern Fl_Double_Window	*fsqMonitor;
 extern FTextRX			*fsq_monitor;
 extern FTextRX			*fsq_que;
 extern Fl_Double_Window	*create_fsqMonitor();
 extern void				open_fsqMonitor();
 extern void				close_fsqMonitor();
 
-extern Fl_Double_Window	*fsqDebug;
 extern Fl_Double_Window	*create_fsqDebug();
 extern void				open_fsqDebug();
 extern void				close_fsqDebug();
@@ -230,9 +237,6 @@ extern Fl_Button			*btn_FSQQTH;
 extern Fl_Button			*btn_FSQQTC;
 extern Progress				*ind_fsq_speed;
 extern Progress				*ind_fsq_s2n;
-
-extern Fl_Double_Window	*fsqpicRxWin;
-extern Fl_Double_Window	*fsqpicTxWin;
 
 extern std::string	fsq_selected_call;
 extern bool			in_heard(std::string);
@@ -285,8 +289,6 @@ extern void			cbFSQCALL(Fl_Widget *w, void *d);
 
 extern void			ifkp_showTxViewer(char C = 'S');
 extern void			ifkp_load_scaled_image(std::string, bool gray = false);
-extern Fl_Double_Window	*ifkppicRxWin;
-extern Fl_Double_Window	*ifkppicTxWin;
 
 #include <FL/Fl_Bitmap.H>
 extern Fl_Bitmap image_s2n;
@@ -536,6 +538,8 @@ extern void xml_update_lotw();
 extern const char* zdate(void);
 extern const char* ztime(void);
 //extern void ztimer(void* first_call);
+extern const double zusec(void);
+extern const timeval tmval(void);
 extern const unsigned long zmsec(void);
 extern void  start_macro_time();
 extern int   stop_macro_time();
@@ -590,10 +594,6 @@ extern void update_csma_io_config(int which);
 // thread terminators
 extern void ADIF_RW_close(void);
 extern void EQSL_close(void);
-
-// notifier dialogs
-extern Fl_Double_Window *notify_window;
-extern Fl_Double_Window *dxcc_window;
 
 extern void cb_mnuCheckUpdate(Fl_Widget *, void *);
 
@@ -748,9 +748,8 @@ extern Fl_Input2	*inpSQSO_category;
 extern Fl_Input2	*inpSQSO_category1;
 extern Fl_Input2	*inpSQSO_category2;
 
-extern Fl_Double_Window	*dxcluster_viewer;
+extern Fl_Double_Window *nano_calibration_dialog();;
 
-extern Fl_Double_Window *rxaudio_dialog;
 // TOD clock
 extern void  TOD_init();
 extern void  TOD_close();

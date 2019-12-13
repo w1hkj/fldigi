@@ -297,8 +297,8 @@ cw::cw() : modem()
 	cw_noise_spike_threshold = two_dots / 4;
 	cw_send_dot_length = KWPM / cw_send_speed;
 	cw_send_dash_length = 3 * cw_send_dot_length;
-	symbollen = (int)round(samplerate * 1.2 / progdefaults.CWspeed);
-	fsymlen = (int)round(samplerate * 1.2 / progdefaults.CWfarnsworth);
+	symbollen = (int)round(samplerate * 1.2 / progdefaults.CWspeed);  // transmit char rate
+	fsymlen = (int)round(samplerate * 1.2 / progdefaults.CWfarnsworth); // transmit word rate
 
 	rx_rep_buf.clear();
 
@@ -453,6 +453,7 @@ void cw::sync_parameters()
 	if (use_nanoIO) {
 		if (nano_wpm != progdefaults.CWspeed) {
 			nano_wpm = progdefaults.CWspeed;
+std::cout << "cw::sync_parameters()" << std::endl;
 			set_nanoWPM(progdefaults.CWspeed);
 		}
 		if (nano_d2d != progdefaults.CWdash2dot) {
@@ -941,8 +942,18 @@ inline double cw::nco(double freq)
 
 inline double cw::qsknco()
 {
-	double amp = sin(qskphase);
-	qskphase += 2.0 * M_PI * 1000 / samplerate;
+	double amp;
+
+// sine wave QSK signal
+//	amp = sin(qskphase);
+
+// square wave QSK signal
+	if (qskphase > M_PI)
+		amp = - 0.5;
+	else
+		amp = 0.5;
+
+	qskphase += TWOPI * progdefaults.QSKfrequency / samplerate;
 	if (qskphase > TWOPI) qskphase -= TWOPI;
 	return amp;
 }
@@ -954,7 +965,7 @@ inline double cw::qsknco()
 // with a raised cosine shape.
 //
 // Left channel contains the shaped A2 CW waveform
-// Right channel contains a square wave burst of 1600 Hz that is used
+// Right channel contains a square wave signal that is used
 // to trigger a qsk switch.  Right channel has pre and post timings for
 // proper switching of the qsk switch before and after the A2 element.
 // If the Pre + Post timing exceeds the interelement spacing then the
@@ -1199,37 +1210,23 @@ void cw::send_ch(int ch)
 {
 	string code;
 	int chout = ch;
-	int flen;
+	int ta = 0, tb = 0;
 
 	sync_parameters();
 
-// handle word space separately (7 dots spacing)
-// last char already had 3 elements of inter-character spacing
-
-	double T = (50.0 - 31 * fsymlen / symbollen) / 19.0;
-
-	if (!progdefaults.CWusefarnsworth || (progdefaults.CWspeed >= progdefaults.CWfarnsworth))
-		T = 1.0;
-
-	int tc = 3.0 * T * symbollen;
-	int tw = 7.0 * T * symbollen;
+	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth)) {
+		ta = 3 * (50 * fsymlen - 46 * symbollen) / 19;
+		tb = 50 * fsymlen - 46 * symbollen - 5 * ta;
+	}
 
 	if ((chout == ' ') || (chout == '\n')) {
-		firstelement = false;
-		flen = tw - tc - ( T > 1.0 ? fsymlen : 0);
-		while (flen - symbollen > 0) {
+		for (int i = 0; i < 4; i++) {
 			send_symbol(0, symbollen);
-			flen -= symbollen;
 		}
-		if (flen) send_symbol(0, flen);
+		if (tb) send_symbol(0, tb);
 		put_echo_char(progdefaults.rx_lowercase ? tolower(ch) : ch);
 		return;
 	}
-
-	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed <= progdefaults.CWfarnsworth))
-		flen = fsymlen;
-	else
-		flen = symbollen;
 
 	code = morse.tx_lookup(chout);
 	if (!code.length()) {
@@ -1238,29 +1235,18 @@ void cw::send_ch(int ch)
 
 	firstelement = true;
 
-//	while (code.length()) {
 	for (size_t n = 0; n < code.length(); n++) {
-		send_symbol(0, flen);
-		send_symbol(1, flen);
+		send_symbol(0, symbollen); // not sent and does not add to timing if 1st element
+		send_symbol(1, symbollen);
 		if (code[n] == '-') {
-			send_symbol( 1, flen );
-			send_symbol( 1, flen );
+			send_symbol( 1, symbollen );
+			send_symbol( 1, symbollen );
 		}
 	}
-	send_symbol(0, flen);
-	send_symbol(0, flen);
-	send_symbol(0, flen);
-
-// inter character space at WPM/FWPM rate
-//	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed <= progdefaults.CWfarnsworth)) {
-	if (T > 1.0) {
-		flen = tc - 3 * flen;
-		while(flen - symbollen > 0) {
-			send_symbol(0, symbollen);
-			flen -= symbollen;
-		}
-		if (flen) send_symbol(0, flen);
-	}
+	send_symbol(0, symbollen);
+	send_symbol(0, symbollen);
+	send_symbol(0, symbollen);
+	if (ta) send_symbol(0, ta);
 
 	if (ch != -1) {
 		string prtstr = morse.tx_print();
@@ -1323,7 +1309,7 @@ int cw::tx_process()
 		if (c == GET_TX_CHAR_ETX || stopflag) {
 			stopflag = false;
 			put_echo_char('\n');
-			nano_serial_flush();
+//			nano_serial_flush();
 			return -1;
 		}
 		nano_send_char(c);

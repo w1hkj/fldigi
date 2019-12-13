@@ -371,6 +371,7 @@ open pa stream:\n\
 		stream_process, this);
 	if (paError != paNoError) {
 		LOG_ERROR("%s", Pa_GetErrorText(paError));
+		stream = 0;
 		return 0;
 	}
 
@@ -393,14 +394,15 @@ LOG_INFO("opened pa stream %p @ %f samples/sec", stream, sr);
 
 void c_portaudio::close()
 {
-	paError = Pa_StopStream(stream );
-	paError = Pa_CloseStream(stream);
-	if (paError != paNoError) {
-		LOG_ERROR("pa close failed");
-		throw cPA_exception(paError);
+	if (stream) {
+		paError = Pa_StopStream(stream );
+		paError = Pa_CloseStream(stream);
+		if (paError != paNoError) {
+			LOG_ERROR("pa close failed");
+		}
+		else
+			LOG_VERBOSE("closed stream %p", stream);
 	}
-	else
-		LOG_VERBOSE("closed stream %p", stream);
 }
 
 // Play 2 channel buffer

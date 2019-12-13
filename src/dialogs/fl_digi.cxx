@@ -241,18 +241,15 @@ fre_t seek_re("CQ", REG_EXTENDED | REG_ICASE | REG_NOSUB);
 
 bool bWF_only = false;
 
-Fl_Double_Window	*fl_digi_main      = (Fl_Double_Window *)0;
-
-Fl_Button			*btnDockMacro[48];
+Fl_Double_Window	*fl_digi_main				= (Fl_Double_Window *)0;
+Fl_Double_Window	*scopeview					= (Fl_Double_Window *)0;
+Fl_Double_Window	*field_day_viewer			= (Fl_Double_Window *)0;
+Fl_Double_Window	*dxcluster_viewer			= (Fl_Double_Window *)0;
+Fl_Double_Window	*rxaudio_dialog				= (Fl_Double_Window *)0;
 
 Fl_Help_Dialog 		*help_dialog       = (Fl_Help_Dialog *)0;
-Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
 
-Fl_Double_Window	*field_day_viewer  = (Fl_Double_Window *)0;
-
-Fl_Double_Window	*dxcluster_viewer  = (Fl_Double_Window *)0;
-
-Fl_Double_Window	*rxaudio_dialog = (Fl_Double_Window *)0;
+Fl_Button			*btnDockMacro[48];
 
 static Fl_Group		*mnuFrame;
 Fl_Menu_Bar 		*mnu;
@@ -262,7 +259,7 @@ Fl_Light_Button		*btnAutoSpot = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTxRSID = (Fl_Light_Button *)0;
-static Fl_Button	*btnMacroTimer = (Fl_Button *)0;
+Fl_Button			*btnMacroTimer = (Fl_Button *)0;
 
 Fl_Group			*center_group = (Fl_Group *)0;
 Fl_Group			*text_group;
@@ -1140,7 +1137,6 @@ void close_tree_items()
 
 void select_tab_tree(const char *tab)
 {
-std::cout << "select " << tab << std::endl;
 	close_tree_items();
 
 	std::string pname = tab;
@@ -1576,137 +1572,35 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 
 void remove_windows()
 {
-	if (scopeview) {
-LOG_INFO("Deleting %s", "scopeview");
-		scopeview->hide();
-		delete scopeview;
-	}
-	if (dlgViewer) {
-LOG_INFO("Deleting %s", "dlgViewer");
-		dlgViewer->hide();
-		delete dlgViewer;
-	}
-	if (dlgLogbook) {
-LOG_INFO("Deleting %s", "dlgLogbook");
-		dlgLogbook->hide();
-		delete dlgLogbook;
-	}
-	if (lotw_review_dialog) {
-LOG_INFO("Deleting %s", "lotw_review_dialog");
-		lotw_review_dialog->hide();
-		delete lotw_review_dialog;
-	}
-	if (dlgConfig) {
-LOG_INFO("Deleting %s", "dlgConfig");
-		dlgConfig->hide();
-		delete cboHamlibRig;
-		delete dlgConfig;
+	Fl_Double_Window *w[] = {
+		scopeview, dlgRecordLoader,
+		dxcluster_viewer, dxcc_window,
+		dlgViewer, dlgLogbook, lotw_review_dialog,  
+		wExport, wCabrillo,
+		dlgConfig, notify_window,
+		picRxWin, picTxWin,
+		thorpicRxWin, thorpicTxWin,
+		fsqMonitor, fsqpicRxWin, fsqpicTxWin,
+		ifkppicRxWin, ifkppicTxWin,
+		MacroEditDialog,
+		test_signal_window,
+		rxaudio_dialog };
+		std::string sdeleting = "\nDeleting dialogs / Stopping debug session";
+	for (size_t n = 0; n < sizeof(w) / sizeof(*w); n++) {
+		if (w[n]) {
+		sdeleting.append("\n   ").append(w[n]->label());
+			w[n]->hide();
+			delete w[n];
+			w[n] = 0;
+		}
 	}
 	if (font_browser) {
-LOG_INFO("Deleting %s", "font-browser");
+		sdeleting.append("\n   ").append(font_browser->label());
 		font_browser->hide();
 		delete font_browser;
+		font_browser = 0;
 	}
-	if (notify_window) {
-LOG_INFO("Deleting %s", "notify_window");
-		notify_window->hide();
-		delete notify_window;
-	}
-	if (dxcc_window) {
-LOG_INFO("Deleting %s", "dxcc_window");
-		dxcc_window->hide();
-		delete dxcc_window;
-	}
-	if (picRxWin) {
-LOG_INFO("Deleting %s", "picRxWin");
-		picRxWin->hide();
-		delete picRxWin;
-	}
-	if (picTxWin) {
-LOG_INFO("Deleting %s", "picTxWin");
-		picTxWin->hide();
-		delete picTxWin;
-	}
-	if (fsqpicRxWin){
-LOG_INFO("Deleting %s", "fsqpicRxWin");
-		fsqpicRxWin->hide();
-		delete fsqpicRxWin;
-	}
-	if (fsqpicTxWin){
-LOG_INFO("Deleting %s", "fsqpicTxWin");
-		fsqpicTxWin->hide();
-		delete fsqpicTxWin;
-	}
-	if (ifkppicRxWin){
-LOG_INFO("Deleting %s", "ifppicRxWin");
-		ifkppicRxWin->hide();
-		delete ifkppicRxWin;
-	}
-	if (ifkppicTxWin){
-LOG_INFO("Deleting %s", "ifppicTxWin");
-		ifkppicTxWin->hide();
-		delete ifkppicTxWin;
-	}
-	if (thorpicRxWin){
-LOG_INFO("Deleting %s", "thorpicRxWin");
-		thorpicRxWin->hide();
-		delete thorpicRxWin;
-	}
-	if (thorpicTxWin){
-LOG_INFO("Deleting %s", "thorpicTxWin");
-		thorpicTxWin->hide();
-		delete thorpicTxWin;
-	}
-	if (wefax_pic_rx_win) {
-LOG_INFO("Deleting %s", "wefax_pic_rxin");
-		wefax_pic_rx_win->hide();
-		delete wefax_pic_rx_win;
-	}
-	if (wefax_pic_tx_win) {
-LOG_INFO("Deleting %s", "wefax_pic_txin");
-		wefax_pic_tx_win->hide();
-		delete wefax_pic_tx_win;
-	}
-	if (wExport) {
-LOG_INFO("Deleting %s", "wExport");
-		wExport->hide();
-		delete wExport;
-	}
-	if (wCabrillo) {
-LOG_INFO("Deleting %s", "wCabrillo");
-		wCabrillo->hide();
-		delete wCabrillo;
-	}
-	if (MacroEditDialog) {
-LOG_INFO("Deleting %s", "MacroEditDialog");
-		MacroEditDialog->hide();
-		delete MacroEditDialog;
-	}
-LOG_INFO("Deleting %s", "fsqMonitor");
-	if (fsqMonitor) {
-		fsqMonitor->hide();
-		delete fsqMonitor;
-	}
-	if (dxcluster_viewer) {
-LOG_INFO("Deleting %s", "dxcluster_viewer");
-		dxcluster_viewer->hide();
-		delete dxcluster_viewer;
-	}
-	if (rxaudio_dialog) {
-LOG_INFO("Deleting %s", "rxaudio_dialog");
-		rxaudio_dialog->hide();
-		delete rxaudio_dialog;
-	}
-	if (test_signal_window) {
-LOG_INFO("Deleting %s", "test signal window");
-		test_signal_window->hide();
-		delete test_signal_window;
-	}
-//	if (fsqDebug) {
-//		fsqDebug->hide();
-//		delete fsqDebug;
-//	}
-LOG_ERROR("stopping debug session\n");
+	LOG_INFO("%s", sdeleting.c_str());
 	debug::stop();
 }
 
@@ -4252,13 +4146,20 @@ void macro_timer(void*)
 		Fl::repeat_timeout(1.0, macro_timer);
 }
 
+static long mt_xdt, mt_xtm;
+
 void macro_timed_execute(void *)
 {
-	if (exec_date == zdate() && exec_time == ztime()) {
+	long dt, tm;
+	dt = atol(zdate());
+	tm = atol(ztime());
+//std::cout << dt << " >= " << mt_xdt << " && " << tm << " >= " << mt_xtm << std::endl;
+	if (dt >= mt_xdt && tm >= mt_xtm) {
 		macros.timed_execute();
 		btnMacroTimer->label(0);
 		btnMacroTimer->color(FL_BACKGROUND_COLOR);
 		btnMacroTimer->set_output();
+		mt_xdt = mt_xtm = 0;
 	} else {
 		Fl::repeat_timeout(1.0, macro_timed_execute);
 	}
@@ -4267,15 +4168,24 @@ void macro_timed_execute(void *)
 void startTimedExecute(std::string &title)
 {
 	ENSURE_THREAD(FLMAIN_TID);
-	Fl::add_timeout(0.0, macro_timed_execute);
 	string txt = "Macro '";
-	txt.append(title).append("' scheduled at ");
-	txt.append(exec_time).append(", on ").append(exec_date).append("\n");
+	txt.append(title).append("' scheduled at ").
+		append(exec_time.substr(0,2)).append(":").
+		append(exec_time.substr(2,2)).append(":").
+		append(exec_time.substr(4,2)).
+		append(", on ").
+		append(exec_date.substr(0,4)).append("/").
+		append(exec_date.substr(4,2)).append("/").
+		append(exec_date.substr(6,2)).append("\n");
+
 	btnMacroTimer->label("SKED");
 	btnMacroTimer->color(fl_rgb_color(240, 240, 0));
 	btnMacroTimer->redraw_label();
 	ReceiveText->clear();
 	ReceiveText->addstr(txt, FTextBase::CTRL);
+	mt_xdt = atol(exec_date.c_str());
+	mt_xtm = atol(exec_time.c_str());
+	Fl::add_timeout(0.0, macro_timed_execute);
 }
 
 void cbMacroTimerButton(Fl_Widget*, void*)
@@ -4540,7 +4450,7 @@ LOG_INFO("Closing WinKeyer interface");
 LOG_INFO("Stopping TOD clock");
 	TOD_close();
 
-LOG_INFO("Deleting audio_alert");
+LOG_VERBOSE("Deleting audio_alert");
 	delete audio_alert;
 
 LOG_INFO("exit_process");
@@ -8670,6 +8580,7 @@ void set_CWwpm()
 {
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
 	cntCW_WPM->value(progdefaults.CWspeed);
+std::cout << "set_CWwpm()" << std::endl;
 	if (use_nanoIO) set_nanoWPM(progdefaults.CWspeed);
 }
 

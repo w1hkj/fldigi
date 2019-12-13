@@ -116,15 +116,38 @@ int stop_macro_time()
 	return macro_time;
 }
 
+const timeval tmval(void)
+{
+	struct timeval t1;
+	{
+		guard_lock lk(&time_mutex);
+		gettimeofday(&t1, NULL);
+	}
+	return t1;
+}
+
+const double zusec(void)
+{
+	struct timeval t1;
+	{
+		guard_lock lk(&time_mutex);
+		gettimeofday(&t1, NULL);
+	}
+	double usecs = t1.tv_sec * 1000000L;
+	usecs += t1.tv_usec;
+	return usecs;
+}
+
 const unsigned long zmsec(void)
 {
 	struct timeval t1;
 	{
 		guard_lock lk(&time_mutex);
-		t1 = now_val;
+		gettimeofday(&t1, NULL);
 	}
-	unsigned long msecs = (t1.tv_sec % 10000) * 1000;
-	msecs += t1.tv_usec * 1000;
+	unsigned long msecs = t1.tv_sec * 1000000L;
+	msecs += t1.tv_usec;
+	msecs /= 1000L;
 	return msecs;
 }
 

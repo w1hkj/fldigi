@@ -404,9 +404,19 @@ void modem::set_samplerate(int smprate)
 
 double modem::PTTnco()
 {
-	double amp = sin(PTTphaseacc);
-	PTTphaseacc += TWOPI * 1000 / samplerate;
+	double amp;
+// sine wave PTT signal
+//	amp = sin(PTTphaseacc);
+
+// square wave PTT signal
+	if (PTTphaseacc > M_PI)
+		amp = - 0.5;
+	else
+		amp = 0.5;
+
+	PTTphaseacc += TWOPI * progdefaults.QSKfrequency / samplerate;
 	if (PTTphaseacc > TWOPI) PTTphaseacc -= TWOPI;
+
 	return amp;
 }
 

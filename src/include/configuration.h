@@ -390,16 +390,16 @@
         ELEM_(int, CWweight, "CWWEIGHT",                                                \
               "Dot to dot-space ratio",                                                 \
               50)                                                                       \
-        ELEM_(int, CWspeed, "CWSPEED",                                                  \
+        ELEM_(double, CWspeed, "CWSPEED",                                               \
               "Transmit speed (WPM)",                                                   \
               18)                                                                       \
-        ELEM_(int, CWfarnsworth, "CWFARNSWORTH",                                        \
+        ELEM_(double, CWfarnsworth, "CWFARNSWORTH",                                     \
               "Speed for Farnsworth timing (WPM)",                                      \
               18)                                                                       \
         ELEM_(bool, CWusefarnsworth, "CWUSEFARNSWORTH",                                 \
               "Use Farnsworth timing",                                                  \
               false)                                                                    \
-        ELEM_(int, defCWspeed, "CWDEFSPEED",                                            \
+        ELEM_(double, defCWspeed, "CWDEFSPEED",                                         \
               "Default speed (WPM)",                                                    \
               24)                                                                       \
         ELEM_(int, CWbandwidth, "CWBANDWIDTH",                                          \
@@ -446,6 +446,9 @@
         ELEM_(bool, QSK, "QSK",                                                         \
               "Generate QSK signal on right audio channel",                             \
               false)                                                                    \
+        ELEM_(double, QSKfrequency, "QSKfrequency",                                     \
+              "QSK square wave fundamental frequency",                                  \
+              2000)                                                                     \
         ELEM_(double, CWpre, "CWPRE",                                                   \
               "Pre-keydown timing (milliseconds)",                                      \
               4.0)                                                                      \
@@ -1378,6 +1381,9 @@
         ELEM_(int, nanoIO_polarity, "NANOIOPOLARITY",                                   \
               "MARK polarity 0 - high, 1 - low",                                        \
               1)                                                                        \
+        ELEM_(int, nanoIO_serbaud, "NANOIO_SERBAUD",                                    \
+              "0/1200, 1/4800, 2/9600, 3/19200, 4/38400, 5/57600, 6/115200",            \
+              6)                                                                        \
         ELEM_(int, nanoIO_CW_incr, "NANOIOCWINCR",                                      \
               "^ ' increment/decrement value\n"                                         \
               "range '1' to '5'",                                                       \
@@ -1394,6 +1400,9 @@
         ELEM_(int, nanoIO_speed_pot, "nanoIO_speed_pot",                                \
               "Enable speed pot in nanoIO circuit / script",                            \
               1)                                                                        \
+        ELEM_(int, usec_correc, "usec_corr",                                            \
+              "Correct CW unit timing by this amount in usec",                          \
+              0)                                                                        \
         /* TTY h/w interface */                                                         \
         ELEM_(int, xcvr_FSK_sideband, "XCVRFSKSIDEBAND",                                \
               "0 = LSB | 1 = USB",                                                      \

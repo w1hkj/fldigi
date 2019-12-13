@@ -91,6 +91,23 @@ static queue<CMDS> Rx_cmds;
 
 bool txque_wait = false;
 
+static void setwpm(double d)
+{
+	sldrCWxmtWPM->value(d);
+	cntCW_WPM->value(d);
+	progdefaults.CWusefarnsworth = false;
+	btnCWusefarnsworth->value(0);
+	que_ok = true;
+}
+
+static void setfwpm(double d)
+{
+	sldrCWfarnsworth->value(d);
+	progdefaults.CWusefarnsworth = true;
+	btnCWusefarnsworth->value(1);
+	que_ok = true;
+}
+
 // following used for debugging and development
 void push_txcmd(CMDS cmd)
 {
@@ -796,28 +813,28 @@ static void pWPM(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	int number;
+	float number;
 	std::string snumber = s.substr(i+5, endbracket - i - 5);
 
 	if (snumber.length() > 0) {
 
 		// first value = WPM
-		sscanf(snumber.c_str(), "%d", &number);
+		sscanf(snumber.c_str(), "%f", &number);
 		if (number < 5) number = 5;
 		if (number > 200) number = 200;
 		progdefaults.CWspeed = number;
-		sldrCWxmtWPM->value(number);
+		setwpm(number);
 
 		// second value = Farnsworth WPM
 		size_t pos;
 		if ((pos = snumber.find(":")) != std::string::npos) {
 			snumber.erase(0, pos+1);
 			if (snumber.length())
-				sscanf(snumber.c_str(), "%d", &number);
+				sscanf(snumber.c_str(), "%f", &number);
 			if (number < 15) number = 15;
 			if (number > 200) number = 200;
 			progdefaults.CWfarnsworth = number;
-			sldrCWfarnsworth->value(number);
+			setfwpm(number);
 		}
 	}
 
@@ -878,30 +895,15 @@ static void pPOST(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static void setwpm(int d)
-{
-	sldrCWxmtWPM->value(d);
-	cntCW_WPM->value(d);
-	que_ok = true;
-}
-
-static void setfwpm(int d)
-{
-	sldrCWfarnsworth->value(d);
-	progdefaults.CWusefarnsworth = true;
-	btnCWusefarnsworth->value(1);
-	que_ok = true;
-}
-
 static void doWPM(std::string s)
 {
-	int number;
+	float number;
 	std::string snumber = s.substr(6);
 
 	if (snumber.length() > 0) {
 
 		// first value = WPM
-		sscanf(snumber.c_str(), "%d", &number);
+		sscanf(snumber.c_str(), "%f", &number);
 		if (number < 5) number = 5;
 		if (number > 200) number = 200;
 		progdefaults.CWspeed = number;
@@ -912,11 +914,13 @@ static void doWPM(std::string s)
 		if ((pos = snumber.find(":")) != std::string::npos) {
 			snumber.erase(0, pos+1);
 			if (snumber.length())
-				sscanf(snumber.c_str(), "%d", &number);
-			if (number < 15) number = 15;
-			if (number > 200) number = 200;
-			progdefaults.CWfarnsworth = number;
-			REQ(setfwpm, number);
+				sscanf(snumber.c_str(), "%f", &number);
+			if (number > progdefaults.CWspeed) {
+				if (number < 15) number = 15;
+				if (number > 200) number = 200;
+				progdefaults.CWfarnsworth = number;
+				REQ(setfwpm, number);
+			}
 		}
 	}
 
@@ -4095,6 +4099,74 @@ static void pSKED(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static long sk_xdt, sk_xtm;
+
+void do_timed_execute(void *)
+{
+	long dt, tm;
+	dt = atol(zdate());
+	tm = atol(ztime());
+//std::cout << dt << " >= " << sk_xdt << " && " << tm << " >= " << sk_xtm << std::endl;
+	if (dt >= sk_xdt && tm >= sk_xtm) {
+		Qwait_time = 0;
+		start_tx();
+		que_ok = true;
+		btnMacroTimer->label(0);
+		btnMacroTimer->color(FL_BACKGROUND_COLOR);
+		btnMacroTimer->set_output();
+		sk_xdt = sk_xtm = 0;
+	} else {
+		Fl::repeat_timeout(1.0, do_timed_execute);
+	}
+}
+
+static void doSKED(std::string s)
+{
+	size_t p = s.find(":");
+	if (p == std::string::npos) {
+		exec_date = zdate();
+		exec_time = s;
+		if (exec_time.empty()) exec_time = ztime();
+	} else {
+		exec_time = s.substr(0, p);
+		exec_date = s.substr(p+1);
+	}
+	if (exec_time.length() == 4) exec_time.append("00");
+
+	string txt;
+	txt.assign("Next scheduled transmission at ").
+		append(exec_time.substr(0,2)).append(":").
+		append(exec_time.substr(2,2)).append(":").
+		append(exec_time.substr(4,2)).
+		append(", on ").
+		append(exec_date.substr(0,4)).append("/").
+		append(exec_date.substr(4,2)).append("/").
+		append(exec_date.substr(6,2)).append("\n");
+	btnMacroTimer->label("SKED");
+	btnMacroTimer->color(fl_rgb_color(240, 240, 0));
+	btnMacroTimer->redraw_label();
+	ReceiveText->addstr(txt, FTextBase::CTRL);
+
+	Qwait_time = 9999;
+
+	sk_xdt = atol(exec_date.c_str());
+	sk_xtm = atol(exec_time.c_str());
+
+	Fl::add_timeout(0.0, do_timed_execute);
+
+}
+
+static void pTxQueSKED(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i + 7, endbracket - i - 7), doSKED };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
 static void pUNTIL(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -4369,6 +4441,7 @@ static const MTAGS mtags[] = {
 	{"<!QSY:",		pTxQueQSY},
 	{"<!IDLE:",		pTxQueIDLE},
 	{"<!WAIT:",		pTxQueWAIT},
+	{"<!SKED:",		pTxQueSKED},
 	{"<!MODEM:",	pTxQueMODEM},
 	{"<!RIGMODE:",	pTxQueRIGMODE},
 	{"<!FILWID:",	pTxQueFILWID},
@@ -4746,8 +4819,8 @@ void MACROTEXT::execute(int n)
 	if (timed_exec && !progStatus.skip_sked_macro) {
 		progStatus.repeatMacro = -1;
 		exec_string = text[n];
-		timed_exec = false;
 		startTimedExecute(name[n]);
+		timed_exec = false;
 		return;
 	}
 

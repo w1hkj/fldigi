@@ -39,8 +39,8 @@
 #include "view_cw.h"
 
 #define	CW_SAMPLERATE	8000
+
 #define	CWMaxSymLen		4096		// AG1LE: - was 4096 
-#define CWKNUM 			640			// 1/2 dot length at 5 wpm
 
 #define MAX_MORSE_ELEMENTS 6 // maximum of 6 elements in a Morse character 256
 
@@ -52,19 +52,20 @@
 #define	ASC_SPACE	' '	// ASCII space char 
 
 // Tone and timing magic numbers. 
-#define	KWPM	(12 * CW_SAMPLERATE/10)  // #samples in dot = KWPM / WPM
+#define	KWPM		(12 * CW_SAMPLERATE/10)		// # samples in dot = KWPM / WPM
+#define CWKNUM 		((KWPM) / 10)				// 640, 1/2 dot length at 5 wpm
 
 #define	TONE_SILENT	0	// 0Hz = silent 'tone' 
 #define	USECS_PER_SEC	1000000	// Microseconds in a second 
 
-#define	INITIAL_SEND_SPEED	18	// Initial send speed in WPM 
+#define	INITIAL_SEND_SPEED		18	// Initial send speed in WPM 
 #define	INITIAL_RECEIVE_SPEED	18	// Initial receive speed in WPM 
 
 // Initial adaptive speed threshold 
-#define	INITIAL_THRESHOLD	((KWPM / INITIAL_RECEIVE_SPEED) * 2)
+#define	INITIAL_THRESHOLD	(((KWPM) / INITIAL_RECEIVE_SPEED) * 2)
 
 // Initial noise filter threshold 
-#define	INITIAL_NOISE_THRESHOLD	((KWPM / CW_MAX_SPEED) / 2)
+#define	INITIAL_NOISE_THRESHOLD	(((KWPM) / CW_MAX_SPEED) / 2)
 
 #define TRACKING_FILTER_SIZE 16
 
@@ -208,8 +209,11 @@ protected:
 // transmit wave shaping
 	int		nusymbollen;
 	int		nufsymlen;
-	int		wpm;
-	int		fwpm;
+
+	double	wpm;
+	double	fwpm;
+//	int		wpm;
+//	int		fwpm;
 
 	void	makeshape();
 	void	sync_transmit_parameters();
