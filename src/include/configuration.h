@@ -1133,6 +1133,9 @@
         ELEM_(std::string, lotw_location, "LOTW_LOCATION",                              \
               "Tqsl station location for uploading records",                            \
               "")                                                                       \
+        ELEM_(int, tracefile_timeout, "tracefile_timeout",                              \
+              "Tqsl trace file timeout in seconds",                                     \
+              15)                                                                       \
         /* MacLogger interface */                                                       \
         ELEM_(bool, connect_to_maclogger, "CONNECT_TO_MACLOGGER",                       \
               "Connect to MacLogger UDP server on 255.255.255.255 / 9932",              \

@@ -78,7 +78,7 @@ static string lotw_fname;
 static string lotw_logfname;
 static string lotw_send_fname;
 static string lotw_log_fname;
-static int logcheck_count = 0;
+static int tracefile_timeout = 0;
 
 string str_lotw;
 //======================================================================
@@ -145,57 +145,88 @@ static notify_dialog *lotw_alert_window = 0;
 
 void check_lotw_log(void *)
 {
-	string logtxt;
-	FILE * logfile = fl_fopen(lotw_log_fname.c_str(), "r");
+	FILE * logfile = fl_fopen(lotw_log_fname.c_str(), "rb");
+
 	if (!logfile) {
-		logcheck_count += 5;
-		if (logcheck_count <= 60) {
-			Fl::repeat_timeout(5.0, check_lotw_log);
+		tracefile_timeout--;
+		if (!tracefile_timeout) {
+			LOG_ERROR(_("NO tqsl log file in %d seconds!"), progdefaults.tracefile_timeout);
+			restore_lotwsdates();
+			clear_lotw_recs_sent();
 			return;
 		}
-		LOG_ERROR("%s", "NO tqsl log file in 60 seconds!");
-		restore_lotwsdates();
+		Fl::repeat_timeout(1.0, check_lotw_log);
 		return;
 	}
-	char c = fgetc(logfile);
-	while (!feof(logfile)) {
-		logtxt += c;
-		c = fgetc(logfile);
+
+	string trace_text;
+	fseek(logfile, 0, SEEK_END);
+	size_t logfile_size = ftell(logfile);
+	rewind(logfile);
+
+	if (logfile_size == 0) {
+		tracefile_timeout--;
+		if (!tracefile_timeout) {
+			LOG_ERROR(_("Tqsl log file empty! waited %d seconds!"), progdefaults.tracefile_timeout);
+			restore_lotwsdates();
+			clear_lotw_recs_sent();
+			return;
+		}
+		Fl::repeat_timeout(1.0, check_lotw_log);
+		return;
+	}
+
+	int ch;
+	for (size_t n = 0; n < logfile_size; n++) {
+		ch = fgetc(logfile);
+		if (ch >= 0x20 && ch <= 0x7F)
+			trace_text += char(ch);
+		else
+			trace_text.append(ascii3[ch & 0xFF]);
 	}
 	fclose(logfile);
 
-//LOG_INFO("TQSL log file:\n%s\n", logtxt.c_str());
+	size_t p1 = trace_text.find("UploadFile returns 0");
+	size_t p2 = trace_text.find("Final Status: Success");
 
-	size_t p = logtxt.find("UploadFile returns 0");
-	if (p != string::npos) {
-		if (progdefaults.lotw_quiet_mode && progdefaults.lotw_show_delivery) {
-			if (!lotw_alert_window) lotw_alert_window = new notify_dialog;
-			lotw_alert_window->notify(_("LoTW upload OK"), 5.0);
-			REQ(show_notifier, lotw_alert_window);
+	if ((p1 == string::npos) && (p2 == string::npos)) {
+		tracefile_timeout--;
+		if (!tracefile_timeout) {
+			LOG_ERROR("%s", "TQSL trace file failed!");
+			if (progdefaults.lotw_quiet_mode) {
+				std::string alert;
+				alert.assign(_("LoTW upload error!"));
+				alert.append(_("\nView LoTW trace log:\n"));
+				alert.append(lotw_log_fname);
+				if (!lotw_alert_window) lotw_alert_window = new notify_dialog;
+				lotw_alert_window->notify(alert.c_str(), 15.0);
+				REQ(show_notifier, lotw_alert_window);
+			}
+			restore_lotwsdates();
+			clear_lotw_recs_sent();
+			return;
 		}
-		if (progdefaults.xml_logbook)
-			xml_update_lotw();
-		clear_lotw_recs_sent();
-	} else {
-		string errlog = LoTWDir;
-		errlog.append("lotw_error_log.txt");
-		ofstream errfile(errlog.c_str());
-		if (errfile) {
-			errfile << logtxt;
-			errfile.close();
-			logtxt.assign("LoTW upload error\nCheck file: ");
-			logtxt.append(errlog);
-		}
-		if (progdefaults.lotw_quiet_mode) {
-			std::string alert = _("LoTW upload error\nView LoTW error log:");
-			alert.append(errlog);
-			if (!lotw_alert_window) lotw_alert_window = new notify_dialog;
-			lotw_alert_window->notify(alert.c_str(), 15.0);
-			REQ(show_notifier, lotw_alert_window);
-		}
-		restore_lotwsdates();
+		Fl::repeat_timeout(1.0, check_lotw_log);
+		return;
 	}
-	remove(lotw_log_fname.c_str());
+
+	if (progdefaults.lotw_quiet_mode && progdefaults.lotw_show_delivery) {
+		if (!lotw_alert_window) lotw_alert_window = new notify_dialog;
+		std::string alert;
+		alert.assign(_("LoTW upload OK"));
+		if (p2 != std::string::npos) {
+			alert.append("\n").append(trace_text.substr(p2));
+			p1 = alert.find("<CR>");
+			if (p1 != std::string::npos) alert.erase(p1);
+		}
+		lotw_alert_window->notify(alert.c_str(), 5.0);
+		REQ(show_notifier, lotw_alert_window);
+LOG_INFO("%s", alert.c_str());
+	}
+	if (progdefaults.xml_logbook)
+		xml_update_lotw();
+	clear_lotw_recs_sent();
+	return;
 }
 
 void send_to_lotw(void *)
@@ -216,7 +247,9 @@ void send_to_lotw(void *)
 	str_lotw.clear();
 
 	lotw_log_fname = LoTWDir;
-	lotw_log_fname.append("lotw_log.txt");
+	lotw_log_fname.append("lotw_trace.txt"); // LoTW trace file
+	rotate_log(lotw_log_fname);
+	remove(lotw_log_fname.c_str());
 
 	string pstring;
 	pstring.assign("\"").append(progdefaults.lotw_pathname).append("\"");
@@ -235,10 +268,12 @@ void send_to_lotw(void *)
 	if (progdefaults.lotw_quiet_mode)
 		pstring.append(" -q");
 
+	LOG_DEBUG("LoTW command string: %s", pstring.c_str());
+
 	start_process(pstring);
 
-	logcheck_count = 5;
-	Fl::add_timeout(5.0, check_lotw_log);
+	tracefile_timeout = progdefaults.tracefile_timeout;
+	Fl::add_timeout(0, check_lotw_log);
 }
 
 string lotw_rec(cQsoRec &rec)

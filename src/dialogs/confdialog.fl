@@ -2768,8 +2768,8 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Logging/LoTW}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      label {Logging/LoTW} open selected
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21
       code0 {add_tree_item(o);}
     } {
       Fl_Input txt_lotw_pathname {
@@ -2784,24 +2784,24 @@ progdefaults.changed = true;}
         label Password
         callback {progdefaults.lotw_pwd = o->value();
 progdefaults.changed = true;}
-        tooltip {Your tqsl login password} xywh {283 85 250 24}
+        tooltip {Your tqsl login password} xywh {283 85 225 24}
         code0 {o->value(progdefaults.lotw_pwd.c_str());}
         code1 {o->type(FL_SECRET_INPUT);}
         code2 {inpLOTW_pwd->labelsize(FL_NORMAL_SIZE);}
         class Fl_Input2
       }
       Fl_Check_Button btn_submit_lotw_password {
-        label {Use password for tqsl access}
+        label {Password required}
         callback {progdefaults.submit_lotw_password=o->value();
 progdefaults.changed=true;}
-        tooltip {Submit password with each upload} xywh {243 120 234 16} down_box DOWN_BOX
+        tooltip {Submit password with each upload} xywh {605 89 162 16} down_box DOWN_BOX
         code0 {o->value(progdefaults.submit_lotw_password);}
       }
       Fl_Input inpLOTW_location {
         label Location
         callback {progdefaults.lotw_location = o->value();
 progdefaults.changed = true;}
-        tooltip {tqsl station location} xywh {283 147 250 24}
+        tooltip {tqsl station location} xywh {283 116 250 24}
         code0 {o->value(progdefaults.lotw_location.c_str());}
         code1 {inpLOTW_pwd->labelsize(FL_NORMAL_SIZE);}
         class Fl_Input2
@@ -2818,15 +2818,22 @@ progdefaults.changed = true;}
         label {Quiet mode [-q], do not open tqsl dialog}
         callback {progdefaults.lotw_quiet_mode=o->value();
 progdefaults.changed=true;}
-        tooltip {Operate tqsl in batch mode (no dialog)} xywh {243 182 309 16} down_box DOWN_BOX
+        tooltip {Operate tqsl in batch mode (no dialog)} xywh {243 149 309 16} down_box DOWN_BOX
         code0 {o->value(progdefaults.lotw_quiet_mode);}
       }
       Fl_Check_Button btn_submit_lotw {
         label {Send QSO data to LoTW when logged}
         callback {progdefaults.submit_lotw=o->value();
 progdefaults.changed=true;}
-        tooltip {Submit each QSO as logged} xywh {243 206 289 16} down_box DOWN_BOX
+        tooltip {Submit each QSO as logged} xywh {243 176 289 16} down_box DOWN_BOX
         code0 {o->value(progdefaults.submit_lotw);}
+      }
+      Fl_Check_Button btn_show_lotw_delivery {
+        label {Show delivery message}
+        callback {progdefaults.lotw_show_delivery = o->value();
+progdefaults.changed = true;}
+        tooltip {Display timed delivery message if enabled} xywh {243 203 70 15} down_box DOWN_BOX
+        code0 {o->value(progdefaults.lotw_show_delivery);}
       }
       Fl_Button btn_export_lotw {
         label Export
@@ -2864,11 +2871,11 @@ progdefaults.changed=true;}
         callback {inpLOTW_pwd->type(inpLOTW_pwd->type() ^ FL_SECRET_INPUT);
 inpLOTW_pwd->redraw();
 o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
-        tooltip {Show password in plain text} xywh {541 85 70 24}
+        tooltip {Show password in plain text} xywh {516 85 70 24}
       }
       Fl_Box {} {
         label {Use this tqsl station location}
-        xywh {540 147 211 24} align 20
+        xywh {540 116 211 24} align 20
       }
       Fl_Button btn_verify_lotw {
         label Match
@@ -2884,12 +2891,11 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
         callback cb_btn_view_unmatched
         tooltip {Verify database with LoTW download file} xywh {645 313 139 24} deactivate
       }
-      Fl_Check_Button btn_show_lotw_delivery {
-        label {Show delivery message}
-        callback {progdefaults.lotw_show_delivery = o->value();
-progdefaults.changed = true;}
-        tooltip {Display timed delivery message if enabled} xywh {542 206 70 15} down_box DOWN_BOX
-        code0 {o->value(progdefaults.lotw_show_delivery);}
+      Fl_Counter cnt_tracefile_timeout {
+        label Timeout
+        callback {progdefaults.tracefile_timeout = o->value();}
+        tooltip {Wait NN seconds for LoTW response} xywh {647 146 79 21} type Simple align 4 minimum 4 maximum 60 step 1 value 5
+        code0 {o->value(progdefaults.tracefile_timeout);}
       }
     }
     Fl_Group {} {
@@ -2998,7 +3004,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/General} selected
+      label {Modem/CW/General}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {add_tree_item(o);}
     } {

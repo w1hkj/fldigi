@@ -2311,6 +2311,13 @@ static void cb_btn_submit_lotw(Fl_Check_Button* o, void*) {
 progdefaults.changed=true;
 }
 
+Fl_Check_Button *btn_show_lotw_delivery=(Fl_Check_Button *)0;
+
+static void cb_btn_show_lotw_delivery(Fl_Check_Button* o, void*) {
+  progdefaults.lotw_show_delivery = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Button *btn_export_lotw=(Fl_Button *)0;
 
 static void cb_btn_export_lotw(Fl_Button*, void*) {
@@ -2341,11 +2348,10 @@ Fl_Button *btn_verify_lotw=(Fl_Button *)0;
 
 Fl_Button *btn_view_unmatched=(Fl_Button *)0;
 
-Fl_Check_Button *btn_show_lotw_delivery=(Fl_Check_Button *)0;
+Fl_Counter *cnt_tracefile_timeout=(Fl_Counter *)0;
 
-static void cb_btn_show_lotw_delivery(Fl_Check_Button* o, void*) {
-  progdefaults.lotw_show_delivery = o->value();
-progdefaults.changed = true;
+static void cb_cnt_tracefile_timeout(Fl_Counter* o, void*) {
+  progdefaults.tracefile_timeout = o->value();
 }
 
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
@@ -9703,7 +9709,6 @@ gured on the\n\"Notifications\" configure dialog."));
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Logging/LoTW"));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-      o->hide();
       { Fl_Input2* o = txt_lotw_pathname = new Fl_Input2(283, 50, 422, 24, _("tqsl:"));
         txt_lotw_pathname->tooltip(_("Enter full path-filename for tqsl executable"));
         txt_lotw_pathname->box(FL_DOWN_BOX);
@@ -9718,7 +9723,7 @@ gured on the\n\"Notifications\" configure dialog."));
         txt_lotw_pathname->when(FL_WHEN_CHANGED);
         o->value(progdefaults.lotw_pathname.c_str());
       } // Fl_Input2* txt_lotw_pathname
-      { Fl_Input2* o = inpLOTW_pwd = new Fl_Input2(283, 85, 250, 24, _("Password"));
+      { Fl_Input2* o = inpLOTW_pwd = new Fl_Input2(283, 85, 225, 24, _("Password"));
         inpLOTW_pwd->tooltip(_("Your tqsl login password"));
         inpLOTW_pwd->box(FL_DOWN_BOX);
         inpLOTW_pwd->color(FL_BACKGROUND2_COLOR);
@@ -9734,13 +9739,13 @@ gured on the\n\"Notifications\" configure dialog."));
         o->type(FL_SECRET_INPUT);
         inpLOTW_pwd->labelsize(FL_NORMAL_SIZE);
       } // Fl_Input2* inpLOTW_pwd
-      { Fl_Check_Button* o = btn_submit_lotw_password = new Fl_Check_Button(243, 120, 234, 16, _("Use password for tqsl access"));
+      { Fl_Check_Button* o = btn_submit_lotw_password = new Fl_Check_Button(605, 89, 162, 16, _("Password required"));
         btn_submit_lotw_password->tooltip(_("Submit password with each upload"));
         btn_submit_lotw_password->down_box(FL_DOWN_BOX);
         btn_submit_lotw_password->callback((Fl_Callback*)cb_btn_submit_lotw_password);
         o->value(progdefaults.submit_lotw_password);
       } // Fl_Check_Button* btn_submit_lotw_password
-      { Fl_Input2* o = inpLOTW_location = new Fl_Input2(283, 147, 250, 24, _("Location"));
+      { Fl_Input2* o = inpLOTW_location = new Fl_Input2(283, 116, 250, 24, _("Location"));
         inpLOTW_location->tooltip(_("tqsl station location"));
         inpLOTW_location->box(FL_DOWN_BOX);
         inpLOTW_location->color(FL_BACKGROUND2_COLOR);
@@ -9759,18 +9764,24 @@ gured on the\n\"Notifications\" configure dialog."));
         btn_select_lotw->tooltip(_("Locate tqsl executable"));
         btn_select_lotw->callback((Fl_Callback*)cb_btn_select_lotw);
       } // Fl_Button* btn_select_lotw
-      { Fl_Check_Button* o = btn_lotw_quiet_mode = new Fl_Check_Button(243, 182, 309, 16, _("Quiet mode [-q], do not open tqsl dialog"));
+      { Fl_Check_Button* o = btn_lotw_quiet_mode = new Fl_Check_Button(243, 149, 309, 16, _("Quiet mode [-q], do not open tqsl dialog"));
         btn_lotw_quiet_mode->tooltip(_("Operate tqsl in batch mode (no dialog)"));
         btn_lotw_quiet_mode->down_box(FL_DOWN_BOX);
         btn_lotw_quiet_mode->callback((Fl_Callback*)cb_btn_lotw_quiet_mode);
         o->value(progdefaults.lotw_quiet_mode);
       } // Fl_Check_Button* btn_lotw_quiet_mode
-      { Fl_Check_Button* o = btn_submit_lotw = new Fl_Check_Button(243, 206, 289, 16, _("Send QSO data to LoTW when logged"));
+      { Fl_Check_Button* o = btn_submit_lotw = new Fl_Check_Button(243, 176, 289, 16, _("Send QSO data to LoTW when logged"));
         btn_submit_lotw->tooltip(_("Submit each QSO as logged"));
         btn_submit_lotw->down_box(FL_DOWN_BOX);
         btn_submit_lotw->callback((Fl_Callback*)cb_btn_submit_lotw);
         o->value(progdefaults.submit_lotw);
       } // Fl_Check_Button* btn_submit_lotw
+      { Fl_Check_Button* o = btn_show_lotw_delivery = new Fl_Check_Button(243, 203, 70, 15, _("Show delivery message"));
+        btn_show_lotw_delivery->tooltip(_("Display timed delivery message if enabled"));
+        btn_show_lotw_delivery->down_box(FL_DOWN_BOX);
+        btn_show_lotw_delivery->callback((Fl_Callback*)cb_btn_show_lotw_delivery);
+        o->value(progdefaults.lotw_show_delivery);
+      } // Fl_Check_Button* btn_show_lotw_delivery
       { btn_export_lotw = new Fl_Button(216, 232, 70, 24, _("Export"));
         btn_export_lotw->tooltip(_("Export records for LoTW upload"));
         btn_export_lotw->callback((Fl_Callback*)cb_btn_export_lotw);
@@ -9796,11 +9807,11 @@ gured on the\n\"Notifications\" configure dialog."));
 work!"));
         o->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
       } // Fl_Box* o
-      { btnLOTW_pwd_show = new Fl_Button(541, 85, 70, 24, _("Show"));
+      { btnLOTW_pwd_show = new Fl_Button(516, 85, 70, 24, _("Show"));
         btnLOTW_pwd_show->tooltip(_("Show password in plain text"));
         btnLOTW_pwd_show->callback((Fl_Callback*)cb_btnLOTW_pwd_show);
       } // Fl_Button* btnLOTW_pwd_show
-      { Fl_Box* o = new Fl_Box(540, 147, 211, 24, _("Use this tqsl station location"));
+      { Fl_Box* o = new Fl_Box(540, 116, 211, 24, _("Use this tqsl station location"));
         o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
       } // Fl_Box* o
       { btn_verify_lotw = new Fl_Button(216, 315, 70, 24, _("Match"));
@@ -9815,12 +9826,17 @@ work!"));
         btn_view_unmatched->callback((Fl_Callback*)cb_btn_view_unmatched);
         btn_view_unmatched->deactivate();
       } // Fl_Button* btn_view_unmatched
-      { Fl_Check_Button* o = btn_show_lotw_delivery = new Fl_Check_Button(542, 206, 70, 15, _("Show delivery message"));
-        btn_show_lotw_delivery->tooltip(_("Display timed delivery message if enabled"));
-        btn_show_lotw_delivery->down_box(FL_DOWN_BOX);
-        btn_show_lotw_delivery->callback((Fl_Callback*)cb_btn_show_lotw_delivery);
-        o->value(progdefaults.lotw_show_delivery);
-      } // Fl_Check_Button* btn_show_lotw_delivery
+      { Fl_Counter* o = cnt_tracefile_timeout = new Fl_Counter(647, 146, 79, 21, _("Timeout"));
+        cnt_tracefile_timeout->tooltip(_("Wait NN seconds for LoTW response"));
+        cnt_tracefile_timeout->type(1);
+        cnt_tracefile_timeout->minimum(4);
+        cnt_tracefile_timeout->maximum(60);
+        cnt_tracefile_timeout->step(1);
+        cnt_tracefile_timeout->value(5);
+        cnt_tracefile_timeout->callback((Fl_Callback*)cb_cnt_tracefile_timeout);
+        cnt_tracefile_timeout->align(Fl_Align(FL_ALIGN_LEFT));
+        o->value(progdefaults.tracefile_timeout);
+      } // Fl_Counter* cnt_tracefile_timeout
       add_tree_item(o);
       o->end();
     } // Fl_Group* o
