@@ -1233,7 +1233,8 @@ void WKCW_connect(bool start)
 			progStatus.WK_online = true;
 			btn_WKCW_connect->value(1);
 		}
-	}
+	} else
+		progStatus.WK_online = false;
 
 	WKCW_init();
 }
@@ -1283,7 +1284,8 @@ void WKFSK_connect(bool start)
 		} else {
 			progStatus.WK_online = true;
 		}
-	}
+	} else
+		progStatus.WK_online = false;
 
 	if (progStatus.WK_version < 31) {
 		fl_alert2("Winkeyer version must be 31 or greater");
