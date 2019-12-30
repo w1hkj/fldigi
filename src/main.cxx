@@ -760,6 +760,17 @@ void delayed_startup(void *)
 		cb_mnuCheckUpdate((Fl_Widget *)0, NULL);
 
 #if USE_PORTAUDIO
+	try {
+		audio_alert = 0;
+		audio_alert = new Caudio_alert;
+	} catch (...) {
+		audio_alert = 0;
+		LOG_ERROR("%s", "Failed to create audio alert object");
+	}
+
+	if (audio_alert)
+		LOG_INFO("%s", "Created audio alert object");
+
 	reset_audio_alerts();
 #endif
 

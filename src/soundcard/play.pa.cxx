@@ -280,7 +280,7 @@ c_portaudio::c_portaudio()
 	monitor_rb = new ringbuffer<float>(8192);
 	start_alert_thread();
 	start_filelist_thread();
-	open(NULL);
+//	open(NULL);
 
 	bpfilt = 0;
 	init_filter();
@@ -369,6 +369,7 @@ open pa stream:\n\
 		sr,
 		FRAMES_PER_BUFFER, paClipOff,
 		stream_process, this);
+
 	if (paError != paNoError) {
 		LOG_ERROR("%s", Pa_GetErrorText(paError));
 		stream = 0;
@@ -378,12 +379,18 @@ open pa stream:\n\
 	paError = Pa_SetStreamFinishedCallback( stream, StreamFinished );
 	if (paError != paNoError) {
 		LOG_ERROR("%s", Pa_GetErrorText(paError));
+		paError = Pa_StopStream(stream );
+		paError = Pa_CloseStream(stream);
+		stream = 0;
 		return 0;
 	}
 
 	paError = Pa_StartStream(stream );
 	if (paError != paNoError) {
 		LOG_ERROR("%s", Pa_GetErrorText(paError));
+		paError = Pa_StopStream(stream );
+		paError = Pa_CloseStream(stream);
+		stream = 0;
 		return 0;
 	}
 

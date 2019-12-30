@@ -6973,6 +6973,16 @@ progdefaults.changed = true;
 resetSoundCard();
 }
 
+Fl_Group *AudioDuplex=(Fl_Group *)0;
+
+Fl_Round_Button *btn_is_full_duplex=(Fl_Round_Button *)0;
+
+static void cb_btn_is_full_duplex(Fl_Round_Button* o, void*) {
+  progdefaults.is_full_duplex = o->value();
+progdefaults.changed = true;
+resetSoundCard();
+}
+
 Fl_Group *AudioAlerts=(Fl_Group *)0;
 
 Fl_Choice *menuAlertsDev=(Fl_Choice *)0;
@@ -6983,14 +6993,12 @@ progdefaults.AlertIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 progdefaults.changed = true;
 }
 
-Fl_Group *AudioDuplex=(Fl_Group *)0;
+Fl_Round_Button *btn_enable_audio_alerts=(Fl_Round_Button *)0;
 
-Fl_Round_Button *btn_is_full_duplex=(Fl_Round_Button *)0;
-
-static void cb_btn_is_full_duplex(Fl_Round_Button* o, void*) {
-  progdefaults.is_full_duplex = o->value();
+static void cb_btn_enable_audio_alerts(Fl_Round_Button* o, void*) {
+  progdefaults.enable_audio_alerts = o->value();
 progdefaults.changed = true;
-resetSoundCard();
+reset_audio_alerts();
 }
 
 Fl_Check_Button *chkAudioStereoOut=(Fl_Check_Button *)0;
@@ -15599,7 +15607,7 @@ i.e. localhost"));
       grpSoundDevices->box(FL_ENGRAVED_BOX);
       grpSoundDevices->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       grpSoundDevices->hide();
-      { AudioOSS = new Fl_Group(257, 24, 490, 45);
+      { AudioOSS = new Fl_Group(255, 24, 500, 45);
         AudioOSS->box(FL_ENGRAVED_FRAME);
         { btnAudioIO[0] = new Fl_Round_Button(267, 34, 53, 25, _("OSS"));
           btnAudioIO[0]->tooltip(_("Use OSS audio server"));
@@ -15614,7 +15622,7 @@ i.e. localhost"));
         } // Fl_Input_Choice* menuOSSDev
         AudioOSS->end();
       } // Fl_Group* AudioOSS
-      { AudioPort = new Fl_Group(257, 69, 490, 79);
+      { AudioPort = new Fl_Group(255, 69, 500, 79);
         AudioPort->box(FL_ENGRAVED_FRAME);
         { btnAudioIO[1] = new Fl_Round_Button(267, 97, 95, 25, _("PortAudio"));
           btnAudioIO[1]->tooltip(_("Use Port Audio server"));
@@ -15634,7 +15642,7 @@ i.e. localhost"));
         } // Fl_Choice* menuPortOutDev
         AudioPort->end();
       } // Fl_Group* AudioPort
-      { AudioPulse = new Fl_Group(257, 149, 490, 45);
+      { AudioPulse = new Fl_Group(255, 149, 500, 45);
         AudioPulse->box(FL_ENGRAVED_FRAME);
         { btnAudioIO[2] = new Fl_Round_Button(267, 160, 100, 25, _("PulseAudio"));
           btnAudioIO[2]->tooltip(_("Use Pulse Audio server"));
@@ -15659,7 +15667,7 @@ i.e. localhost"));
         } // Fl_Input2* inpPulseServer
         AudioPulse->end();
       } // Fl_Group* AudioPulse
-      { AudioNull = new Fl_Group(257, 194, 490, 45);
+      { AudioNull = new Fl_Group(255, 194, 135, 45);
         AudioNull->box(FL_ENGRAVED_FRAME);
         { btnAudioIO[3] = new Fl_Round_Button(268, 204, 100, 25, _("File I/O only"));
           btnAudioIO[3]->tooltip(_("NO AUDIO DEVICE AVAILABLE (or testing)"));
@@ -15669,20 +15677,10 @@ i.e. localhost"));
         } // Fl_Round_Button* btnAudioIO[3]
         AudioNull->end();
       } // Fl_Group* AudioNull
-      { AudioAlerts = new Fl_Group(257, 239, 490, 55, _("Alerts / Rx Audio"));
-        AudioAlerts->box(FL_ENGRAVED_FRAME);
-        AudioAlerts->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { menuAlertsDev = new Fl_Choice(427, 259, 310, 25, _("Playback"));
-          menuAlertsDev->tooltip(_("Audio output device"));
-          menuAlertsDev->down_box(FL_BORDER_BOX);
-          menuAlertsDev->callback((Fl_Callback*)cb_menuAlertsDev);
-        } // Fl_Choice* menuAlertsDev
-        AudioAlerts->end();
-      } // Fl_Group* AudioAlerts
-      { AudioDuplex = new Fl_Group(257, 295, 490, 45);
+      { AudioDuplex = new Fl_Group(390, 194, 365, 45);
         AudioDuplex->box(FL_ENGRAVED_FRAME);
-        { Fl_Round_Button* o = btn_is_full_duplex = new Fl_Round_Button(268, 305, 223, 25, _("Device supports full duplex"));
-          btn_is_full_duplex->tooltip(_("NO AUDIO DEVICE AVAILABLE (or testing)"));
+        { Fl_Round_Button* o = btn_is_full_duplex = new Fl_Round_Button(433, 204, 225, 25, _("Device supports full duplex"));
+          btn_is_full_duplex->tooltip(_("Capture/Playback supports full duplex operation"));
           btn_is_full_duplex->down_box(FL_DOWN_BOX);
           btn_is_full_duplex->value(1);
           btn_is_full_duplex->selection_color((Fl_Color)1);
@@ -15691,6 +15689,23 @@ i.e. localhost"));
         } // Fl_Round_Button* btn_is_full_duplex
         AudioDuplex->end();
       } // Fl_Group* AudioDuplex
+      { AudioAlerts = new Fl_Group(255, 239, 500, 80, _("Alerts / Rx Audio"));
+        AudioAlerts->box(FL_ENGRAVED_FRAME);
+        AudioAlerts->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        { menuAlertsDev = new Fl_Choice(427, 259, 310, 25, _("Playback"));
+          menuAlertsDev->tooltip(_("Audio output device"));
+          menuAlertsDev->down_box(FL_BORDER_BOX);
+          menuAlertsDev->callback((Fl_Callback*)cb_menuAlertsDev);
+        } // Fl_Choice* menuAlertsDev
+        { Fl_Round_Button* o = btn_enable_audio_alerts = new Fl_Round_Button(427, 287, 225, 25, _("Enable Audio alerts"));
+          btn_enable_audio_alerts->tooltip(_("First select audio alert playback device"));
+          btn_enable_audio_alerts->down_box(FL_DOWN_BOX);
+          btn_enable_audio_alerts->selection_color((Fl_Color)1);
+          btn_enable_audio_alerts->callback((Fl_Callback*)cb_btn_enable_audio_alerts);
+          o->value(progdefaults.enable_audio_alerts);
+        } // Fl_Round_Button* btn_enable_audio_alerts
+        AudioAlerts->end();
+      } // Fl_Group* AudioAlerts
       add_tree_item(o);
       grpSoundDevices->end();
     } // Fl_Group* grpSoundDevices

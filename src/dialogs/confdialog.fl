@@ -4104,7 +4104,7 @@ nanoIO_set_cw_ptt();}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/DTR-RTS keying} open selected
+      label {Modem/CW/DTR-RTS keying}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {add_tree_item(o);}
     } {
@@ -8685,12 +8685,12 @@ progdefaults.TIMED_OUT_ALERT_MENU = o->value();} open
       }
     }
     Fl_Group grpSoundDevices {
-      label {Soundcard/Devices}
+      label {Soundcard/Devices} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {add_tree_item(o);}
     } {
       Fl_Group AudioOSS {open
-        xywh {257 24 490 45} box ENGRAVED_FRAME
+        xywh {255 24 500 45} box ENGRAVED_FRAME
       } {
         Fl_Round_Button {btnAudioIO[0]} {
           label OSS
@@ -8709,7 +8709,7 @@ progdefaults.changed = true;} open
         } {}
       }
       Fl_Group AudioPort {open
-        xywh {257 69 490 79} box ENGRAVED_FRAME
+        xywh {255 69 500 79} box ENGRAVED_FRAME
       } {
         Fl_Round_Button {btnAudioIO[1]} {
           label PortAudio
@@ -8736,7 +8736,7 @@ progdefaults.changed = true;} open
         } {}
       }
       Fl_Group AudioPulse {open
-        xywh {257 149 490 45} box ENGRAVED_FRAME
+        xywh {255 149 500 45} box ENGRAVED_FRAME
       } {
         Fl_Round_Button {btnAudioIO[2]} {
           label PulseAudio
@@ -8758,7 +8758,7 @@ http://www.pulseaudio.org/wiki/ServerStrings} xywh {512 160 225 24}
         }
       }
       Fl_Group AudioNull {open
-        xywh {257 194 490 45} box ENGRAVED_FRAME
+        xywh {255 194 135 45} box ENGRAVED_FRAME
       } {
         Fl_Round_Button {btnAudioIO[3]} {
           label {File I/O only}
@@ -8768,9 +8768,21 @@ resetSoundCard();}
           tooltip {NO AUDIO DEVICE AVAILABLE (or testing)} xywh {268 204 100 25} down_box DOWN_BOX selection_color 1
         }
       }
+      Fl_Group AudioDuplex {open
+        xywh {390 194 365 45} box ENGRAVED_FRAME
+      } {
+        Fl_Round_Button btn_is_full_duplex {
+          label {Device supports full duplex}
+          callback {progdefaults.is_full_duplex = o->value();
+progdefaults.changed = true;
+resetSoundCard();}
+          tooltip {Capture/Playback supports full duplex operation} xywh {433 204 225 25} down_box DOWN_BOX value 1 selection_color 1
+          code0 {o->value(progdefaults.is_full_duplex);}
+        }
+      }
       Fl_Group AudioAlerts {
         label {Alerts / Rx Audio} open
-        xywh {257 239 490 55} box ENGRAVED_FRAME align 21
+        xywh {255 239 500 80} box ENGRAVED_FRAME align 21
       } {
         Fl_Choice menuAlertsDev {
           label Playback
@@ -8779,17 +8791,13 @@ progdefaults.AlertIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 progdefaults.changed = true;} open
           tooltip {Audio output device} xywh {427 259 310 25} down_box BORDER_BOX
         } {}
-      }
-      Fl_Group AudioDuplex {open
-        xywh {257 295 490 45} box ENGRAVED_FRAME
-      } {
-        Fl_Round_Button btn_is_full_duplex {
-          label {Device supports full duplex}
-          callback {progdefaults.is_full_duplex = o->value();
+        Fl_Round_Button btn_enable_audio_alerts {
+          label {Enable Audio alerts}
+          callback {progdefaults.enable_audio_alerts = o->value();
 progdefaults.changed = true;
-resetSoundCard();}
-          tooltip {NO AUDIO DEVICE AVAILABLE (or testing)} xywh {268 305 223 25} down_box DOWN_BOX value 1 selection_color 1
-          code0 {o->value(progdefaults.is_full_duplex);}
+reset_audio_alerts();}
+          tooltip {First select audio alert playback device} xywh {427 287 225 25} down_box DOWN_BOX selection_color 1
+          code0 {o->value(progdefaults.enable_audio_alerts);}
         }
       }
     }

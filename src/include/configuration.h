@@ -1513,6 +1513,9 @@
         ELEM_(int, AlertIndex, "ALERTINDEX",                                            \
               "Alert output device index",                                              \
               -1)                                                                       \
+        ELEM_(bool, enable_audio_alerts, "ENABLE_AUDIO_ALERTS",                         \
+             "1 - enable audio stream, 0 - disable audio stream",                       \
+             false)                                                                     \
         ELEM_(int, PortFramesPerBuffer, "", "",  0)                                     \
         ELEM_(std::string, PulseServer, "PULSESERVER",                                  \
               "PulseAudio server string",                                               \

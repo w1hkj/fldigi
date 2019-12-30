@@ -59,13 +59,23 @@ public:
 
 	Caudio_alert();
 	~Caudio_alert();
-	
+
+	int  open() {
+		if (sc_audio) return sc_audio->open(NULL);
+		return 0;
+	}
+	void close() {
+		if (sc_audio) sc_audio->close();
+	}
+
 	c_portaudio *pa() { return sc_audio; }
 	void init_filter() { sc_audio->init_filter(); }
 
 };
 
 extern Caudio_alert *audio_alert;
+
+extern void reset_audio_alerts();
 
 extern void center_rxfilt_at_track();
 

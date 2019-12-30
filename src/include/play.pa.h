@@ -109,6 +109,7 @@ public:
 
 	int 	open(void *);
 	void	close();
+	int		is_open() { return stream != 0; }
 
 	void	play_buffer(float *buffer, int len, int _sr, int src = ALERT);
 

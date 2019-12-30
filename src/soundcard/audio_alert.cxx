@@ -214,3 +214,20 @@ void center_rxfilt_at_track()
 	if (audio_alert)
 		audio_alert->init_filter();
 }
+
+void reset_audio_alerts()
+{
+	if (progdefaults.enable_audio_alerts && audio_alert) {
+		if (audio_alert->open())
+			LOG_INFO("Opened audio alert stream on %s", progdefaults.AlertDevice.c_str());
+		else {
+			progdefaults.enable_audio_alerts = 0;
+			btn_enable_audio_alerts->value(0);
+			LOG_ERROR("Open audio device %s FAILED", progdefaults.AlertDevice.c_str());
+		}
+	}
+	else {
+		audio_alert->close();
+		LOG_INFO("Closed audio alert device %s", progdefaults.AlertDevice.c_str());
+	}
+}
