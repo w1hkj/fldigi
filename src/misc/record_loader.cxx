@@ -330,6 +330,8 @@ void DerivedRecordLst::AddRow( int row )
 			ptRow->m_url = new Fl_Button(X,Y,W,H, strdup(strnam.c_str()) );
 			ptRow->m_url->tooltip( strurl );
 			ptRow->m_url->callback(cb_record_url, ptRow->m_itf);
+		} else {
+			ptRow->m_url = new Fl_Button(X, Y, W, H, "N/A");
 		}
 	}
 	ptRow->UpdateRow();

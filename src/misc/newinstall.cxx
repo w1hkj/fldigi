@@ -413,7 +413,8 @@ void Wizard::create_wizard(void)
 		{ grpSoundDevices },
 		{ grpRigFlrig },
 		{ grpRigCat },
-		{ grpRigHamlib }
+		{ grpRigHamlib },
+		{ tabDataFiles }
 	};
 
 	tabs.resize(sizeof(tabs_)/sizeof(*tabs_));
@@ -444,6 +445,8 @@ void Wizard::destroy_wizard(void)
 	// re-parent tabs
 	for (tab_t::const_iterator i = tabs.begin() + 1; i != tabs.end(); ++i) {
 		i->parent->insert(*i->tab, i->position);
+		if (i < tabs.end() - 1)
+			i->tab->hide();
 		i->tab->resize(i->x, i->y, i->w, i->h);
 		i->parent->init_sizes();
 	}
