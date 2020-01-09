@@ -15,7 +15,6 @@ extern Fl_Double_Window *dlgConfig;
 extern Mode_Browser* mode_browser; 
 struct CONFIG_PAGE {Fl_Group *grp; std::string label; CONFIG_PAGE(Fl_Group *_grp = 0, std::string _lbl = "") { grp = _grp; label = _lbl; } ~CONFIG_PAGE() { if (grp) delete grp; } }; 
 extern std::vector<CONFIG_PAGE *> config_pages; 
-void add_tree_item(Fl_Group *g);
 void SelectItem_CB(Fl_Widget *w);
 void cbWaterfallFontBrowser(Fl_Widget*, void*);
 void cbViewerFontBrowser(Fl_Widget*, void*);

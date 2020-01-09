@@ -544,7 +544,7 @@ int configuration::setDefaults()
 	cboHamlibRig->show();
 	cboHamlibRig->value(HamRigName.c_str());
 #else
-	tabHamlib->parent()->remove(*tabHamlib);
+	tab_tree->remove(tab_tree->find_item(_("Rig Control/Hamlib")));
 #endif
 	btnRTSptt->value(RTSptt);
 	btnDTRptt->value(DTRptt);

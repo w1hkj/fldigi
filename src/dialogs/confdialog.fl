@@ -142,13 +142,6 @@ decl {std::vector<CONFIG_PAGE *> config_pages;} {public local
 decl {Fl_Group *current = 0;} {private local
 }
 
-Function {add_tree_item(Fl_Group *g)} {open return_type void
-} {
-  code {CONFIG_PAGE *p1 = new CONFIG_PAGE(g, g->label());
-config_pages.push_back(p1);
-tab_tree->add(g->label());} {}
-}
-
 Function {SelectItem_CB(Fl_Widget *w)} {open return_type void
 } {
   code {Fl_Tree *tree = (Fl_Tree*)w;
@@ -476,7 +469,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {620 24 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
+    xywh {671 24 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
   } {
     Fl_Group {} {open
       xywh {0 0 201 385} resizable
@@ -484,7 +477,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
       Fl_Tree tab_tree {
         callback SelectItem_CB
         xywh {0 0 200 350} resizable
-        code0 {o->root_label("Configure");}
+        code0 {o->root_label(_("Configure"));}
         code1 {o->selectmode(FL_TREE_SELECT_SINGLE);}
         code2 {o->connectorstyle(FL_TREE_CONNECTOR_DOTTED); // default is NONE on Mac}
         code3 {o->connectorwidth(15); // default is 17}
@@ -515,7 +508,9 @@ tab_tree->close(_("Web"));}
     Fl_Group {} {
       label {Colors-Fonts/Buttons}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Buttons"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Colors-Fonts/Buttons"));}
     } {
       Fl_Button btnSpotColor {
         label Spot
@@ -692,7 +687,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Colors-Fonts/FreqDisp - Meters}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/FreqDisp - Meters"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Colors-Fonts/FreqDisp - Meters"));}
     } {
       Fl_Group {} {open
         xywh {304 51 395 87} box ENGRAVED_FRAME
@@ -951,7 +948,9 @@ progdefaults.changed = true;} open
     Fl_Group {} {
       label {Colors-Fonts/Function keys}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Function keys"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Colors-Fonts/Function keys"));}
     } {
       Fl_Check_Button btnUseGroupColors {
         label {Use colored buttons}
@@ -1084,7 +1083,9 @@ font_browser->show();}
     Fl_Group {} {
       label {Colors-Fonts/Logging controls}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Logging controls"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Colors-Fonts/Logging controls"));}
     } {
       Fl_Group {} {
         label {Logging Panel Controls} open
@@ -1392,7 +1393,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Colors-Fonts/Rx-Tx}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Rx-Tx"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Colors-Fonts/Rx-Tx"));}
     } {
       Fl_Group listbox_charset_status {
         label {Rx/Tx Character set} open
@@ -1698,7 +1701,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Colors-Fonts/Tabs}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Tabs"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Colors-Fonts/Tabs"));}
     } {
       Fl_Button btnTabColor {
         label {Tab Color}
@@ -1720,8 +1725,10 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Colors-Fonts/Signal Level}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("Colors-Fonts");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Signal Level"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Colors-Fonts/Signal Level"));}
+      code3 {tab_tree->close(_("Colors-Fonts"));}
     } {
       Fl_Button btnLowSignal {
         label Low
@@ -1779,7 +1786,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Contests/General}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Contests/General"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Contests/General"));}
     } {
       Fl_Group listbox_contest {
         label Contest
@@ -1981,7 +1990,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Contests/Field Day}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Contests/Field Day"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Contests/Field Day"));}
     } {
       Fl_Input inp_my_FD_call {
         label {Operator Call}
@@ -2015,8 +2026,10 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Contests/JOTA School}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("Contests");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Contests/JOTA School"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Contests/JOTA School"));}
+      code3 {tab_tree->close(_("Contests"));}
     } {
       Fl_Group {} {
         label {School Round Up} open
@@ -2059,7 +2072,9 @@ progdefaults.changed=true;}
     Fl_Group {} {
       label {IDs/CW}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("IDs/CW"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("IDs/CW"));}
     } {
       Fl_Group sld {
         label {CW Postamble ID} open
@@ -2094,7 +2109,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {IDs/RsID}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("IDs/RsID"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("IDs/RsID"));}
     } {
       Fl_Group {} {
         label {Reed-Solomon ID (Rx)} open
@@ -2235,8 +2252,10 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {IDs/Video}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("IDs");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("IDs/Video"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("IDs/Video"));}
+      code3 {tab_tree->close(_("IDs"));}
     } {
       Fl_Group {} {
         label {Video Preamble ID} open
@@ -2309,7 +2328,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Logging/MacLogger}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/MacLogger"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Logging/MacLogger"));}
     } {
       Fl_Check_Button btnConnectToMaclogger {
         label {Connect to MacLogger}
@@ -2384,7 +2405,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Logging/N3FJP logs}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/N3FJP logs"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Logging/N3FJP logs"));}
     } {
       Fl_Text_Display txt_N3FJP_data {
         label {TCP/IP Data Stream}
@@ -2468,7 +2491,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Logging/Call Lookup}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/Call Lookup"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Logging/Call Lookup"));}
     } {
       Fl_Group {} {
         label {Web Browser lookup} open
@@ -2660,7 +2685,9 @@ progdefaults.changed= true;}
     Fl_Group {} {
       label {Logging/eQSL}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/eQSL"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Logging/eQSL"));}
     } {
       Fl_Input inpEQSL_www_url {
         label {www url}
@@ -2770,7 +2797,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Logging/LoTW}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/LoTW"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Logging/LoTW"));}
     } {
       Fl_Input txt_lotw_pathname {
         label {tqsl:}
@@ -2901,8 +2930,10 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
     Fl_Group {} {
       label {Logging/QSO logging}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("Logging");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/QSO logging"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Logging/QSO logging"));}
+      code3 {tab_tree->close(_("Logging"));}
     } {
       Fl_Check_Button btnNagMe {
         label {Prompt to save log on exit}
@@ -3004,9 +3035,11 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/General} open
+      label {Modem/CW/General}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/General"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/CW/General"));}
     } {
       Fl_Group {} {
         label Receive
@@ -3171,7 +3204,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/CW/Timing and QSK}
       xywh {200 0 654 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Timing and QSK"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/CW/Timing and QSK"));}
     } {
       Fl_Group {} {
         label Timing open
@@ -3304,7 +3339,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/CW/Prosigns}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Prosigns"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/CW/Prosigns"));}
     } {
       Fl_Group {} {
         label {Use these for WinKeyer
@@ -3544,7 +3581,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/CW/WinKeyer}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/WinKeyer"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/CW/WinKeyer"));}
     } {
       Fl_Group select_WK_CommPort {
         label {Ser. Port}
@@ -3770,7 +3809,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/CW/Extended Chars.}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Extended Chars."));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/CW/Extended Chars."));}
     } {
       Fl_Group {} {
         label {Check to enable character encode/decode
@@ -3940,7 +3981,9 @@ for information regarding extended Morse characters.} open
     Fl_Group {} {
       label {Modem/CW/nanoIO}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/nanoIO"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/CW/nanoIO"));}
     } {
       Fl_Group select_nanoCW_CommPort {
         label {Ser. Port}
@@ -4106,7 +4149,9 @@ nanoIO_set_cw_ptt();}
     Fl_Group {} {
       label {Modem/CW/DTR-RTS keying}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/DTR-RTS keying"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/CW/DTR-RTS keying"));}
     } {
       Fl_Group {} {open
         xywh {205 25 590 145} box ENGRAVED_BOX
@@ -4165,7 +4210,9 @@ progdefaults.changed = true;} open
     Fl_Group {} {
       label {Modem/DominoEX}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/DominoEX"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/DominoEX"));}
     } {
       Fl_Input txtSecondary {
         label {Secondary Text}
@@ -4223,7 +4270,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/Feld Hell}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Feld Hell"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/Feld Hell"));}
     } {
       Fl_Group {} {
         label {Hell Transmit Parameters} open
@@ -4318,7 +4367,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/FSQ}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/FSQ"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/FSQ"));}
     } {
       Fl_Group {} {
         label {Rx Parameters} open
@@ -4611,7 +4662,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/IFKP}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/IFKP"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/IFKP"));}
     } {
       Fl_Group {} {
         label {Tx Parameters} open
@@ -4733,7 +4786,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/MT-63}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/MT-63"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/MT-63"));}
     } {
       Fl_Group {} {open
         xywh {249 36 490 84} box ENGRAVED_FRAME align 21
@@ -4825,7 +4880,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/Contestia}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Contestia"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/Contestia"));}
     } {
       Fl_Group {} {open
         xywh {257 40 490 240} box ENGRAVED_FRAME
@@ -4895,7 +4952,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/Olivia}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Olivia"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/Olivia"));}
     } {
       Fl_Group {} {open
         xywh {253 40 490 280} box ENGRAVED_FRAME
@@ -4975,7 +5034,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/Psk}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Psk"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/Psk"));}
     } {
       Fl_Group {} {
         label {AFC behavior} open
@@ -5072,7 +5133,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/TTY/Rx}
       xywh {200 0 601 350} box FLAT_BOX align 21 hide
-      code1 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Rx"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/TTY/Rx"));}
     } {
       Fl_Group {} {
         label Receive open
@@ -5267,7 +5330,9 @@ progdefaults.BELL_RING_MENU = o->value();} open
     Fl_Group {} {
       label {Modem/TTY/Tx}
       xywh {200 0 601 350} box FLAT_BOX align 21 hide
-      code1 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Tx"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/TTY/Tx"));}
     } {
       Fl_Group {} {
         label {Sound Card FSK}
@@ -5427,7 +5492,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/TTY/nanoIO}
       xywh {200 0 601 350} box FLAT_BOX align 21 hide
-      code1 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/nanoIO"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/TTY/nanoIO"));}
     } {
       Fl_Group select_nanoIO_CommPort {
         label {Ser. Port}
@@ -5481,7 +5548,9 @@ Read from nanoIO} xywh {286 52 63 24} down_box DOWN_BOX
       label {Modem/TTY/Navigator}
       xywh {200 0 601 350} box FLAT_BOX align 21 hide
       code0 {\#include "Nav.h"}
-      code1 {add_tree_item(o);}
+      code1 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Navigator"));}
+      code2 {config_pages.push_back(p);}
+      code3 {tab_tree->add(_("Modem/TTY/Navigator"));}
     } {
       Fl_Group {} {
         label {FSK Interface} open
@@ -5643,7 +5712,9 @@ progdefaults.changed = true;} open
     Fl_Group {} {
       label {Modem/TTY/Synop}
       xywh {200 0 601 350} box FLAT_BOX align 21 hide
-      code1 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Synop"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/TTY/Synop"));}
     } {
       Fl_Check_Button btnSynopAdifDecoding {
         label {SYNOP to ADIF}
@@ -5671,7 +5742,9 @@ progdefaults.changed = true;}
       label {Modem/TTY/Winkeyer 3}
       xywh {200 0 601 350} box FLAT_BOX align 21 hide
       code0 {\#include "winkeyer.h"}
-      code1 {add_tree_item(o);}
+      code1 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Winkeyer 3"));}
+      code2 {config_pages.push_back(p);}
+      code3 {tab_tree->add(_("Modem/TTY/Winkeyer 3"));}
     } {
       Fl_Group {} {
         label {Serial Interface} open
@@ -5792,7 +5865,9 @@ WKFSK_init();} open
     Fl_Group {} {
       label {Modem/Thor}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Thor"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/Thor"));}
     } {
       Fl_Group {} {open
         xywh {262 40 490 270} box ENGRAVED_FRAME
@@ -5871,7 +5946,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/Navtex}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Navtex"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/Navtex"));}
     } {
       Fl_Check_Button btnNvtxAdifLog {
         label {Log Navtex messages to Adif file}
@@ -5891,8 +5968,10 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Modem/Wefax}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("Modem");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Wefax"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/Wefax"));}
+      code3 {tab_tree->close(_("Modem"));}
     } {
       Fl_Check_Button btnWefaxEmbeddedGui {
         label {Embedded Wefax Gui}
@@ -5965,7 +6044,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Misc/Autostart}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Autostart"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/Autostart"));}
     } {
       Fl_Input txt_auto_flrig_pathname {
         label {flrig:}
@@ -6162,7 +6243,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Misc/CPU}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/CPU"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/CPU"));}
     } {
       Fl_Check_Button chkSlowCpu {
         label {Slow CPU (less than 700MHz)}
@@ -6173,10 +6256,12 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Misc/IO}
+      label {TCP-IP sessions}
       callback {btnDisable_p2p_io_widgets->value(1);}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/TCP-IP sessions"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/TCP-IP sessions"));}
     } {
       Fl_Group {} {open
         xywh {205 18 588 102} box ENGRAVED_BOX align 21
@@ -6552,9 +6637,11 @@ number to the default value.} xywh {624 313 73 22}
       }
     }
     Fl_Group {} {
-      label {Misc/NBEMS}
+      label {NBEMS interface}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/NBEMS interface"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/NBEMS interface"));}
     } {
       Fl_Group {} {
         label {NBEMS data file interface} open
@@ -6631,7 +6718,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Misc/Sweet Spot}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Sweet Spot"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/Sweet Spot"));}
     } {
       Fl_Group {} {open
         xywh {253 70 490 75} box ENGRAVED_FRAME align 21
@@ -6689,7 +6778,9 @@ Other radios should not need it.} xywh {468 171 70 15} down_box DOWN_BOX
     Fl_Group {} {
       label {Misc/Rx text capture}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Rx text capture"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/Rx text capture"));}
     } {
       Fl_Group grpTalker {
         label {Talker Socket (MS only)} open
@@ -6730,7 +6821,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Misc/PSK reporter}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/PSK reporter"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/PSK reporter"));}
     } {
       Fl_Check_Button btnPSKRepAuto {
         label {Automatically spot callsigns in decoded text}
@@ -6823,7 +6916,9 @@ if (!pskrep_start()) {
     Fl_Group {} {
       label {Misc/DTMF}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/DTMF"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/DTMF"));}
     } {
       Fl_Check_Button chkDTMFdecode {
         label {Decode DTMF tones}
@@ -6835,7 +6930,9 @@ if (!pskrep_start()) {
     Fl_Group {} {
       label {Misc/KML}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/KML"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/KML"));}
     } {
       Fl_Input btnKmlSaveDir {
         label {KML files directory}
@@ -6941,8 +7038,10 @@ if (progdefaults.kml_enabled) {
     Fl_Group {} {
       label {Misc/PSM}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("Misc");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/PSM"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/PSM"));}
+      code3 {tab_tree->close(_("Misc"));}
     } {
       Fl_Group {} {open
         xywh {204 32 590 108} box ENGRAVED_BOX align 21
@@ -7120,7 +7219,9 @@ progdefaults.changed = true;}
     Fl_Group grpOperator {
       label {Operator-Station}
       xywh {200 0 600 350} box ENGRAVED_BOX color 50 align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Operator-Station"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Operator-Station"));}
     } {
       Fl_Input inpMyCallsign {
         label {Station Callsign:}
@@ -7242,7 +7343,9 @@ progdefaults.changed = true;} open
     Fl_Group grpRigFlrig {
       label {Rig Control/flrig}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/flrig"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Rig Control/flrig"));}
     } {
       Fl_Group {} {
         label {"Disable PTT keys modem if multiple instances of fldigi (client)
@@ -7320,9 +7423,11 @@ progdefaults.changed=true;}
       }
     }
     Fl_Group grpRigCat {
-      label {Rig Control/CAT (rigcat)}
+      label {Rig Control/CAT (rigcat)} selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/CAT (rigcat)"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Rig Control/CAT (rigcat)"));}
     } {
       Fl_Check_Button chkUSERIGCAT {
         label {Use RigCAT}
@@ -7530,7 +7635,9 @@ btnInitRIGCAT->redraw_label();}
     Fl_Group grpRigGPIO {
       label {Rig Control/GPIO}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/GPIO"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Rig Control/GPIO"));}
     } {
       Fl_Box {} {
         label {BCM GPIO  pin    Value}
@@ -7980,7 +8087,9 @@ progdefaults.changed=true;}
     Fl_Group grpRigHamlib {
       label {Rig Control/Hamlib}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/Hamlib"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Rig Control/Hamlib"));}
     } {
       Fl_Check_Button chkUSEHAMLIB {
         label {Use Hamlib}
@@ -8199,8 +8308,10 @@ progdefaults.changed = true;}
     Fl_Group grpRigHardware {
       label {Rig Control/Hardware PTT}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("Rig Control");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/Hardware PTT"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Rig Control/Hardware PTT"));}
+      code3 {tab_tree->close(_("Rig Control"));}
     } {
       Fl_Group {} {open
         xywh {209 27 580 38} box ENGRAVED_FRAME
@@ -8368,7 +8479,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Soundcard/Alerts} open
       xywh {200 0 600 350} box ENGRAVED_BOX color 50 selection_color 50 align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Alerts"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Soundcard/Alerts"));}
     } {
       Fl_Group {} {open
         xywh {203 18 590 64} box ENGRAVED_BOX align 17
@@ -8694,9 +8807,11 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group grpSoundDevices {
-      label {Soundcard/Devices} open
+      label {Soundcard/Devices}
       xywh {200 -4 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Devices"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Soundcard/Devices"));}
     } {
       Fl_Group AudioOSS {open
         xywh {255 20 500 45} box ENGRAVED_FRAME
@@ -8813,7 +8928,9 @@ reset_audio_alerts();}
     Fl_Group {} {
       label {Soundcard/Right channel}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Right channel"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Soundcard/Right channel"));}
     } {
       Fl_Group {} {
         label {Transmit Usage} open
@@ -8919,7 +9036,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Soundcard/Settings}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Settings"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Soundcard/Settings"));}
     } {
       Fl_Group grpAudioSampleRate {
         label {Sample rate} open
@@ -9003,8 +9122,10 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Soundcard/Wav file recording}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("Soundcard");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Wav file recording"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Soundcard/Wav file recording"));}
+      code3 {tab_tree->close(_("Soundcard"));}
     } {
       Fl_Group listbox_wav_samplerate {
         label {Wav write sample rate}
@@ -9027,7 +9148,9 @@ progdefaults.changed=true;}
     Fl_Group {} {
       label {UI/Browser/Channels}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Browser/Channels"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("UI/Browser/Channels"));}
     } {
       Fl_Spinner cntChannels {
         label {Channels, first channel starts at waterfall lower limit}
@@ -9077,7 +9200,7 @@ font_browser->show();}
         callback {progdefaults.VIEWERfixed = o->value();
 progdefaults.changed = true;
 initViewer();}
-        tooltip {Force channel spacing to even 100 Hz increments} xywh {468 116 165 20} down_box DOWN_BOX value 1
+        tooltip {Force channel spacing to even 100 Hz increments} xywh {468 92 165 20} down_box DOWN_BOX value 1
         code0 {o->value(progdefaults.VIEWERfixed);}
       }
       Fl_Check_Button btnMarquee {
@@ -9106,9 +9229,11 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {UI/Browser/Colors fonts}
+      label {UI/Browser/Colors}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Browser/Colors"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("UI/Browser/Colors"));}
     } {
       Fl_Button bwsrHiLite_1_color {
         label {HiLite 1}
@@ -9160,7 +9285,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {UI/Browser/Detection Level}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Browser/Detection Level"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("UI/Browser/Detection Level"));}
     } {
       Fl_Button bwsrSliderColor {
         label Backgnd
@@ -9212,7 +9339,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {UI/General}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/General"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("UI/General"));}
     } {
       Fl_Group {} {open
         xywh {206 21 590 76} box ENGRAVED_FRAME
@@ -9356,7 +9485,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {UI/Macro buttons}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Macro buttons"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("UI/Macro buttons"));}
     } {
       Fl_Group {} {open
         xywh {205 205 590 35} box ENGRAVED_FRAME
@@ -9544,7 +9675,9 @@ Default above Rx panel} xywh {532 307 216 20} down_box DOWN_BOX
     Fl_Group {} {
       label {UI/Rx Text}
       xywh {200 2 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Rx Text"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("UI/Rx Text"));}
     } {
       Fl_Check_Button btnRXClicks {
         label {Single-click to capture}
@@ -9588,8 +9721,10 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {UI/Touch}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("UI");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Touch"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("UI/Touch"));}
+      code3 {tab_tree->close(_("UI"));}
     } {
       Fl_Box {} {
         label {Note:
@@ -9636,7 +9771,9 @@ UI_select();}
     Fl_Group {} {
       label {Waterfall/Buttons & Controls}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/Buttons & Controls"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Waterfall/Buttons & Controls"));}
     } {
       Fl_Box {} {
         label {Enable check box to show each respective operator control}
@@ -9772,7 +9909,9 @@ WF_UI();}
     Fl_Group {} {
       label {Waterfall/Display}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/Display"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Waterfall/Display"));}
     } {
       Fl_Group {} {
         label {Colors and cursors} open
@@ -10014,7 +10153,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Waterfall/FFT Processing}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/FFT Processing"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Waterfall/FFT Processing"));}
     } {
       Fl_Group {} {open
         xywh {251 25 490 135} box ENGRAVED_FRAME
@@ -10100,7 +10241,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Waterfall/Mouse usage}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/Mouse usage"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Waterfall/Mouse usage"));}
     } {
       Fl_Group {} {open
         xywh {211 50 580 170} box ENGRAVED_FRAME
@@ -10152,8 +10295,10 @@ behaves inside the waterfall} xywh {266 178 150 22} box DOWN_BOX color 7 align 8
     Fl_Group {} {
       label {Waterfall/Spectrum}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("Waterfall");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/Spectrum"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Waterfall/Spectrum"));}
+      code3 {tab_tree->close(_("Waterfall"));}
     } {
       Fl_Group {} {
         label {Spectrum Scope / Waterfall interaction} open
@@ -10192,7 +10337,9 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Web/Pskmail}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Web/Pskmail"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Web/Pskmail"));}
     } {
       Fl_Group {} {
         label {Mail Server Attributes} open
@@ -10260,8 +10407,10 @@ progdefaults.changed = true;}
     Fl_Group {} {
       label {Web/WX}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {add_tree_item(o);}
-      code1 {tab_tree->close("Web");}
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Web/WX"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Web/WX"));}
+      code3 {tab_tree->close(_("Web"));}
     } {
       Fl_Input txt_wx_url {
         label {Access URL}
@@ -10428,11 +10577,11 @@ Function {make_rxaudio_dialog()} {open
 } {
   Fl_Window {} {
     label {Rx Audio Monitor} open
-    xywh {616 220 360 230} type Double visible
+    xywh {616 220 360 230} type Double hide
   } {
     Fl_Check_Button btn_mon_xcvr_audio {
       label {Monitor ON}
-      callback {progdefaults.mon_xcvr_audio = o->value();} selected
+      callback {progdefaults.mon_xcvr_audio = o->value();}
       tooltip {Rx audio stream ON} xywh {50 7 70 18} down_box DOWN_BOX
       code0 {o->value(progdefaults.mon_xcvr_audio);}
     }

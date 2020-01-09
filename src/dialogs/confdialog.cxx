@@ -41,12 +41,6 @@ Mode_Browser* mode_browser;
 std::vector<CONFIG_PAGE *> config_pages; 
 static Fl_Group *current = 0; 
 
-void add_tree_item(Fl_Group *g) {
-  CONFIG_PAGE *p1 = new CONFIG_PAGE(g, g->label());
-  config_pages.push_back(p1);
-  tab_tree->add(g->label());
-}
-
 void SelectItem_CB(Fl_Widget *w) {
   Fl_Tree *tree = (Fl_Tree*)w;
   Fl_Tree_Item *item = tree->callback_item();
@@ -4858,7 +4852,7 @@ static void cb_chkSlowCpu(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-static void cb_Misc(Fl_Group*, void*) {
+static void cb_TCP(Fl_Group*, void*) {
   btnDisable_p2p_io_widgets->value(1);
 }
 
@@ -8261,7 +8255,7 @@ Fl_Double_Window* ConfigureDialog() {
       { Fl_Tree* o = tab_tree = new Fl_Tree(0, 0, 200, 350);
         tab_tree->callback((Fl_Callback*)SelectItem_CB);
         Fl_Group::current()->resizable(tab_tree);
-        o->root_label("Configure");
+        o->root_label(_("Configure"));
         o->selectmode(FL_TREE_SELECT_SINGLE);
         o->connectorstyle(FL_TREE_CONNECTOR_DOTTED); // default is NONE on Mac
         o->connectorwidth(15); // default is 17
@@ -8373,7 +8367,9 @@ Fl_Double_Window* ConfigureDialog() {
         default_btn_color->box(FL_THIN_DOWN_BOX);
         o->color(progdefaults.default_btn_color);
       } // Fl_Box* default_btn_color
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Buttons"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Colors-Fonts/Buttons"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Colors-Fonts/FreqDisp - Meters"));
@@ -8450,7 +8446,9 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_ListBox* listboxPWRselect
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/FreqDisp - Meters"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Colors-Fonts/FreqDisp - Meters"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Colors-Fonts/Function keys"));
@@ -8486,7 +8484,9 @@ Fl_Double_Window* ConfigureDialog() {
       { btnMacroBtnFont = new Fl_Button(509, 87, 90, 30, _("Font/Color"));
         btnMacroBtnFont->callback((Fl_Callback*)cb_btnMacroBtnFont);
       } // Fl_Button* btnMacroBtnFont
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Function keys"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Colors-Fonts/Function keys"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Colors-Fonts/Logging controls"));
@@ -8580,7 +8580,9 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Button* btnDXdefault_colors_font
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Logging controls"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Colors-Fonts/Logging controls"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Colors-Fonts/Rx-Tx"));
@@ -8681,7 +8683,9 @@ Fl_Double_Window* ConfigureDialog() {
         btn_show_all_codes->callback((Fl_Callback*)cb_btn_show_all_codes);
         o->value(progdefaults.show_all_codes);
       } // Fl_Check_Button* btn_show_all_codes
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Rx-Tx"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Colors-Fonts/Rx-Tx"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Colors-Fonts/Tabs"));
@@ -8694,7 +8698,9 @@ Fl_Double_Window* ConfigureDialog() {
       { btnTabDefaultColor = new Fl_Button(526, 69, 75, 21, _("System"));
         btnTabDefaultColor->callback((Fl_Callback*)cb_btnTabDefaultColor);
       } // Fl_Button* btnTabDefaultColor
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Tabs"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Colors-Fonts/Tabs"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Colors-Fonts/Signal Level"));
@@ -8735,8 +8741,10 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Box* overcolor
       { new Fl_Box(340, 79, 316, 21, _("Signal Level Colors"));
       } // Fl_Box* o
-      add_tree_item(o);
-      tab_tree->close("Colors-Fonts");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Signal Level"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Colors-Fonts/Signal Level"));
+      tab_tree->close(_("Colors-Fonts"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Contests/General"));
@@ -8943,7 +8951,9 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Contests/General"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Contests/General"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Contests/Field Day"));
@@ -8995,7 +9005,9 @@ Fl_Double_Window* ConfigureDialog() {
         o->value(progdefaults.my_FD_class.c_str());
         inpSend1->labelsize(FL_NORMAL_SIZE);
       } // Fl_Input2* inp_my_FD_class
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Contests/Field Day"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Contests/Field Day"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Contests/JOTA School"));
@@ -9057,8 +9069,10 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Input2* inp_my_JOTA_scout
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
-      tab_tree->close("Contests");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Contests/JOTA School"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Contests/JOTA School"));
+      tab_tree->close(_("Contests"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("IDs/CW"));
@@ -9101,7 +9115,9 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Button* bCWIDModes
         sld->end();
       } // Fl_Group* sld
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("IDs/CW"));
+      config_pages.push_back(p);
+      tab_tree->add(_("IDs/CW"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("IDs/RsID"));
@@ -9220,7 +9236,9 @@ gured on the\n\"Notifications\" configure dialog."));
         } // Fl_Check_Button* btn_post_rsid
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("IDs/RsID"));
+      config_pages.push_back(p);
+      tab_tree->add(_("IDs/RsID"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("IDs/Video"));
@@ -9299,8 +9317,10 @@ gured on the\n\"Notifications\" configure dialog."));
         } // Fl_Button* bVideoIDModes
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
-      tab_tree->close("IDs");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("IDs/Video"));
+      config_pages.push_back(p);
+      tab_tree->add(_("IDs/Video"));
+      tab_tree->close(_("IDs"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Logging/MacLogger"));
@@ -9354,7 +9374,9 @@ gured on the\n\"Notifications\" configure dialog."));
       { Fl_Button* o = new Fl_Button(661, 117, 129, 26, _("Clear UDP text"));
         o->callback((Fl_Callback*)cb_Clear);
       } // Fl_Button* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/MacLogger"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Logging/MacLogger"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Logging/N3FJP logs"));
@@ -9436,7 +9458,9 @@ gured on the\n\"Notifications\" configure dialog."));
         btn_enable_N3FJP_RIGTX->callback((Fl_Callback*)cb_btn_enable_N3FJP_RIGTX);
         o->value(progdefaults.enable_N3FJP_RIGTX);
       } // Fl_Check_Button* btn_enable_N3FJP_RIGTX
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/N3FJP logs"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Logging/N3FJP logs"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Logging/Call Lookup"));
@@ -9638,7 +9662,9 @@ gured on the\n\"Notifications\" configure dialog."));
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/Call Lookup"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Logging/Call Lookup"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Logging/eQSL"));
@@ -9768,7 +9794,9 @@ gured on the\n\"Notifications\" configure dialog."));
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/eQSL"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Logging/eQSL"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Logging/LoTW"));
@@ -9903,7 +9931,9 @@ work!"));
         cnt_tracefile_timeout->align(Fl_Align(FL_ALIGN_LEFT));
         o->value(progdefaults.tracefile_timeout);
       } // Fl_Counter* cnt_tracefile_timeout
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/LoTW"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Logging/LoTW"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Logging/QSO logging"));
@@ -10005,8 +10035,10 @@ work!"));
         btnDisplayLogbookRead->callback((Fl_Callback*)cb_btnDisplayLogbookRead);
         o->value(progdefaults.DisplayLogbookRead);
       } // Fl_Check_Button* btnDisplayLogbookRead
-      add_tree_item(o);
-      tab_tree->close("Logging");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/QSO logging"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Logging/QSO logging"));
+      tab_tree->close(_("Logging"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/General"));
@@ -10247,7 +10279,9 @@ work!"));
         } // Fl_Check_Button* btnCWusefarnsworth
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/General"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/CW/General"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 654, 350, _("Modem/CW/Timing and QSK"));
@@ -10448,7 +10482,9 @@ work!"));
         } // Fl_Check_Button* btnQSKadjust
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Timing and QSK"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/CW/Timing and QSK"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/Prosigns"));
@@ -10656,7 +10692,9 @@ work!"));
         btnCW_prosign_display->callback((Fl_Callback*)cb_btnCW_prosign_display);
         o->value(progdefaults.CW_prosign_display);
       } // Fl_Check_Button* btnCW_prosign_display
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Prosigns"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/CW/Prosigns"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/WinKeyer"));
@@ -10903,7 +10941,9 @@ work!"));
         } // Fl_Check_Button* btnK3NG
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/WinKeyer"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/CW/WinKeyer"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/Extended Chars."));
@@ -11004,7 +11044,9 @@ ded Morse characters."));
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Extended Chars."));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/CW/Extended Chars."));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/nanoIO"));
@@ -11209,7 +11251,9 @@ ded Morse characters."));
         } // Fl_Button* btn_correction
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/nanoIO"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/CW/nanoIO"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/DTR-RTS keying"));
@@ -11271,7 +11315,9 @@ c are\nneeded."));
         } // Fl_Light_Button* btn_CW_KEYLINE_connect
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/DTR-RTS keying"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/CW/DTR-RTS keying"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/DominoEX"));
@@ -11362,7 +11408,9 @@ c are\nneeded."));
         o->labelsize(FL_NORMAL_SIZE);
         o->hide();
       } // Fl_Counter2* valDominoEX_PATHS
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/DominoEX"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/DominoEX"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/Feld Hell"));
@@ -11505,7 +11553,9 @@ c are\nneeded."));
         } // Fl_Value_Slider* val_hellagc
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Feld Hell"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/Feld Hell"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/FSQ"));
@@ -11704,7 +11754,9 @@ c are\nneeded."));
         } // Fl_Button* btn_fsq_color_defaults
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/FSQ"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/FSQ"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/IFKP"));
@@ -11777,7 +11829,9 @@ c are\nneeded."));
         } // Fl_Button* btn_select_ifkp_heard_log
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/IFKP"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/IFKP"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/MT-63"));
@@ -11849,7 +11903,9 @@ c are\nneeded."));
         } // Fl_Check_Button* btnMT63_manual
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/MT-63"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/MT-63"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/Contestia"));
@@ -11948,7 +12004,9 @@ c are\nneeded."));
         } // Fl_Check_Button* btnContestia_start_stop_tones
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Contestia"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/Contestia"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/Olivia"));
@@ -12056,7 +12114,9 @@ c are\nneeded."));
         } // Fl_Check_Button* btnOlivia_start_stop_tones
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Olivia"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/Olivia"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/Psk"));
@@ -12199,7 +12259,9 @@ c are\nneeded."));
         } // Fl_Check_Button* btnPSK8Preamble
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Psk"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/Psk"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/Rx"));
@@ -12340,7 +12402,9 @@ ency"));
         } // Fl_Button* btn_test_bell_ring_wav
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Rx"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/TTY/Rx"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/Tx"));
@@ -12546,7 +12610,9 @@ ency"));
         } // Fl_Counter* cnt_TTY_LTRS
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Tx"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/TTY/Tx"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/nanoIO"));
@@ -12607,7 +12673,9 @@ ency"));
         o->setFont(progdefaults.RxFontnbr);
         o->setFontSize(12);
       } // FTextView* txt_nano_io
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/nanoIO"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/TTY/nanoIO"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/Navigator"));
@@ -12838,7 +12906,9 @@ ency"));
         } // Fl_Light_Button* btn_Nav_config
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Navigator"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/TTY/Navigator"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/Synop"));
@@ -12867,7 +12937,9 @@ le Earth)"));
         btnSynopInterleaved->align(Fl_Align(132|FL_ALIGN_INSIDE));
         o->value(progdefaults.SynopInterleaved);
       } // Fl_Check_Button* btnSynopInterleaved
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Synop"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/TTY/Synop"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/Winkeyer 3"));
@@ -13064,7 +13136,9 @@ le Earth)"));
         } // Fl_ListBox* sel_WKFSK_monitor
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Winkeyer 3"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/TTY/Winkeyer 3"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/Thor"));
@@ -13172,7 +13246,9 @@ le Earth)"));
         } // Fl_Counter2* valTHOR_PATHS
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Thor"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/Thor"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/Navtex"));
@@ -13190,7 +13266,9 @@ le Earth)"));
         btnNvtxKmlLog->callback((Fl_Callback*)cb_btnNvtxKmlLog);
         o->value(progdefaults.NVTX_KmlLog);
       } // Fl_Check_Button* btnNvtxKmlLog
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Navtex"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/Navtex"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/Wefax"));
@@ -13259,8 +13337,10 @@ le Earth)"));
         btnWefaxSaveMonochrome->callback((Fl_Callback*)cb_btnWefaxSaveMonochrome);
         o->value(progdefaults.WEFAX_SaveMonochrome);
       } // Fl_Check_Button* btnWefaxSaveMonochrome
-      add_tree_item(o);
-      tab_tree->close("Modem");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Wefax"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/Wefax"));
+      tab_tree->close(_("Modem"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Misc/Autostart"));
@@ -13464,7 +13544,9 @@ le Earth)"));
         btn_test_prog3->tooltip(_("Start prog3"));
         btn_test_prog3->callback((Fl_Callback*)cb_btn_test_prog3);
       } // Fl_Button* btn_test_prog3
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Autostart"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Misc/Autostart"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Misc/CPU"));
@@ -13477,12 +13559,14 @@ le Earth)"));
         chkSlowCpu->callback((Fl_Callback*)cb_chkSlowCpu);
         o->value(progdefaults.slowcpu);
       } // Fl_Check_Button* chkSlowCpu
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/CPU"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Misc/CPU"));
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Misc/IO"));
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("TCP-IP sessions"));
       o->box(FL_ENGRAVED_BOX);
-      o->callback((Fl_Callback*)cb_Misc);
+      o->callback((Fl_Callback*)cb_TCP);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
       { Fl_Group* o = new Fl_Group(205, 18, 588, 102);
@@ -13804,10 +13888,12 @@ i.e. localhost"));
         } // Fl_Button* btnDefault_fllog_ip
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/TCP-IP sessions"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Misc/TCP-IP sessions"));
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Misc/NBEMS"));
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("NBEMS interface"));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
@@ -13889,7 +13975,9 @@ i.e. localhost"));
         } // Fl_Group* o
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/NBEMS interface"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Misc/NBEMS interface"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Misc/Sweet Spot"));
@@ -13976,7 +14064,9 @@ i.e. localhost"));
         } // Fl_Check_Button* btnCWIsLSB
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Sweet Spot"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Misc/Sweet Spot"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Misc/Rx text capture"));
@@ -14011,7 +14101,9 @@ i.e. localhost"));
         } // Fl_Check_Button* chkRxStream
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Rx text capture"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Misc/Rx text capture"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Misc/PSK reporter"));
@@ -14092,7 +14184,9 @@ i.e. localhost"));
         boxPSKRepMsg->labelfont(2);
         boxPSKRepMsg->label(0);
       } // Fl_Box* boxPSKRepMsg
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/PSK reporter"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Misc/PSK reporter"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Misc/DTMF"));
@@ -14105,7 +14199,9 @@ i.e. localhost"));
         chkDTMFdecode->callback((Fl_Callback*)cb_chkDTMFdecode);
         o->value(progdefaults.DTMFdecode);
       } // Fl_Check_Button* chkDTMFdecode
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/DTMF"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Misc/DTMF"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Misc/KML"));
@@ -14211,7 +14307,9 @@ and restarted if needed."));
         } // Fl_Check_Button* btn_kml_enabled
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/KML"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Misc/KML"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Misc/PSM"));
@@ -14384,8 +14482,10 @@ ed)"));
       { btnBuyChannelDefaults = new Fl_Button(669, 320, 126, 22, _("Default Settings"));
         btnBuyChannelDefaults->callback((Fl_Callback*)cb_btnBuyChannelDefaults);
       } // Fl_Button* btnBuyChannelDefaults
-      add_tree_item(o);
-      tab_tree->close("Misc");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/PSM"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Misc/PSM"));
+      tab_tree->close(_("Misc"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = grpOperator = new Fl_Group(200, 0, 600, 350, _("Operator-Station"));
@@ -14536,7 +14636,9 @@ ed)"));
         inp_QP_short_county->when(FL_WHEN_RELEASE);
         inp_QP_short_county->value(states.cnty_short(listbox_states->value(),listbox_counties->value()).c_str());
       } // Fl_Input2* inp_QP_short_county
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Operator-Station"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Operator-Station"));
       grpOperator->end();
     } // Fl_Group* grpOperator
     { Fl_Group* o = grpRigFlrig = new Fl_Group(200, 0, 600, 350, _("Rig Control/flrig"));
@@ -14611,7 +14713,9 @@ i.e. localhost"));
         } // Fl_Check_Button* btn_fldigi_client_to_fldigi
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/flrig"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Rig Control/flrig"));
       grpRigFlrig->end();
     } // Fl_Group* grpRigFlrig
     { Fl_Group* o = grpRigCat = new Fl_Group(200, 0, 600, 350, _("Rig Control/CAT (rigcat)"));
@@ -14817,7 +14921,9 @@ i.e. localhost"));
         } // Fl_Value_Input2* cntRigCatInitDelay
         grpRigCAT->end();
       } // Fl_Group* grpRigCAT
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/CAT (rigcat)"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Rig Control/CAT (rigcat)"));
       grpRigCat->end();
     } // Fl_Group* grpRigCat
     { Fl_Group* o = grpRigGPIO = new Fl_Group(200, 0, 600, 350, _("Rig Control/GPIO"));
@@ -15082,7 +15188,9 @@ i.e. localhost"));
         cnt_gpio_pulse_width->align(Fl_Align(FL_ALIGN_RIGHT));
         o->value(progdefaults.gpio_pulse_width);
       } // Fl_Counter* cnt_gpio_pulse_width
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/GPIO"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Rig Control/GPIO"));
       grpRigGPIO->end();
     } // Fl_Group* grpRigGPIO
     { Fl_Group* o = grpRigHamlib = new Fl_Group(200, 0, 600, 350, _("Rig Control/Hamlib"));
@@ -15350,7 +15458,9 @@ i.e. localhost"));
         } // Fl_Button* btnInitHAMLIB
         grpHamlib->end();
       } // Fl_Group* grpHamlib
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/Hamlib"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Rig Control/Hamlib"));
       grpRigHamlib->end();
     } // Fl_Group* grpRigHamlib
     { Fl_Group* o = grpRigHardware = new Fl_Group(200, 0, 600, 350, _("Rig Control/Hardware PTT"));
@@ -15457,8 +15567,10 @@ i.e. localhost"));
         } // Fl_Counter* cntPTT_off_delay
         grpPTTdelays->end();
       } // Fl_Group* grpPTTdelays
-      add_tree_item(o);
-      tab_tree->close("Rig Control");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/Hardware PTT"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Rig Control/Hardware PTT"));
+      tab_tree->close(_("Rig Control"));
       grpRigHardware->end();
     } // Fl_Group* grpRigHardware
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Soundcard/Alerts"));
@@ -15628,7 +15740,9 @@ i.e. localhost"));
         o->value(progdefaults.alert_volume);
         o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
       } // Fl_Value_Slider2* sldrAlertVolume
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Alerts"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Soundcard/Alerts"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = grpSoundDevices = new Fl_Group(200, -4, 600, 350, _("Soundcard/Devices"));
@@ -15734,7 +15848,9 @@ i.e. localhost"));
         } // Fl_Round_Button* btn_enable_audio_alerts
         AudioAlerts->end();
       } // Fl_Group* AudioAlerts
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Devices"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Soundcard/Devices"));
       grpSoundDevices->end();
     } // Fl_Group* grpSoundDevices
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Soundcard/Right channel"));
@@ -15794,7 +15910,9 @@ nce.\nYou may change the state from either location.\n..."));
         } // Fl_Check_Button* chkReverseRxAudio
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Right channel"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Soundcard/Right channel"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Soundcard/Settings"));
@@ -15910,7 +16028,9 @@ ll with your audio device."));
         } // Fl_Spinner2* cntTxOffset
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Settings"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Soundcard/Settings"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Soundcard/Wav file recording"));
@@ -15939,8 +16059,10 @@ ll with your audio device."));
         btn_record_both->callback((Fl_Callback*)cb_btn_record_both);
         o->value(progdefaults.record_both_channels);
       } // Fl_Check_Button* btn_record_both
-      add_tree_item(o);
-      tab_tree->close("Soundcard");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Wav file recording"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Soundcard/Wav file recording"));
+      tab_tree->close(_("Soundcard"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("UI/Browser/Channels"));
@@ -16004,7 +16126,7 @@ ll with your audio device."));
         btnViewerFont->tooltip(_("select browser font"));
         btnViewerFont->callback((Fl_Callback*)cb_btnViewerFont);
       } // Fl_Button* btnViewerFont
-      { Fl_Check_Button* o = btnFixedIntervals = new Fl_Check_Button(468, 116, 165, 20, _("Fixed Intervals"));
+      { Fl_Check_Button* o = btnFixedIntervals = new Fl_Check_Button(468, 92, 165, 20, _("Fixed Intervals"));
         btnFixedIntervals->tooltip(_("Force channel spacing to even 100 Hz increments"));
         btnFixedIntervals->down_box(FL_DOWN_BOX);
         btnFixedIntervals->value(1);
@@ -16029,10 +16151,12 @@ ll with your audio device."));
         btnBrowserHistory->callback((Fl_Callback*)cb_btnBrowserHistory);
         o->value(progdefaults.VIEWERhistory);
       } // Fl_Check_Button* btnBrowserHistory
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Browser/Channels"));
+      config_pages.push_back(p);
+      tab_tree->add(_("UI/Browser/Channels"));
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("UI/Browser/Colors fonts"));
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("UI/Browser/Colors"));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
@@ -16066,7 +16190,9 @@ ll with your audio device."));
         bwsrHiLite_select->align(Fl_Align(FL_ALIGN_TOP));
         bwsrHiLite_select->color((Fl_Color)progdefaults.bwsrSelect);
       } // Fl_Button* bwsrHiLite_select
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Browser/Colors"));
+      config_pages.push_back(p);
+      tab_tree->add(_("UI/Browser/Colors"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("UI/Browser/Detection Level"));
@@ -16085,7 +16211,9 @@ ll with your audio device."));
         bwsrSldrSelColor->align(Fl_Align(FL_ALIGN_TOP));
         bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));
       } // Fl_Button* bwsrSldrSelColor
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Browser/Detection Level"));
+      config_pages.push_back(p);
+      tab_tree->add(_("UI/Browser/Detection Level"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("UI/General"));
@@ -16222,7 +16350,9 @@ ll with your audio device."));
         } // Fl_Spinner* val_tx_timeout
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/General"));
+      config_pages.push_back(p);
+      tab_tree->add(_("UI/General"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("UI/Macro buttons"));
@@ -16363,7 +16493,9 @@ ll with your audio device."));
         } // Fl_Check_Button* btn_4bar_position
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Macro buttons"));
+      config_pages.push_back(p);
+      tab_tree->add(_("UI/Macro buttons"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 2, 600, 350, _("UI/Rx Text"));
@@ -16410,7 +16542,9 @@ ab and newline are automatically included."));
         btn_clear_fields->callback((Fl_Callback*)cb_btn_clear_fields);
         o->value(progdefaults.clear_fields);
       } // Fl_Check_Button* btn_clear_fields
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Rx Text"));
+      config_pages.push_back(p);
+      tab_tree->add(_("UI/Rx Text"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("UI/Touch"));
@@ -16448,8 +16582,10 @@ i on a\ntouch screen device such as a tablet."));
         } // Fl_Check_Button* btn_rxtx_swap
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
-      tab_tree->close("UI");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/Touch"));
+      config_pages.push_back(p);
+      tab_tree->add(_("UI/Touch"));
+      tab_tree->close(_("UI"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Waterfall/Buttons & Controls"));
@@ -16532,7 +16668,9 @@ i on a\ntouch screen device such as a tablet."));
       { btn_wf_disable_all = new Fl_Button(555, 285, 88, 20, _("Disable all"));
         btn_wf_disable_all->callback((Fl_Callback*)cb_btn_wf_disable_all);
       } // Fl_Button* btn_wf_disable_all
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/Buttons & Controls"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Waterfall/Buttons & Controls"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Waterfall/Display"));
@@ -16731,7 +16869,9 @@ i on a\ntouch screen device such as a tablet."));
         } // Fl_Value_Slider2* valTxMonitorLevel
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/Display"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Waterfall/Display"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Waterfall/FFT Processing"));
@@ -16870,7 +17010,9 @@ i on a\ntouch screen device such as a tablet."));
         } // Fl_Counter2* cntrWfheight
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/FFT Processing"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Waterfall/FFT Processing"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Waterfall/Mouse usage"));
@@ -16927,7 +17069,9 @@ i on a\ntouch screen device such as a tablet."));
         } // Fl_ListBox* listboxWaterfallWheelAction
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/Mouse usage"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Waterfall/Mouse usage"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Waterfall/Spectrum"));
@@ -16967,8 +17111,10 @@ i on a\ntouch screen device such as a tablet."));
         } // Fl_Check_Button* btn_spectrum_modem_scale
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
-      tab_tree->close("Waterfall");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/Spectrum"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Waterfall/Spectrum"));
+      tab_tree->close(_("Waterfall"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Web/Pskmail"));
@@ -17077,7 +17223,9 @@ i on a\ntouch screen device such as a tablet."));
         } // Fl_Check_Button* btn_arq_s2n_report
         o->end();
       } // Fl_Group* o
-      add_tree_item(o);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Web/Pskmail"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Web/Pskmail"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Web/WX"));
@@ -17157,8 +17305,10 @@ i on a\ntouch screen device such as a tablet."));
         btn_wx_mbars->callback((Fl_Callback*)cb_btn_wx_mbars);
         o->value(progdefaults.wx_mbars);
       } // Fl_Check_Button* btn_wx_mbars
-      add_tree_item(o);
-      tab_tree->close("Web");
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Web/WX"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Web/WX"));
+      tab_tree->close(_("Web"));
       o->end();
     } // Fl_Group* o
     { btnSaveConfig = new Fl_Button(492, 355, 130, 22, _("Save"));
