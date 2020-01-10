@@ -1572,6 +1572,17 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 
 void remove_windows()
 {
+	std::string titles[] = {
+		"scope view", "record loader", "cluster viewer", "dxcc window",
+		"viewer", "logbook", "lotw review",
+		"export", "cabrillo",
+		"config", "notify",
+		"mfsk rxwin", "mfsk txwin",
+		"thor rxwin", "thor txwin",
+		"fsq monitor", "fsq rxwin", "fsq txwin",
+		"ifkp rxwin", "ifkp txwin",
+		"macro editor", "test signals", "rx audio"
+	};
 	Fl_Double_Window *w[] = {
 		scopeview, dlgRecordLoader,
 		dxcluster_viewer, dxcc_window,
@@ -1588,14 +1599,14 @@ void remove_windows()
 		std::string sdeleting = "\nDeleting dialogs / Stopping debug session";
 	for (size_t n = 0; n < sizeof(w) / sizeof(*w); n++) {
 		if (w[n]) {
-		sdeleting.append("\n   ").append(w[n]->label());
+		sdeleting.append("\n   ").append(titles[n]);
 			w[n]->hide();
 			delete w[n];
 			w[n] = 0;
 		}
 	}
 	if (font_browser) {
-		sdeleting.append("\n   ").append(font_browser->label());
+		sdeleting.append("\n   font browser");
 		font_browser->hide();
 		delete font_browser;
 		font_browser = 0;
