@@ -363,7 +363,7 @@ void PTT::open_tty(void)
 	serPort.DTR(progdefaults.DTRplus);
 	serPort.RTSptt(progdefaults.RTSptt);
 	serPort.DTRptt(progdefaults.DTRptt);
-	if (progdefaults.SCU_17) serPort.Stopbits(1);
+	if (progdefaults.SCU_17) serPort.Stopbits(0);//1);
 	else serPort.Stopbits(2);
 	if (serPort.OpenPort() == false) {
 		LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());

@@ -751,15 +751,16 @@ void delayed_startup(void *)
 		if (open_nanoIO()) btn_nanoIO_connect->value(1);
 	}
 
+	if (progStatus.useCW_KEYLINE) {
+		if (!open_CW_KEYLINE())
+			progStatus.useCW_KEYLINE = false;
+	}
+
 	if (progdefaults.check_for_updates)
 		cb_mnuCheckUpdate((Fl_Widget *)0, NULL);
 
 #if USE_PORTAUDIO
-	LOG_INFO("%s", str_pa_devices.c_str());
-	try {
-		audio_alert = new Caudio_alert;
-	} catch (...) {
-	}
+	reset_audio_alerts();
 #endif
 
 }
@@ -1157,6 +1158,19 @@ int main(int argc, char ** argv)
 
 	progdefaults.initInterface();
 	trx_start();
+
+#if USE_PORTAUDIO
+	try {
+		audio_alert = 0;
+		audio_alert = new Caudio_alert;
+	} catch (...) {
+		audio_alert = 0;
+		LOG_ERROR("%s", "Failed to create audio alert object");
+	}
+
+	if (audio_alert)
+		LOG_INFO("%s", "Created audio alert object");
+#endif
 
 	if (!have_config) {
 		show_wizard(argc, argv);

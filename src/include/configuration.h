@@ -203,6 +203,15 @@
         ELEM_(bool, CWIsLSB, "CWISLSB",                                                 \
               "Select if BFO is injected as LSB instead of USB",                        \
               false)                                                                    \
+        ELEM_(std::string, CW_KEYLINE_serial_port_name, "CW_KEYLINE_SERIAL_PORT_NAME",  \
+              "Independent serial port used for keying DTR or RTS as keyline",          \
+              "")                                                                       \
+        ELEM_(int, CW_KEYLINE, "CWKEYLINE",                                             \
+              "0 - none, 1 - RTS, 2 - DTR",                                             \
+              2)                                                                        \
+        ELEM_(bool, CW_KEYLINE_on_cat_port, "CW_KEYLINE_on_cat_port",                   \
+              "DTR/RTS keying shares RigCat serial port",                               \
+              false)                                                                    \
         ELEM_(bool, WaterfallHistoryDefault, "WATERFALLHISTORYDEFAULT",                 \
               "Replay audio history when changing frequency by clicking on\n"           \
               "the waterfall",                                                          \
@@ -387,9 +396,6 @@
         /* CW */                                                                        \
         ELEM_(bool, useCWkeylineRTS, "", "",  false)                                    \
         ELEM_(bool, useCWkeylineDTR, "", "",  false)                                    \
-        ELEM_(int, CWweight, "CWWEIGHT",                                                \
-              "Dot to dot-space ratio",                                                 \
-              50)                                                                       \
         ELEM_(double, CWspeed, "CWSPEED",                                               \
               "Transmit speed (WPM)",                                                   \
               18)                                                                       \
@@ -452,6 +458,9 @@
         ELEM_(double, CWpre, "CWPRE",                                                   \
               "Pre-keydown timing (milliseconds)",                                      \
               4.0)                                                                      \
+        ELEM_(double, QSKamp, "QSKAMP",                                                 \
+              "Right channel QSK signal amplitude",                                     \
+              0.8)                                                                      \
         ELEM_(double, CWpost, "CWPOST",                                                 \
               "Post-keydown timing (milliseconds)",                                     \
               4.0)                                                                      \
@@ -475,6 +484,9 @@
               "  0: Hanning; 1: Blackman;"                                              \
               "Raised cosine = Hanning.",                                               \
               0)   /* Hanning */                                                        \
+        ELEM_(double, QSKrisetime, "QSKrisetime",                                       \
+              "Leading and trailing edge rise times (milliseconds)",                    \
+              4.0)                                                                      \
         ELEM_(double, CWrisetime, "CWRISETIME",                                         \
               "Leading and trailing edge rise times (milliseconds)",                    \
               4.0)                                                                      \

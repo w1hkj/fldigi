@@ -406,13 +406,13 @@ double modem::PTTnco()
 {
 	double amp;
 // sine wave PTT signal
-//	amp = sin(PTTphaseacc);
+	amp = 0.9 * sin(PTTphaseacc);
 
 // square wave PTT signal
-	if (PTTphaseacc > M_PI)
-		amp = - 0.5;
-	else
-		amp = 0.5;
+//	if (PTTphaseacc > M_PI)
+//		amp = - 0.5;
+//	else
+//		amp = 0.5;
 
 	PTTphaseacc += TWOPI * progdefaults.QSKfrequency / samplerate;
 	if (PTTphaseacc > TWOPI) PTTphaseacc -= TWOPI;

@@ -64,6 +64,9 @@ public:
 	void DTRptt(bool b){dtrptt = b;}
 	bool DTRptt(){return dtrptt;}
 
+	void SetDTR(bool b);
+	void SetRTS(bool b);
+
 	void RTSCTS(bool b){rtscts = b;}
 	bool RTSCTS(){return rtscts;}
 	void SetPTT(bool b);
@@ -173,6 +176,9 @@ public:
 
 	void DTRptt(bool b){dtrptt = b;}
 	bool DTRptt(){return dtrptt;}
+
+	void SetDTR(bool b);
+	void SetRTS(bool b);
 
 	void RTSCTS(bool b){rtscts = b;}
 	bool RTSCTS(){return rtscts;}

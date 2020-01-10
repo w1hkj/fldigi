@@ -476,7 +476,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {543 24 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
+    xywh {620 24 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
   } {
     Fl_Group {} {open
       xywh {0 0 201 385} resizable
@@ -489,7 +489,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
         code2 {o->connectorstyle(FL_TREE_CONNECTOR_DOTTED); // default is NONE on Mac}
         code3 {o->connectorwidth(15); // default is 17}
       }
-      Fl_Group {} {open
+      Fl_Group {} {
         xywh {0 350 201 35}
       } {
         Fl_Group {} {open
@@ -3170,39 +3170,32 @@ progdefaults.changed = true;}
     }
     Fl_Group {} {
       label {Modem/CW/Timing and QSK}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      xywh {200 0 654 350} box ENGRAVED_BOX align 21 hide
       code0 {add_tree_item(o);}
     } {
       Fl_Group {} {
         label Timing open
-        xywh {205 28 585 136} box ENGRAVED_FRAME align 21
+        xywh {205 28 590 124} box ENGRAVED_FRAME align 21
       } {
-        Fl_Counter cntCWweight {
-          label {Weight (%)}
-          callback {progdefaults.CWweight=(int)o->value();
-progdefaults.changed = true;}
-          tooltip {Dot to dot-space ratio} xywh {220 57 65 20} type Simple align 8 minimum 20 maximum 80 step 1 value 50
-          code0 {o->value(progdefaults.CWweight);}
-          code1 {o->labelsize(FL_NORMAL_SIZE);}
-          class Fl_Counter2
-        }
         Fl_Counter cntCWdash2dot {
           label {Dash/Dot}
           callback {progdefaults.CWdash2dot=o->value();
 cnt_nanoCWdash2dot->value(progdefaults.CWdash2dot);
 progdefaults.changed = true;}
-          tooltip {Dash to dot ratio} xywh {445 57 80 20} type Simple align 8 minimum 2.5 maximum 4 value 3
+          tooltip {Dash to dot ratio} xywh {335 44 125 24} align 8 minimum 2.5 maximum 4 value 3
           code0 {o->value(progdefaults.CWdash2dot);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
+          code2 {o->lstep(1);}
           class Fl_Counter2
         }
         Fl_Counter cntCWrisetime {
           label {Edge timing}
           callback {progdefaults.CWrisetime=o->value();
 progdefaults.changed = true;}
-          tooltip {Leading and Trailing edge risetimes (msec)} xywh {445 90 80 20} type Simple align 8 minimum 0 maximum 15 value 4
+          tooltip {Leading and Trailing edge risetimes (msec)} xywh {335 75 125 24} align 8 minimum 0 maximum 15 value 4
           code0 {o->value(progdefaults.CWrisetime);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
+          code2 {o->lstep(1);}
           class Fl_Counter2
         }
         Fl_Group i_listboxQSKshape {
@@ -3210,40 +3203,16 @@ progdefaults.changed = true;}
           callback {progdefaults.QSKshape = o->index();
 progdefaults.changed = true;} open
           tooltip {Hanning/Blackman - use edge timing
-BPF - use BPF bandwidth} xywh {220 90 112 20} box DOWN_BOX color 7 align 8
+BPF - use BPF bandwidth} xywh {335 108 125 24} box DOWN_BOX color 7 align 8
           code0 {o->add("Hanning|Blackman");}
           code1 {o->index(progdefaults.QSKshape);}
           code2 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_ListBox
         } {}
-        Fl_Check_Button btnCWnarrow {
-          label {Edge decrease}
-          callback {progdefaults.CWnarrow = o->value();
-progdefaults.changed = true;}
-          tooltip {Weight decreases with increasing edge timing} xywh {650 92 131 15} down_box DOWN_BOX
-          code0 {o->value(progdefaults.CWnarrow);}
-        }
-        Fl_Check_Button btnCW_bpf_on {
-          label {BPF transmit audio}
-          callback {progdefaults.CW_bpf_on = o->value();
-progdefaults.changed = true;}
-          tooltip {Enable LO/HI bfp of transmit audio} xywh {220 127 167 15} down_box DOWN_BOX
-          code0 {o->value(progdefaults.CW_bpf_on);}
-        }
-        Fl_Counter cntCW_hpf {
-          label {BPF bw}
-          callback {progdefaults.CW_bpf=o->value();
-progdefaults.changed = true;}
-          tooltip {Low filter cutoff} xywh {435 124 100 20} align 8 minimum 10 maximum 1000 step 1 value 100
-          code0 {o->value(progdefaults.CW_bpf);}
-          code1 {o->labelsize(FL_NORMAL_SIZE);}
-          code2 {o->lstep(10.0);}
-          class Fl_Counter2
-        }
       }
       Fl_Group {} {
         label QSK open
-        xywh {205 169 290 150} box ENGRAVED_FRAME align 21
+        xywh {205 155 590 153} box ENGRAVED_FRAME align 21
       } {
         Fl_Check_Button btnQSK {
           label {QSK on right audio channel}
@@ -3256,45 +3225,68 @@ if (o->value()) {
   progdefaults.PTTrightchannel = false;
   btnPTTrightchannel->value(0);
 }}
-          tooltip {Generate square wave signal on right channel} xywh {216 190 233 20} down_box DOWN_BOX
+          tooltip {Generate square wave signal on right channel} xywh {267 172 217 20} down_box DOWN_BOX
           code0 {o->value(progdefaults.QSK);}
         }
         Fl_Counter cntQSKfrequency {
           label {QSK frequency}
           callback {progdefaults.QSKfrequency=o->value();
 progdefaults.changed = true;}
-          tooltip {Fundamental frequency of QSK square wave signal} xywh {216 221 71 20} type Simple align 8 minimum 800 maximum 3200 step 100 value 1600
+          tooltip {Fundamental frequency of QSK square wave signal} xywh {215 206 125 24} align 8 minimum 800 maximum 8000 step 5 value 3200
           code0 {o->value(progdefaults.QSKfrequency);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
+          code2 {o->lstep(100);}
           class Fl_Counter2
         }
         Fl_Counter cntPreTiming {
           label {Pre-keydown timing (ms)}
-          callback {progdefaults.CWpre=o->value();
+          callback {progdefaults.CWpre = o->value();
 progdefaults.changed = true;}
-          tooltip {Msec pre-keydown (+ is earlier in time)} xywh {216 253 71 20} type Simple align 8 minimum 0 maximum 20 step 0.5
+          tooltip {Msec pre-keydown} xywh {476 206 125 24} align 8 minimum 0 maximum 100
           code0 {o->value(progdefaults.CWpre);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
+          code2 {o->lstep(1);}
           class Fl_Counter2
         }
         Fl_Counter cntPostTiming {
           label {Post-keydown timing (ms)}
-          callback {progdefaults.CWpost=o->value();
+          callback {progdefaults.CWpost = o->value();
 progdefaults.changed = true;}
-          tooltip {Msec post-keydown (+ is earlier in time)} xywh {216 285 71 20} type Simple align 8 minimum -20 maximum 20 step 0.5
-          code0 {o->value(progdefaults.CWpre);}
+          tooltip {Msec post-keydown} xywh {476 237 125 24} align 8 minimum 0 maximum 100
+          code0 {o->value(progdefaults.CWpost);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
+          code2 {o->lstep(1);}
+          class Fl_Counter2
+        }
+        Fl_Counter cntQSKamp {
+          label {QSK amplitude}
+          callback {progdefaults.QSKamp=o->value();
+progdefaults.changed = true;}
+          tooltip {Amplitude of right channel QSK signal} xywh {215 237 125 24} align 8 minimum 0 maximum 1 step 0.01 value 0.8
+          code0 {o->value(progdefaults.QSKamp);}
+          code1 {o->labelsize(FL_NORMAL_SIZE);}
+          code2 {o->lstep(0.1);}
+          class Fl_Counter2
+        }
+        Fl_Counter cntQSKrisetime {
+          label {Edge timing}
+          callback {progdefaults.QSKrisetime=o->value();
+progdefaults.changed = true;}
+          tooltip {Leading and Trailing edge risetimes (msec)} xywh {215 270 125 24} align 8 minimum 0 maximum 15 value 4
+          code0 {o->value(progdefaults.QSKrisetime);}
+          code1 {o->labelsize(FL_NORMAL_SIZE);}
+          code2 {o->lstep(1);}
           class Fl_Counter2
         }
       }
       Fl_Group {} {
         label {Send Test character} open
-        xywh {500 169 290 150} box ENGRAVED_BOX align 21
+        xywh {205 310 590 40} box ENGRAVED_BOX align 21
       } {
         Fl_Group i_listbox_test_char {
           label {Test char}
           callback {progdefaults.TestChar = o->index();} open
-          tooltip {Test character for QSK adjustment} xywh {520 221 45 20} box DOWN_BOX color 7 align 8
+          tooltip {Test character for QSK adjustment} xywh {391 319 112 22} box DOWN_BOX color 7 align 8
           code0 {extern char szTestChar[];}
           code1 {o->add(szTestChar);}
           code2 {o->index(progdefaults.TestChar);}
@@ -3304,7 +3296,7 @@ progdefaults.changed = true;}
         Fl_Check_Button btnQSKadjust {
           label {Send continuously}
           callback {progdefaults.QSKadjust = o->value();}
-          tooltip {Send a continuous stream of test characters} xywh {520 253 176 20} down_box DOWN_BOX
+          tooltip {Send a continuous stream of test characters} xywh {585 321 152 18} down_box DOWN_BOX
           code0 {o->value(progdefaults.QSKadjust);}
         }
       }
@@ -4108,6 +4100,65 @@ nanoIO_set_cw_ptt();}
           label Adjust
           callback {nanoIO_correction();}
           tooltip {send compensation to nanoIO} xywh {711 129 80 22}
+        }
+      }
+    }
+    Fl_Group {} {
+      label {Modem/CW/DTR-RTS keying} open selected
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {add_tree_item(o);}
+    } {
+      Fl_Group {} {open
+        xywh {205 25 590 145} box ENGRAVED_BOX
+      } {
+        Fl_Box {} {
+          label {DTR/RTS keying may share the RigCat serial port, or be assigned to separate
+serial port (typical of Yaesu transceiver FT-991A).  If separate, the CAT control
+can be via flrig, RigCat or Hamlib.  No settings for baud, stops bits, etc are
+needed.}
+          xywh {216 50 565 90} align 20
+        }
+      }
+      Fl_Check_Button btn_CW_KEYLINE_catport {
+        label {Use RIGCAT serial port}
+        callback {progdefaults.CW_KEYLINE_on_cat_port = o->value();}
+        xywh {257 184 70 15} down_box DOWN_BOX
+        code0 {o->value(progdefaults.CW_KEYLINE_on_cat_port);}
+      }
+      Fl_Group listbox_CW_KEYLINE {
+        label {CW Keyline}
+        callback {progdefaults.CW_KEYLINE = o->index();
+progdefaults.changed = true;} open
+        xywh {580 179 110 24} box DOWN_BOX color 7 align 4
+        code0 {o->add("None|RTS|DTR");}
+        code1 {o->index(progdefaults.CW_KEYLINE);}
+        class Fl_ListBox
+      } {}
+      Fl_Group {} {
+        label {Keyline on separate serial port} open
+        xywh {205 226 589 78} box ENGRAVED_FRAME align 17
+      } {
+        Fl_Group select_CW_KEYLINE_CommPort {
+          label {Ser. Port}
+          callback {progdefaults.CW_KEYLINE_serial_port_name = o->value();} open
+          tooltip {nanoIO serial port} xywh {210 264 485 23} box DOWN_BOX color 55 align 5
+          code0 {\#include "combo.h"}
+          code1 {\#include "nanoIO.h"}
+          code2 {o->value(progdefaults.CW_KEYLINE_serial_port_name.c_str());}
+          class Fl_ComboBox
+        } {}
+        Fl_Light_Button btn_CW_KEYLINE_connect {
+          label Connect
+          callback {if (o->value()) {
+  if (!open_CW_KEYLINE())
+    o->value(0);
+  progStatus.useCW_KEYLINE = 1;
+} else {
+  close_CW_KEYLINE();
+  progStatus.useCW_KEYLINE = 0;
+}}
+          tooltip {Connect / Disconnect from nanoIO} xywh {705 264 80 23}
+          code0 {o->value(progStatus.useCW_KEYLINE);}
         }
       }
     }
@@ -9038,7 +9089,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {UI/Browser/Colors fonts} selected
+      label {UI/Browser/Colors fonts}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {add_tree_item(o);}
     } {

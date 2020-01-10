@@ -40,6 +40,7 @@
 #include "waterfall.h"
 #include "fl_digi.h"
 #include "fftfilt.h"
+#include "serial.h"
 
 #include "cw.h"
 #include "misc.h"
@@ -211,8 +212,6 @@ void cw::tx_init()
 	acc_symbols = 0;
 	ovhd_symbols = 0;
 
-	cw_xmt_filter->create_filter(lwr, upr);
-	qsk_ptr = XMT_FILT_LEN / 2;
 	maxval = 0.0;
 }
 
@@ -251,8 +250,10 @@ void cw::init()
 	trackingfilter->reset();
 	two_dots = (long int)trackingfilter->run(2 * cw_send_dot_length);
 	put_cwRcvWPM(cw_send_speed);
-	for (int i = 0; i < OUTBUFSIZE; i++)
-		outbuf[i] = qskbuf[i] = 0.0;
+//	for (int i = 0; i < OUTBUFSIZE; i++)
+//		outbuf[i] = qskbuf[i] = 0.0;
+	memset(outbuf, 0, OUTBUFSIZE*sizeof(*outbuf));
+	memset(qskbuf, 0, OUTBUFSIZE*sizeof(*qskbuf));
 	rx_init();
 	use_paren = progdefaults.CW_use_paren;
 	prosigns = progdefaults.CW_prosigns;
@@ -265,7 +266,6 @@ void cw::init()
 
 cw::~cw() {
 	if (cw_FFT_filter) delete cw_FFT_filter;
-	if (cw_xmt_filter) delete cw_xmt_filter;
 	if (bitfilter) delete bitfilter;
 	if (trackingfilter) delete trackingfilter;
 }
@@ -329,29 +329,13 @@ cw::cw() : modem()
 
 	cw_FFT_filter = new fftfilt(progdefaults.CWspeed/(1.2 * samplerate), CW_FFT_SIZE);
 
-// transmit filtering
-
-	nbfreq = frequency;
-	nbpf = progdefaults.CW_bpf;
-	lwr = nbfreq - nbpf/2.0;
-	upr = nbfreq + nbpf/2.0;
-	if (lwr < 50.0) lwr = 50.0;
-	if (upr > 3900.0) upr = 3900.0;
-	lwr /= samplerate;
-	upr /= samplerate;
-	xmt_signal = new double[XMT_FILT_LEN];
-	for (int i = 0; i < XMT_FILT_LEN; i++) xmt_signal[i] = 0.0;
-	qsk_signal = new double[QSK_DELAY_LEN];
-	for (int i = 0; i < QSK_DELAY_LEN; i++) qsk_signal[i] = 0.0;
-	cw_xmt_filter = new fftfilt( lwr, upr, 2*XMT_FILT_LEN);// transmit filter length
-
 	int bfv = symbollen / 32;
 	if (bfv < 1) bfv = 1;
 	bitfilter = new Cmovavg(bfv);
 
 	trackingfilter = new Cmovavg(TRACKING_FILTER_SIZE);
 
-	makeshape();
+	create_edges();
 
 	nano_wpm = progdefaults.CWspeed;
 	nano_d2d = progdefaults.CWdash2dot;
@@ -444,7 +428,7 @@ void cw::sync_transmit_parameters()
 		QSKshape = progdefaults.QSKshape;
 		symbollen = nusymbollen;
 		fsymlen = nufsymlen;
-		makeshape();
+		create_edges();
 	}
 }
 
@@ -453,7 +437,6 @@ void cw::sync_parameters()
 	if (use_nanoIO) {
 		if (nano_wpm != progdefaults.CWspeed) {
 			nano_wpm = progdefaults.CWspeed;
-std::cout << "cw::sync_parameters()" << std::endl;
 			set_nanoWPM(progdefaults.CWspeed);
 		}
 		if (nano_d2d != progdefaults.CWdash2dot) {
@@ -910,49 +893,56 @@ int cw::handle_event(int cw_event, string &sc)
 //===========================================================================
 
 double keyshape[CWKNUM];
+double QSKkeyshape[CWKNUM];
 
-void cw::makeshape()
+void cw::create_edges()
 {
 	for (int i = 0; i < CWKNUM; i++) keyshape[i] = 1.0;
 
 	switch (QSKshape) {
 		case 1: // blackman
-			knum = (int)(8 * risetime);
+			knum = (int)(risetime * CW_SAMPLERATE / 1000);
 			if (knum >= symbollen) knum = symbollen;
 			for (int i = 0; i < knum; i++)
 				keyshape[i] = (0.42 - 0.50 * cos(M_PI * i/ knum) + 0.08 * cos(2 * M_PI * i / knum));
 			break;
 		case 0: // hanning
 		default:
-			knum = (int)(8 * risetime);
+			knum = (int)(risetime * CW_SAMPLERATE / 1000);
 			if (knum >= symbollen) knum = symbollen;
 			for (int i = 0; i < knum; i++)
 				keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / knum));
+	}
+
+	for (int i = 0; i < CWKNUM; i++) QSKkeyshape[i] = 1.0;
+
+	switch (QSKshape) {
+		case 1: // blackman
+			qnum = (int)(progdefaults.QSKrisetime * CW_SAMPLERATE / 1000);
+			if (qnum >= symbollen) qnum = symbollen;
+			for (int i = 0; i < qnum; i++)
+				QSKkeyshape[i] = (0.42 - 0.50 * cos(M_PI * i/ qnum) + 0.08 * cos(2 * M_PI * i / qnum));
+			break;
+		case 0: // hanning
+		default:
+			qnum = (int)(progdefaults.QSKrisetime * CW_SAMPLERATE / 1000);
+			if (qnum >= symbollen) qnum = symbollen;
+			for (int i = 0; i < qnum; i++)
+				QSKkeyshape[i] = 0.5 * (1.0 - cos (M_PI * i / qnum));
 	}
 }
 
 inline double cw::nco(double freq)
 {
 	phaseacc += 2.0 * M_PI * freq / samplerate;
-
 	if (phaseacc > TWOPI) phaseacc -= TWOPI;
-
 	return sin(phaseacc);
 }
 
 inline double cw::qsknco()
 {
 	double amp;
-
-// sine wave QSK signal
-//	amp = sin(qskphase);
-
-// square wave QSK signal
-	if (qskphase > M_PI)
-		amp = - 0.5;
-	else
-		amp = 0.5;
-
+	amp = sin(qskphase);
 	qskphase += TWOPI * progdefaults.QSKfrequency / samplerate;
 	if (qskphase > TWOPI) qskphase -= TWOPI;
 	return amp;
@@ -973,232 +963,81 @@ inline double cw::qsknco()
 // character.
 //=======================================================================
 
-//void appendfile(double *left, double *right, size_t count)
-//{
-//	FILE *ofile = fl_fopen("stereo.txt", "a");
-//	for (size_t i = 0; i < count; i++)
-//		fprintf(ofile,"%f,%f\n", left[i], right[i]);
-//	fclose(ofile);
-//}
-
-void cw::nb_filter(double *output, double *qsk, int len)
+bool first_char = true;
+/*
+void appendfile(double *left, double *right, size_t count)
 {
-// fft implementation of 
-	if (nbfreq != tx_frequency ||
-		nbpf != progdefaults.CW_bpf) {
-
-		nbfreq = tx_frequency;
-		nbpf = progdefaults.CW_bpf;
-		lwr = nbfreq - nbpf/2.0;
-		upr = nbfreq + nbpf/2.0;
-		if (lwr < 50.0) lwr = 50.0;
-		if (upr > 3900.0) upr = 3900.0;
-		lwr /= samplerate;
-		upr /= samplerate;
-		cw_xmt_filter->create_filter(lwr, upr);
-	}
-	cmplx *zp;
-	int n = 0;
-	for (int i = 0; i < len; i++) {
-// n will be either 0 or XMT_FILT_LEN
-		qsk_signal[qsk_ptr] = qsk[i];
-		qsk_ptr++;
-		if (qsk_ptr == QSK_DELAY_LEN) qsk_ptr--;
-		if ((n = cw_xmt_filter->run(
-					cmplx(output[i], output[i]), 
-					&zp)) > 0) {
-			for (int k = 0; k < n; k++)
-				if (abs(zp[k].real()) > maxval) maxval = abs(zp[k].real());
-			if (maxval == 0) maxval = 1.0;
-			for (int k = 0; k < n; k++)
-				xmt_signal[k] = 0.95 * zp[k].real() / maxval;
-
-//			appendfile(xmt_signal, qsk_signal, n);
-
-			if (progdefaults.QSK)
-				ModulateStereo(xmt_signal, qsk_signal, n);
-			else
-				ModulateXmtr(xmt_signal, n);
-			for (int k = 0; k < QSK_DELAY_LEN - n - 1; k++)
-				qsk_signal[k] = qsk_signal[k + n];
-			qsk_ptr -= n;
-		}
-	}
-}
-
-int q_carryover = 0, carryover = 0;
-
-void cw::send_symbol(int bits, int len)
-{
-	double freq;
-	int sample, qsample, i;
-	int delta = 0;
-	int keydown;
-	int keyup;
-	int kpre;
-	int kpost;
-	int duration = 0;
-	int symlen = 0;
-	float dsymlen = 0.0;
-	int currsym = bits & 1;
-	double qsk_amp = progdefaults.QSK ? 1.0 : 0.0;
-
-	sync_transmit_parameters();
-
-	acc_symbols += len;
-
-	freq = get_txfreq_woffset();
-
-	delta = (int) (len * (progdefaults.CWweight - 50) / 100.0);
-
-	symlen = len;
-	if (currsym == 1) {
-   		dsymlen = len * (progdefaults.CWdash2dot - 3.0) / (progdefaults.CWdash2dot + 1.0);
-		if (lastsym == 1 && currsym == 1)
-			symlen += (int)(3 * dsymlen);
-		else
-			symlen -= (int)dsymlen;
-	}
-
-	if (delta < -(symlen - knum)) delta = -(symlen - knum);
-	if (delta > (symlen - knum)) delta = symlen - knum;
-
-	keydown = symlen + delta ;
-	keyup = symlen - delta;
-
-	kpre = (int)(progdefaults.CWpre * 8);
-	if (kpre > symlen) kpre = symlen;
-	if (progdefaults.QSK) {
-		kpre = (int)(progdefaults.CWpre * 8);
-		if (kpre > symlen) kpre = symlen;
-
-		if (progdefaults.CWnarrow) {
-			if (keydown - 2*knum < 0)
-				kpost = knum + (int)(progdefaults.CWpost * 8);
-			else
-				kpost = keydown - knum + (int)(progdefaults.CWpost * 8);
-		} else
-			kpost = keydown + (int)(progdefaults.CWpost * 8);
-		if (kpost < 0)
-			kpost = 0;
-	} else {
-		kpre = 0;
-		kpost = 0;
-	}
-
-	if (firstelement) {
-		firstelement = false;
+	if (!count) {
+		FILE *ofile = fl_fopen("cwstream.txt", "w");
+		fclose(ofile);
 		return;
 	}
+	FILE *ofile = fl_fopen("cwstream.txt", "a");
+	for (size_t i = 0; i < count; i++)
+		fprintf(ofile,"%f,%f\n", left[i], right[i]);
+	fclose(ofile);
+}
+*/
 
-	if (currsym == 1) { // keydown
-		sample = 0;
-		if (lastsym == 1) {
-			for (i = 0; i < keydown; i++, sample++) {
-				outbuf[sample] = nco(freq);
-				qskbuf[sample] = qsk_amp * qsknco();
-			}
-			duration = keydown;
-		} else {
-			if (carryover) {
-				for (int i = carryover; i < knum; i++, sample++)
-					outbuf[sample] = nco(freq) * keyshape[knum - i];
-				while (sample < kpre)
-					outbuf[sample++] = 0 * nco(freq);
-			} else
-				for (int i = 0; i < kpre; i++, sample++)
-					outbuf[sample] = 0 * nco(freq);
-			sample = 0;
-			for (int i = 0; i < kpre; i++, sample++) {
-				qskbuf[sample] = qsk_amp * qsknco();
-			}
-			for (int i = 0; i < knum; i++, sample++) {
-				outbuf[sample] = nco(freq) * keyshape[i];
-				qskbuf[sample] = qsk_amp * qsknco();
-			}
-			duration = kpre + knum;
+enum {START, FIRST, MID, LAST, SPACE};
+
+void cw::send_symbol(int bit, int len, int state)
+{
+	double qsk_amp = progdefaults.QSK ? progdefaults.QSKamp : 0.0;
+
+	sync_transmit_parameters();
+	acc_symbols += len;
+
+	memset(outbuf, 0, OUTBUFSIZE*sizeof(*outbuf));
+	memset(qskbuf, 0, OUTBUFSIZE*sizeof(*qskbuf));
+
+	if (bit == 1) { // keydown
+		for (int n = 0; n < len; n++) {
+			outbuf[n] = nco(get_txfreq_woffset());
+			if (n < knum) outbuf[n] *= keyshape[n];
+			if (len - n < knum) outbuf[n] *= keyshape[len - n];
+			qskbuf[n] = qsk_amp * qsknco();
 		}
-		carryover = 0;
-	}
-	else { // keyup
-		if (lastsym == 0) {
-			duration = keyup;
-			sample = 0;
-			if (carryover) {
-				for (int i = carryover; i < knum; i++, sample++)
-					outbuf[sample] = nco(freq) * keyshape[knum - i];
-				while (sample < duration)
-					outbuf[sample++] = 0 * nco(freq);
-			} else
-				while (sample < duration)
-					outbuf[sample++] = 0 * nco(freq);
-			carryover = 0;
-
-			qsample = 0;
-			if (q_carryover) {
-				for (int i = 0; i < q_carryover; i++, qsample++) {
-					qskbuf[qsample] = qsk_amp * qsknco();
+	} else { // keyup
+		for (int n = 0; n < len; n++) {
+			outbuf[n] = 0;
+			if (progdefaults.QSK) {
+				qskbuf[n] = 0;
+				if (state == START || state == FIRST) {
+					qskbuf[n] = 0;
+					if (n > len - kpre) {
+						qskbuf[n] = qsk_amp * qsknco();
+						if (n < len - kpre + qnum)
+							qskbuf[n] *= QSKkeyshape[n - (len - kpre)];
+					}
+				} else if (state == MID) {
+					qskbuf[n] = qsk_amp * qsknco();
+					if (len > kpre + kpost) {
+						if (n < kpost)
+							qskbuf[n] *= QSKkeyshape[kpost - n];
+						else if (n > len - kpre)
+							qskbuf[n] *= QSKkeyshape[n - (len - kpre)];
+						else qskbuf[n] = 0;
+					}
+				} else if (state == LAST) {
+					qskbuf[n] = qsk_amp * qsknco();
+					if (n > kpost - qnum)
+						qskbuf[n] *= QSKkeyshape[kpost - n];
+					if (n >= kpost) qskbuf[n] = 0;
+				} else { // state == SPACE
+					qskbuf[n] = 0;
 				}
-				while (qsample < duration)
-					qskbuf[qsample++] = 0 * qsknco();
-			} else
-				while (qsample < duration)
-					qskbuf[qsample++] = 0 * qsknco();
-			if (q_carryover > duration)
-				q_carryover = duration - q_carryover;
-			else
-				q_carryover = 0;
-
-		} else { // last symbol = 1
-			duration = 2 * len - kpre - knum;
-			carryover = 0;
-			sample = 0;
-
-			int next = keydown - knum;
-			if (progdefaults.CWnarrow)
-				next = keydown - 2*knum;
-
-			for (int i = 0; i < next; i++, sample++)
-				outbuf[sample] = nco(freq);
-
-			for (int i = 0; i < knum; i++, sample++) {
-				if (sample == duration) {
-					carryover = i;
-					break;
-				}
-				outbuf[sample] = nco(freq) * keyshape[knum - i];
 			}
-			while (sample < duration)
-				outbuf[sample++] = 0 * nco(freq);
-
-			q_carryover = 0;
-			qsample = 0;
-
-			for (int i = 0; i < kpost; i++, qsample++) {
-				if (qsample == duration) {
-					q_carryover = kpost - duration;
-					break;
-				}
-				qskbuf[qsample] = qsk_amp * qsknco();
-			}
-			while (qsample < duration)
-				qskbuf[qsample++] = 0 * qsknco();
 		}
 	}
 
-	if (duration > 0) {
-		if (progdefaults.CW_bpf_on)
-			nb_filter(outbuf, qskbuf, duration);
-		else {
-			if (progdefaults.QSK)
-				ModulateStereo(outbuf, qskbuf, duration);
-			else
-				ModulateXmtr(outbuf, duration);
-		}
-	}
+//	appendfile(outbuf, qskbuf, len);
 
-	lastsym = currsym;
-	firstelement = false;
+	if (progdefaults.QSK)
+		ModulateStereo(outbuf, qskbuf, len);
+	else
+		ModulateXmtr(outbuf, len);
+
 }
 
 //=====================================================================
@@ -1206,47 +1045,73 @@ void cw::send_symbol(int bits, int len)
 // sends a morse character and the space afterwards
 //=======================================================================
 
+int lastch = 0;
 void cw::send_ch(int ch)
 {
 	string code;
-	int chout = ch;
-	int ta = 0, tb = 0;
+
+	float kfactor = CW_SAMPLERATE / 1000.0;
+	float tc = 1200.0 / progdefaults.CWspeed;
+	float ta = 0.0;
+	float tch = 3 * tc, twd = 4 * tc;
+
+	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth)) {
+		ta = 60000.0 / progdefaults.CWfarnsworth - 37200.0 / progdefaults.CWspeed;
+		tch = 3 * ta / 19;
+		twd = 4 * ta / 19;
+	}
+	tc *= kfactor;
+	tch *= kfactor;
+	twd *= kfactor;
 
 	sync_parameters();
 
-	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth)) {
-		ta = 3 * (50 * fsymlen - 46 * symbollen) / 19;
-		tb = 50 * fsymlen - 46 * symbollen - 5 * ta;
-	}
+	if (progdefaults.CWpre < progdefaults.QSKrisetime)
+		kpre = progdefaults.QSKrisetime * kfactor;
+	else
+		kpre = progdefaults.CWpre * kfactor;
 
-	if ((chout == ' ') || (chout == '\n')) {
-		for (int i = 0; i < 4; i++) {
-			send_symbol(0, symbollen);
-		}
-		if (tb) send_symbol(0, tb);
+	if (progdefaults.CWpost < progdefaults.QSKrisetime)
+		kpost = progdefaults.QSKrisetime * kfactor;
+	else
+		kpost = progdefaults.CWpost * kfactor;
+
+	if ((ch == ' ') || (ch == '\n')) {
+		send_symbol(0, 
+			twd,
+			SPACE);
 		put_echo_char(progdefaults.rx_lowercase ? tolower(ch) : ch);
 		return;
 	}
 
-	code = morse.tx_lookup(chout);
+	code = morse.tx_lookup(ch);
 	if (!code.length()) {
+		lastch = ch;
 		return;
 	}
 
-	firstelement = true;
+	float w = (progdefaults.CWdash2dot + 1) / (progdefaults.CWdash2dot -1);
 
-	for (size_t n = 0; n < code.length(); n++) {
-		send_symbol(0, symbollen); // not sent and does not add to timing if 1st element
-		send_symbol(1, symbollen);
-		if (code[n] == '-') {
-			send_symbol( 1, symbollen );
-			send_symbol( 1, symbollen );
-		}
+	int elements = code.length();
+
+	if (kpre)
+		send_symbol(
+			0,
+			(first_char ? kpre :
+				(kpre < 3 * tc - kpost) ? kpre : 
+					3 * tc ),
+			(first_char ? START : FIRST));
+
+	for (int n = 0; n < elements; n++) {
+		send_symbol(1, 
+					(code[n] == '-' ? (w + 1) : (w - 1)) * symbollen,
+					MID);
+		send_symbol(0,
+					((n < elements - 1) ? tc :
+						(kpost + kpre < 3 * tc) ? tch - kpre:
+							tch),
+					(n < elements - 1 ? MID : LAST) );
 	}
-	send_symbol(0, symbollen);
-	send_symbol(0, symbollen);
-	send_symbol(0, symbollen);
-	if (ta) send_symbol(0, ta);
 
 	if (ch != -1) {
 		string prtstr = morse.tx_print();
@@ -1255,6 +1120,7 @@ void cw::send_ch(int ch)
 				prtstr[n],
 				prtstr[0] == '<' ? FTextBase::CTRL : FTextBase::XMIT);
 	}
+	lastch = ch;
 }
 
 //=====================================================================
@@ -1262,11 +1128,13 @@ void cw::send_ch(int ch)
 // Read characters from screen and send them out the sound card.
 // This is called repeatedly from a thread during tx.
 //=======================================================================
-
 int cw::tx_process()
 {
 	int c;
 
+//	if (first_char) {
+//		appendfile(NULL, NULL, 0);
+//	}
 	if (use_paren != progdefaults.CW_use_paren ||
 		prosigns != progdefaults.CW_prosigns) {
 		use_paren = progdefaults.CW_use_paren;
@@ -1279,12 +1147,8 @@ int cw::tx_process()
 	if (c == GET_TX_CHAR_NODATA) {
 		if (stopflag) {
 			stopflag = false;
-			if (progdefaults.CW_bpf_on) { // flush the transmit bandpass filter
-				int n = cw_xmt_filter->flush_size();
-				for (int i = 0; i < n; i++) outbuf[i] = 0;
-				nb_filter(outbuf, outbuf, n);
-			}
 			put_echo_char('\n');
+			first_char = true;
 			return -1;
 		}
 		Fl::awake();
@@ -1309,7 +1173,6 @@ int cw::tx_process()
 		if (c == GET_TX_CHAR_ETX || stopflag) {
 			stopflag = false;
 			put_echo_char('\n');
-//			nano_serial_flush();
 			return -1;
 		}
 		nano_send_char(c);
@@ -1319,18 +1182,19 @@ int cw::tx_process()
 
 	if (c == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
-		if (progdefaults.CW_bpf_on) { // flush the transmit bandpass filter
-			int n = cw_xmt_filter->flush_size();
-			for (int i = 0; i < n; i++) outbuf[i] = 0;
-			nb_filter(outbuf, outbuf, n);
-		}
 		put_echo_char('\n');
+		first_char = true;
 		return -1;
 	}
 
 	acc_symbols = 0;
-	send_ch(c);
 
+	if (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)
+		send_CW_KEYLINE(c);
+	else {
+		send_ch(c);
+		first_char = false;
+	}
 	char_samples = acc_symbols;
 
 	return 0;
@@ -1367,3 +1231,124 @@ void cw::toggleWPM()
 	update_Status();
 }
 
+Cserial CW_KEYLINE_serial;
+bool CW_KEYLINE_isopen = false;
+
+void cw::CW_KEYLINE(bool on)
+{
+	if (on) {
+		if (progdefaults.CW_KEYLINE == 2) {
+			if (progdefaults.CW_KEYLINE_on_cat_port)
+				rigio.SetDTR(1);
+			else
+				CW_KEYLINE_serial.SetDTR(1);
+		} else if (progdefaults.CW_KEYLINE == 1) {
+			if (progdefaults.CW_KEYLINE_on_cat_port)
+				rigio.SetRTS(1);
+			else
+				CW_KEYLINE_serial.SetRTS(1);
+		}
+	} else {
+		if (progdefaults.CW_KEYLINE == 2) {
+			if (progdefaults.CW_KEYLINE_on_cat_port)
+				rigio.SetDTR(0);
+			else
+				CW_KEYLINE_serial.SetDTR(0);
+		} else if (progdefaults.CW_KEYLINE == 1) {
+			if (progdefaults.CW_KEYLINE_on_cat_port)
+				rigio.SetRTS(0);
+			else
+				CW_KEYLINE_serial.SetRTS(0);
+		}
+	}
+}
+
+void cw::send_CW_KEYLINE(int c)
+{
+	if (c == GET_TX_CHAR_NODATA || c == 0x0d) {
+		MilliSleep(50);
+		return;
+	}
+
+	float tc = 1200.0 / progdefaults.CWspeed;
+	float ta = 0.0;
+	float tch = 3 * tc, twd = 4 * tc;
+
+	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth)) {
+		ta = 60000.0 / progdefaults.CWfarnsworth - 37200 / progdefaults.CWspeed;
+		tch = 3 * ta / 19;
+		twd = 4 * ta / 19;
+	}
+
+	if (c == 0x0a) c = ' ';
+	if (c == ' ') {
+		MilliSleep(twd);
+		put_echo_char(' ');
+		return;
+	}
+
+	string code = morse.tx_lookup(c);
+	for (size_t n = 0; n < code.length(); n++) {
+		CW_KEYLINE(1);
+		if (code[n] == '.')
+			MilliSleep(tc);
+		else
+			MilliSleep(3*tc);
+		CW_KEYLINE(0);
+		if (n == code.length() -1)
+			MilliSleep(tch);
+		else
+			MilliSleep(tc);
+	}
+
+	string prtstr = morse.tx_print();
+	for (size_t n = 0; n < prtstr.length(); n++)
+		put_echo_char(
+			prtstr[n],
+			prtstr[0] == '<' ? FTextBase::CTRL : FTextBase::XMIT);
+	return;
+}
+
+int open_CW_KEYLINE()
+{
+	CW_KEYLINE_serial.Device(progdefaults.CW_KEYLINE_serial_port_name);
+	CW_KEYLINE_serial.Baud(progdefaults.BaudRate(9));
+	CW_KEYLINE_serial.RTS(false);
+	CW_KEYLINE_serial.DTR(false);
+	CW_KEYLINE_serial.RTSptt(false);
+	CW_KEYLINE_serial.DTRptt(false);
+	CW_KEYLINE_serial.RestoreTIO(true);
+	CW_KEYLINE_serial.RTSCTS(false);
+	CW_KEYLINE_serial.Stopbits(1);
+
+	LOG_VERBOSE("\n\
+CW Keyline Serial port parameters:\n\
+device	 : %s\n\
+baudrate   : %d\n\
+stopbits   : %d\n\
+initial rts: %+d\n\
+initial dtr: %+d\n\
+restore tio: %c\n\
+flowcontrol: %c\n",
+		CW_KEYLINE_serial.Device().c_str(),
+		CW_KEYLINE_serial.Baud(),
+		CW_KEYLINE_serial.Stopbits(),
+		(CW_KEYLINE_serial.RTS() ? +12 : -12),
+		(CW_KEYLINE_serial.DTR() ? +12 : -12),
+		(CW_KEYLINE_serial.RestoreTIO() ? 'T' : 'F'),
+		(CW_KEYLINE_serial.RTSCTS() ? 'T' : 'F')
+	);
+
+	if (CW_KEYLINE_serial.OpenPort() == false) {
+		LOG_ERROR("Cannot open serial port %s", CW_KEYLINE_serial.Device().c_str());
+		return 0;
+	}
+	CW_KEYLINE_isopen = true;
+	return 1;
+}
+
+void close_CW_KEYLINE()
+{
+	CW_KEYLINE_serial.ClosePort();
+	CW_KEYLINE_isopen = false;
+}

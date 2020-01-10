@@ -6573,6 +6573,7 @@ void cb_cntCW_WPM(Fl_Widget * w, void *v)
 	if (use_nanoIO && cnt->value() < 5) cnt->value(5);
 
 	progdefaults.CWspeed = (int)cnt->value();
+LOG_INFO("%f WPM", progdefaults.CWspeed);
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
 	cntr_nanoCW_WPM->value(progdefaults.CWspeed);
 

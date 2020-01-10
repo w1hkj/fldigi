@@ -2577,13 +2577,6 @@ static void cb_btnCWusefarnsworth(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Counter2 *cntCWweight=(Fl_Counter2 *)0;
-
-static void cb_cntCWweight(Fl_Counter2* o, void*) {
-  progdefaults.CWweight=(int)o->value();
-progdefaults.changed = true;
-}
-
 Fl_Counter2 *cntCWdash2dot=(Fl_Counter2 *)0;
 
 static void cb_cntCWdash2dot(Fl_Counter2* o, void*) {
@@ -2603,27 +2596,6 @@ Fl_ListBox *i_listboxQSKshape=(Fl_ListBox *)0;
 
 static void cb_i_listboxQSKshape(Fl_ListBox* o, void*) {
   progdefaults.QSKshape = o->index();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnCWnarrow=(Fl_Check_Button *)0;
-
-static void cb_btnCWnarrow(Fl_Check_Button* o, void*) {
-  progdefaults.CWnarrow = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnCW_bpf_on=(Fl_Check_Button *)0;
-
-static void cb_btnCW_bpf_on(Fl_Check_Button* o, void*) {
-  progdefaults.CW_bpf_on = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *cntCW_hpf=(Fl_Counter2 *)0;
-
-static void cb_cntCW_hpf(Fl_Counter2* o, void*) {
-  progdefaults.CW_bpf=o->value();
 progdefaults.changed = true;
 }
 
@@ -2651,14 +2623,28 @@ progdefaults.changed = true;
 Fl_Counter2 *cntPreTiming=(Fl_Counter2 *)0;
 
 static void cb_cntPreTiming(Fl_Counter2* o, void*) {
-  progdefaults.CWpre=o->value();
+  progdefaults.CWpre = o->value();
 progdefaults.changed = true;
 }
 
 Fl_Counter2 *cntPostTiming=(Fl_Counter2 *)0;
 
 static void cb_cntPostTiming(Fl_Counter2* o, void*) {
-  progdefaults.CWpost=o->value();
+  progdefaults.CWpost = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cntQSKamp=(Fl_Counter2 *)0;
+
+static void cb_cntQSKamp(Fl_Counter2* o, void*) {
+  progdefaults.QSKamp=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cntQSKrisetime=(Fl_Counter2 *)0;
+
+static void cb_cntQSKrisetime(Fl_Counter2* o, void*) {
+  progdefaults.QSKrisetime=o->value();
 progdefaults.changed = true;
 }
 
@@ -3268,6 +3254,38 @@ Fl_Button *btn_correction=(Fl_Button *)0;
 
 static void cb_btn_correction(Fl_Button*, void*) {
   nanoIO_correction();
+}
+
+Fl_Check_Button *btn_CW_KEYLINE_catport=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_KEYLINE_catport(Fl_Check_Button* o, void*) {
+  progdefaults.CW_KEYLINE_on_cat_port = o->value();
+}
+
+Fl_ListBox *listbox_CW_KEYLINE=(Fl_ListBox *)0;
+
+static void cb_listbox_CW_KEYLINE(Fl_ListBox* o, void*) {
+  progdefaults.CW_KEYLINE = o->index();
+progdefaults.changed = true;
+}
+
+Fl_ComboBox *select_CW_KEYLINE_CommPort=(Fl_ComboBox *)0;
+
+static void cb_select_CW_KEYLINE_CommPort(Fl_ComboBox* o, void*) {
+  progdefaults.CW_KEYLINE_serial_port_name = o->value();
+}
+
+Fl_Light_Button *btn_CW_KEYLINE_connect=(Fl_Light_Button *)0;
+
+static void cb_btn_CW_KEYLINE_connect(Fl_Light_Button* o, void*) {
+  if (o->value()) {
+  if (!open_CW_KEYLINE())
+    o->value(0);
+  progStatus.useCW_KEYLINE = 1;
+} else {
+  close_CW_KEYLINE();
+  progStatus.useCW_KEYLINE = 0;
+};
 }
 
 Fl_Input2 *txtSecondary=(Fl_Input2 *)0;
@@ -10217,36 +10235,15 @@ work!"));
       add_tree_item(o);
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/Timing and QSK"));
+    { Fl_Group* o = new Fl_Group(200, 0, 654, 350, _("Modem/CW/Timing and QSK"));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
-      { Fl_Group* o = new Fl_Group(205, 28, 585, 136, _("Timing"));
+      { Fl_Group* o = new Fl_Group(205, 28, 590, 124, _("Timing"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { Fl_Counter2* o = cntCWweight = new Fl_Counter2(220, 57, 65, 20, _("Weight (%)"));
-          cntCWweight->tooltip(_("Dot to dot-space ratio"));
-          cntCWweight->type(1);
-          cntCWweight->box(FL_UP_BOX);
-          cntCWweight->color(FL_BACKGROUND_COLOR);
-          cntCWweight->selection_color(FL_INACTIVE_COLOR);
-          cntCWweight->labeltype(FL_NORMAL_LABEL);
-          cntCWweight->labelfont(0);
-          cntCWweight->labelsize(14);
-          cntCWweight->labelcolor(FL_FOREGROUND_COLOR);
-          cntCWweight->minimum(20);
-          cntCWweight->maximum(80);
-          cntCWweight->step(1);
-          cntCWweight->value(50);
-          cntCWweight->callback((Fl_Callback*)cb_cntCWweight);
-          cntCWweight->align(Fl_Align(FL_ALIGN_RIGHT));
-          cntCWweight->when(FL_WHEN_CHANGED);
-          o->value(progdefaults.CWweight);
-          o->labelsize(FL_NORMAL_SIZE);
-        } // Fl_Counter2* cntCWweight
-        { Fl_Counter2* o = cntCWdash2dot = new Fl_Counter2(445, 57, 80, 20, _("Dash/Dot"));
+        { Fl_Counter2* o = cntCWdash2dot = new Fl_Counter2(335, 44, 125, 24, _("Dash/Dot"));
           cntCWdash2dot->tooltip(_("Dash to dot ratio"));
-          cntCWdash2dot->type(1);
           cntCWdash2dot->box(FL_UP_BOX);
           cntCWdash2dot->color(FL_BACKGROUND_COLOR);
           cntCWdash2dot->selection_color(FL_INACTIVE_COLOR);
@@ -10262,10 +10259,10 @@ work!"));
           cntCWdash2dot->when(FL_WHEN_CHANGED);
           o->value(progdefaults.CWdash2dot);
           o->labelsize(FL_NORMAL_SIZE);
+          o->lstep(1);
         } // Fl_Counter2* cntCWdash2dot
-        { Fl_Counter2* o = cntCWrisetime = new Fl_Counter2(445, 90, 80, 20, _("Edge timing"));
+        { Fl_Counter2* o = cntCWrisetime = new Fl_Counter2(335, 75, 125, 24, _("Edge timing"));
           cntCWrisetime->tooltip(_("Leading and Trailing edge risetimes (msec)"));
-          cntCWrisetime->type(1);
           cntCWrisetime->box(FL_UP_BOX);
           cntCWrisetime->color(FL_BACKGROUND_COLOR);
           cntCWrisetime->selection_color(FL_INACTIVE_COLOR);
@@ -10281,8 +10278,9 @@ work!"));
           cntCWrisetime->when(FL_WHEN_CHANGED);
           o->value(progdefaults.CWrisetime);
           o->labelsize(FL_NORMAL_SIZE);
+          o->lstep(1);
         } // Fl_Counter2* cntCWrisetime
-        { Fl_ListBox* o = i_listboxQSKshape = new Fl_ListBox(220, 90, 112, 20, _("Edge shape"));
+        { Fl_ListBox* o = i_listboxQSKshape = new Fl_ListBox(335, 108, 125, 24, _("Edge shape"));
           i_listboxQSKshape->tooltip(_("Hanning/Blackman - use edge timing\nBPF - use BPF bandwidth"));
           i_listboxQSKshape->box(FL_DOWN_BOX);
           i_listboxQSKshape->color(FL_BACKGROUND2_COLOR);
@@ -10299,52 +10297,19 @@ work!"));
           o->labelsize(FL_NORMAL_SIZE);
           i_listboxQSKshape->end();
         } // Fl_ListBox* i_listboxQSKshape
-        { Fl_Check_Button* o = btnCWnarrow = new Fl_Check_Button(650, 92, 131, 15, _("Edge decrease"));
-          btnCWnarrow->tooltip(_("Weight decreases with increasing edge timing"));
-          btnCWnarrow->down_box(FL_DOWN_BOX);
-          btnCWnarrow->callback((Fl_Callback*)cb_btnCWnarrow);
-          o->value(progdefaults.CWnarrow);
-        } // Fl_Check_Button* btnCWnarrow
-        { Fl_Check_Button* o = btnCW_bpf_on = new Fl_Check_Button(220, 127, 167, 15, _("BPF transmit audio"));
-          btnCW_bpf_on->tooltip(_("Enable LO/HI bfp of transmit audio"));
-          btnCW_bpf_on->down_box(FL_DOWN_BOX);
-          btnCW_bpf_on->callback((Fl_Callback*)cb_btnCW_bpf_on);
-          o->value(progdefaults.CW_bpf_on);
-        } // Fl_Check_Button* btnCW_bpf_on
-        { Fl_Counter2* o = cntCW_hpf = new Fl_Counter2(435, 124, 100, 20, _("BPF bw"));
-          cntCW_hpf->tooltip(_("Low filter cutoff"));
-          cntCW_hpf->box(FL_UP_BOX);
-          cntCW_hpf->color(FL_BACKGROUND_COLOR);
-          cntCW_hpf->selection_color(FL_INACTIVE_COLOR);
-          cntCW_hpf->labeltype(FL_NORMAL_LABEL);
-          cntCW_hpf->labelfont(0);
-          cntCW_hpf->labelsize(14);
-          cntCW_hpf->labelcolor(FL_FOREGROUND_COLOR);
-          cntCW_hpf->minimum(10);
-          cntCW_hpf->maximum(1000);
-          cntCW_hpf->step(1);
-          cntCW_hpf->value(100);
-          cntCW_hpf->callback((Fl_Callback*)cb_cntCW_hpf);
-          cntCW_hpf->align(Fl_Align(FL_ALIGN_RIGHT));
-          cntCW_hpf->when(FL_WHEN_CHANGED);
-          o->value(progdefaults.CW_bpf);
-          o->labelsize(FL_NORMAL_SIZE);
-          o->lstep(10.0);
-        } // Fl_Counter2* cntCW_hpf
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(205, 169, 290, 150, _("QSK"));
+      { Fl_Group* o = new Fl_Group(205, 155, 590, 153, _("QSK"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(216, 190, 233, 20, _("QSK on right audio channel"));
+        { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(267, 172, 217, 20, _("QSK on right audio channel"));
           btnQSK->tooltip(_("Generate square wave signal on right channel"));
           btnQSK->down_box(FL_DOWN_BOX);
           btnQSK->callback((Fl_Callback*)cb_btnQSK);
           o->value(progdefaults.QSK);
         } // Fl_Check_Button* btnQSK
-        { Fl_Counter2* o = cntQSKfrequency = new Fl_Counter2(216, 221, 71, 20, _("QSK frequency"));
+        { Fl_Counter2* o = cntQSKfrequency = new Fl_Counter2(215, 206, 125, 24, _("QSK frequency"));
           cntQSKfrequency->tooltip(_("Fundamental frequency of QSK square wave signal"));
-          cntQSKfrequency->type(1);
           cntQSKfrequency->box(FL_UP_BOX);
           cntQSKfrequency->color(FL_BACKGROUND_COLOR);
           cntQSKfrequency->selection_color(FL_INACTIVE_COLOR);
@@ -10353,18 +10318,18 @@ work!"));
           cntQSKfrequency->labelsize(14);
           cntQSKfrequency->labelcolor(FL_FOREGROUND_COLOR);
           cntQSKfrequency->minimum(800);
-          cntQSKfrequency->maximum(3200);
-          cntQSKfrequency->step(100);
-          cntQSKfrequency->value(1600);
+          cntQSKfrequency->maximum(8000);
+          cntQSKfrequency->step(5);
+          cntQSKfrequency->value(3200);
           cntQSKfrequency->callback((Fl_Callback*)cb_cntQSKfrequency);
           cntQSKfrequency->align(Fl_Align(FL_ALIGN_RIGHT));
           cntQSKfrequency->when(FL_WHEN_CHANGED);
           o->value(progdefaults.QSKfrequency);
           o->labelsize(FL_NORMAL_SIZE);
+          o->lstep(100);
         } // Fl_Counter2* cntQSKfrequency
-        { Fl_Counter2* o = cntPreTiming = new Fl_Counter2(216, 253, 71, 20, _("Pre-keydown timing (ms)"));
-          cntPreTiming->tooltip(_("Msec pre-keydown (+ is earlier in time)"));
-          cntPreTiming->type(1);
+        { Fl_Counter2* o = cntPreTiming = new Fl_Counter2(476, 206, 125, 24, _("Pre-keydown timing (ms)"));
+          cntPreTiming->tooltip(_("Msec pre-keydown"));
           cntPreTiming->box(FL_UP_BOX);
           cntPreTiming->color(FL_BACKGROUND_COLOR);
           cntPreTiming->selection_color(FL_INACTIVE_COLOR);
@@ -10373,17 +10338,16 @@ work!"));
           cntPreTiming->labelsize(14);
           cntPreTiming->labelcolor(FL_FOREGROUND_COLOR);
           cntPreTiming->minimum(0);
-          cntPreTiming->maximum(20);
-          cntPreTiming->step(0.5);
+          cntPreTiming->maximum(100);
           cntPreTiming->callback((Fl_Callback*)cb_cntPreTiming);
           cntPreTiming->align(Fl_Align(FL_ALIGN_RIGHT));
           cntPreTiming->when(FL_WHEN_CHANGED);
           o->value(progdefaults.CWpre);
           o->labelsize(FL_NORMAL_SIZE);
+          o->lstep(1);
         } // Fl_Counter2* cntPreTiming
-        { Fl_Counter2* o = cntPostTiming = new Fl_Counter2(216, 285, 71, 20, _("Post-keydown timing (ms)"));
-          cntPostTiming->tooltip(_("Msec post-keydown (+ is earlier in time)"));
-          cntPostTiming->type(1);
+        { Fl_Counter2* o = cntPostTiming = new Fl_Counter2(476, 237, 125, 24, _("Post-keydown timing (ms)"));
+          cntPostTiming->tooltip(_("Msec post-keydown"));
           cntPostTiming->box(FL_UP_BOX);
           cntPostTiming->color(FL_BACKGROUND_COLOR);
           cntPostTiming->selection_color(FL_INACTIVE_COLOR);
@@ -10391,21 +10355,60 @@ work!"));
           cntPostTiming->labelfont(0);
           cntPostTiming->labelsize(14);
           cntPostTiming->labelcolor(FL_FOREGROUND_COLOR);
-          cntPostTiming->minimum(-20);
-          cntPostTiming->maximum(20);
-          cntPostTiming->step(0.5);
+          cntPostTiming->minimum(0);
+          cntPostTiming->maximum(100);
           cntPostTiming->callback((Fl_Callback*)cb_cntPostTiming);
           cntPostTiming->align(Fl_Align(FL_ALIGN_RIGHT));
           cntPostTiming->when(FL_WHEN_CHANGED);
-          o->value(progdefaults.CWpre);
+          o->value(progdefaults.CWpost);
           o->labelsize(FL_NORMAL_SIZE);
+          o->lstep(1);
         } // Fl_Counter2* cntPostTiming
+        { Fl_Counter2* o = cntQSKamp = new Fl_Counter2(215, 237, 125, 24, _("QSK amplitude"));
+          cntQSKamp->tooltip(_("Amplitude of right channel QSK signal"));
+          cntQSKamp->box(FL_UP_BOX);
+          cntQSKamp->color(FL_BACKGROUND_COLOR);
+          cntQSKamp->selection_color(FL_INACTIVE_COLOR);
+          cntQSKamp->labeltype(FL_NORMAL_LABEL);
+          cntQSKamp->labelfont(0);
+          cntQSKamp->labelsize(14);
+          cntQSKamp->labelcolor(FL_FOREGROUND_COLOR);
+          cntQSKamp->minimum(0);
+          cntQSKamp->maximum(1);
+          cntQSKamp->step(0.01);
+          cntQSKamp->value(0.8);
+          cntQSKamp->callback((Fl_Callback*)cb_cntQSKamp);
+          cntQSKamp->align(Fl_Align(FL_ALIGN_RIGHT));
+          cntQSKamp->when(FL_WHEN_CHANGED);
+          o->value(progdefaults.QSKamp);
+          o->labelsize(FL_NORMAL_SIZE);
+          o->lstep(0.1);
+        } // Fl_Counter2* cntQSKamp
+        { Fl_Counter2* o = cntQSKrisetime = new Fl_Counter2(215, 270, 125, 24, _("Edge timing"));
+          cntQSKrisetime->tooltip(_("Leading and Trailing edge risetimes (msec)"));
+          cntQSKrisetime->box(FL_UP_BOX);
+          cntQSKrisetime->color(FL_BACKGROUND_COLOR);
+          cntQSKrisetime->selection_color(FL_INACTIVE_COLOR);
+          cntQSKrisetime->labeltype(FL_NORMAL_LABEL);
+          cntQSKrisetime->labelfont(0);
+          cntQSKrisetime->labelsize(14);
+          cntQSKrisetime->labelcolor(FL_FOREGROUND_COLOR);
+          cntQSKrisetime->minimum(0);
+          cntQSKrisetime->maximum(15);
+          cntQSKrisetime->value(4);
+          cntQSKrisetime->callback((Fl_Callback*)cb_cntQSKrisetime);
+          cntQSKrisetime->align(Fl_Align(FL_ALIGN_RIGHT));
+          cntQSKrisetime->when(FL_WHEN_CHANGED);
+          o->value(progdefaults.QSKrisetime);
+          o->labelsize(FL_NORMAL_SIZE);
+          o->lstep(1);
+        } // Fl_Counter2* cntQSKrisetime
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(500, 169, 290, 150, _("Send Test character"));
+      { Fl_Group* o = new Fl_Group(205, 310, 590, 40, _("Send Test character"));
         o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { Fl_ListBox* o = i_listbox_test_char = new Fl_ListBox(520, 221, 45, 20, _("Test char"));
+        { Fl_ListBox* o = i_listbox_test_char = new Fl_ListBox(391, 319, 112, 22, _("Test char"));
           i_listbox_test_char->tooltip(_("Test character for QSK adjustment"));
           i_listbox_test_char->box(FL_DOWN_BOX);
           i_listbox_test_char->color(FL_BACKGROUND2_COLOR);
@@ -10422,7 +10425,7 @@ work!"));
           o->labelsize(FL_NORMAL_SIZE);
           i_listbox_test_char->end();
         } // Fl_ListBox* i_listbox_test_char
-        { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(520, 253, 176, 20, _("Send continuously"));
+        { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(585, 321, 152, 18, _("Send continuously"));
           btnQSKadjust->tooltip(_("Send a continuous stream of test characters"));
           btnQSKadjust->down_box(FL_DOWN_BOX);
           btnQSKadjust->callback((Fl_Callback*)cb_btnQSKadjust);
@@ -11189,6 +11192,68 @@ ded Morse characters."));
           btn_correction->tooltip(_("send compensation to nanoIO"));
           btn_correction->callback((Fl_Callback*)cb_btn_correction);
         } // Fl_Button* btn_correction
+        o->end();
+      } // Fl_Group* o
+      add_tree_item(o);
+      o->end();
+    } // Fl_Group* o
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/DTR-RTS keying"));
+      o->box(FL_ENGRAVED_BOX);
+      o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+      o->hide();
+      { Fl_Group* o = new Fl_Group(205, 25, 590, 145);
+        o->box(FL_ENGRAVED_BOX);
+        { Fl_Box* o = new Fl_Box(216, 50, 565, 90, _("DTR/RTS keying may share the RigCat serial port, or be assigned to separate\n\
+serial port (typical of Yaesu transceiver FT-991A).  If separate, the CAT cont\
+rol\ncan be via flrig, RigCat or Hamlib.  No settings for baud, stops bits, et\
+c are\nneeded."));
+          o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+        } // Fl_Box* o
+        o->end();
+      } // Fl_Group* o
+      { Fl_Check_Button* o = btn_CW_KEYLINE_catport = new Fl_Check_Button(257, 184, 70, 15, _("Use RIGCAT serial port"));
+        btn_CW_KEYLINE_catport->down_box(FL_DOWN_BOX);
+        btn_CW_KEYLINE_catport->callback((Fl_Callback*)cb_btn_CW_KEYLINE_catport);
+        o->value(progdefaults.CW_KEYLINE_on_cat_port);
+      } // Fl_Check_Button* btn_CW_KEYLINE_catport
+      { Fl_ListBox* o = listbox_CW_KEYLINE = new Fl_ListBox(580, 179, 110, 24, _("CW Keyline"));
+        listbox_CW_KEYLINE->box(FL_DOWN_BOX);
+        listbox_CW_KEYLINE->color(FL_BACKGROUND2_COLOR);
+        listbox_CW_KEYLINE->selection_color(FL_BACKGROUND_COLOR);
+        listbox_CW_KEYLINE->labeltype(FL_NORMAL_LABEL);
+        listbox_CW_KEYLINE->labelfont(0);
+        listbox_CW_KEYLINE->labelsize(14);
+        listbox_CW_KEYLINE->labelcolor(FL_FOREGROUND_COLOR);
+        listbox_CW_KEYLINE->callback((Fl_Callback*)cb_listbox_CW_KEYLINE);
+        listbox_CW_KEYLINE->align(Fl_Align(FL_ALIGN_LEFT));
+        listbox_CW_KEYLINE->when(FL_WHEN_RELEASE);
+        o->add("None|RTS|DTR");
+        o->index(progdefaults.CW_KEYLINE);
+        listbox_CW_KEYLINE->end();
+      } // Fl_ListBox* listbox_CW_KEYLINE
+      { Fl_Group* o = new Fl_Group(205, 226, 589, 78, _("Keyline on separate serial port"));
+        o->box(FL_ENGRAVED_FRAME);
+        o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+        { Fl_ComboBox* o = select_CW_KEYLINE_CommPort = new Fl_ComboBox(210, 264, 485, 23, _("Ser. Port"));
+          select_CW_KEYLINE_CommPort->tooltip(_("nanoIO serial port"));
+          select_CW_KEYLINE_CommPort->box(FL_DOWN_BOX);
+          select_CW_KEYLINE_CommPort->color((Fl_Color)55);
+          select_CW_KEYLINE_CommPort->selection_color(FL_BACKGROUND_COLOR);
+          select_CW_KEYLINE_CommPort->labeltype(FL_NORMAL_LABEL);
+          select_CW_KEYLINE_CommPort->labelfont(0);
+          select_CW_KEYLINE_CommPort->labelsize(14);
+          select_CW_KEYLINE_CommPort->labelcolor(FL_FOREGROUND_COLOR);
+          select_CW_KEYLINE_CommPort->callback((Fl_Callback*)cb_select_CW_KEYLINE_CommPort);
+          select_CW_KEYLINE_CommPort->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          select_CW_KEYLINE_CommPort->when(FL_WHEN_RELEASE);
+          o->value(progdefaults.CW_KEYLINE_serial_port_name.c_str());
+          select_CW_KEYLINE_CommPort->end();
+        } // Fl_ComboBox* select_CW_KEYLINE_CommPort
+        { Fl_Light_Button* o = btn_CW_KEYLINE_connect = new Fl_Light_Button(705, 264, 80, 23, _("Connect"));
+          btn_CW_KEYLINE_connect->tooltip(_("Connect / Disconnect from nanoIO"));
+          btn_CW_KEYLINE_connect->callback((Fl_Callback*)cb_btn_CW_KEYLINE_connect);
+          o->value(progStatus.useCW_KEYLINE);
+        } // Fl_Light_Button* btn_CW_KEYLINE_connect
         o->end();
       } // Fl_Group* o
       add_tree_item(o);

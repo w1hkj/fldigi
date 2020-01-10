@@ -568,6 +568,7 @@ int configuration::setDefaults()
 
 	select_nanoIO_CommPort->value(nanoIO_serial_port_name.c_str());
 	select_nanoCW_CommPort->value(nanoIO_serial_port_name.c_str());
+	select_CW_KEYLINE_CommPort->value(CW_KEYLINE_serial_port_name.c_str());
 
 	select_USN_FSK_port->value(Nav_FSK_port.c_str());
 	select_Nav_config_port->value(Nav_config_port.c_str());
@@ -601,7 +602,6 @@ int configuration::setDefaults()
 	btnBwTracksColor->color(
 		fl_rgb_color(bwTrackRGBI.R, bwTrackRGBI.G, bwTrackRGBI.B) );
 
-	cntCWweight->value(CWweight);
 	sldrCWxmtWPM->value(CWspeed);
 	cntCWdefWPM->value(defCWspeed);
 	sldrCWbandwidth->value(CWbandwidth);
@@ -936,6 +936,7 @@ void configuration::testCommPorts()
 
 		select_nanoIO_CommPort->add(gbuf.gl_pathv[j]);
 		select_nanoCW_CommPort->add(gbuf.gl_pathv[j]);
+		select_CW_KEYLINE_CommPort->add(gbuf.gl_pathv[j]);
 
 		select_WK_CommPort->add(gbuf.gl_pathv[j]);
 		select_WKFSK_CommPort->add(gbuf.gl_pathv[j]);
@@ -970,6 +971,7 @@ void configuration::testCommPorts()
 
 			select_nanoIO_CommPort->add(ttyname);
 			select_nanoCW_CommPort->add(ttyname);
+			select_CW_KEYLINE_CommPort->add(ttyname);
 
 			select_WK_CommPort->add(ttyname);
 			select_WKFSK_CommPort->add(ttyname);
@@ -998,6 +1000,7 @@ void configuration::testCommPorts()
 
 			select_nanoIO_CommPort->add(gbuf.gl_pathv[j]);
 			select_nanoCW_CommPort->add(gbuf.gl_pathv[j]);
+			select_CW_KEYLINE_CommPort->add(gbuf.gl_pathv[j]);
 
 			select_USN_FSK_port->add(gbuf.gl_pathv[j]);
 			select_Nav_config_port->add(gbuf.gl_pathv[j]);

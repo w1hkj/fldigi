@@ -183,6 +183,7 @@ public:
 	double		get_cwXmtWPM();
 	void		set_cwXmtWPM(double);
 	double		get_cwRcvWPM();
+	virtual void		CW_KEYLINE(bool) {};
 
 	virtual	void		incWPM() {};
 	virtual void		decWPM() {};

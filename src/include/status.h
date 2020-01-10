@@ -256,6 +256,8 @@ struct status {
 	bool	nanoCW_online;
 	bool	nanoFSK_online;
 
+	bool	useCW_KEYLINE;
+
 //----------------------------------------------------------------------
 
 	bool	bLastStateRead;

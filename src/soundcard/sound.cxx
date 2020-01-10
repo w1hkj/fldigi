@@ -673,15 +673,17 @@ void SoundBase::write_file(SNDFILE* file, float* bufleft, float* bufright, size_
 	if (output_size) {
 		if (progdefaults.record_both_channels) {
 			float buffer[2*output_size];
+			memset(buffer, 0, 2 * output_size * sizeof(float));
 			for (size_t i = 0; i < output_size; i++) {
-				buffer[2*i] = 0.9 * bufl[i];
-				buffer[2*i + 1] = 0.9 * bufr[i];
+				buffer[2*i] = bufl[i];//0.9 * bufl[i];
+				buffer[2*i + 1] = bufr[i];//0.9 * bufr[i];
 			}
 			sf_write_float(file, buffer, 2 * output_size);
 		} else {
 			sf_write_float(file, bufl, output_size);
 		}
 	}
+
 	return;
 
 }
@@ -2542,7 +2544,7 @@ size_t SoundNull::Write_stereo(double* bufleft, double* bufright, size_t count)
 
 	MilliSleep((long)ceil((1e3 * count) / sample_frequency));
 
-	return count;
+	return count ? count : 1;
 }
 
 size_t SoundNull::Read(float *buf, size_t count)
@@ -2564,3 +2566,12 @@ size_t SoundNull::Read(float *buf, size_t count)
 	return count;
 
 }
+
+void SoundNull::flush(unsigned)
+{
+#if USE_SNDFILE
+	if (generate)
+		sf_close(ofGenerate);
+#endif
+}
+

@@ -82,11 +82,31 @@ bool Cserial::OpenPort()  {
 
 	if ((fd = fl_open( device.c_str(), oflags)) < 0)
 		return false;
+
+// the status port must be set before any other control attributes are
+// changed.  Failure to do so will cause DTR/RTS h/w transients !!
+
+	ioctl(fd, TIOCMGET, &status);
+	origstatus = status;
+
+	if (dtr)
+		status |= TIOCM_DTR; 		// set the DTR bit
+	else
+		status &= ~TIOCM_DTR;		// clear the DTR bit
+
+	if (rtscts == false) {			// rts OK for ptt if RTSCTS not used
+		if (rts)
+			status |= TIOCM_RTS;		// set the RTS bit
+		else
+			status &= ~TIOCM_RTS;		// clear the RTS bit
+	}
+
+	ioctl(fd, TIOCMSET, &status);
+
 // save current port settings
 	tcflush (fd, TCIFLUSH);
-
 	tcgetattr (fd, &oldtio);
-	newtio = oldtio;
+//	newtio = oldtio;
 
 	// 8 data bits
 	newtio.c_cflag &= ~CSIZE;
@@ -158,23 +178,29 @@ bool Cserial::OpenPort()  {
 
 	tcsetattr (fd, TCSANOW, &newtio);
 
+	return true;
+}
+
+void Cserial::SetDTR(bool b)
+{
 	ioctl(fd, TIOCMGET, &status);
 	origstatus = status;
-
-	if (dtr)
+	if (b)
 		status |= TIOCM_DTR; 		// set the DTR bit
 	else
 		status &= ~TIOCM_DTR;		// clear the DTR bit
-
-	if (rtscts == false) {			// rts OK for ptt if RTSCTS not used
-		if (rts)
-			status |= TIOCM_RTS;		// set the RTS bit
-		else
-			status &= ~TIOCM_RTS;		// clear the RTS bit
-	}
 	ioctl(fd, TIOCMSET, &status);
+}
 
-	return true;
+void Cserial::SetRTS(bool b)
+{
+	ioctl(fd, TIOCMGET, &status);
+	origstatus = status;
+	if (b)
+		status |= TIOCM_RTS;		// set the RTS bit
+	else
+		status &= ~TIOCM_RTS;		// clear the RTS bit
+	ioctl(fd, TIOCMSET, &status);
 }
 
 ///////////////////////////////////////////////////////
@@ -220,8 +246,8 @@ void Cserial::ClosePort()
 {
 	if (fd < 0) return;
 	if (restore_tio) {
-		ioctl(fd, TIOCMSET, &origstatus);
 		tcsetattr (fd, TCSANOW, &oldtio);
+		ioctl(fd, TIOCMSET, &origstatus);
 	}
 	close(fd);
 	LOG_INFO("Serial port closed, fd = %d", fd);
@@ -775,6 +801,33 @@ void Cserial::SetPTT(bool b)
 	}
 	SetCommState(hComm, &dcb);
 }
+
+void Cserial::SetDTR(bool b)
+{
+	if(hComm == INVALID_HANDLE_VALUE) {
+		LOG_PERROR("Invalid handle");
+		return;
+	}
+	if (b == true)
+		dcb.fDtrControl = DTR_CONTROL_ENABLE;
+	else
+		dcb.fDtrControl = DTR_CONTROL_DISABLE;
+	SetCommState(hComm, &dcb);
+}
+
+void Cserial::SetRTS(bool b)
+{
+	if(hComm == INVALID_HANDLE_VALUE) {
+		LOG_PERROR("Invalid handle");
+		return;
+	}
+	if (b == true)
+		dcb.fRtsControl = RTS_CONTROL_ENABLE;
+	else
+		dcb.fRtsControl = RTS_CONTROL_DISABLE;
+	SetCommState(hComm, &dcb);
+}
+
 
 //======================================================================
 // end Win32 code

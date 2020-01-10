@@ -128,22 +128,26 @@ void nano_send_cw_char(int c)
 		return;
 	}
 
-	float tc = 0, tf = 0;
-	int msec;
+	int   msec = 0;
 
-	tc = 1200.0 / progdefaults.CWspeed;
+	float tc = 1200.0 / progdefaults.CWspeed;
+	float ta = 0.0;
+	float tch = 3 * tc, twd = 4 * tc;
 
-	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth))
-		tf = 1200.0 / progdefaults.CWfarnsworth;
+	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth)) {
+		ta = 60000.0 / progdefaults.CWfarnsworth - 37200 / progdefaults.CWspeed;
+		tch = 3 * ta / 19;
+		twd = 4 * ta / 19;
+	}
 
 	if (nano_morse == 0) return;
-		if (c == '^' || c == '|') {
-			nano_serial_write(c);
-			msec = 50;
-			nano_read_byte(msec);
-			MilliSleep(50);
-			return;
-		}
+	if (c == '^' || c == '|') {
+		nano_serial_write(c);
+		msec = 50;
+		nano_read_byte(msec);
+		MilliSleep(50);
+		return;
+	}
 	int len = 4;
 	if (c == 0x0a) c = ' ';
 	if (c == ' ') {
@@ -151,14 +155,14 @@ void nano_send_cw_char(int c)
 		msec = len * tc + 50;
 		nano_serial_write(c);
 		nano_read_byte(msec);
-		if (tf && !calibrating) MilliSleep(4 * tf - msec);
+		if (!calibrating) MilliSleep(len * tc - msec + twd);
 	} else {
 		len = nano_morse->tx_length(c);
 		if (len) {
 			msec = len * tc + 50;
 			nano_serial_write(c);
 			nano_read_byte(msec);
-			if (tf && !calibrating) MilliSleep(len * tf - msec);
+			if (!calibrating) MilliSleep(len * tc - msec + tch);
 		}
 	}
 	return;
@@ -193,19 +197,18 @@ static int  setwpm = progdefaults.CWspeed;
 
 void save_nano_state()
 {
-//	nano_was = nanoIO_isCW;
-//	farnsworth = progdefaults.CWusefarnsworth;
+	if (!use_nanoIO) return;
 	setwpm = progdefaults.CWspeed;
 }
 
 void restore_nano_state()
 {
-//	nanoIO_isCW = nano_was;
-//	progdefaults.CWusefarnsworth = farnsworth;
+	if (!use_nanoIO) return;
 	progdefaults.CWspeed = setwpm;
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
 	cntCW_WPM->value(progdefaults.CWspeed);
 	calibrating = false;
+LOG_INFO("%f WPM", progdefaults.CWspeed);
 }
 
 void nanoIO_wpm_cal()
@@ -213,6 +216,7 @@ void nanoIO_wpm_cal()
 	save_nano_state();
 	progdefaults.CWusefarnsworth = false;
 	progdefaults.CWspeed = cntrWPMtest->value();
+LOG_INFO("%f WPM", progdefaults.CWspeed);
 
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
 	cntCW_WPM->value(progdefaults.CWspeed);
@@ -264,7 +268,7 @@ void nano_PTT(int val)
 		if (calibrating) {
 			timeval ptt_end = tmval();
 			double tdiff = timeval_subtract(ptt_start, ptt_end);
-std::cout << "tdiff " << tdiff << std::endl;
+//std::cout << "tdiff " << tdiff << std::endl;
 			wpm_err = (tdiff - 60) * 1000;
 			Fl::awake(dispWPMtiming);
 		}
@@ -377,6 +381,7 @@ void nano_parse_config(std::string s)
 		int wpm = progdefaults.CWspeed;
 		if (sscanf(s.substr(p1).c_str(), "%d", &wpm)) {
 			progdefaults.CWspeed = wpm;
+LOG_INFO("%f WPM", progdefaults.CWspeed);
 			cntCW_WPM->value(wpm);
 			cntr_nanoCW_WPM->value(wpm);
 			sldrCWxmtWPM->value(wpm);

@@ -38,7 +38,7 @@
 
 #include "view_cw.h"
 
-#define	CW_SAMPLERATE	8000
+#define	CW_SAMPLERATE	16000 //8000
 
 #define	CWMaxSymLen		4096		// AG1LE: - was 4096 
 
@@ -148,10 +148,12 @@ protected:
 	int lastsym;					// last symbol sent
 	double risetime;			    	// leading/trailing edge rise time (msec)
 	int knum;					// number of samples on edges
+	int qnum;					// number of samples on QSK signal edges
 	int QSKshape;                   		// leading/trailing edge shape factor
 	double qskbuf[OUTBUFSIZE];			// signal array for qsk drive
 	double qskphase;				//
 	bool firstelement;
+	bool lastelement;
 	double maxval;
 
 //	double *keyshape;				// array defining leading edge
@@ -182,7 +184,7 @@ protected:
 	void	reset_rx_filter();
 	int		handle_event(int cw_event, std::string &sc);
 	inline	int usec_diff(unsigned int earlier, unsigned int later);
-	void	send_symbol(int symbol, int len);
+	void	send_symbol(int symbol, int len, int state);
 	void	send_ch(int c);
 	bool 	tables_init();
 	unsigned int tokenize_representation(char *representation);
@@ -209,24 +211,18 @@ protected:
 // transmit wave shaping
 	int		nusymbollen;
 	int		nufsymlen;
+	int		kpre;
+	int		kpost;
 
 	double	wpm;
 	double	fwpm;
-//	int		wpm;
-//	int		fwpm;
 
-	void	makeshape();
+	void	create_edges();
 	void	sync_transmit_parameters();
+	void	flush_audio();
 
-	fftfilt	*cw_xmt_filter;
-	double	nbfreq;
-	double	nbpf;
-	double lwr;
-	double upr;
-	double	*xmt_signal;
-	double	*qsk_signal;
-	int		qsk_ptr;
-	void nb_filter(double *output, double *qsk, int len);
+	void send_CW_KEYLINE(int);
+	void CW_KEYLINE(bool);
 
 	view_cw	viewcw;
 
@@ -254,5 +250,10 @@ public:
 };
 
 extern bool CW_table_changed;
+
+extern bool CW_KEYLINE_isopen;
+extern void close_CW_KEYLINE();
+extern int open_CW_KEYLINE();
+extern bool CW_KEYLINE_isopen;
 
 #endif

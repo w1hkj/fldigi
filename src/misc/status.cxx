@@ -298,6 +298,7 @@ status progStatus = {
 	false,			// 	bool	nanoCW_online;
 	false,			// 	bool	nanoFSK_online;
 
+	false,			// 	bool	useCW_KEYLINE;
 //----------------------------------------------------------------------
 	false				// bool bLastStateRead;
 };
@@ -674,6 +675,7 @@ if (!bWF_only) {
 	spref.set("nanoCW_online", nanoCW_online);
 	spref.set("nanoFSK_online", nanoFSK_online);
 
+	spref.set("useCW_KEYLINE", useCW_KEYLINE);
 
 }
 
@@ -988,6 +990,7 @@ void status::loadLastState()
 		spref.get("nanoCW_online", i, nanoCW_online); nanoCW_online = i;
 		spref.get("nanoFSK_online", i, nanoFSK_online); nanoFSK_online = i;
 
+		spref.get("useCW_KEYLINE", i, useCW_KEYLINE); useCW_KEYLINE = i;
 }
 
 void status::initLastState()

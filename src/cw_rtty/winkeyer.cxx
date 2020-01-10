@@ -48,7 +48,7 @@
 
 #include "icons.h"
 
-#define LOG_WKEY  LOG_VERBOSE
+#define LOG_WKEY  LOG_INFO
 
 using namespace std;
 

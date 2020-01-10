@@ -567,6 +567,7 @@ void WFdisp::processFFT() {
 					 IMAGE_WIDTH * sizeof(short int));
 		}
 
+		dispdec = 1.0 * WFBLOCKSIZE / srate;
 		dispcnt = 1.0 * WFBLOCKSIZE / SC_SMPLRATE; // FAST
 		if (wfspeed == NORMAL) dispcnt *= NORMAL;
 		if (wfspeed == SLOW) dispcnt *= progdefaults.drop_speed;

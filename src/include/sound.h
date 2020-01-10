@@ -360,7 +360,7 @@ public:
 	size_t	Read(float *buf, size_t count);
 	size_t	resample_write(float* buf, size_t count){return 0;};
 	bool	must_close(int dir = 0) { return false; }
-	void	flush(unsigned) { }
+	void	flush(unsigned);
 };
 
 #endif // SOUND_H
