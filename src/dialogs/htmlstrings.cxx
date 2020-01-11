@@ -67,7 +67,7 @@ Espa\361ol     Spanish      Pavel Milanes Costa CO7WT\n\
                          Christian W. Correa HK4QWC\n\
 Deutsch     German       Marc Richter        DF2MR\n\
 Fran\347ais    French       Bernard Seront      F4GAR\n\
-Italiano    Italian      Pierfrancesco Caci  IK5PVX\n\
+Italiano    Italian      Emanuale Repetto    IZ1UKX\n\
 Język       Polish       Roman Bagiński      SP4JEU\n\
 Nederlands  Dutch        Peter van der Post  PA1POS\n\
 Pусский     Russian      Alexandr Kalugin    RX9CDR\n\
