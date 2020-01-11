@@ -61,7 +61,7 @@ public:
 	~Caudio_alert();
 
 	int  open() {
-		if (sc_audio) return sc_audio->open(NULL);
+		if (sc_audio) return sc_audio->open();
 		return 0;
 	}
 	void close() {

@@ -330,7 +330,7 @@ void trx_trx_receive_loop()
 
 				active_modem->rx_process(rbvec[0].buf, numread);
 
-				if (audio_alert && progdefaults.mon_xcvr_audio)
+				if (audio_alert)
 					audio_alert->monitor(rbvec[0].buf, numread, current_RXsamplerate);
 
 				if (progdefaults.rsid)

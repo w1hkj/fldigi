@@ -771,6 +771,7 @@ extern Fl_Button *btn_select_rx_extract_timed_out;
 extern Fl_Choice *mnu_rx_timed_out_alert_menu;
 extern Fl_Button *btn_test_rx_extract_timed_out;
 extern Fl_Check_Button *btn_enable_flmsg_time_out_wav;
+extern Fl_Value_Slider2 *sldrAlertVolume;
 extern Fl_Group *grpSoundDevices;
 extern Fl_Group *AudioOSS;
 #include <FL/Fl_Input_Choice.H>

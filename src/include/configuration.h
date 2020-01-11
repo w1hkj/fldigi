@@ -1028,6 +1028,9 @@
         ELEM_(int, BELL_RING_MENU, "BELL_RING_MENU",                                    \
               "menu selector",                                                          \
               9)                                                                        \
+        ELEM_(int, alert_volume, "alert_volume",                                        \
+              "Audio alert stream volume",                                              \
+              50)                                                                       \
         ELEM_(int, mon_xcvr_audio, "mon_xcvr_audio",                                    \
               "monitor transceiver audio on alert audio device",                        \
               0)                                                                        \

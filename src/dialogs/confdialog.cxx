@@ -6903,6 +6903,13 @@ static void cb_btn_enable_flmsg_time_out_wav(Fl_Check_Button* o, void*) {
   progdefaults.ENABLE_RX_EXTRACT_TIMED_OUT=o->value();
 }
 
+Fl_Value_Slider2 *sldrAlertVolume=(Fl_Value_Slider2 *)0;
+
+static void cb_sldrAlertVolume(Fl_Value_Slider2* o, void*) {
+  progdefaults.alert_volume = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *grpSoundDevices=(Fl_Group *)0;
 
 Fl_Group *AudioOSS=(Fl_Group *)0;
@@ -15460,17 +15467,17 @@ i.e. localhost"));
       o->selection_color(FL_LIGHT1);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
-      { Fl_Group* o = new Fl_Group(203, 26, 590, 66);
+      { Fl_Group* o = new Fl_Group(203, 18, 590, 64);
         o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_File_Input* o = inp_wav_fname_regex = new Fl_File_Input(208, 49, 304, 35, _("REGEX detected wav"));
+        { Fl_File_Input* o = inp_wav_fname_regex = new Fl_File_Input(208, 41, 304, 35, _("REGEX detected wav"));
           inp_wav_fname_regex->align(Fl_Align(FL_ALIGN_TOP_LEFT));
           o->value(progdefaults.BWSR_REGEX_MATCH.c_str());
         } // Fl_File_Input* inp_wav_fname_regex
-        { btn_select_regex_wav = new Fl_Button(514, 60, 60, 24, _("Select"));
+        { btn_select_regex_wav = new Fl_Button(514, 52, 60, 24, _("Select"));
           btn_select_regex_wav->callback((Fl_Callback*)cb_btn_select_regex_wav);
         } // Fl_Button* btn_select_regex_wav
-        { Fl_Choice* o = mnu_regex_alert_menu = new Fl_Choice(578, 60, 135, 24, _("Sound:"));
+        { Fl_Choice* o = mnu_regex_alert_menu = new Fl_Choice(578, 52, 135, 24, _("Sound:"));
           mnu_regex_alert_menu->box(FL_DOWN_BOX);
           mnu_regex_alert_menu->down_box(FL_BORDER_BOX);
           mnu_regex_alert_menu->color((Fl_Color)53);
@@ -15479,27 +15486,27 @@ i.e. localhost"));
           o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");
           o->value(progdefaults.REGEX_ALERT_MENU);
         } // Fl_Choice* mnu_regex_alert_menu
-        { Fl_Check_Button* o = btn_enable_regex_match_wa = new Fl_Check_Button(718, 39, 70, 15, _("Enable"));
+        { Fl_Check_Button* o = btn_enable_regex_match_wa = new Fl_Check_Button(718, 31, 70, 15, _("Enable"));
           btn_enable_regex_match_wa->down_box(FL_DOWN_BOX);
           btn_enable_regex_match_wa->callback((Fl_Callback*)cb_btn_enable_regex_match_wa);
           o->value(progdefaults.ENABLE_BWSR_REGEX_MATCH);
         } // Fl_Check_Button* btn_enable_regex_match_wa
-        { btn_test_regex_wav = new Fl_Button(718, 60, 60, 24, _("Test"));
+        { btn_test_regex_wav = new Fl_Button(718, 52, 60, 24, _("Test"));
           btn_test_regex_wav->callback((Fl_Callback*)cb_btn_test_regex_wav);
         } // Fl_Button* btn_test_regex_wav
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(203, 92, 590, 66);
+      { Fl_Group* o = new Fl_Group(203, 81, 590, 64);
         o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_File_Input* o = inp_wav_fname_mycall = new Fl_File_Input(208, 114, 304, 35, _("MYCALL detected wav"));
+        { Fl_File_Input* o = inp_wav_fname_mycall = new Fl_File_Input(208, 103, 304, 35, _("MYCALL detected wav"));
           inp_wav_fname_mycall->align(Fl_Align(FL_ALIGN_TOP_LEFT));
           o->value(progdefaults.BWSR_MYCALL_MATCH.c_str());
         } // Fl_File_Input* inp_wav_fname_mycall
-        { btn_select_mycall_wav = new Fl_Button(514, 125, 60, 24, _("Select"));
+        { btn_select_mycall_wav = new Fl_Button(514, 114, 60, 24, _("Select"));
           btn_select_mycall_wav->callback((Fl_Callback*)cb_btn_select_mycall_wav);
         } // Fl_Button* btn_select_mycall_wav
-        { Fl_Choice* o = mnu_mycall_alert_menu = new Fl_Choice(578, 125, 135, 24, _("Sound:"));
+        { Fl_Choice* o = mnu_mycall_alert_menu = new Fl_Choice(578, 114, 135, 24, _("Sound:"));
           mnu_mycall_alert_menu->box(FL_DOWN_BOX);
           mnu_mycall_alert_menu->down_box(FL_BORDER_BOX);
           mnu_mycall_alert_menu->color((Fl_Color)53);
@@ -15508,27 +15515,27 @@ i.e. localhost"));
           o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");
           o->value(progdefaults.MYCALL_ALERT_MENU);
         } // Fl_Choice* mnu_mycall_alert_menu
-        { Fl_Check_Button* o = btn_enable_mycall_match_wav = new Fl_Check_Button(718, 103, 70, 15, _("Enable"));
+        { Fl_Check_Button* o = btn_enable_mycall_match_wav = new Fl_Check_Button(718, 92, 70, 15, _("Enable"));
           btn_enable_mycall_match_wav->down_box(FL_DOWN_BOX);
           btn_enable_mycall_match_wav->callback((Fl_Callback*)cb_btn_enable_mycall_match_wav);
           o->value(progdefaults.ENABLE_BWSR_MYCALL_MATCH);
         } // Fl_Check_Button* btn_enable_mycall_match_wav
-        { btn_test_mycall_wav = new Fl_Button(718, 125, 60, 24, _("Test"));
+        { btn_test_mycall_wav = new Fl_Button(718, 114, 60, 24, _("Test"));
           btn_test_mycall_wav->callback((Fl_Callback*)cb_btn_test_mycall_wav);
         } // Fl_Button* btn_test_mycall_wav
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(203, 159, 590, 66);
+      { Fl_Group* o = new Fl_Group(203, 144, 590, 64);
         o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_File_Input* o = inp_wav_fname_rsid = new Fl_File_Input(208, 181, 304, 35, _("RsID audio alert wav"));
+        { Fl_File_Input* o = inp_wav_fname_rsid = new Fl_File_Input(208, 166, 304, 35, _("RsID audio alert wav"));
           inp_wav_fname_rsid->align(Fl_Align(FL_ALIGN_TOP_LEFT));
           o->value(progdefaults.RSID_MATCH.c_str());
         } // Fl_File_Input* inp_wav_fname_rsid
-        { btn_select_rsid_wav = new Fl_Button(514, 192, 60, 24, _("Select"));
+        { btn_select_rsid_wav = new Fl_Button(514, 177, 60, 24, _("Select"));
           btn_select_rsid_wav->callback((Fl_Callback*)cb_btn_select_rsid_wav);
         } // Fl_Button* btn_select_rsid_wav
-        { Fl_Choice* o = mnu_rsid_alert_menu = new Fl_Choice(578, 192, 135, 24, _("Sound:"));
+        { Fl_Choice* o = mnu_rsid_alert_menu = new Fl_Choice(578, 177, 135, 24, _("Sound:"));
           mnu_rsid_alert_menu->box(FL_DOWN_BOX);
           mnu_rsid_alert_menu->down_box(FL_BORDER_BOX);
           mnu_rsid_alert_menu->color((Fl_Color)53);
@@ -15537,27 +15544,27 @@ i.e. localhost"));
           o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");
           o->value(progdefaults.RSID_ALERT_MENU);
         } // Fl_Choice* mnu_rsid_alert_menu
-        { Fl_Check_Button* o = btn_enable_rsid_match_wav = new Fl_Check_Button(718, 171, 70, 15, _("Enable"));
+        { Fl_Check_Button* o = btn_enable_rsid_match_wav = new Fl_Check_Button(718, 156, 70, 15, _("Enable"));
           btn_enable_rsid_match_wav->down_box(FL_DOWN_BOX);
           btn_enable_rsid_match_wav->callback((Fl_Callback*)cb_btn_enable_rsid_match_wav);
           o->value(progdefaults.ENABLE_RSID_MATCH);
         } // Fl_Check_Button* btn_enable_rsid_match_wav
-        { btn_test_rsid_wav = new Fl_Button(718, 192, 60, 24, _("Test"));
+        { btn_test_rsid_wav = new Fl_Button(718, 177, 60, 24, _("Test"));
           btn_test_rsid_wav->callback((Fl_Callback*)cb_btn_test_rsid_wav);
         } // Fl_Button* btn_test_rsid_wav
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(203, 225, 590, 120);
+      { Fl_Group* o = new Fl_Group(203, 207, 590, 114);
         o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_File_Input* o = inp_wav_flmsg_rcvd = new Fl_File_Input(208, 245, 304, 35, _("flmsg received wav"));
+        { Fl_File_Input* o = inp_wav_flmsg_rcvd = new Fl_File_Input(208, 227, 304, 35, _("flmsg received wav"));
           inp_wav_flmsg_rcvd->align(Fl_Align(FL_ALIGN_TOP_LEFT));
           o->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
         } // Fl_File_Input* inp_wav_flmsg_rcvd
-        { btn_select_rx_extract_msg = new Fl_Button(514, 256, 60, 24, _("Select"));
+        { btn_select_rx_extract_msg = new Fl_Button(514, 238, 60, 24, _("Select"));
           btn_select_rx_extract_msg->callback((Fl_Callback*)cb_btn_select_rx_extract_msg);
         } // Fl_Button* btn_select_rx_extract_msg
-        { Fl_Choice* o = mnu_rx_extract_alert_menu = new Fl_Choice(578, 256, 135, 24, _("Sound:"));
+        { Fl_Choice* o = mnu_rx_extract_alert_menu = new Fl_Choice(578, 238, 135, 24, _("Sound:"));
           mnu_rx_extract_alert_menu->box(FL_DOWN_BOX);
           mnu_rx_extract_alert_menu->down_box(FL_BORDER_BOX);
           mnu_rx_extract_alert_menu->color((Fl_Color)53);
@@ -15566,22 +15573,22 @@ i.e. localhost"));
           o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");
           o->value(progdefaults.RX_EXTRACT_ALERT_MENU);
         } // Fl_Choice* mnu_rx_extract_alert_menu
-        { Fl_Check_Button* o = btn_enable_flmsg_wav = new Fl_Check_Button(718, 234, 70, 15, _("Enable"));
+        { Fl_Check_Button* o = btn_enable_flmsg_wav = new Fl_Check_Button(718, 216, 70, 15, _("Enable"));
           btn_enable_flmsg_wav->down_box(FL_DOWN_BOX);
           btn_enable_flmsg_wav->callback((Fl_Callback*)cb_btn_enable_flmsg_wav);
           o->value(progdefaults.ENABLE_RX_EXTRACT_MSG_RCVD);
         } // Fl_Check_Button* btn_enable_flmsg_wav
-        { btn_test_flmsg_extract_wav = new Fl_Button(718, 256, 60, 24, _("Test"));
+        { btn_test_flmsg_extract_wav = new Fl_Button(718, 238, 60, 24, _("Test"));
           btn_test_flmsg_extract_wav->callback((Fl_Callback*)cb_btn_test_flmsg_extract_wav);
         } // Fl_Button* btn_test_flmsg_extract_wav
-        { Fl_File_Input* o = inp_wav_flmsg_timed_out = new Fl_File_Input(208, 303, 304, 35, _("flmsg timed out wav"));
+        { Fl_File_Input* o = inp_wav_flmsg_timed_out = new Fl_File_Input(208, 282, 304, 35, _("flmsg timed out wav"));
           inp_wav_flmsg_timed_out->align(Fl_Align(FL_ALIGN_TOP_LEFT));
           o->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
         } // Fl_File_Input* inp_wav_flmsg_timed_out
-        { btn_select_rx_extract_timed_out = new Fl_Button(514, 314, 60, 24, _("Select"));
+        { btn_select_rx_extract_timed_out = new Fl_Button(514, 293, 60, 24, _("Select"));
           btn_select_rx_extract_timed_out->callback((Fl_Callback*)cb_btn_select_rx_extract_timed_out);
         } // Fl_Button* btn_select_rx_extract_timed_out
-        { Fl_Choice* o = mnu_rx_timed_out_alert_menu = new Fl_Choice(578, 314, 135, 24, _("Sound:"));
+        { Fl_Choice* o = mnu_rx_timed_out_alert_menu = new Fl_Choice(578, 293, 135, 24, _("Sound:"));
           mnu_rx_timed_out_alert_menu->box(FL_DOWN_BOX);
           mnu_rx_timed_out_alert_menu->down_box(FL_BORDER_BOX);
           mnu_rx_timed_out_alert_menu->color((Fl_Color)53);
@@ -15590,67 +15597,88 @@ i.e. localhost"));
           o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell|rtty_bell|standard_tone");
           o->value(progdefaults.TIMED_OUT_ALERT_MENU);
         } // Fl_Choice* mnu_rx_timed_out_alert_menu
-        { btn_test_rx_extract_timed_out = new Fl_Button(718, 314, 60, 24, _("Test"));
+        { btn_test_rx_extract_timed_out = new Fl_Button(718, 293, 60, 24, _("Test"));
           btn_test_rx_extract_timed_out->callback((Fl_Callback*)cb_btn_test_rx_extract_timed_out);
         } // Fl_Button* btn_test_rx_extract_timed_out
-        { Fl_Check_Button* o = btn_enable_flmsg_time_out_wav = new Fl_Check_Button(718, 293, 70, 15, _("Enable"));
+        { Fl_Check_Button* o = btn_enable_flmsg_time_out_wav = new Fl_Check_Button(718, 271, 70, 15, _("Enable"));
           btn_enable_flmsg_time_out_wav->down_box(FL_DOWN_BOX);
           btn_enable_flmsg_time_out_wav->callback((Fl_Callback*)cb_btn_enable_flmsg_time_out_wav);
           o->value(progdefaults.ENABLE_RX_EXTRACT_TIMED_OUT);
         } // Fl_Check_Button* btn_enable_flmsg_time_out_wav
         o->end();
       } // Fl_Group* o
+      { Fl_Value_Slider2* o = sldrAlertVolume = new Fl_Value_Slider2(256, 325, 403, 20, _("Alert volume"));
+        sldrAlertVolume->tooltip(_("My transmit CW WPM"));
+        sldrAlertVolume->type(1);
+        sldrAlertVolume->box(FL_DOWN_BOX);
+        sldrAlertVolume->color(FL_BACKGROUND_COLOR);
+        sldrAlertVolume->selection_color(FL_BACKGROUND_COLOR);
+        sldrAlertVolume->labeltype(FL_NORMAL_LABEL);
+        sldrAlertVolume->labelfont(0);
+        sldrAlertVolume->labelsize(14);
+        sldrAlertVolume->labelcolor(FL_FOREGROUND_COLOR);
+        sldrAlertVolume->minimum(5);
+        sldrAlertVolume->maximum(100);
+        sldrAlertVolume->step(1);
+        sldrAlertVolume->value(50);
+        sldrAlertVolume->textsize(14);
+        sldrAlertVolume->callback((Fl_Callback*)cb_sldrAlertVolume);
+        sldrAlertVolume->align(Fl_Align(FL_ALIGN_RIGHT));
+        sldrAlertVolume->when(FL_WHEN_CHANGED);
+        o->value(progdefaults.alert_volume);
+        o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
+      } // Fl_Value_Slider2* sldrAlertVolume
       add_tree_item(o);
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = grpSoundDevices = new Fl_Group(200, 0, 600, 350, _("Soundcard/Devices"));
+    { Fl_Group* o = grpSoundDevices = new Fl_Group(200, -4, 600, 350, _("Soundcard/Devices"));
       grpSoundDevices->box(FL_ENGRAVED_BOX);
       grpSoundDevices->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       grpSoundDevices->hide();
-      { AudioOSS = new Fl_Group(255, 24, 500, 45);
+      { AudioOSS = new Fl_Group(255, 20, 500, 45);
         AudioOSS->box(FL_ENGRAVED_FRAME);
-        { btnAudioIO[0] = new Fl_Round_Button(267, 34, 53, 25, _("OSS"));
+        { btnAudioIO[0] = new Fl_Round_Button(267, 30, 53, 25, _("OSS"));
           btnAudioIO[0]->tooltip(_("Use OSS audio server"));
           btnAudioIO[0]->down_box(FL_DOWN_BOX);
           btnAudioIO[0]->selection_color((Fl_Color)1);
           btnAudioIO[0]->callback((Fl_Callback*)cb_btnAudioIO);
         } // Fl_Round_Button* btnAudioIO[0]
-        { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(572, 34, 165, 25, _("Device:"));
+        { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(572, 30, 165, 25, _("Device:"));
           menuOSSDev->tooltip(_("Select device"));
           menuOSSDev->callback((Fl_Callback*)cb_menuOSSDev);
           o->value(progdefaults.OSSdevice.c_str());
         } // Fl_Input_Choice* menuOSSDev
         AudioOSS->end();
       } // Fl_Group* AudioOSS
-      { AudioPort = new Fl_Group(255, 69, 500, 79);
+      { AudioPort = new Fl_Group(255, 65, 500, 79);
         AudioPort->box(FL_ENGRAVED_FRAME);
-        { btnAudioIO[1] = new Fl_Round_Button(267, 97, 95, 25, _("PortAudio"));
+        { btnAudioIO[1] = new Fl_Round_Button(267, 93, 95, 25, _("PortAudio"));
           btnAudioIO[1]->tooltip(_("Use Port Audio server"));
           btnAudioIO[1]->down_box(FL_DOWN_BOX);
           btnAudioIO[1]->selection_color((Fl_Color)1);
           btnAudioIO[1]->callback((Fl_Callback*)cb_btnAudioIO1);
         } // Fl_Round_Button* btnAudioIO[1]
-        { menuPortInDev = new Fl_Choice(427, 80, 310, 25, _("Capture:"));
+        { menuPortInDev = new Fl_Choice(427, 76, 310, 25, _("Capture:"));
           menuPortInDev->tooltip(_("Audio input device"));
           menuPortInDev->down_box(FL_BORDER_BOX);
           menuPortInDev->callback((Fl_Callback*)cb_menuPortInDev);
         } // Fl_Choice* menuPortInDev
-        { menuPortOutDev = new Fl_Choice(427, 115, 310, 25, _("Playback:"));
+        { menuPortOutDev = new Fl_Choice(427, 111, 310, 25, _("Playback:"));
           menuPortOutDev->tooltip(_("Audio output device"));
           menuPortOutDev->down_box(FL_BORDER_BOX);
           menuPortOutDev->callback((Fl_Callback*)cb_menuPortOutDev);
         } // Fl_Choice* menuPortOutDev
         AudioPort->end();
       } // Fl_Group* AudioPort
-      { AudioPulse = new Fl_Group(255, 149, 500, 45);
+      { AudioPulse = new Fl_Group(255, 145, 500, 45);
         AudioPulse->box(FL_ENGRAVED_FRAME);
-        { btnAudioIO[2] = new Fl_Round_Button(267, 160, 100, 25, _("PulseAudio"));
+        { btnAudioIO[2] = new Fl_Round_Button(267, 156, 100, 25, _("PulseAudio"));
           btnAudioIO[2]->tooltip(_("Use Pulse Audio server"));
           btnAudioIO[2]->down_box(FL_DOWN_BOX);
           btnAudioIO[2]->selection_color((Fl_Color)1);
           btnAudioIO[2]->callback((Fl_Callback*)cb_btnAudioIO2);
         } // Fl_Round_Button* btnAudioIO[2]
-        { Fl_Input2* o = inpPulseServer = new Fl_Input2(512, 160, 225, 24, _("Server string:"));
+        { Fl_Input2* o = inpPulseServer = new Fl_Input2(512, 156, 225, 24, _("Server string:"));
           inpPulseServer->tooltip(_("Leave this blank or refer to\nhttp://www.pulseaudio.org/wiki/ServerStrings"));
           inpPulseServer->box(FL_DOWN_BOX);
           inpPulseServer->color(FL_BACKGROUND2_COLOR);
@@ -15667,9 +15695,9 @@ i.e. localhost"));
         } // Fl_Input2* inpPulseServer
         AudioPulse->end();
       } // Fl_Group* AudioPulse
-      { AudioNull = new Fl_Group(255, 194, 135, 45);
+      { AudioNull = new Fl_Group(255, 190, 135, 45);
         AudioNull->box(FL_ENGRAVED_FRAME);
-        { btnAudioIO[3] = new Fl_Round_Button(268, 204, 100, 25, _("File I/O only"));
+        { btnAudioIO[3] = new Fl_Round_Button(268, 200, 100, 25, _("File I/O only"));
           btnAudioIO[3]->tooltip(_("NO AUDIO DEVICE AVAILABLE (or testing)"));
           btnAudioIO[3]->down_box(FL_DOWN_BOX);
           btnAudioIO[3]->selection_color((Fl_Color)1);
@@ -15677,9 +15705,9 @@ i.e. localhost"));
         } // Fl_Round_Button* btnAudioIO[3]
         AudioNull->end();
       } // Fl_Group* AudioNull
-      { AudioDuplex = new Fl_Group(390, 194, 365, 45);
+      { AudioDuplex = new Fl_Group(390, 190, 365, 45);
         AudioDuplex->box(FL_ENGRAVED_FRAME);
-        { Fl_Round_Button* o = btn_is_full_duplex = new Fl_Round_Button(433, 204, 225, 25, _("Device supports full duplex"));
+        { Fl_Round_Button* o = btn_is_full_duplex = new Fl_Round_Button(433, 200, 225, 25, _("Device supports full duplex"));
           btn_is_full_duplex->tooltip(_("Capture/Playback supports full duplex operation"));
           btn_is_full_duplex->down_box(FL_DOWN_BOX);
           btn_is_full_duplex->value(1);
@@ -15689,15 +15717,15 @@ i.e. localhost"));
         } // Fl_Round_Button* btn_is_full_duplex
         AudioDuplex->end();
       } // Fl_Group* AudioDuplex
-      { AudioAlerts = new Fl_Group(255, 239, 500, 80, _("Alerts / Rx Audio"));
+      { AudioAlerts = new Fl_Group(255, 235, 500, 80, _("Alerts / Rx Audio"));
         AudioAlerts->box(FL_ENGRAVED_FRAME);
         AudioAlerts->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { menuAlertsDev = new Fl_Choice(427, 259, 310, 25, _("Playback"));
+        { menuAlertsDev = new Fl_Choice(427, 255, 310, 25, _("Playback"));
           menuAlertsDev->tooltip(_("Audio output device"));
           menuAlertsDev->down_box(FL_BORDER_BOX);
           menuAlertsDev->callback((Fl_Callback*)cb_menuAlertsDev);
         } // Fl_Choice* menuAlertsDev
-        { Fl_Round_Button* o = btn_enable_audio_alerts = new Fl_Round_Button(427, 287, 225, 25, _("Enable Audio alerts"));
+        { Fl_Round_Button* o = btn_enable_audio_alerts = new Fl_Round_Button(427, 283, 225, 25, _("Enable Audio alerts"));
           btn_enable_audio_alerts->tooltip(_("First select audio alert playback device"));
           btn_enable_audio_alerts->down_box(FL_DOWN_BOX);
           btn_enable_audio_alerts->selection_color((Fl_Color)1);
@@ -17295,6 +17323,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
   { Fl_Double_Window* o = new Fl_Double_Window(360, 230, _("Rx Audio Monitor"));
     w = o; if (w) {/* empty */}
     { Fl_Check_Button* o = btn_mon_xcvr_audio = new Fl_Check_Button(50, 7, 70, 18, _("Monitor ON"));
+      btn_mon_xcvr_audio->tooltip(_("Rx audio stream ON"));
       btn_mon_xcvr_audio->down_box(FL_DOWN_BOX);
       btn_mon_xcvr_audio->callback((Fl_Callback*)cb_btn_mon_xcvr_audio);
       o->value(progdefaults.mon_xcvr_audio);
@@ -17303,7 +17332,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
       o->box(FL_ENGRAVED_FRAME);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       { Fl_Value_Slider2* o = sldrRxFilt_bw = new Fl_Value_Slider2(10, 118, 300, 20, _("BW"));
-        sldrRxFilt_bw->tooltip(_("My transmit CW WPM"));
+        sldrRxFilt_bw->tooltip(_("Filter bandwidth"));
         sldrRxFilt_bw->type(5);
         sldrRxFilt_bw->box(FL_DOWN_BOX);
         sldrRxFilt_bw->color((Fl_Color)206);
@@ -17323,7 +17352,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
         o->value(progdefaults.RxFilt_bw);
       } // Fl_Value_Slider2* sldrRxFilt_bw
       { Fl_Value_Slider2* o = sldrRxFilt_mid = new Fl_Value_Slider2(10, 144, 300, 20, _("Mid"));
-        sldrRxFilt_mid->tooltip(_("My transmit CW WPM"));
+        sldrRxFilt_mid->tooltip(_("Filter center frequ ency"));
         sldrRxFilt_mid->type(5);
         sldrRxFilt_mid->box(FL_DOWN_BOX);
         sldrRxFilt_mid->color((Fl_Color)206);
@@ -17343,7 +17372,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
         o->value(progdefaults.RxFilt_mid);
       } // Fl_Value_Slider2* sldrRxFilt_mid
       { Fl_Value_Slider2* o = sldrRxFilt_low = new Fl_Value_Slider2(10, 170, 300, 20, _("Low"));
-        sldrRxFilt_low->tooltip(_("My transmit CW WPM"));
+        sldrRxFilt_low->tooltip(_("Filter low cutoff frequency"));
         sldrRxFilt_low->type(5);
         sldrRxFilt_low->box(FL_DOWN_BOX);
         sldrRxFilt_low->color((Fl_Color)206);
@@ -17363,7 +17392,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
         o->value(progdefaults.RxFilt_low);
       } // Fl_Value_Slider2* sldrRxFilt_low
       { Fl_Value_Slider2* o = sldrRxFilt_high = new Fl_Value_Slider2(10, 196, 300, 20, _("High"));
-        sldrRxFilt_high->tooltip(_("My transmit CW WPM"));
+        sldrRxFilt_high->tooltip(_("Filter high cutoff frequency"));
         sldrRxFilt_high->type(5);
         sldrRxFilt_high->box(FL_DOWN_BOX);
         sldrRxFilt_high->color((Fl_Color)206);
@@ -17383,6 +17412,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
         o->value(progdefaults.RxFilt_high);
       } // Fl_Value_Slider2* sldrRxFilt_high
       { Fl_Check_Button* o = btn_RxFilt_at_track = new Fl_Check_Button(156, 93, 70, 15, _("track WF cursor"));
+        btn_RxFilt_at_track->tooltip(_("Filter center freq tracks waterfall track point"));
         btn_RxFilt_at_track->down_box(FL_DOWN_BOX);
         btn_RxFilt_at_track->callback((Fl_Callback*)cb_btn_RxFilt_at_track);
         o->value(progdefaults.RxFilt_track_wf);
@@ -17390,7 +17420,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
       o->end();
     } // Fl_Group* o
     { Fl_Value_Slider2* o = sldrRxFilt_vol = new Fl_Value_Slider2(10, 55, 300, 20, _("Vol\'"));
-      sldrRxFilt_vol->tooltip(_("My transmit CW WPM"));
+      sldrRxFilt_vol->tooltip(_("Rx audio volume"));
       sldrRxFilt_vol->type(5);
       sldrRxFilt_vol->box(FL_DOWN_BOX);
       sldrRxFilt_vol->color((Fl_Color)206);
@@ -17409,7 +17439,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
       o->value(progdefaults.RxFilt_vol);
     } // Fl_Value_Slider2* sldrRxFilt_vol
     { Fl_Check_Button* o = btn_mon_dsp_audio = new Fl_Check_Button(50, 29, 70, 18, _("Filtered audio"));
-      btn_mon_dsp_audio->tooltip(_("Set Mid point of filter at waterfall cursor"));
+      btn_mon_dsp_audio->tooltip(_("Enable DSP filtering of rx audio stream"));
       btn_mon_dsp_audio->down_box(FL_DOWN_BOX);
       btn_mon_dsp_audio->callback((Fl_Callback*)cb_btn_mon_dsp_audio);
       o->value(progdefaults.mon_dsp_audio);

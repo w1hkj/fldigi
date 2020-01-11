@@ -57,9 +57,6 @@ protected:
 };
 
 class c_portaudio {
-#define NUM_CHANNELS 2
-#define MAX_FRAMES_PER_BUFFER 2048
-#define SCRATE 8000
 
 friend void process_alert();
 friend void stream_process();
@@ -69,9 +66,9 @@ public:
 	enum { ALERT, MONITOR };
 
 	int		paError;
-	float	data_frames[ MAX_FRAMES_PER_BUFFER * NUM_CHANNELS ];
+	float	*data_frames; //[ MAX_FRAMES_PER_BUFFER * NUM_CHANNELS ];
 	int		ptr;
-	double	sr;
+	double	sr;				// sample rate of output sound codec
 	int		data_ptr;
 	int		num_frames;
 	int		state;
@@ -91,7 +88,7 @@ public:
 	double	*dbuffer;
 	float   *fbuffer;
 	float	*nubuffer;
-	double	b_sr;
+	double	b_sr;			// sample rate of source monitor stream
 	int		b_len;
 // ringbuffer for streaming audio
 	ringbuffer<float> * monitor_rb;
@@ -107,7 +104,7 @@ public:
 	c_portaudio();
 	~c_portaudio();
 
-	int 	open(void *);
+	int 	open();//void *);
 	void	close();
 	int		is_open() { return stream != 0; }
 
@@ -130,5 +127,8 @@ public:
 
 	void	init_filter();
 };
+
+void open_alert_port(c_portaudio *cpa);
+void close_alert_port(c_portaudio *cpa);
 
 #endif

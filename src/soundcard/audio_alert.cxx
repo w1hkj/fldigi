@@ -6,7 +6,9 @@
 #include "configuration.h"
 #include "confdialog.h"
 
+#define SC_RATE 8000
 #define PHONERING 15000
+
 int Caudio_alert::int_phone_ring[PHONERING];
 
 #define BEEBOO 48000
@@ -15,9 +17,9 @@ int Caudio_alert::int_audio_beeboo[BEEBOO];
 void Caudio_alert::bark()
 {
 	try {
-		sc_audio->play_sound(int_audio_bark, BARK_SIZE, SCRATE);
-		sc_audio->silence(0.5, SCRATE);
-		sc_audio->play_sound(int_audio_bark, BARK_SIZE, SCRATE);
+		sc_audio->play_sound(int_audio_bark, BARK_SIZE, SC_RATE);
+		sc_audio->silence(0.5, SC_RATE);
+		sc_audio->play_sound(int_audio_bark, BARK_SIZE, SC_RATE);
 	} catch (...) {
 		throw;
 	} 
@@ -26,7 +28,7 @@ void Caudio_alert::bark()
 void Caudio_alert::checkout()
 {
 	try {
-		sc_audio->play_sound(int_audio_checkout, CHECKOUT_SIZE, SCRATE);
+		sc_audio->play_sound(int_audio_checkout, CHECKOUT_SIZE, SC_RATE);
 	} catch (...) {
 		throw;
 	}
@@ -35,7 +37,7 @@ void Caudio_alert::checkout()
 void Caudio_alert::doesnot()
 {
 	try {
-		sc_audio->play_sound(int_audio_doesnot, DOESNOT_SIZE, SCRATE);
+		sc_audio->play_sound(int_audio_doesnot, DOESNOT_SIZE, SC_RATE);
 	} catch (...) {
 		throw;
 	}
@@ -44,9 +46,9 @@ void Caudio_alert::doesnot()
 void Caudio_alert::diesel()
 {
 	try {
-		sc_audio->play_sound(int_audio_diesel, DIESEL_SIZE, SCRATE);
-		sc_audio->silence(0.5, SCRATE);
-		sc_audio->play_sound(int_audio_diesel, DIESEL_SIZE, SCRATE);
+		sc_audio->play_sound(int_audio_diesel, DIESEL_SIZE, SC_RATE);
+		sc_audio->silence(0.5, SC_RATE);
+		sc_audio->play_sound(int_audio_diesel, DIESEL_SIZE, SC_RATE);
 	} catch (...) {
 		throw;
 	}
@@ -55,7 +57,7 @@ void Caudio_alert::diesel()
 void Caudio_alert::steam_train()
 {
 	try {
-		sc_audio->play_sound(int_steam_train, STEAM_TRAIN_SIZE, SCRATE);
+		sc_audio->play_sound(int_steam_train, STEAM_TRAIN_SIZE, SC_RATE);
 	} catch (...) {
 		throw;
 	}
@@ -64,7 +66,7 @@ void Caudio_alert::steam_train()
 void Caudio_alert::beeboo()
 {
 	try {
-		sc_audio->play_sound(int_audio_beeboo, BEEBOO, SCRATE);
+		sc_audio->play_sound(int_audio_beeboo, BEEBOO, SC_RATE);
 	} catch (...) {
 		throw;
 	}
@@ -73,9 +75,9 @@ void Caudio_alert::beeboo()
 void Caudio_alert::phone()
 {
 	try {
-		sc_audio->play_sound(int_phone_ring, PHONERING, SCRATE);
-		sc_audio->silence(1.0, SCRATE);
-		sc_audio->play_sound(int_phone_ring, PHONERING, SCRATE);
+		sc_audio->play_sound(int_phone_ring, PHONERING, SC_RATE);
+		sc_audio->silence(1.0, SC_RATE);
+		sc_audio->play_sound(int_phone_ring, PHONERING, SC_RATE);
 	} catch (...) {
 		throw;
 	}
@@ -84,7 +86,7 @@ void Caudio_alert::phone()
 void Caudio_alert::dinner_bell()
 {
 	try {
-		sc_audio->play_sound(int_dinner_bell, DINNER_BELL, SCRATE);
+		sc_audio->play_sound(int_dinner_bell, DINNER_BELL, SC_RATE);
 	} catch (...) {
 		throw;
 	}
@@ -93,7 +95,7 @@ void Caudio_alert::dinner_bell()
 void Caudio_alert::tty_bell()
 {
 	try {
-		sc_audio->play_sound(int_tty_bell, TTY_BELL, SCRATE);
+		sc_audio->play_sound(int_tty_bell, TTY_BELL, SC_RATE);
 	} catch (...) {
 		throw;
 	}
@@ -168,7 +170,8 @@ void Caudio_alert::alert(std::string s)
 
 void Caudio_alert::monitor(double *buffer, int len, int _sr)
 {
-	sc_audio->mon_write(buffer, len, _sr);
+	if (progdefaults.mon_xcvr_audio)
+		sc_audio->mon_write(buffer, len, _sr);
 }
 
 Caudio_alert::Caudio_alert()
@@ -225,8 +228,7 @@ void reset_audio_alerts()
 			btn_enable_audio_alerts->value(0);
 			LOG_ERROR("Open audio device %s FAILED", progdefaults.AlertDevice.c_str());
 		}
-	}
-	else {
+	} else {
 		audio_alert->close();
 		LOG_INFO("Closed audio alert device %s", progdefaults.AlertDevice.c_str());
 	}
