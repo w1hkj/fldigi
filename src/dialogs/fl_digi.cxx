@@ -2624,6 +2624,7 @@ void cb_mnuOnLineDOCS(Fl_Widget *, void *)
 }
 
 inline int version_check(string v1, string v2) {
+
 	long v1a, v1b, v1c;
 	long v2a, v2b, v2c;
 	size_t p;
@@ -2636,14 +2637,14 @@ inline int version_check(string v1, string v2) {
 	v2b = atol(v2.c_str()); p = v2.find("."); v2.erase(0, p + 1);
 	v2c = atol(v2.c_str()); p = v2.find("."); v2.erase(0, p + 1);
 
-	if (v1a < v2a) return -1;
-	if (v1a > v2a) return 1;
-	if (v1b < v2b) return -1;
-	if (v1b > v2b) return 1;
-	if (v1c < v2c) return -1;
-	if (v1c > v2c) return 1;
-	if (v1.length()) return 1;
-	return 0;
+	long l1, l2;
+	l1 = v1a * 10000 + v1b * 100 + v1c;
+	l2 = v2a * 10000 + v2b * 100 + v2c;
+
+	if (l1 < l2) return -1;
+	if (l1 > l2) return 1;
+	if (v1 == v2) return 0;
+	return 1;
 }
 
 static notify_dialog *latest_dialog = 0;
@@ -2667,7 +2668,6 @@ void cb_mnuCheckUpdate(Fl_Widget *, void *)
 	size_t p2 = reply.rfind("fldigi", p);
 	p2 += 7;
 	version_str = reply.substr(p2, p - p2);
-
 	int is_ok = version_check(string(PACKAGE_VERSION), version_str);
 
 	if (!latest_dialog) latest_dialog = new notify_dialog;
