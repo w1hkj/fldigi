@@ -1,9 +1,55 @@
 
 
+=Version 4.1.09=
+
+2020-01-11  David Freese  <w1hkj@bellsouth.net>
+
+	fcc49c526: Alert/Rx-monitor playback
+	680ca1f77: Dialog closure
+	f07717816: PO updates
+	f2f602486: config-dialog-mod
+	e7a384268: cw mods
+	d4872494d: MilliSleep
+	8c9b3ddbc: New Install
+	7c1d1bb25: Audio alerts disable
+	7afdab54b: Winkeyer
+	11f0c05cc: lotw mangled report files
+	f45e88de2: Analysis mode
+	96ea26f03: ARRL CW bulletins
+
+2019-11-26  Harry McGavran Jr  <w5pny@w5pny.com>
+
+	fb6bcd0d2: hamcall
+
+2019-11-23  David Freese  <w1hkj@bellsouth.net>
+
+	bf22efe03: RSID code assignments
+	5cdbb98ae: tree metaphor
+	38e58fd7c: OS X Bus 10 error
+	e0e70142b: Log ADIF export
+	7c48281e9: xmlrpc_rig
+	09ba2e6bf: Rx monitor
+	594ac028e: Display Logbook Datum
+	644296e5e: RTTY bell
+	93f9896e4: Combo Box behavior
+	c07d43517: cw prosigns
+	18b3260ae: MinGW mods
+	c05c8bbd5: CW International Chars
+	29d97e9c4: macros
+	70743d9c1: mp3
+	e282c9952: Xmt Audio file
+	9c07eb9e5: Alerts
+	de7b8c6ae: Data file update
+	42591fbc6: Wefax autosave
+	be3ac55aa: flrig freq/mode
+	2541779d9: Fltk 1.4.x
+	8dbac5ff2: Update check
+	618c6d2d2: WEFAX AFC
+
+
 =Version 4.1.08=
 
-2019-08-14  David Freese  <w1hkj@bellsouth.net>
-
+	0bf19e02e: Greek translation files
 	c5eb44d5b: Logbook
 	93f3320d7: xmlrpc <vector>
 	357df508e: Documentation
