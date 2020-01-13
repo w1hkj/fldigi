@@ -246,12 +246,22 @@ void Cserial::ClosePort()
 {
 	if (fd < 0) return;
 	if (restore_tio) {
-		tcsetattr (fd, TCSANOW, &oldtio);
+// Some serial drivers force RTS and DTR high immediately upon
+// opening the port, so our origstatus will indicate those bits
+// high (though the lines weren't actually high before we opened).
+// But then when we "restore" RTS and DTR from origstatus here
+// it can result in PTT activation upon program exit!  To avoid
+// this possibility, we ignore the apparentl initial settings, and
+// instead force RTS and DTR low before closing the port.  (Just
+// omitting the ioctl(TIOCMSET) would also resolve the problem).
+// Kamal Mostafa <kamal@whence.com>
+		origstatus &= ~(TIOCM_RTS|TIOCM_DTR);
 		ioctl(fd, TIOCMSET, &origstatus);
+		tcsetattr (fd, TCSANOW, &oldtio);
 	}
 	close(fd);
-	LOG_INFO("Serial port closed, fd = %d", fd);
 	fd = -1;
+	LOG_INFO("Serial port closed, fd = %d", fd);
 	return;
 }
 
