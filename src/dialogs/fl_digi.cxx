@@ -8336,19 +8336,14 @@ static void rx_parser(const unsigned char data, int style)
 	// will therefore have the eight bit set and can not match either
 	// '\r' or '\n'.
 
-//	static unsigned int lastdata = 0;
-	display_rx_data(data, style);
-/*
+	static unsigned int lastdata = 0;
 	if (data == '\n' && lastdata == '\r');
 	else if (data == '\r') {
-//		add_rx_char('\n');
 		display_rx_data('\n', style);
 	} else {
-//		add_rx_char(data);
 		display_rx_data(data, style);
 	}
-*/
-//	lastdata = data;
+	lastdata = data;
 
 	if (!(data < ' ' && iscntrl(data)) && progStatus.spot_recv)
 		spot_recv(data);
