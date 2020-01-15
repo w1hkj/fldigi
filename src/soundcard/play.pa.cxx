@@ -155,7 +155,6 @@ void process_alert()
  * syncs to requests for audio alert output
  **********************************************************************************/
 static c_portaudio *requester = 0;
-//static c_portaudio *stream_requester = 0;
 
 static void * alert_loop(void *args)
 {
@@ -184,12 +183,6 @@ static void * alert_loop(void *args)
 
 		if (alert_process_flag == TERMINATE)
 			break;
-
-// execute a single request for audio stream processing
-//		if (stream_ready) {
-//			stream_requester->process_mon();
-//			stream_ready = false;
-//		}
 
 	}
 	return (void *)0;
@@ -278,8 +271,8 @@ static void add_alert(c_portaudio * _cpa, float *buffer, int len, int src)
 	if(alert_thread_running) {
 		if (_cpa->paStreamParameters.device == -1) return;
 		struct PLAYLIST *plist = new PLAYLIST;
-		plist->fbuff = buffer;//new float[len];
-		plist->bufflen = len; // # floats
+		plist->fbuff = buffer;
+		plist->bufflen = len;
 		plist->cpa = _cpa;
 		plist->data_ptr = 0;
 		plist->frames = len / _cpa->paStreamParameters.channelCount;
@@ -539,15 +532,15 @@ void c_portaudio::play_mp3(std::string fname)
 {
 	if (fname.empty()) return;
 
-	drmp3_config config;
-	drmp3_uint64 frame_count;
-
-	drmp3 mp3;
-    if (!drmp3_init_file(&mp3, fname.c_str(), NULL)) {
-        LOG_ERROR("Failed to open mp3 file");
+    FILE* pFile;
+    pFile = fopen(fname.c_str(), "rb");
+    if (pFile == NULL) {
         return;
     }
-	drmp3_uninit(&mp3);
+    fclose(pFile);
+
+	drmp3_config config;
+	drmp3_uint64 frame_count;
 
 	float* mp3_buffer =  drmp3_open_file_and_read_f32(
 						fname.c_str(), &config, &frame_count );
@@ -557,11 +550,10 @@ void c_portaudio::play_mp3(std::string fname)
 		return;
 	}
 
-	LOG_VERBOSE("\n\
-MP3 parameters\n\
-      channels: %d\n\
-   sample rate: %d\n\
-   frame count: %ld\n",
+	LOG_INFO("\n\
+MP3 channels: %d\n\
+ sample rate: %d\n\
+ frame count: %ld\n",
        config.outputChannels,
        config.outputSampleRate,
        long(frame_count));
@@ -609,6 +601,7 @@ void c_portaudio::do_play_file(std::string fname)
 {
 	if ((fname.find(".mp3") != std::string::npos) ||
 		(fname.find(".MP3") != std::string::npos)) {
+//std::cout << "do_play_file(" << fname << ")" << std::endl;
 		return play_mp3(fname);
 	}
 	if ((fname.find(".wav") != std::string::npos) ||
@@ -621,6 +614,7 @@ void c_portaudio::do_play_file(std::string fname)
 void c_portaudio::play_file(std::string fname)
 {
 	guard_lock filelock(&filelist_mutex);
+//std::cout << "filelist.push(this, " << fname << ")" << std::endl;
 	filelist.push( FILELIST(this, fname));
 }
 
@@ -728,16 +722,14 @@ static void * filelist_loop(void *args)
 		MilliSleep(50);
 
 		if (filelist_terminate_flag) break;
-
-		if (!filelist.empty()) {
-			{
-				guard_lock filelock(&filelist_mutex);
+		{
+			guard_lock filelock(&filelist_mutex);
+			if (!filelist.empty()) {
 				fl = filelist.top();
 				filelist.pop();
+				fl.cpa->do_play_file(fl.fn);
 			}
-			fl.cpa->do_play_file(fl.fn);
 		}
-
 	}
 	return (void *)0;
 }

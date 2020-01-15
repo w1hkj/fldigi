@@ -7423,7 +7423,7 @@ progdefaults.changed=true;}
       }
     }
     Fl_Group grpRigCat {
-      label {Rig Control/CAT (rigcat)} selected
+      label {Rig Control/CAT (rigcat)}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/CAT (rigcat)"));}
       code1 {config_pages.push_back(p);}
@@ -8477,7 +8477,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Soundcard/Alerts} open
+      label {Soundcard/Alerts} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX color 50 selection_color 50 align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Alerts"));}
       code1 {config_pages.push_back(p);}
@@ -8800,7 +8800,7 @@ progdefaults.TIMED_OUT_ALERT_MENU = o->value();} open
         label {Alert volume}
         callback {progdefaults.alert_volume = (int)o->value();
 progdefaults.changed = true;}
-        tooltip {My transmit CW WPM} xywh {256 325 403 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 50 textsize 14
+        xywh {256 325 403 20} type Horizontal align 8 maximum 100 step 1 value 20 textsize 14
         code0 {o->value(progdefaults.alert_volume);}
         code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
         class Fl_Value_Slider2
