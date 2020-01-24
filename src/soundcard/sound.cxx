@@ -1758,7 +1758,7 @@ size_t SoundPort::resample_write(float* buf, size_t count)
 		pa_perror(3, "Portaudio write error #3");
 		throw SndException("Portaudio write error 3");
 	}
-	if (active_modem->get_stopflag()) return count;
+//	if (active_modem->get_stopflag()) return count;
 
 	sd[1].rb->write(wbuf, sd[1].params.channelCount * count);
 
@@ -2414,7 +2414,7 @@ size_t SoundPulse::resample_write(float* buf, size_t count)
 
 	if (!active_modem) return count;
 
-	if (active_modem->get_stopflag()) return count;
+//	if (active_modem->get_stopflag()) return count;
 
 	if (pa_simple_write(sd[1].stream, wbuf, count * sd[1].stream_params.channels * sizeof(float), &err) == -1)
 		throw SndPulseException(err);

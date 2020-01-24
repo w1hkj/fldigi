@@ -122,11 +122,11 @@ void olivia::send_tones()
 
 	preamblephase = 0;
 	for (int i = 0; i < SR4; i++)
-		tonebuff[2*SR4 + i] = tonebuff[i] = 0.9 * nco(freqa) * ampshape[i];
+		tonebuff[2*SR4 + i] = tonebuff[i] = nco(freqa) * ampshape[i];
 
 	preamblephase = 0;
 	for (int i = 0; i < SR4; i++)
-		tonebuff[3*SR4 + i] = tonebuff[SR4 + i] = 0.9 * nco(freqb) * ampshape[i];
+		tonebuff[3*SR4 + i] = tonebuff[SR4 + i] = nco(freqb) * ampshape[i];
 
 	for (int j = 0; j < TONE_DURATION; j += SCBLOCKSIZE)
 		ModulateXmtr(&tonebuff[j], SCBLOCKSIZE);
@@ -186,7 +186,6 @@ int olivia::tx_process()
 // modem already has that many characters buffered, don't try
 // to read any more. If stopflag is set, we will always read 
 // whatever there is.
-
 	if (stopflag || (Tx->GetReadReady() < Tx->BitsPerSymbol)) {
 		if (!stopflag && (c = get_tx_char()) == GET_TX_CHAR_ETX)
 			stopflag = true;
@@ -213,14 +212,14 @@ int olivia::tx_process()
 	if (c > 0)
 		put_echo_char(c);
 
-	if ((len = Tx->Output(txfbuffer)) > 0) {
-		for (int i = 0; i < len; i++) txfbuffer[i] *= 0.9;
+	if ((len = Tx->Output(txfbuffer)) > 0)
 		ModulateXmtr(txfbuffer, len);
-	}
 
 	if (stopflag && Tx->DoPostambleYet() == 1 && postamblesent != 1) {
 		postamblesent = 1; 
 		send_tones();
+		memset(tonebuff, 0, sizeof(*tonebuff) * SCBLOCKSIZE);
+		ModulateXmtr(tonebuff, SCBLOCKSIZE);
 	}
 
 	if (!Tx->Running()) {
