@@ -2096,6 +2096,7 @@ public:
 	{
 		wf->rfcarrier(rfc);
 		show_frequency(rfc);
+		wf->setQSY(1);
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
