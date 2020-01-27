@@ -48,11 +48,16 @@ using namespace std;
 #include "main.h"
 #include "modem.h"
 
+#include "threads.h"
+
 #include "rtty.h"
 
 #define FILTER_DEBUG 0
 
 #define SHAPER_BAUD 150
+
+//void start_fsk_thread();
+//void stop_fsk_thread();
 
 //=====================================================================
 // Baudot support
@@ -197,6 +202,9 @@ rtty::~rtty()
 	delete m_Osc2;
 	delete m_SymShaper1;
 	delete m_SymShaper2;
+
+// EXPERIMENTAL FSK DTR/RTS
+//	stop_fsk_thread();
 }
 
 void rtty::reset_filters()
@@ -236,6 +244,8 @@ void rtty::restart()
 	txmode = LETTERS;
 	rxmode = LETTERS;
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
+// part of an EXPERIMENTAL FSK implementation
+//	bitlen = 1000.0 / rtty_baud;  // bit length in milliseconds
 	set_bandwidth(shift);
 
 	rtty_BW = progdefaults.RTTY_BW = rtty_baud * 2;
@@ -331,6 +341,8 @@ rtty::rtty(trx_mode tty_mode)
 
 	restart();
 
+// EXPERIMENT FSK on DTR/RTS
+//	start_fsk_thread();
 }
 
 void rtty::Update_syncscope()
@@ -380,25 +392,25 @@ static int rparity(int c)
 	return p & 1;
 }
 
-int rtty::rttyparity(unsigned int c)
+int rttyparity(unsigned int c, int nbits)
 {
 	c &= (1 << nbits) - 1;
 
-	switch (rtty_parity) {
+	switch (progdefaults.rtty_parity) {
 	default:
-	case RTTY_PARITY_NONE:
+	case rtty::RTTY_PARITY_NONE:
 		return 0;
 
-	case RTTY_PARITY_ODD:
+	case rtty::RTTY_PARITY_ODD:
 		return rparity(c);
 
-	case RTTY_PARITY_EVEN:
+	case rtty::RTTY_PARITY_EVEN:
 		return !rparity(c);
 
-	case RTTY_PARITY_ZERO:
+	case rtty::RTTY_PARITY_ZERO:
 		return 0;
 
-	case RTTY_PARITY_ONE:
+	case rtty::RTTY_PARITY_ONE:
 		return 1;
 	}
 }
@@ -408,7 +420,7 @@ int rtty::decode_char()
 	unsigned int parbit, par, data;
 
 	parbit = (rxdata >> nbits) & 1;
-	par = rttyparity(rxdata);
+	par = rttyparity(rxdata, nbits);
 
 	if (rtty_parity != RTTY_PARITY_NONE && parbit != par)
 		return 0;
@@ -865,130 +877,124 @@ double rtty::FSKnco()
 
 }
 
+extern Cserial CW_KEYLINE_serial;
+extern bool CW_KEYLINE_isopen;
 
 void rtty::send_symbol(int symbol, int len)
 {
-	acc_symbols += len;
-
-//#if !SHAPER_BAUD
-if (!progStatus.shaped_rtty) {
-//if (rtty_baud > SHAPER_BAUD) {
-	double freq;
-
 	if (reverse) symbol = !symbol;
 
-	if (symbol)
-		freq = get_txfreq_woffset() + shift / 2.0;
-	else
-		freq = get_txfreq_woffset() - shift / 2.0;
+	acc_symbols += len;
 
-	for (int i = 0; i < len; i++) {
-		outbuf[i] = nco(freq);
+	if (!progStatus.shaped_rtty) {
+		double freq;
+
 		if (symbol)
-			FSKbuf[i] = FSKnco();
+			freq = get_txfreq_woffset() + shift / 2.0;
 		else
-			FSKbuf[i] = 0.0 * FSKnco();
-	}
-} else {
-//#else
+			freq = get_txfreq_woffset() - shift / 2.0;
 
-	double const freq1 = get_txfreq_woffset() + shift / 2.0;
-	double const freq2 = get_txfreq_woffset() - shift / 2.0;
-	double mark = 0, space = 0;
-	double signal = 0;
+		for (int i = 0; i < len; i++) {
+			outbuf[i] = nco(freq);
+			if (symbol)
+				FSKbuf[i] = FSKnco();
+			else
+				FSKbuf[i] = 0.0;
+		}
+	} else {
+		double const freq1 = get_txfreq_woffset() + shift / 2.0;
+		double const freq2 = get_txfreq_woffset() - shift / 2.0;
+		double mark = 0, space = 0;
+		double signal = 0;
 
-	if (reverse)
-		symbol = !symbol;
+		if (maxamp == 0) {
+			int sym = 0;
+			for (int j = 0; j < 100; j++) {
+				if (sym) sym = 0;
+				else sym = 1;
+				for( int i = 0; i < 3*len; ++i ) {
+					mark  = m_SymShaper1->Update( sym) * m_Osc1->Update( freq1 );
+					space = m_SymShaper2->Update(!sym) * m_Osc2->Update( freq2 );
+					signal = mark + space;
 
-	if (maxamp == 0) {
-		int sym = 0;
-		for (int j = 0; j < 100; j++) {
-			if (sym) sym = 0;
-			else sym = 1;
-			for( int i = 0; i < 3*len; ++i ) {
-				mark  = m_SymShaper1->Update( sym) * m_Osc1->Update( freq1 );
-				space = m_SymShaper2->Update(!sym) * m_Osc2->Update( freq2 );
-				signal = mark + space;
-
-				if (maxamp < fabs(signal)) maxamp = fabs(signal);
+					if (maxamp < fabs(signal)) maxamp = fabs(signal);
+				}
 			}
 		}
-	}
 
-	for( int i = 0; i < len; ++i ) {
-		mark  = m_SymShaper1->Update( symbol) * m_Osc1->Update( freq1 );
-		space = m_SymShaper2->Update(!symbol) * m_Osc2->Update( freq2 );
-		signal = mark + space;
+		for( int i = 0; i < len; ++i ) {
+			mark  = m_SymShaper1->Update( symbol) * m_Osc1->Update( freq1 );
+			space = m_SymShaper2->Update(!symbol) * m_Osc2->Update( freq2 );
+			signal = mark + space;
 
-		if (maxamp < fabs(signal)) {
-			maxamp = fabs(signal);
+			if (maxamp < fabs(signal)) {
+				maxamp = fabs(signal);
+			}
+
+			outbuf[i] = maxamp ? (signal / maxamp) : 0.0;
+
+			if (symbol)
+				FSKbuf[i] = FSKnco();
+			else
+				FSKbuf[i] = 0.0 * FSKnco();
 		}
-		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
-
-		if (symbol)
-			FSKbuf[i] = FSKnco();
-		else
-			FSKbuf[i] = 0.0 * FSKnco();
 	}
-}
-//#endif
+
 	if (progdefaults.PseudoFSK)
 		ModulateStereo(outbuf, FSKbuf, symbollen);
 	else
 		ModulateXmtr(outbuf, symbollen);
+
 }
 
 void rtty::send_stop()
 {
-//#if !SHAPER_BAUD
-if (!progStatus.shaped_rtty) {
-//if (rtty_baud >= SHAPER_BAUD) {
-	double freq;
-	bool invert = reverse;
+	if (!progStatus.shaped_rtty) {
+		double freq;
+		bool invert = reverse;
 
-	if (invert)
-		freq = get_txfreq_woffset() - shift / 2.0;
-	else
-		freq = get_txfreq_woffset() + shift / 2.0;
-
-	for (int i = 0; i < stoplen; i++) {
-		outbuf[i] = nco(freq);
 		if (invert)
-			FSKbuf[i] = 0.0 * FSKnco();
+			freq = get_txfreq_woffset() - shift / 2.0;
 		else
-			FSKbuf[i] = FSKnco();
-	}
-} else {
-//#else
+			freq = get_txfreq_woffset() + shift / 2.0;
 
-	double const freq1 = get_txfreq_woffset() + shift / 2.0;
-	double const freq2 = get_txfreq_woffset() - shift / 2.0;
-	double mark = 0, space = 0, signal = 0;
-
-	bool symbol = true;
-
-	if (reverse)
-		symbol = !symbol;
-
-	for( int i = 0; i < stoplen; ++i ) {
-		mark  = m_SymShaper1->Update( symbol)*m_Osc1->Update( freq1 );
-		space = m_SymShaper2->Update(!symbol)*m_Osc2->Update( freq2 );
-		signal = mark + space;
-
-		if (maxamp < fabs(signal)) maxamp = fabs(signal);
-		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
+		for (int i = 0; i < stoplen; i++) {
+			outbuf[i] = nco(freq);
+			if (invert)
+				FSKbuf[i] = 0.0;
+			else
+				FSKbuf[i] = FSKnco();
+		}
+	} else {
+		double const freq1 = get_txfreq_woffset() + shift / 2.0;
+		double const freq2 = get_txfreq_woffset() - shift / 2.0;
+		double mark = 0, space = 0, signal = 0;
+		bool symbol = true;
 
 		if (reverse)
-			FSKbuf[i] = 0.0 * FSKnco();
-		else
-			FSKbuf[i] = FSKnco();
+			symbol = !symbol;
+
+		for( int i = 0; i < stoplen; ++i ) {
+			mark  = m_SymShaper1->Update( symbol)*m_Osc1->Update( freq1 );
+			space = m_SymShaper2->Update(!symbol)*m_Osc2->Update( freq2 );
+			signal = mark + space;
+
+			if (maxamp < fabs(signal))
+				maxamp = fabs(signal);
+			outbuf[i] = maxamp ? (signal / maxamp) : 0.0;
+
+			if (reverse)
+				FSKbuf[i] = 0.0;
+			else
+				FSKbuf[i] = FSKnco();
+		}
 	}
-}
-//#endif
+
 	if (progdefaults.PseudoFSK)
 		ModulateStereo(outbuf, FSKbuf, stoplen);
 	else
 		ModulateXmtr(outbuf, stoplen);
+
 }
 
 void rtty::flush_stream()
@@ -1003,7 +1009,8 @@ void rtty::flush_stream()
 		signal = mark + space;
 
 		if (maxamp < fabs(signal)) maxamp = fabs(signal);
-		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
+		
+		outbuf[i] = maxamp ? (signal / maxamp) : 0.0;
 
 		FSKbuf[i] = 0.0;
 	}
@@ -1017,8 +1024,13 @@ void rtty::flush_stream()
 
 void rtty::send_char(int c)
 {
-	int i;
+// experimental code that fails to perform well on Windows, poorly on OS-X
+// and perfectly on Linux!
+//	if (progdefaults.useFSK && (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)) {
+//		send_FSK(c);
+//	}
 
+	int i;
 	if (nbits == 5) {
 		if (c == LETTERS)
 			c = 0x1F;
@@ -1034,7 +1046,7 @@ void rtty::send_char(int c)
 	}
 // parity bit
 	if (rtty_parity != RTTY_PARITY_NONE)
-		send_symbol(rttyparity(c), symbollen);
+		send_symbol(rttyparity(c, nbits), symbollen);
 // stop bit(s)
 	send_stop();
 
@@ -1050,6 +1062,7 @@ void rtty::send_char(int c)
 	}
 	else
 		put_echo_char(c);
+
 }
 
 void rtty::send_idle()
@@ -1160,11 +1173,8 @@ int rtty::tx_process()
 	}
 
 	if (preamble) {
-		m_SymShaper1->reset();
-		m_SymShaper2->reset();
-		send_stop();
 		for (int i = 0; i < progdefaults.TTY_LTRS; i++)
-			send_idle();
+			send_char(LETTERS);
 		preamble = false;
 	}
 
@@ -1313,6 +1323,143 @@ char rtty::baudot_dec(unsigned char data)
 	return out;
 }
 
+// ---------------------------------------------------------------------
+// TTY output on DTR/RTS signal lines
+//----------------------------------------------------------------------
+// experimental code that performs perfect on Linux, OK on OS-X and
+// fails on Windows-10 !!!
+/*
+static pthread_t       fsk_pthread;
+static pthread_cond_t  fsk_cond;
+static pthread_mutex_t fsk_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static bool fsk_thread_running   = false;
+static bool fsk_terminate_flag   = false;
+
+#define fskbit(bit, len) {if (progdefaults.FSK_keyline == 2) ser->SetDTR(bit);\
+else ser->SetRTS(bit);\
+MilliSleep((len));}
+
+static int fsk_ch;
+static int fsk_nbits;
+static int fsk_parity;
+static bool fsk_sending = false;
+
+void send_fsk(int c)
+{
+	fsk_sending = true;
+	int bitlen = 1000.0 / rtty::BAUD[progdefaults.rtty_baud];
+	int stoplen = bitlen * (progdefaults.rtty_stop == 0 ? 1.0 : progdefaults.rtty_stop == 1 ? 1.5 : 2.0);
+
+	Cserial *ser = &CW_KEYLINE_serial;
+	if (progdefaults.CW_KEYLINE_on_cat_port)
+		ser = &rigio;
+
+	if (fsk_nbits == 5) {
+		if (c == LETTERS) c = 0x1F;
+		else if (c == FIGURES) c = 0x1B;
+	}
+
+// start bit
+	fskbit(1, bitlen);
+// data bits
+	for (int i = 0; i < fsk_nbits; i++)
+		fskbit(!((c >> i) & 1), bitlen);
+
+// parity bit
+	if (fsk_parity != rtty::RTTY_PARITY_NONE)
+		fskbit(!rttyparity(c, fsk_nbits), bitlen);
+
+// stop bits
+	fskbit(0, stoplen);
+	fsk_sending = false;
+}
+
+static void * fsk_loop(void *args)
+{
+//	SET_THREAD_ID(AUDIO_ALERT_TID);
+
+	fsk_thread_running   = true;
+	fsk_terminate_flag   = false;
+
+	while(1) {
+		pthread_mutex_lock(&fsk_mutex);
+		pthread_cond_wait(&fsk_cond, &fsk_mutex);
+		pthread_mutex_unlock(&fsk_mutex);
+
+		if (fsk_terminate_flag)
+			break;
+		send_fsk(fsk_ch);
+	}
+	return (void *)0;
+}
+
+void stop_fsk_thread(void)
+{
+	if(!fsk_thread_running) return;
+
+	fsk_terminate_flag = true;
+	pthread_cond_signal(&fsk_cond);
+
+	MilliSleep(10);
+
+	pthread_join(fsk_pthread, NULL);
+
+	pthread_mutex_destroy(&fsk_mutex);
+	pthread_cond_destroy(&fsk_cond);
+
+	memset((void *) &fsk_pthread, 0, sizeof(fsk_pthread));
+	memset((void *) &fsk_mutex,   0, sizeof(fsk_mutex));
+
+	fsk_thread_running   = false;
+	fsk_terminate_flag   = false;
+}
+
+void start_fsk_thread(void)
+{
+	if (fsk_thread_running) return;
+
+	memset((void *) &fsk_pthread, 0, sizeof(fsk_pthread));
+	memset((void *) &fsk_mutex,   0, sizeof(fsk_mutex));
+	memset((void *) &fsk_cond,    0, sizeof(fsk_cond));
+
+	if(pthread_cond_init(&fsk_cond, NULL)) {
+		LOG_ERROR("Alert thread create fail (pthread_cond_init)");
+		return;
+	}
+
+	if(pthread_mutex_init(&fsk_mutex, NULL)) {
+		LOG_ERROR("AUDIO_ALERT thread create fail (pthread_mutex_init)");
+		return;
+	}
+
+	if (pthread_create(&fsk_pthread, NULL, fsk_loop, NULL) < 0) {
+		pthread_mutex_destroy(&fsk_mutex);
+		LOG_ERROR("AUDIO_ALERT thread create fail (pthread_create)");
+	}
+
+	LOG_VERBOSE("started audio fsk thread");
+
+	MilliSleep(10); // Give the CPU time to set 'fsk_thread_running'
+}
+
+void rtty::send_FSK(int c)
+{
+	if (!fsk_thread_running)
+		start_fsk_thread();
+
+	int count = 100;
+	while (fsk_sending) {
+		MilliSleep(1);
+		if (--count <= 0) return;
+	}
+	fsk_ch = c;
+	fsk_nbits = nbits;
+	fsk_parity = rtty_parity;
+
+	pthread_cond_signal(&fsk_cond);
+}
+*/
 //======================================================================
 // methods for class Oscillator and class SymbolShaper
 //======================================================================
@@ -1459,3 +1606,4 @@ void SymbolShaper::print_sinc_table()
 {
 	for (int i = 0; i < 1024; i++) printf("%f\n", m_SincTable[i]);
 }
+

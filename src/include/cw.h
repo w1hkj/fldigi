@@ -221,8 +221,7 @@ protected:
 	void	sync_transmit_parameters();
 	void	flush_audio();
 
-	void send_CW_KEYLINE(int);
-	void CW_KEYLINE(bool);
+	void send_CW(int);
 
 	view_cw	viewcw;
 

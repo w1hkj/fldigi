@@ -469,7 +469,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {671 24 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
+    xywh {649 24 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
   } {
     Fl_Group {} {open
       xywh {0 0 201 385} resizable
@@ -4161,32 +4161,51 @@ nanoIO_set_cw_ptt();}
 serial port (typical of Yaesu transceiver FT-991A).  If separate, the CAT control
 can be via flrig, RigCat or Hamlib.  No settings for baud, stops bits, etc are
 needed.}
-          xywh {216 50 565 90} align 20
+          xywh {210 38 580 116} align 20
         }
       }
-      Fl_Check_Button btn_CW_KEYLINE_catport {
-        label {Use RIGCAT serial port}
-        callback {progdefaults.CW_KEYLINE_on_cat_port = o->value();}
-        xywh {257 184 70 15} down_box DOWN_BOX
-        code0 {o->value(progdefaults.CW_KEYLINE_on_cat_port);}
-      }
-      Fl_Group listbox_CW_KEYLINE {
-        label {CW Keyline}
-        callback {progdefaults.CW_KEYLINE = o->index();
-progdefaults.changed = true;} open
-        xywh {580 179 110 24} box DOWN_BOX color 7 align 4
-        code0 {o->add("None|RTS|DTR");}
-        code1 {o->index(progdefaults.CW_KEYLINE);}
-        class Fl_ListBox
-      } {}
-      Fl_Group {} {
-        label {Keyline on separate serial port} open
-        xywh {205 226 589 78} box ENGRAVED_FRAME align 17
+      Fl_Group {} {open
+        xywh {205 170 590 129} box ENGRAVED_FRAME
       } {
+        Fl_Group listbox_CW_KEYLINE {
+          label {CW Keyline}
+          callback {progdefaults.CW_KEYLINE = o->index();
+progdefaults.changed = true;} open
+          xywh {290 182 90 24} box DOWN_BOX color 7 align 4
+          code0 {o->add("None|RTS|DTR");}
+          code1 {o->index(progdefaults.CW_KEYLINE);}
+          class Fl_ListBox
+        } {}
+        Fl_Group listbox_FSK_KEYLINE {
+          label {FSK Keyline}
+          callback {progdefaults.FSK_keyline = o->index();
+progdefaults.useFSK = (listbox_FSK_KEYLINE->index() > 0);
+chkFSKkeying->value(progdefaults.useFSK);
+progdefaults.changed = true;} open
+          xywh {693 182 90 24} box DOWN_BOX color 7 align 4 hide
+          code0 {o->add("None|RTS|DTR");}
+          code1 {o->index(progdefaults.FSK_keyline);}
+          class Fl_ListBox
+        } {}
+        Fl_Group listbox_PTT_KEYLINE {
+          label {PTT keyline}
+          callback {progdefaults.PTT_KEYLINE = o->index();
+progdefaults.changed = true;} open
+          xywh {471 182 90 24} box DOWN_BOX color 7 align 4
+          code0 {o->add("None|RTS|DTR");}
+          code1 {o->index(progdefaults.PTT_KEYLINE);}
+          class Fl_ListBox
+        } {}
+        Fl_Check_Button chkFSKkeying {
+          label {Xcvr FSK keying}
+          callback {o->value(progdefaults.useFSK);}
+          tooltip {Transceiver h/l FSK keying} xywh {761 210 22 22} down_box DOWN_BOX align 4 hide
+          code0 {o->value(progdefaults.useFSK);}
+        }
         Fl_Group select_CW_KEYLINE_CommPort {
-          label {Ser. Port}
+          label {Use Separate Keying Serial Port}
           callback {progdefaults.CW_KEYLINE_serial_port_name = o->value();} open
-          tooltip {nanoIO serial port} xywh {210 264 485 23} box DOWN_BOX color 55 align 5
+          tooltip {nanoIO serial port} xywh {210 265 485 23} box DOWN_BOX color 55 align 5
           code0 {\#include "combo.h"}
           code1 {\#include "nanoIO.h"}
           code2 {o->value(progdefaults.CW_KEYLINE_serial_port_name.c_str());}
@@ -4202,8 +4221,14 @@ progdefaults.changed = true;} open
   close_CW_KEYLINE();
   progStatus.useCW_KEYLINE = 0;
 }}
-          tooltip {Connect / Disconnect from nanoIO} xywh {705 264 80 23}
+          tooltip {Connect / Disconnect from nanoIO} xywh {705 265 80 23}
           code0 {o->value(progStatus.useCW_KEYLINE);}
+        }
+        Fl_Check_Button btn_CW_KEYLINE_catport {
+          label {Share RIGCAT port}
+          callback {progdefaults.CW_KEYLINE_on_cat_port = o->value();}
+          xywh {357 225 23 15} down_box DOWN_BOX align 4
+          code0 {o->value(progdefaults.CW_KEYLINE_on_cat_port);}
         }
       }
     }
@@ -5328,14 +5353,14 @@ progdefaults.BELL_RING_MENU = o->value();} open
       }
     }
     Fl_Group {} {
-      label {Modem/TTY/Tx}
+      label {Modem/TTY/Tx} open selected
       xywh {200 0 601 350} box FLAT_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Tx"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Modem/TTY/Tx"));}
     } {
       Fl_Group {} {
-        label {Sound Card FSK}
+        label {Sound Card FSK} open
         xywh {205 32 590 229} box ENGRAVED_FRAME align 21
       } {
         Fl_Group selShift {
@@ -5419,7 +5444,7 @@ progdefaults.changed = true;}
           label chars
           callback {progdefaults.rtty_autocount = (int)o->value();
 progdefaults.changed = true;}
-          tooltip {Auto CRLF line length} xywh {643 65 65 22} type Simple align 8 minimum 68 maximum 80 step 1 value 72
+          tooltip {Auto CRLF line length} xywh {643 65 75 22} type Simple align 8 minimum 68 maximum 80 step 1 value 72
           code0 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_Counter2
         }
@@ -5457,10 +5482,17 @@ if (o->value()) {
           tooltip {Create keyed square wave on right audio channel} xywh {532 164 212 22} down_box DOWN_BOX
           code0 {o->value(progdefaults.PseudoFSK);}
         }
+        Fl_Counter cnt_TTY_LTRS {
+          label {LTRS at start}
+          callback {progdefaults.TTY_LTRS = (int)o->value();
+progdefaults.changed = true;}
+          tooltip {Insert NN LTRS bytes at start of each transmission} xywh {532 231 75 22} type Simple align 8 minimum 0 maximum 10 step 1 value 1
+          code0 {o->value(progdefaults.TTY_LTRS);}
+        }
       }
       Fl_Group {} {
-        label {Transceiver FSK}
-        xywh {205 262 590 77} box ENGRAVED_FRAME align 21
+        label {Transceiver FSK} open
+        xywh {205 262 590 77} box ENGRAVED_FRAME align 21 hide
       } {
         Fl_Counter cntr_xcvr_FSK_MARK {
           label Mark
@@ -5480,13 +5512,6 @@ progdefaults.changed = true;} open
           code1 {o->index(progdefaults.rtty_shift);}
           class Fl_ListBox
         } {}
-        Fl_Counter cnt_TTY_LTRS {
-          label {LTRS at start}
-          callback {progdefaults.TTY_LTRS = (int)o->value();
-progdefaults.changed = true;}
-          tooltip {Insert NN LTRS bytes at start of each transmission} xywh {611 297 80 23} type Simple align 8 minimum 0 maximum 10 step 1 value 2
-          code0 {o->value(progdefaults.TTY_LTRS);}
-        }
       }
     }
     Fl_Group {} {
@@ -8477,7 +8502,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Soundcard/Alerts} open selected
+      label {Soundcard/Alerts}
       xywh {200 0 600 350} box ENGRAVED_BOX color 50 selection_color 50 align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Alerts"));}
       code1 {config_pages.push_back(p);}

@@ -34,6 +34,8 @@
 
 #include <config.h>
 
+#include <iostream>
+
 #include <unistd.h>
 #include <sys/types.h>
 #if HAVE_SYS_SELECT_H
@@ -71,6 +73,7 @@ LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
 using namespace std;
 
+extern Cserial CW_KEYLINE_serial;
 
 PTT::PTT(ptt_t dev) : pttdev(PTT_INVALID), oldtio(0)
 {
@@ -120,24 +123,50 @@ void PTT::reset(ptt_t dev)
 
 void PTT::set(bool ptt)
 {
+	string ptt_temp =
+		pttdev == PTT_NONE ? "NONE" :
+		pttdev == PTT_HAMLIB ? "HAMLIB" :
+		pttdev == PTT_RIGCAT ? "RIGCAT" :
+		pttdev == PTT_TTY ? "TTY" :
+		pttdev == PTT_GPIO ? "GPIO" :
+		pttdev == PTT_PARPORT ? "PARPORT" :
+		pttdev == PTT_UHROUTER ? "UHROUTER" : "UNKNOWN";
+	LOG_VERBOSE("PTT via %s : %s", ptt_temp.c_str(), ptt ? "ON" : "OFF");
+
 // add milliseconds - no audio to clear virtual audio card used by Flex systems
 	if (!ptt && progdefaults.PTT_off_delay)
 		MilliSleep(progdefaults.PTT_off_delay);
 
+	if (progdefaults.PTT_KEYLINE > 0 && active_modem == rtty_modem) {
+		ptt_temp.assign("PTT ").append(ptt ? "ON :" : "OFF:");
+		if (progdefaults.PTT_KEYLINE == 2) { // DTR signalling
+			if (progdefaults.CW_KEYLINE_on_cat_port) {
+				rigio.SetDTR(ptt);
+				ptt_temp.append("rigio DTR");
+			} else {
+				CW_KEYLINE_serial.SetDTR(ptt);
+				ptt_temp.append("cw_serial DTR");
+			}
+		} else {                             // RTS signalling
+			if (progdefaults.CW_KEYLINE_on_cat_port) {
+				rigio.SetRTS(ptt);
+				ptt_temp.append("rigio RTS");
+			} else {
+				CW_KEYLINE_serial.SetRTS(ptt);
+				ptt_temp.append("cw_serial RTS");
+			}
+		}
+		LOG_VERBOSE("%s", ptt_temp.c_str());
+
+		if (ptt) start_tx_timer();
+		else     stop_tx_timer();
+		return;
+	}
+
 	if (active_modem == cw_modem &&
 	    ((progdefaults.useCWkeylineRTS) || progdefaults.useCWkeylineDTR == true))
 		return;
-//{ // uncomment block for debugging
-//	string sport =
-//		pttdev == PTT_NONE ? "NONE" :
-//		pttdev == PTT_HAMLIB ? "HAMLIB" :
-//		pttdev == PTT_RIGCAT ? "RIGCAT" :
-//		pttdev == PTT_TTY ? "TTY" :
-//		pttdev == PTT_GPIO ? "GPIO" :
-//		pttdev == PTT_PARPORT ? "PARPORT" :
-//		pttdev == PTT_UHROUTER ? "UHROUTER" : "UNKNOWN";
-//	LOG_INFO("PTT via %s : %s", sport.c_str(), ptt ? "ON" : "OFF");
-//}
+
 	switch (pttdev) {
 	case PTT_NONE: default:
 		noCAT_setPTT(ptt);
@@ -147,7 +176,7 @@ void PTT::set(bool ptt)
 		hamlib_set_ptt(ptt);
 		break;
 #endif
-	case PTT_RIGCAT: 
+	case PTT_RIGCAT:
 		rigCAT_set_ptt(ptt);
 		break;
 	case PTT_TTY:
@@ -301,7 +330,7 @@ void PTT::close_gpio(void)
 
 void PTT::set_gpio(bool ptt)
 {
-#define VALUE_MAX 30 
+#define VALUE_MAX 30
 	static const char s_values_str[] = "01";
 
 	string portname = "/sys/class/gpio/gpio";
@@ -337,7 +366,7 @@ void PTT::set_gpio(bool ptt)
 					}
 				}
 				if (ok)
-					LOG_INFO("Set GPIO ptt on %s %s%s", 
+					LOG_INFO("Set GPIO ptt on %s %s%s",
 						ctrlport.c_str(),
 						(progdefaults.gpio_pulse_width > 0) ?
 							"pulsed " : "",

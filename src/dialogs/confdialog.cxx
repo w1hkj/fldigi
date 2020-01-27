@@ -3250,17 +3250,33 @@ static void cb_btn_correction(Fl_Button*, void*) {
   nanoIO_correction();
 }
 
-Fl_Check_Button *btn_CW_KEYLINE_catport=(Fl_Check_Button *)0;
-
-static void cb_btn_CW_KEYLINE_catport(Fl_Check_Button* o, void*) {
-  progdefaults.CW_KEYLINE_on_cat_port = o->value();
-}
-
 Fl_ListBox *listbox_CW_KEYLINE=(Fl_ListBox *)0;
 
 static void cb_listbox_CW_KEYLINE(Fl_ListBox* o, void*) {
   progdefaults.CW_KEYLINE = o->index();
 progdefaults.changed = true;
+}
+
+Fl_ListBox *listbox_FSK_KEYLINE=(Fl_ListBox *)0;
+
+static void cb_listbox_FSK_KEYLINE(Fl_ListBox* o, void*) {
+  progdefaults.FSK_keyline = o->index();
+progdefaults.useFSK = (listbox_FSK_KEYLINE->index() > 0);
+chkFSKkeying->value(progdefaults.useFSK);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *listbox_PTT_KEYLINE=(Fl_ListBox *)0;
+
+static void cb_listbox_PTT_KEYLINE(Fl_ListBox* o, void*) {
+  progdefaults.PTT_KEYLINE = o->index();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkFSKkeying=(Fl_Check_Button *)0;
+
+static void cb_chkFSKkeying(Fl_Check_Button* o, void*) {
+  o->value(progdefaults.useFSK);
 }
 
 Fl_ComboBox *select_CW_KEYLINE_CommPort=(Fl_ComboBox *)0;
@@ -3280,6 +3296,12 @@ static void cb_btn_CW_KEYLINE_connect(Fl_Light_Button* o, void*) {
   close_CW_KEYLINE();
   progStatus.useCW_KEYLINE = 0;
 };
+}
+
+Fl_Check_Button *btn_CW_KEYLINE_catport=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_KEYLINE_catport(Fl_Check_Button* o, void*) {
+  progdefaults.CW_KEYLINE_on_cat_port = o->value();
 }
 
 Fl_Input2 *txtSecondary=(Fl_Input2 *)0;
@@ -4222,6 +4244,13 @@ if (o->value()) {
 };
 }
 
+Fl_Counter *cnt_TTY_LTRS=(Fl_Counter *)0;
+
+static void cb_cnt_TTY_LTRS(Fl_Counter* o, void*) {
+  progdefaults.TTY_LTRS = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Counter *cntr_xcvr_FSK_MARK=(Fl_Counter *)0;
 
 static void cb_cntr_xcvr_FSK_MARK(Fl_Counter* o, void*) {
@@ -4234,13 +4263,6 @@ static void cb_sel_xcvr_FSK_shift(Fl_ListBox* o, void*) {
   progdefaults.rtty_shift = o->index();
 selShift->index(progdefaults.rtty_shift);
 resetRTTY();
-progdefaults.changed = true;
-}
-
-Fl_Counter *cnt_TTY_LTRS=(Fl_Counter *)0;
-
-static void cb_cnt_TTY_LTRS(Fl_Counter* o, void*) {
-  progdefaults.TTY_LTRS = (int)o->value();
 progdefaults.changed = true;
 }
 
@@ -11262,7 +11284,7 @@ ded Morse characters."));
       o->hide();
       { Fl_Group* o = new Fl_Group(205, 25, 590, 145);
         o->box(FL_ENGRAVED_BOX);
-        { Fl_Box* o = new Fl_Box(216, 50, 565, 90, _("DTR/RTS keying may share the RigCat serial port, or be assigned to separate\n\
+        { Fl_Box* o = new Fl_Box(210, 38, 580, 116, _("DTR/RTS keying may share the RigCat serial port, or be assigned to separate\n\
 serial port (typical of Yaesu transceiver FT-991A).  If separate, the CAT cont\
 rol\ncan be via flrig, RigCat or Hamlib.  No settings for baud, stops bits, et\
 c are\nneeded."));
@@ -11270,30 +11292,63 @@ c are\nneeded."));
         } // Fl_Box* o
         o->end();
       } // Fl_Group* o
-      { Fl_Check_Button* o = btn_CW_KEYLINE_catport = new Fl_Check_Button(257, 184, 70, 15, _("Use RIGCAT serial port"));
-        btn_CW_KEYLINE_catport->down_box(FL_DOWN_BOX);
-        btn_CW_KEYLINE_catport->callback((Fl_Callback*)cb_btn_CW_KEYLINE_catport);
-        o->value(progdefaults.CW_KEYLINE_on_cat_port);
-      } // Fl_Check_Button* btn_CW_KEYLINE_catport
-      { Fl_ListBox* o = listbox_CW_KEYLINE = new Fl_ListBox(580, 179, 110, 24, _("CW Keyline"));
-        listbox_CW_KEYLINE->box(FL_DOWN_BOX);
-        listbox_CW_KEYLINE->color(FL_BACKGROUND2_COLOR);
-        listbox_CW_KEYLINE->selection_color(FL_BACKGROUND_COLOR);
-        listbox_CW_KEYLINE->labeltype(FL_NORMAL_LABEL);
-        listbox_CW_KEYLINE->labelfont(0);
-        listbox_CW_KEYLINE->labelsize(14);
-        listbox_CW_KEYLINE->labelcolor(FL_FOREGROUND_COLOR);
-        listbox_CW_KEYLINE->callback((Fl_Callback*)cb_listbox_CW_KEYLINE);
-        listbox_CW_KEYLINE->align(Fl_Align(FL_ALIGN_LEFT));
-        listbox_CW_KEYLINE->when(FL_WHEN_RELEASE);
-        o->add("None|RTS|DTR");
-        o->index(progdefaults.CW_KEYLINE);
-        listbox_CW_KEYLINE->end();
-      } // Fl_ListBox* listbox_CW_KEYLINE
-      { Fl_Group* o = new Fl_Group(205, 226, 589, 78, _("Keyline on separate serial port"));
+      { Fl_Group* o = new Fl_Group(205, 170, 590, 129);
         o->box(FL_ENGRAVED_FRAME);
-        o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_ComboBox* o = select_CW_KEYLINE_CommPort = new Fl_ComboBox(210, 264, 485, 23, _("Ser. Port"));
+        { Fl_ListBox* o = listbox_CW_KEYLINE = new Fl_ListBox(290, 182, 90, 24, _("CW Keyline"));
+          listbox_CW_KEYLINE->box(FL_DOWN_BOX);
+          listbox_CW_KEYLINE->color(FL_BACKGROUND2_COLOR);
+          listbox_CW_KEYLINE->selection_color(FL_BACKGROUND_COLOR);
+          listbox_CW_KEYLINE->labeltype(FL_NORMAL_LABEL);
+          listbox_CW_KEYLINE->labelfont(0);
+          listbox_CW_KEYLINE->labelsize(14);
+          listbox_CW_KEYLINE->labelcolor(FL_FOREGROUND_COLOR);
+          listbox_CW_KEYLINE->callback((Fl_Callback*)cb_listbox_CW_KEYLINE);
+          listbox_CW_KEYLINE->align(Fl_Align(FL_ALIGN_LEFT));
+          listbox_CW_KEYLINE->when(FL_WHEN_RELEASE);
+          o->add("None|RTS|DTR");
+          o->index(progdefaults.CW_KEYLINE);
+          listbox_CW_KEYLINE->end();
+        } // Fl_ListBox* listbox_CW_KEYLINE
+        { Fl_ListBox* o = listbox_FSK_KEYLINE = new Fl_ListBox(693, 182, 90, 24, _("FSK Keyline"));
+          listbox_FSK_KEYLINE->box(FL_DOWN_BOX);
+          listbox_FSK_KEYLINE->color(FL_BACKGROUND2_COLOR);
+          listbox_FSK_KEYLINE->selection_color(FL_BACKGROUND_COLOR);
+          listbox_FSK_KEYLINE->labeltype(FL_NORMAL_LABEL);
+          listbox_FSK_KEYLINE->labelfont(0);
+          listbox_FSK_KEYLINE->labelsize(14);
+          listbox_FSK_KEYLINE->labelcolor(FL_FOREGROUND_COLOR);
+          listbox_FSK_KEYLINE->callback((Fl_Callback*)cb_listbox_FSK_KEYLINE);
+          listbox_FSK_KEYLINE->align(Fl_Align(FL_ALIGN_LEFT));
+          listbox_FSK_KEYLINE->when(FL_WHEN_RELEASE);
+          listbox_FSK_KEYLINE->hide();
+          o->add("None|RTS|DTR");
+          o->index(progdefaults.FSK_keyline);
+          listbox_FSK_KEYLINE->end();
+        } // Fl_ListBox* listbox_FSK_KEYLINE
+        { Fl_ListBox* o = listbox_PTT_KEYLINE = new Fl_ListBox(471, 182, 90, 24, _("PTT keyline"));
+          listbox_PTT_KEYLINE->box(FL_DOWN_BOX);
+          listbox_PTT_KEYLINE->color(FL_BACKGROUND2_COLOR);
+          listbox_PTT_KEYLINE->selection_color(FL_BACKGROUND_COLOR);
+          listbox_PTT_KEYLINE->labeltype(FL_NORMAL_LABEL);
+          listbox_PTT_KEYLINE->labelfont(0);
+          listbox_PTT_KEYLINE->labelsize(14);
+          listbox_PTT_KEYLINE->labelcolor(FL_FOREGROUND_COLOR);
+          listbox_PTT_KEYLINE->callback((Fl_Callback*)cb_listbox_PTT_KEYLINE);
+          listbox_PTT_KEYLINE->align(Fl_Align(FL_ALIGN_LEFT));
+          listbox_PTT_KEYLINE->when(FL_WHEN_RELEASE);
+          o->add("None|RTS|DTR");
+          o->index(progdefaults.PTT_KEYLINE);
+          listbox_PTT_KEYLINE->end();
+        } // Fl_ListBox* listbox_PTT_KEYLINE
+        { Fl_Check_Button* o = chkFSKkeying = new Fl_Check_Button(761, 210, 22, 22, _("Xcvr FSK keying"));
+          chkFSKkeying->tooltip(_("Transceiver h/l FSK keying"));
+          chkFSKkeying->down_box(FL_DOWN_BOX);
+          chkFSKkeying->callback((Fl_Callback*)cb_chkFSKkeying);
+          chkFSKkeying->align(Fl_Align(FL_ALIGN_LEFT));
+          chkFSKkeying->hide();
+          o->value(progdefaults.useFSK);
+        } // Fl_Check_Button* chkFSKkeying
+        { Fl_ComboBox* o = select_CW_KEYLINE_CommPort = new Fl_ComboBox(210, 265, 485, 23, _("Use Separate Keying Serial Port"));
           select_CW_KEYLINE_CommPort->tooltip(_("nanoIO serial port"));
           select_CW_KEYLINE_CommPort->box(FL_DOWN_BOX);
           select_CW_KEYLINE_CommPort->color((Fl_Color)55);
@@ -11308,11 +11363,17 @@ c are\nneeded."));
           o->value(progdefaults.CW_KEYLINE_serial_port_name.c_str());
           select_CW_KEYLINE_CommPort->end();
         } // Fl_ComboBox* select_CW_KEYLINE_CommPort
-        { Fl_Light_Button* o = btn_CW_KEYLINE_connect = new Fl_Light_Button(705, 264, 80, 23, _("Connect"));
+        { Fl_Light_Button* o = btn_CW_KEYLINE_connect = new Fl_Light_Button(705, 265, 80, 23, _("Connect"));
           btn_CW_KEYLINE_connect->tooltip(_("Connect / Disconnect from nanoIO"));
           btn_CW_KEYLINE_connect->callback((Fl_Callback*)cb_btn_CW_KEYLINE_connect);
           o->value(progStatus.useCW_KEYLINE);
         } // Fl_Light_Button* btn_CW_KEYLINE_connect
+        { Fl_Check_Button* o = btn_CW_KEYLINE_catport = new Fl_Check_Button(357, 225, 23, 15, _("Share RIGCAT port"));
+          btn_CW_KEYLINE_catport->down_box(FL_DOWN_BOX);
+          btn_CW_KEYLINE_catport->callback((Fl_Callback*)cb_btn_CW_KEYLINE_catport);
+          btn_CW_KEYLINE_catport->align(Fl_Align(FL_ALIGN_LEFT));
+          o->value(progdefaults.CW_KEYLINE_on_cat_port);
+        } // Fl_Check_Button* btn_CW_KEYLINE_catport
         o->end();
       } // Fl_Group* o
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/DTR-RTS keying"));
@@ -12520,7 +12581,7 @@ ency"));
           btnAUTOCRLF->callback((Fl_Callback*)cb_btnAUTOCRLF);
           o->value(progdefaults.rtty_autocrlf);
         } // Fl_Check_Button* btnAUTOCRLF
-        { Fl_Counter2* o = cntrAUTOCRLF = new Fl_Counter2(643, 65, 65, 22, _("chars"));
+        { Fl_Counter2* o = cntrAUTOCRLF = new Fl_Counter2(643, 65, 75, 22, _("chars"));
           cntrAUTOCRLF->tooltip(_("Auto CRLF line length"));
           cntrAUTOCRLF->type(1);
           cntrAUTOCRLF->box(FL_UP_BOX);
@@ -12565,11 +12626,23 @@ ency"));
           chkPseudoFSK->callback((Fl_Callback*)cb_chkPseudoFSK);
           o->value(progdefaults.PseudoFSK);
         } // Fl_Check_Button* chkPseudoFSK
+        { Fl_Counter* o = cnt_TTY_LTRS = new Fl_Counter(532, 231, 75, 22, _("LTRS at start"));
+          cnt_TTY_LTRS->tooltip(_("Insert NN LTRS bytes at start of each transmission"));
+          cnt_TTY_LTRS->type(1);
+          cnt_TTY_LTRS->minimum(0);
+          cnt_TTY_LTRS->maximum(10);
+          cnt_TTY_LTRS->step(1);
+          cnt_TTY_LTRS->value(1);
+          cnt_TTY_LTRS->callback((Fl_Callback*)cb_cnt_TTY_LTRS);
+          cnt_TTY_LTRS->align(Fl_Align(FL_ALIGN_RIGHT));
+          o->value(progdefaults.TTY_LTRS);
+        } // Fl_Counter* cnt_TTY_LTRS
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(205, 262, 590, 77, _("Transceiver FSK"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        o->hide();
         { Fl_Counter* o = cntr_xcvr_FSK_MARK = new Fl_Counter(221, 297, 126, 23, _("Mark"));
           cntr_xcvr_FSK_MARK->tooltip(_("Mark frequency in Hertz"));
           cntr_xcvr_FSK_MARK->minimum(500);
@@ -12597,17 +12670,6 @@ ency"));
           o->index(progdefaults.rtty_shift);
           sel_xcvr_FSK_shift->end();
         } // Fl_ListBox* sel_xcvr_FSK_shift
-        { Fl_Counter* o = cnt_TTY_LTRS = new Fl_Counter(611, 297, 80, 23, _("LTRS at start"));
-          cnt_TTY_LTRS->tooltip(_("Insert NN LTRS bytes at start of each transmission"));
-          cnt_TTY_LTRS->type(1);
-          cnt_TTY_LTRS->minimum(0);
-          cnt_TTY_LTRS->maximum(10);
-          cnt_TTY_LTRS->step(1);
-          cnt_TTY_LTRS->value(2);
-          cnt_TTY_LTRS->callback((Fl_Callback*)cb_cnt_TTY_LTRS);
-          cnt_TTY_LTRS->align(Fl_Align(FL_ALIGN_RIGHT));
-          o->value(progdefaults.TTY_LTRS);
-        } // Fl_Counter* cnt_TTY_LTRS
         o->end();
       } // Fl_Group* o
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Tx"));

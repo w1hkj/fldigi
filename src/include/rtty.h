@@ -38,6 +38,7 @@
 #include "fftfilt.h"
 #include "digiscope.h"
 #include "view_rtty.h"
+#include "serial.h"
 
 #define	RTTY_SampleRate	8000
 //#define RTTY_SampleRate 11025
@@ -137,7 +138,6 @@ private:
 	int nbits;
 	int stoplen;
 	int msb;
-	bool useFSK;
 
 	double		phaseacc;
 	double		rtty_squelch;
@@ -218,7 +218,6 @@ private:
 
 	unsigned char Bit_reverse(unsigned char in, int n);
 	int decode_char();
-	int rttyparity(unsigned int);
 	bool rx(bool bit);
 
 	view_rtty *rttyviewer;
@@ -236,6 +235,14 @@ private:
 
 	bool is_mark_space(int &);
 	bool is_mark();
+
+//----------------------------------------------------------------------
+// experimental FSK generator
+//	bool   useFSK;
+//	double bitlen;
+//	Cserial *fsk_serial;
+//	inline void send_FSK(int c);
+//----------------------------------------------------------------------
 
 public:
 	rtty(trx_mode mode);
@@ -257,5 +264,7 @@ public:
 	void searchUp();
 
 };
+
+int rttyparity(unsigned int, int);
 
 #endif

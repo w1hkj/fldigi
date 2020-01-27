@@ -197,12 +197,7 @@ status progStatus = {
 	progdefaults.rtty_autocount,
 	progdefaults.rtty_afcspeed,
 	false, // bool rtty_filter_changed
-	progdefaults.useFSKkeyline,
-	progdefaults.useFSKkeylineDTR,
-	progdefaults.FSKisLSB,
-	progdefaults.useUART,
 	progdefaults.PreferXhairScope,
-	progdefaults.PseudoFSK,
 	true,						// bool shaped_rtty
 	progdefaults.UOSrx,
 	progdefaults.UOStx,
@@ -400,12 +395,7 @@ void status::saveLastState()
 	rtty_autocrlf = progdefaults.rtty_autocrlf;
 	rtty_autocount = progdefaults.rtty_autocount;
 	rtty_afcspeed = progdefaults.rtty_afcspeed;
-	useFSKkeyline = progdefaults.useFSKkeyline;
-	useFSKkeylineDTR = progdefaults.useFSKkeylineDTR;
-	FSKisLSB = progdefaults.FSKisLSB;
-	useUART = progdefaults.useUART;
 	PreferXhairScope = progdefaults.PreferXhairScope;
-	PseudoFSK = progdefaults.PseudoFSK;
 	UOSrx = progdefaults.UOSrx;
 	UOStx = progdefaults.UOStx;
 
@@ -576,12 +566,7 @@ if (!bWF_only) {
 	spref.set("rtty_autocrlf", rtty_autocrlf);
 	spref.set("rtty_autocount", rtty_autocount);
 	spref.set("rtty_afcspeed", rtty_afcspeed);
-	spref.set("rtty_useFSKkeyline", useFSKkeyline);
-	spref.set("rtty_useFSK_DTR", useFSKkeylineDTR);
-	spref.set("rtty_FSKisLSB", FSKisLSB);
-	spref.set("rtty_useUART", useUART);
 	spref.set("preferxhairscope", PreferXhairScope);
-	spref.set("psaudofsk", PseudoFSK);
 	spref.set("shaped_rtty", shaped_rtty);
 	spref.set("uosrx", UOSrx);
 	spref.set("uostx", UOStx);
@@ -856,12 +841,7 @@ void status::loadLastState()
 	spref.get("rtty_autocrlf", i, rtty_autocrlf); rtty_autocrlf = i;
 	spref.get("rtty_autocount", rtty_autocount, rtty_autocount);
 	spref.get("rtty_afcspeed", rtty_afcspeed, rtty_afcspeed);
-	spref.get("rtty_useFSKkeyline", i, useFSKkeyline); useFSKkeyline = i;
-	spref.get("rtty_useFSK_DTR", i, useFSKkeylineDTR); useFSKkeylineDTR = i;
-	spref.get("rtty_FSKisLSB", i, FSKisLSB); FSKisLSB = i;
-	spref.get("rtty_useUART", i, useUART); useUART = i;
 	spref.get("preferxhairscope", i, PreferXhairScope); PreferXhairScope = i;
-	spref.get("psaudofsk", i, PseudoFSK); PseudoFSK = i;
 	spref.get("shaped_rtty", i, shaped_rtty); shaped_rtty = i;
 	spref.get("uosrx", i, UOSrx); UOSrx = i;
 	spref.get("uostx", i, UOStx); UOStx = i;
@@ -1015,15 +995,12 @@ void status::initLastState()
 		btnCRCRLF->value(progdefaults.rtty_crcrlf = rtty_crcrlf);
 		btnAUTOCRLF->value(progdefaults.rtty_autocrlf = rtty_autocrlf);
 		cntrAUTOCRLF->value(progdefaults.rtty_autocount = rtty_autocount);
-		chkPseudoFSK->value(progdefaults.PseudoFSK = PseudoFSK);
 		chkUOSrx->value(progdefaults.UOSrx = UOSrx);
 		chkUOStx->value(progdefaults.UOStx = UOStx);
-//		chkXagc->value(progdefaults.Xagc = Xagc);
 		i_listbox_rtty_afc_speed->index(progdefaults.rtty_afcspeed = rtty_afcspeed);
 		btnPreferXhairScope->value(progdefaults.PreferXhairScope = PreferXhairScope);
 
 		if (mvsquelch) {
-//printf("init rtty squelch %f\n", VIEWER_rttysquelch);
 			mvsquelch->range(-12.0, 6.0);
 			mvsquelch->value(VIEWER_rttysquelch);
 		}

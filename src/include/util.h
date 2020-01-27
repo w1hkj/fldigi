@@ -165,6 +165,7 @@ void save_signals(void);
 void restore_signals(void);
 
 void MilliSleep(long msecs);
+void NanoSleep(double msecs);
 
 #ifdef __cplusplus
 } // extern "C"

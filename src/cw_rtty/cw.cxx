@@ -60,6 +60,9 @@
 
 using namespace std;
 
+void start_cwio_thread();
+void stop_cwio_thread();
+
 #define XMT_FILT_LEN 256
 #define QSK_DELAY_LEN 4*XMT_FILT_LEN
 #define CW_FFT_SIZE 2048 // must be a factor of 2
@@ -268,6 +271,7 @@ cw::~cw() {
 	if (cw_FFT_filter) delete cw_FFT_filter;
 	if (bitfilter) delete bitfilter;
 	if (trackingfilter) delete trackingfilter;
+	stop_cwio_thread();
 }
 
 cw::cw() : modem()
@@ -349,6 +353,7 @@ cw::cw() : modem()
 	noise_floor = 1.0;
 	sig_avg = 0.0;
 
+	start_cwio_thread();
 }
 
 // SHOULD ONLY BE CALLED FROM THE rx_processing loop
@@ -964,20 +969,6 @@ inline double cw::qsknco()
 //=======================================================================
 
 bool first_char = true;
-/*
-void appendfile(double *left, double *right, size_t count)
-{
-	if (!count) {
-		FILE *ofile = fl_fopen("cwstream.txt", "w");
-		fclose(ofile);
-		return;
-	}
-	FILE *ofile = fl_fopen("cwstream.txt", "a");
-	for (size_t i = 0; i < count; i++)
-		fprintf(ofile,"%f,%f\n", left[i], right[i]);
-	fclose(ofile);
-}
-*/
 
 enum {START, FIRST, MID, LAST, SPACE};
 
@@ -992,8 +983,11 @@ void cw::send_symbol(int bit, int len, int state)
 	memset(qskbuf, 0, OUTBUFSIZE*sizeof(*qskbuf));
 
 	if (bit == 1) { // keydown
+		tx_frequency = get_txfreq_woffset();
+		if (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)
+			tx_frequency = progdefaults.CWsweetspot;
 		for (int n = 0; n < len; n++) {
-			outbuf[n] = nco(get_txfreq_woffset());
+			outbuf[n] = nco(tx_frequency);
 			if (n < knum) outbuf[n] *= keyshape[n];
 			if (len - n < knum) outbuf[n] *= keyshape[len - n];
 			qskbuf[n] = qsk_amp * qsknco();
@@ -1030,8 +1024,6 @@ void cw::send_symbol(int bit, int len, int state)
 			}
 		}
 	}
-
-//	appendfile(outbuf, qskbuf, len);
 
 	if (progdefaults.QSK)
 		ModulateStereo(outbuf, qskbuf, len);
@@ -1132,9 +1124,6 @@ int cw::tx_process()
 {
 	int c;
 
-//	if (first_char) {
-//		appendfile(NULL, NULL, 0);
-//	}
 	if (use_paren != progdefaults.CW_use_paren ||
 		prosigns != progdefaults.CW_prosigns) {
 		use_paren = progdefaults.CW_use_paren;
@@ -1190,11 +1179,11 @@ int cw::tx_process()
 	acc_symbols = 0;
 
 	if (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)
-		send_CW_KEYLINE(c);
-	else {
+		send_CW(c);
+//	else {
 		send_ch(c);
 		first_char = false;
-	}
+//	}
 	char_samples = acc_symbols;
 
 	return 0;
@@ -1231,83 +1220,12 @@ void cw::toggleWPM()
 	update_Status();
 }
 
+// ---------------------------------------------------------------------
+// TTY output on DTR/RTS signal lines
+//----------------------------------------------------------------------
+
 Cserial CW_KEYLINE_serial;
 bool CW_KEYLINE_isopen = false;
-
-void cw::CW_KEYLINE(bool on)
-{
-	if (on) {
-		if (progdefaults.CW_KEYLINE == 2) {
-			if (progdefaults.CW_KEYLINE_on_cat_port)
-				rigio.SetDTR(1);
-			else
-				CW_KEYLINE_serial.SetDTR(1);
-		} else if (progdefaults.CW_KEYLINE == 1) {
-			if (progdefaults.CW_KEYLINE_on_cat_port)
-				rigio.SetRTS(1);
-			else
-				CW_KEYLINE_serial.SetRTS(1);
-		}
-	} else {
-		if (progdefaults.CW_KEYLINE == 2) {
-			if (progdefaults.CW_KEYLINE_on_cat_port)
-				rigio.SetDTR(0);
-			else
-				CW_KEYLINE_serial.SetDTR(0);
-		} else if (progdefaults.CW_KEYLINE == 1) {
-			if (progdefaults.CW_KEYLINE_on_cat_port)
-				rigio.SetRTS(0);
-			else
-				CW_KEYLINE_serial.SetRTS(0);
-		}
-	}
-}
-
-void cw::send_CW_KEYLINE(int c)
-{
-	if (c == GET_TX_CHAR_NODATA || c == 0x0d) {
-		MilliSleep(50);
-		return;
-	}
-
-	float tc = 1200.0 / progdefaults.CWspeed;
-	float ta = 0.0;
-	float tch = 3 * tc, twd = 4 * tc;
-
-	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth)) {
-		ta = 60000.0 / progdefaults.CWfarnsworth - 37200 / progdefaults.CWspeed;
-		tch = 3 * ta / 19;
-		twd = 4 * ta / 19;
-	}
-
-	if (c == 0x0a) c = ' ';
-	if (c == ' ') {
-		MilliSleep(twd);
-		put_echo_char(' ');
-		return;
-	}
-
-	string code = morse.tx_lookup(c);
-	for (size_t n = 0; n < code.length(); n++) {
-		CW_KEYLINE(1);
-		if (code[n] == '.')
-			MilliSleep(tc);
-		else
-			MilliSleep(3*tc);
-		CW_KEYLINE(0);
-		if (n == code.length() -1)
-			MilliSleep(tch);
-		else
-			MilliSleep(tc);
-	}
-
-	string prtstr = morse.tx_print();
-	for (size_t n = 0; n < prtstr.length(); n++)
-		put_echo_char(
-			prtstr[n],
-			prtstr[0] == '<' ? FTextBase::CTRL : FTextBase::XMIT);
-	return;
-}
 
 int open_CW_KEYLINE()
 {
@@ -1352,3 +1270,150 @@ void close_CW_KEYLINE()
 	CW_KEYLINE_serial.ClosePort();
 	CW_KEYLINE_isopen = false;
 }
+
+//----------------------------------------------------------------------
+static pthread_t       cwio_pthread;
+static pthread_cond_t  cwio_cond;
+static pthread_mutex_t cwio_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static bool cwio_thread_running   = false;
+static bool cwio_terminate_flag   = false;
+//----------------------------------------------------------------------
+
+#define cwio_bit(bit, len) {if (progdefaults.CW_KEYLINE == 2) ser->SetDTR(bit);\
+else ser->SetRTS(bit);\
+MilliSleep((len));}
+
+static int cwio_ch;
+static cMorse cwio_morse;
+static bool cwio_sending = false;
+
+void send_cwio(int c)
+{
+	cwio_sending = true;
+	if (c == GET_TX_CHAR_NODATA || c == 0x0d) {
+		cwio_sending = false;
+		return;
+	}
+
+	float tc = 1200.0 / progdefaults.CWspeed;
+	float ta = 0.0;
+	float tch = 3 * tc, twd = 4 * tc;
+
+	Cserial *ser = &CW_KEYLINE_serial;
+	if (progdefaults.CW_KEYLINE_on_cat_port)
+		ser = &rigio;
+
+	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth)) {
+		ta = 60000.0 / progdefaults.CWfarnsworth - 37200 / progdefaults.CWspeed;
+		tch = 3 * ta / 19;
+		twd = 4 * ta / 19;
+	}
+
+	if (c == 0x0a) c = ' ';
+	if (c == ' ') {
+		cwio_bit(0, twd);
+		cwio_sending = false;
+		return;
+	}
+
+	string code;
+	code = cwio_morse.tx_lookup(c);
+	for (size_t n = 0; n < code.length(); n++) {
+		if (code[n] == '.') {
+			cwio_bit(1, tc);
+		} else {
+			cwio_bit(1, 3*tc);
+		}
+		if (n < code.length() -1) {
+			cwio_bit(0, tc);
+		} else {
+			cwio_bit(0, tch);
+		}
+	}
+	cwio_sending = false;
+}
+
+static void * cwio_loop(void *args)
+{
+//	SET_THREAD_ID(AUDIO_ALERT_TID);
+
+	cwio_thread_running   = true;
+	cwio_terminate_flag   = false;
+
+	while(1) {
+		pthread_mutex_lock(&cwio_mutex);
+		pthread_cond_wait(&cwio_cond, &cwio_mutex);
+		pthread_mutex_unlock(&cwio_mutex);
+
+		if (cwio_terminate_flag)
+			break;
+		send_cwio(cwio_ch);
+	}
+	return (void *)0;
+}
+
+void stop_cwio_thread(void)
+{
+	if(!cwio_thread_running) return;
+
+	cwio_terminate_flag = true;
+	pthread_cond_signal(&cwio_cond);
+
+	MilliSleep(10);
+
+	pthread_join(cwio_pthread, NULL);
+
+	pthread_mutex_destroy(&cwio_mutex);
+	pthread_cond_destroy(&cwio_cond);
+
+	memset((void *) &cwio_pthread, 0, sizeof(cwio_pthread));
+	memset((void *) &cwio_mutex,   0, sizeof(cwio_mutex));
+
+	cwio_thread_running   = false;
+	cwio_terminate_flag   = false;
+}
+
+void start_cwio_thread(void)
+{
+	if (cwio_thread_running) return;
+
+	memset((void *) &cwio_pthread, 0, sizeof(cwio_pthread));
+	memset((void *) &cwio_mutex,   0, sizeof(cwio_mutex));
+	memset((void *) &cwio_cond,    0, sizeof(cwio_cond));
+
+	if(pthread_cond_init(&cwio_cond, NULL)) {
+		LOG_ERROR("Alert thread create fail (pthread_cond_init)");
+		return;
+	}
+
+	if(pthread_mutex_init(&cwio_mutex, NULL)) {
+		LOG_ERROR("AUDIO_ALERT thread create fail (pthread_mutex_init)");
+		return;
+	}
+
+	if (pthread_create(&cwio_pthread, NULL, cwio_loop, NULL) < 0) {
+		pthread_mutex_destroy(&cwio_mutex);
+		LOG_ERROR("AUDIO_ALERT thread create fail (pthread_create)");
+	}
+
+	LOG_VERBOSE("started audio cwio thread");
+
+	MilliSleep(10); // Give the CPU time to set 'cwio_thread_running'
+}
+
+void cw::send_CW(int c)
+{
+	if (!cwio_thread_running)
+		start_cwio_thread();
+	int count = 400;
+	while (cwio_sending) {
+		MilliSleep(1);
+		if (--count <= 0) return;
+	}
+	cwio_ch = c;
+	cwio_morse.init();
+
+	pthread_cond_signal(&cwio_cond);
+}
+

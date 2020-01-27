@@ -154,12 +154,7 @@ struct status {
 	int		rtty_autocount;
 	int		rtty_afcspeed;
 	bool	rtty_filter_changed;
-	bool	useFSKkeyline;
-	bool	useFSKkeylineDTR;
-	bool	FSKisLSB;
-	bool	useUART;
 	bool	PreferXhairScope;
-	bool	PseudoFSK;
 	bool	shaped_rtty;
 	bool	UOSrx;
 	bool	UOStx;
