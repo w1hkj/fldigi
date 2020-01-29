@@ -276,6 +276,7 @@ modem::modem()
 	bandwidth = 0.0;
 
 	CW_EOT = false;
+	sig_start = sig_stop = false;
 }
 
 // modem types CW and RTTY do not use the base init()
@@ -519,6 +520,19 @@ void modem::ModulateXmtr(double *buffer, int len)
 	if (disable_modem) return;
 
 	tx_sample_count += len;
+
+	if (sig_start) {
+		int num = len / 2;
+		for (int i = 0; i < num; i++)
+			buffer[i] *= (0.5 * (1.0 - cos (M_PI * i / num)));
+		sig_start = false;
+	}
+	if (sig_stop) {
+		int num = len / 2;
+		for (int i = 0; i < num; i++)
+			buffer[len - i - 1] *= (0.5 * (1.0 - cos (M_PI * i / num)));
+		sig_stop = false;
+	}
 
 	if (progdefaults.PTTrightchannel) {
 		for (int i = 0; i < len; i++)

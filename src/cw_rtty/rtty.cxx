@@ -1015,6 +1015,7 @@ void rtty::flush_stream()
 		FSKbuf[i] = 0.0;
 	}
 
+	sig_stop = true;
 	if (progdefaults.PseudoFSK)
 		ModulateStereo(outbuf, FSKbuf, symbollen * 6);
 	else
@@ -1088,6 +1089,7 @@ int rtty::tx_process()
 	if (progStatus.nanoFSK_online) {
 		if (preamble) {
 			start_deadman();
+			sig_start = true;
 			for (int i = 0; i < progdefaults.TTY_LTRS; i++)
 				nano_send_char(-1);
 			preamble = false;
@@ -1173,6 +1175,7 @@ int rtty::tx_process()
 	}
 
 	if (preamble) {
+		sig_start = true;
 		for (int i = 0; i < progdefaults.TTY_LTRS; i++)
 			send_char(LETTERS);
 		preamble = false;

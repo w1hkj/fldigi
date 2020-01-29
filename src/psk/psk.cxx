@@ -2098,6 +2098,7 @@ void psk::tx_char(unsigned char c)
 
 void psk::tx_flush()
 {
+	sig_start = false;
 	if (_pskr) {
 		ovhd_symbols = ((numcarriers - symbols) % numcarriers);
 		//VK2ETA replace with a more effective flushing sequence (avoids cutting the last characters in low s/n)
@@ -2105,23 +2106,28 @@ void psk::tx_flush()
 
 		for (int i = 0; i < dcdbits / 2; i++) {
 			tx_bit(1);
+			if (i == dcdbits/2 - 1) sig_stop = true;
 			tx_bit(1);
 		}
 
 	// QPSK - flush the encoder
 	} else if (_qpsk) {
-		for (int i = 0; i < dcdbits; i++)
+		for (int i = 0; i < dcdbits; i++) {
+			if (i == dcdbits - 1) sig_stop = true;
 			tx_bit(0);
+		}
 
 	// FEC enabled: Sens the NULL character in MFSk varicode as the flush / post-amble sequence
 	} else if (!_disablefec && (_xpsk || _8psk || _16psk) ) {
 		for (int i=0; i<flushlength; i++) {
+			if (i == flushlength - 1) sig_stop = true;
 			tx_char(0); // Send <NUL> to clear bit accumulators on both Tx and Rx ends.
 		}
 
 	// FEC disabled: use unmodulated carrier (bpsk-like single tone)
 	} else if (_disablefec && ( _xpsk || _8psk || _16psk) ) {
 		for (int i=0; i<symbits; i++) {
+			if (i == symbits - 1) sig_stop = true;
 			tx_char(0); // Send <NUL> to clear bit accumulators on both Tx and Rx ends.
 		}
 
@@ -2130,13 +2136,17 @@ void psk::tx_flush()
 		else if (_8psk) symbol = 4;
 		else symbol = 2; // xpsk
 
-		for (int i = 0; i <= 96; i++) // DCD window is only 32-bits wide. Send 3-times
+		for (int i = 0; i <= 96; i++) { // DCD window is only 32-bits wide. Send 3-times
+			if (i == 95) sig_stop = true;
 			tx_symbol(symbol);
+		}
 
 	// Standard BPSK postamble
 	} else {
-		for (int i = 0; i < dcdbits; i++)
+		for (int i = 0; i < dcdbits; i++) {
+			if (i == dcdbits - 1) sig_stop = true;
 			tx_symbol(2); // 0 degrees
+		}
 	}
 	for (int i = 0; i < 2048; i++) outbuf[i] = 0;
 	transmit(outbuf, 2048);
@@ -2159,7 +2169,9 @@ int psk::tx_process()
 			if (mode != MODE_PSK63F)
 				clearbits();
 			// FEC prep the encoder with one/zero sequences of bits
-			for (int i = 0; i < preamble; i += 2) {
+			sig_start = true;
+			sig_stop = false;
+			for (int i = 0; i < preamble/2; i++) {
 				tx_bit(1);
 				tx_bit(0);
 			}
@@ -2175,6 +2187,8 @@ int psk::tx_process()
 				if (preamble > 96) preamble = 96;
 			if (_disablefec) {
 				// Send continuous symbol 0: Usual PSK 2-tone preamble
+				sig_start = true;
+				sig_stop = false;
 				for (int i = 0; i < preamble; i++ )
 					tx_symbol(0);
 				tx_char(0);
@@ -2186,6 +2200,8 @@ int psk::tx_process()
 				_disablefec = false;
 				// FEC prep the encoder with encoded sequence of double-zeros
 				// sends a single centered preamble tone for FEC modes
+				sig_start = true;
+				sig_stop = false;
 				for (int i = 0; i < preamble; i += 2) {
 					tx_bit(0);
 					tx_bit(0);
@@ -2196,6 +2212,8 @@ int psk::tx_process()
 			}
 		} else {
 			// Standard BPSK/QPSK preamble
+			sig_start = true;
+			sig_stop = false;
 			for (int i = 0; i < preamble; i++) {
 				tx_symbol(0);   // send phase reversals
 			}

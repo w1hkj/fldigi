@@ -55,6 +55,8 @@ protected:
 	int		samplerate;
 	bool	reverse;
 	int		sigsearch;
+	bool	sig_start;
+	bool	sig_stop;
 
 	double	bandwidth;
 	double	freqerr;
@@ -98,7 +100,7 @@ protected:
 	bool CW_EOT;
 public:
 	modem();
-	virtual ~modem(){};
+	virtual ~modem(){}
 
 // these processes must be declared in the derived class
 	virtual void init();

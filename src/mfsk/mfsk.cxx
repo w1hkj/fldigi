@@ -1084,7 +1084,7 @@ int mfsk::tx_process()
 	switch (txstate) {
 		case TX_STATE_PREAMBLE:
 			clearbits();
-
+			sig_start = true;
 			if (mode != MODE_MFSK64L && mode != MODE_MFSK128L )
 				for (int i = 0; i < preamble / 3; i++)
 					sendbit(0);
@@ -1092,6 +1092,7 @@ int mfsk::tx_process()
 			txstate = TX_STATE_START;
 			break;
 		case TX_STATE_START:
+			sig_start = true;
 			sendchar('\r');
 			sendchar(2);		// STX
 			sendchar('\r');
@@ -1130,6 +1131,7 @@ int mfsk::tx_process()
 		case TX_STATE_FLUSH:
 			sendchar('\r');
 			sendchar(4);		// EOT
+			sig_stop = true;
 			sendchar('\r');
 			flushtx(preamble);
 			rxstate = RX_STATE_DATA;
