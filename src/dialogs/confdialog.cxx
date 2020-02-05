@@ -3169,6 +3169,7 @@ Fl_ListBox *listbox_nanoIO_serbaud=(Fl_ListBox *)0;
 
 static void cb_listbox_nanoIO_serbaud(Fl_ListBox* o, void*) {
   progdefaults.nanoIO_serbaud = o->index();
+listbox_nanoIO_serbaud2->index(o->index());
 progdefaults.changed = true;
 }
 
@@ -4284,12 +4285,26 @@ static void cb_btn_nanoIO_connect(Fl_Light_Button* o, void*) {
 };
 }
 
-Fl_ListBox *sel_nanoIO_baud=(Fl_ListBox *)0;
+Fl_ListBox *listbox_nanoIO_serbaud2=(Fl_ListBox *)0;
 
-static void cb_sel_nanoIO_baud(Fl_ListBox* o, void*) {
-  progdefaults.nanoIO_baud = o->index();
-nano_set_baud(progdefaults.nanoIO_baud);
+static void cb_listbox_nanoIO_serbaud2(Fl_ListBox* o, void*) {
+  progdefaults.nanoIO_serbaud = o->index();
+listbox_nanoIO_serbaud->index(o->index());
 progdefaults.changed = true;
+}
+
+FTextView *txt_nano_io=(FTextView *)0;
+
+Fl_Button *btn_nanofsk_save=(Fl_Button *)0;
+
+static void cb_btn_nanofsk_save(Fl_Button*, void*) {
+  nano_CW_save();
+}
+
+Fl_Button *btn_nanofsk_query=(Fl_Button *)0;
+
+static void cb_btn_nanofsk_query(Fl_Button*, void*) {
+  nano_CW_query();
 }
 
 Fl_Check_Button *chk_nanoIO_polarity=(Fl_Check_Button *)0;
@@ -4300,7 +4315,50 @@ nano_mark_polarity(progdefaults.nanoIO_polarity);
 progdefaults.changed = true;
 }
 
-FTextView *txt_nano_io=(FTextView *)0;
+Fl_ListBox *sel_nanoIO_baud=(Fl_ListBox *)0;
+
+static void cb_sel_nanoIO_baud(Fl_ListBox* o, void*) {
+  progdefaults.nanoIO_baud = o->index();
+nano_set_baud(progdefaults.nanoIO_baud);
+progdefaults.changed = true;
+}
+
+Fl_Group *grp_nanoio_debug=(Fl_Group *)0;
+
+Fl_Browser *brws_nanoio_sent=(Fl_Browser *)0;
+
+Fl_Browser *brws_nanoio_rcvd=(Fl_Browser *)0;
+
+Fl_Button *btn_nanoio_clear_sent=(Fl_Button *)0;
+
+static void cb_btn_nanoio_clear_sent(Fl_Button*, void*) {
+  brws_nanoio_sent->clear();
+}
+
+Fl_Button *btn_nanoio_clear_both=(Fl_Button *)0;
+
+static void cb_btn_nanoio_clear_both(Fl_Button*, void*) {
+  brws_nanoio_rcvd->clear();
+brws_nanoio_sent->clear();
+}
+
+Fl_Button *btn_nanoio_clear_rcvd=(Fl_Button *)0;
+
+static void cb_btn_nanoio_clear_rcvd(Fl_Button*, void*) {
+  brws_nanoio_rcvd->clear();
+}
+
+Fl_Light_Button *btn_nanoio_debug=(Fl_Light_Button *)0;
+
+static void cb_btn_nanoio_debug(Fl_Light_Button* o, void*) {
+  if (o->value()) {
+  grp_nanoio_debug->show();
+  txt_nano_io->hide();
+} else {
+  grp_nanoio_debug->hide();
+  txt_nano_io->show();
+};
+}
 
 Fl_ComboBox *select_USN_FSK_port=(Fl_ComboBox *)0;
 
@@ -10306,7 +10364,7 @@ work!"));
       tab_tree->add(_("Modem/CW/General"));
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 654, 350, _("Modem/CW/Timing and QSK"));
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/Timing and QSK"));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
@@ -12325,7 +12383,7 @@ c are\nneeded."));
       tab_tree->add(_("Modem/Psk"));
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/Rx"));
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/TTY/Rx"));
       o->box(FL_FLAT_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
@@ -12468,7 +12526,7 @@ ency"));
       tab_tree->add(_("Modem/TTY/Rx"));
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/Tx"));
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/TTY/Tx"));
       o->box(FL_FLAT_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
@@ -12677,11 +12735,11 @@ ency"));
       tab_tree->add(_("Modem/TTY/Tx"));
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/nanoIO"));
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/TTY/nanoIO"));
       o->box(FL_FLAT_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
-      { select_nanoIO_CommPort = new Fl_ComboBox(288, 23, 406, 25, _("Ser. Port"));
+      { Fl_ComboBox* o = select_nanoIO_CommPort = new Fl_ComboBox(290, 23, 420, 25, _("Ser. Port"));
         select_nanoIO_CommPort->tooltip(_("nanoIO serial port"));
         select_nanoIO_CommPort->box(FL_DOWN_BOX);
         select_nanoIO_CommPort->color((Fl_Color)55);
@@ -12693,36 +12751,29 @@ ency"));
         select_nanoIO_CommPort->callback((Fl_Callback*)cb_select_nanoIO_CommPort);
         select_nanoIO_CommPort->align(Fl_Align(FL_ALIGN_LEFT));
         select_nanoIO_CommPort->when(FL_WHEN_RELEASE);
+        o->value(progdefaults.nanoIO_serial_port_name.c_str());
         select_nanoIO_CommPort->end();
       } // Fl_ComboBox* select_nanoIO_CommPort
-      { btn_nanoIO_connect = new Fl_Light_Button(704, 23, 80, 25, _("Connect"));
+      { btn_nanoIO_connect = new Fl_Light_Button(715, 23, 80, 25, _("Connect"));
         btn_nanoIO_connect->tooltip(_("Connect / Disconnect from nanoIO"));
         btn_nanoIO_connect->callback((Fl_Callback*)cb_btn_nanoIO_connect);
       } // Fl_Light_Button* btn_nanoIO_connect
-      { Fl_ListBox* o = sel_nanoIO_baud = new Fl_ListBox(594, 52, 100, 25, _("Baud rate"));
-        sel_nanoIO_baud->tooltip(_("nanoIO - TTY baud"));
-        sel_nanoIO_baud->box(FL_DOWN_BOX);
-        sel_nanoIO_baud->color(FL_BACKGROUND2_COLOR);
-        sel_nanoIO_baud->selection_color(FL_BACKGROUND_COLOR);
-        sel_nanoIO_baud->labeltype(FL_NORMAL_LABEL);
-        sel_nanoIO_baud->labelfont(0);
-        sel_nanoIO_baud->labelsize(14);
-        sel_nanoIO_baud->labelcolor(FL_FOREGROUND_COLOR);
-        sel_nanoIO_baud->callback((Fl_Callback*)cb_sel_nanoIO_baud);
-        sel_nanoIO_baud->align(Fl_Align(FL_ALIGN_LEFT));
-        sel_nanoIO_baud->when(FL_WHEN_CHANGED);
-        o->add("45.45|50.0|75.0|100.0");
-        o->index(progdefaults.nanoIO_baud);
-        o->labelsize(FL_NORMAL_SIZE);
-        sel_nanoIO_baud->end();
-      } // Fl_ListBox* sel_nanoIO_baud
-      { Fl_Check_Button* o = chk_nanoIO_polarity = new Fl_Check_Button(286, 52, 63, 24, _("MARK polarity"));
-        chk_nanoIO_polarity->tooltip(_("Set - mark logical HIGH\nRead from nanoIO"));
-        chk_nanoIO_polarity->down_box(FL_DOWN_BOX);
-        chk_nanoIO_polarity->callback((Fl_Callback*)cb_chk_nanoIO_polarity);
-        o->value(progdefaults.nanoIO_polarity);
-      } // Fl_Check_Button* chk_nanoIO_polarity
-      { FTextView* o = txt_nano_io = new FTextView(204, 99, 591, 247, _("USB serial I/O"));
+      { Fl_ListBox* o = listbox_nanoIO_serbaud2 = new Fl_ListBox(293, 57, 92, 24, _("Serial Baud"));
+        listbox_nanoIO_serbaud2->box(FL_DOWN_BOX);
+        listbox_nanoIO_serbaud2->color(FL_BACKGROUND2_COLOR);
+        listbox_nanoIO_serbaud2->selection_color(FL_BACKGROUND_COLOR);
+        listbox_nanoIO_serbaud2->labeltype(FL_NORMAL_LABEL);
+        listbox_nanoIO_serbaud2->labelfont(0);
+        listbox_nanoIO_serbaud2->labelsize(14);
+        listbox_nanoIO_serbaud2->labelcolor(FL_FOREGROUND_COLOR);
+        listbox_nanoIO_serbaud2->callback((Fl_Callback*)cb_listbox_nanoIO_serbaud2);
+        listbox_nanoIO_serbaud2->align(Fl_Align(FL_ALIGN_LEFT));
+        listbox_nanoIO_serbaud2->when(FL_WHEN_RELEASE);
+        o->add("1200|4800|9600|19200|38400|57600|115200");
+        o->index(progdefaults.nanoIO_serbaud);
+        listbox_nanoIO_serbaud2->end();
+      } // Fl_ListBox* listbox_nanoIO_serbaud2
+      { FTextView* o = txt_nano_io = new FTextView(202, 126, 596, 220, _("USB serial I/O"));
         txt_nano_io->box(FL_DOWN_FRAME);
         txt_nano_io->color(FL_BACKGROUND2_COLOR);
         txt_nano_io->selection_color(FL_SELECTION_COLOR);
@@ -12735,12 +12786,68 @@ ency"));
         o->setFont(progdefaults.RxFontnbr);
         o->setFontSize(12);
       } // FTextView* txt_nano_io
+      { btn_nanofsk_save = new Fl_Button(715, 57, 80, 25, _("Save"));
+        btn_nanofsk_save->tooltip(_("Write state of nanoIO to Arduino EEPROM"));
+        btn_nanofsk_save->callback((Fl_Callback*)cb_btn_nanofsk_save);
+      } // Fl_Button* btn_nanofsk_save
+      { btn_nanofsk_query = new Fl_Button(630, 57, 80, 25, _("Status"));
+        btn_nanofsk_query->tooltip(_("Query state of nanoIO"));
+        btn_nanofsk_query->callback((Fl_Callback*)cb_btn_nanofsk_query);
+      } // Fl_Button* btn_nanofsk_query
+      { Fl_Check_Button* o = chk_nanoIO_polarity = new Fl_Check_Button(409, 90, 53, 24, _("MARK polarity"));
+        chk_nanoIO_polarity->tooltip(_("Set - mark logical HIGH\nRead from nanoIO"));
+        chk_nanoIO_polarity->down_box(FL_DOWN_BOX);
+        chk_nanoIO_polarity->callback((Fl_Callback*)cb_chk_nanoIO_polarity);
+        o->value(progdefaults.nanoIO_polarity);
+      } // Fl_Check_Button* chk_nanoIO_polarity
+      { Fl_ListBox* o = sel_nanoIO_baud = new Fl_ListBox(533, 90, 84, 25, _("TTY Baud"));
+        sel_nanoIO_baud->tooltip(_("nanoIO - TTY baud"));
+        sel_nanoIO_baud->box(FL_DOWN_BOX);
+        sel_nanoIO_baud->color(FL_BACKGROUND2_COLOR);
+        sel_nanoIO_baud->selection_color(FL_BACKGROUND_COLOR);
+        sel_nanoIO_baud->labeltype(FL_NORMAL_LABEL);
+        sel_nanoIO_baud->labelfont(0);
+        sel_nanoIO_baud->labelsize(14);
+        sel_nanoIO_baud->labelcolor(FL_FOREGROUND_COLOR);
+        sel_nanoIO_baud->callback((Fl_Callback*)cb_sel_nanoIO_baud);
+        sel_nanoIO_baud->align(Fl_Align(FL_ALIGN_RIGHT));
+        sel_nanoIO_baud->when(FL_WHEN_CHANGED);
+        o->add("45.45|50.0|75.0|100.0");
+        o->index(progdefaults.nanoIO_baud);
+        o->labelsize(FL_NORMAL_SIZE);
+        sel_nanoIO_baud->end();
+      } // Fl_ListBox* sel_nanoIO_baud
+      { grp_nanoio_debug = new Fl_Group(202, 126, 596, 220, _("Debug Output"));
+        grp_nanoio_debug->box(FL_ENGRAVED_FRAME);
+        grp_nanoio_debug->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+        grp_nanoio_debug->hide();
+        { brws_nanoio_sent = new Fl_Browser(202, 126, 298, 190);
+          brws_nanoio_sent->align(Fl_Align(FL_ALIGN_BOTTOM|FL_ALIGN_INSIDE));
+        } // Fl_Browser* brws_nanoio_sent
+        { brws_nanoio_rcvd = new Fl_Browser(500, 126, 298, 190);
+          brws_nanoio_rcvd->align(Fl_Align(FL_ALIGN_BOTTOM|FL_ALIGN_INSIDE));
+        } // Fl_Browser* brws_nanoio_rcvd
+        { btn_nanoio_clear_sent = new Fl_Button(309, 319, 85, 20, _("Clear Sent"));
+          btn_nanoio_clear_sent->callback((Fl_Callback*)cb_btn_nanoio_clear_sent);
+        } // Fl_Button* btn_nanoio_clear_sent
+        { btn_nanoio_clear_both = new Fl_Button(457, 319, 85, 20, _("Clear Both"));
+          btn_nanoio_clear_both->callback((Fl_Callback*)cb_btn_nanoio_clear_both);
+        } // Fl_Button* btn_nanoio_clear_both
+        { btn_nanoio_clear_rcvd = new Fl_Button(605, 319, 85, 20, _("Clear Rcvd"));
+          btn_nanoio_clear_rcvd->callback((Fl_Callback*)cb_btn_nanoio_clear_rcvd);
+        } // Fl_Button* btn_nanoio_clear_rcvd
+        grp_nanoio_debug->end();
+        Fl_Group::current()->resizable(grp_nanoio_debug);
+      } // Fl_Group* grp_nanoio_debug
+      { btn_nanoio_debug = new Fl_Light_Button(715, 90, 80, 25, _("Debug"));
+        btn_nanoio_debug->callback((Fl_Callback*)cb_btn_nanoio_debug);
+      } // Fl_Light_Button* btn_nanoio_debug
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/nanoIO"));
       config_pages.push_back(p);
       tab_tree->add(_("Modem/TTY/nanoIO"));
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/Navigator"));
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/TTY/Navigator"));
       o->box(FL_FLAT_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
@@ -12973,7 +13080,7 @@ ency"));
       tab_tree->add(_("Modem/TTY/Navigator"));
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/Synop"));
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/TTY/Synop"));
       o->box(FL_FLAT_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
@@ -13004,7 +13111,7 @@ le Earth)"));
       tab_tree->add(_("Modem/TTY/Synop"));
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 601, 350, _("Modem/TTY/Winkeyer 3"));
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/TTY/Winkeyer 3"));
       o->box(FL_FLAT_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();

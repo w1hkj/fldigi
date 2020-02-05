@@ -137,32 +137,6 @@ void PTT::set(bool ptt)
 	if (!ptt && progdefaults.PTT_off_delay)
 		MilliSleep(progdefaults.PTT_off_delay);
 
-	if (progdefaults.PTT_KEYLINE > 0 && active_modem == rtty_modem) {
-		ptt_temp.assign("PTT ").append(ptt ? "ON :" : "OFF:");
-		if (progdefaults.PTT_KEYLINE == 2) { // DTR signalling
-			if (progdefaults.CW_KEYLINE_on_cat_port) {
-				rigio.SetDTR(ptt);
-				ptt_temp.append("rigio DTR");
-			} else {
-				CW_KEYLINE_serial.SetDTR(ptt);
-				ptt_temp.append("cw_serial DTR");
-			}
-		} else {                             // RTS signalling
-			if (progdefaults.CW_KEYLINE_on_cat_port) {
-				rigio.SetRTS(ptt);
-				ptt_temp.append("rigio RTS");
-			} else {
-				CW_KEYLINE_serial.SetRTS(ptt);
-				ptt_temp.append("cw_serial RTS");
-			}
-		}
-		LOG_VERBOSE("%s", ptt_temp.c_str());
-
-		if (ptt) start_tx_timer();
-		else     stop_tx_timer();
-		return;
-	}
-
 	if (active_modem == cw_modem &&
 	    ((progdefaults.useCWkeylineRTS) || progdefaults.useCWkeylineDTR == true))
 		return;

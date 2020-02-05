@@ -488,9 +488,20 @@ extern Fl_Counter *cntr_xcvr_FSK_MARK;
 extern Fl_ListBox *sel_xcvr_FSK_shift;
 extern Fl_ComboBox *select_nanoIO_CommPort;
 extern Fl_Light_Button *btn_nanoIO_connect;
-extern Fl_ListBox *sel_nanoIO_baud;
-extern Fl_Check_Button *chk_nanoIO_polarity;
+extern Fl_ListBox *listbox_nanoIO_serbaud2;
 extern FTextView *txt_nano_io;
+extern Fl_Button *btn_nanofsk_save;
+extern Fl_Button *btn_nanofsk_query;
+extern Fl_Check_Button *chk_nanoIO_polarity;
+extern Fl_ListBox *sel_nanoIO_baud;
+extern Fl_Group *grp_nanoio_debug;
+#include <FL/Fl_Browser.H>
+extern Fl_Browser *brws_nanoio_sent;
+extern Fl_Browser *brws_nanoio_rcvd;
+extern Fl_Button *btn_nanoio_clear_sent;
+extern Fl_Button *btn_nanoio_clear_both;
+extern Fl_Button *btn_nanoio_clear_rcvd;
+extern Fl_Light_Button *btn_nanoio_debug;
 #include "Nav.h"
 extern Fl_ComboBox *select_USN_FSK_port;
 extern Fl_Light_Button *btn_Nav_connect;

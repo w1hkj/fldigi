@@ -3203,7 +3203,7 @@ progdefaults.changed = true;}
     }
     Fl_Group {} {
       label {Modem/CW/Timing and QSK}
-      xywh {200 0 654 350} box ENGRAVED_BOX align 21 hide
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Timing and QSK"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Modem/CW/Timing and QSK"));}
@@ -4045,6 +4045,7 @@ progdefaults.changed = true;}
       Fl_Group listbox_nanoIO_serbaud {
         label Baud
         callback {progdefaults.nanoIO_serbaud = o->index();
+listbox_nanoIO_serbaud2->index(o->index());
 progdefaults.changed = true;} open
         xywh {594 47 110 24} box DOWN_BOX color 7 align 4
         code0 {o->add("1200|4800|9600|19200|38400|57600|115200");}
@@ -5157,7 +5158,7 @@ progdefaults.changed = true;}
     }
     Fl_Group {} {
       label {Modem/TTY/Rx}
-      xywh {200 0 601 350} box FLAT_BOX align 21 hide
+      xywh {200 0 600 350} box FLAT_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Rx"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Modem/TTY/Rx"));}
@@ -5353,8 +5354,8 @@ progdefaults.BELL_RING_MENU = o->value();} open
       }
     }
     Fl_Group {} {
-      label {Modem/TTY/Tx} open selected
-      xywh {200 0 601 350} box FLAT_BOX align 21 hide
+      label {Modem/TTY/Tx}
+      xywh {200 0 600 350} box FLAT_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Tx"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Modem/TTY/Tx"));}
@@ -5515,8 +5516,8 @@ progdefaults.changed = true;} open
       }
     }
     Fl_Group {} {
-      label {Modem/TTY/nanoIO}
-      xywh {200 0 601 350} box FLAT_BOX align 21 hide
+      label {Modem/TTY/nanoIO} open
+      xywh {200 0 600 350} box FLAT_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/nanoIO"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Modem/TTY/nanoIO"));}
@@ -5524,9 +5525,10 @@ progdefaults.changed = true;} open
       Fl_Group select_nanoIO_CommPort {
         label {Ser. Port}
         callback {progdefaults.nanoIO_serial_port_name = o->value();} open
-        tooltip {nanoIO serial port} xywh {288 23 406 25} box DOWN_BOX color 55 align 4
+        tooltip {nanoIO serial port} xywh {290 23 420 25} box DOWN_BOX color 55 align 4
         code0 {\#include "combo.h"}
         code1 {\#include "nanoIO.h"}
+        code2 {o->value(progdefaults.nanoIO_serial_port_name.c_str());}
         class Fl_ComboBox
       } {}
       Fl_Light_Button btn_nanoIO_connect {
@@ -5538,40 +5540,98 @@ progdefaults.changed = true;} open
 } else {
   close_nanoIO();
 }}
-        tooltip {Connect / Disconnect from nanoIO} xywh {704 23 80 25}
+        tooltip {Connect / Disconnect from nanoIO} xywh {715 23 80 25}
       }
-      Fl_Group sel_nanoIO_baud {
-        label {Baud rate}
-        callback {progdefaults.nanoIO_baud = o->index();
-nano_set_baud(progdefaults.nanoIO_baud);
+      Fl_Group listbox_nanoIO_serbaud2 {
+        label {Serial Baud}
+        callback {progdefaults.nanoIO_serbaud = o->index();
+listbox_nanoIO_serbaud->index(o->index());
 progdefaults.changed = true;} open
-        tooltip {nanoIO - TTY baud} xywh {594 52 100 25} box DOWN_BOX color 7 align 4 when 1
-        code0 {o->add("45.45|50.0|75.0|100.0");}
-        code1 {o->index(progdefaults.nanoIO_baud);}
-        code2 {o->labelsize(FL_NORMAL_SIZE);}
+        xywh {293 57 92 24} box DOWN_BOX color 7 align 4
+        code0 {o->add("1200|4800|9600|19200|38400|57600|115200");}
+        code1 {o->index(progdefaults.nanoIO_serbaud);}
         class Fl_ListBox
       } {}
+      Fl_Text_Display txt_nano_io {
+        label {USB serial I/O}
+        xywh {202 126 596 220} align 5
+        code0 {\#include "FTextRXTX.h"}
+        code1 {o->setFont(progdefaults.RxFontnbr);}
+        code2 {o->setFontSize(12);}
+        class FTextView
+      }
+      Fl_Button btn_nanofsk_save {
+        label Save
+        callback {nano_CW_save();}
+        tooltip {Write state of nanoIO to Arduino EEPROM} xywh {715 57 80 25}
+      }
+      Fl_Button btn_nanofsk_query {
+        label Status
+        callback {nano_CW_query();}
+        tooltip {Query state of nanoIO} xywh {630 57 80 25}
+      }
       Fl_Check_Button chk_nanoIO_polarity {
         label {MARK polarity}
         callback {progdefaults.nanoIO_polarity=o->value();
 nano_mark_polarity(progdefaults.nanoIO_polarity);
 progdefaults.changed = true;}
         tooltip {Set - mark logical HIGH
-Read from nanoIO} xywh {286 52 63 24} down_box DOWN_BOX
+Read from nanoIO} xywh {409 90 53 24} down_box DOWN_BOX
         code0 {o->value(progdefaults.nanoIO_polarity);}
       }
-      Fl_Text_Display txt_nano_io {
-        label {USB serial I/O}
-        xywh {204 99 591 247} align 5
-        code0 {\#include "FTextRXTX.h"}
-        code1 {o->setFont(progdefaults.RxFontnbr);}
-        code2 {o->setFontSize(12);}
-        class FTextView
+      Fl_Group sel_nanoIO_baud {
+        label {TTY Baud}
+        callback {progdefaults.nanoIO_baud = o->index();
+nano_set_baud(progdefaults.nanoIO_baud);
+progdefaults.changed = true;} open
+        tooltip {nanoIO - TTY baud} xywh {533 90 84 25} box DOWN_BOX color 7 align 8 when 1
+        code0 {o->add("45.45|50.0|75.0|100.0");}
+        code1 {o->index(progdefaults.nanoIO_baud);}
+        code2 {o->labelsize(FL_NORMAL_SIZE);}
+        class Fl_ListBox
+      } {}
+      Fl_Group grp_nanoio_debug {
+        label {Debug Output} open
+        xywh {202 126 596 220} box ENGRAVED_FRAME align 5 hide resizable
+      } {
+        Fl_Browser brws_nanoio_sent {
+          xywh {202 126 298 190} align 18
+        }
+        Fl_Browser brws_nanoio_rcvd {
+          xywh {500 126 298 190} align 18
+        }
+        Fl_Button btn_nanoio_clear_sent {
+          label {Clear Sent}
+          callback {brws_nanoio_sent->clear();}
+          xywh {309 319 85 20}
+        }
+        Fl_Button btn_nanoio_clear_both {
+          label {Clear Both}
+          callback {brws_nanoio_rcvd->clear();
+brws_nanoio_sent->clear();} selected
+          xywh {457 319 85 20}
+        }
+        Fl_Button btn_nanoio_clear_rcvd {
+          label {Clear Rcvd}
+          callback {brws_nanoio_rcvd->clear();}
+          xywh {605 319 85 20}
+        }
+      }
+      Fl_Light_Button btn_nanoio_debug {
+        label Debug
+        callback {if (o->value()) {
+  grp_nanoio_debug->show();
+  txt_nano_io->hide();
+} else {
+  grp_nanoio_debug->hide();
+  txt_nano_io->show();
+}}
+        xywh {715 90 80 25}
       }
     }
     Fl_Group {} {
       label {Modem/TTY/Navigator}
-      xywh {200 0 601 350} box FLAT_BOX align 21 hide
+      xywh {200 0 600 350} box FLAT_BOX align 21 hide
       code0 {\#include "Nav.h"}
       code1 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Navigator"));}
       code2 {config_pages.push_back(p);}
@@ -5736,7 +5796,7 @@ progdefaults.changed = true;} open
     }
     Fl_Group {} {
       label {Modem/TTY/Synop}
-      xywh {200 0 601 350} box FLAT_BOX align 21 hide
+      xywh {200 0 600 350} box FLAT_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Synop"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Modem/TTY/Synop"));}
@@ -5765,7 +5825,7 @@ progdefaults.changed = true;}
     }
     Fl_Group {} {
       label {Modem/TTY/Winkeyer 3}
-      xywh {200 0 601 350} box FLAT_BOX align 21 hide
+      xywh {200 0 600 350} box FLAT_BOX align 21 hide
       code0 {\#include "winkeyer.h"}
       code1 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Winkeyer 3"));}
       code2 {config_pages.push_back(p);}
@@ -10598,8 +10658,7 @@ Function {make_window()} {} {}
 Function {make_window()} {open
 } {}
 
-Function {make_rxaudio_dialog()} {open
-} {
+Function {make_rxaudio_dialog()} {} {
   Fl_Window {} {
     label {Rx Audio Monitor} open
     xywh {616 220 360 230} type Double hide
