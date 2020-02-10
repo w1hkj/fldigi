@@ -50,7 +50,8 @@ function bundle()
 	echo "APPL${signature}" > "$appname/Contents/PkgInfo"
 	sed -e "s!%%IDENTIFIER%%!${identifier}!g; s!%%NAME%%!${name}!g;\
 		s!%%SIGNATURE%%!${signature}!g; s!%%BINARY%%!${binary}!g;\
-		s!%%VERSION%%!${version}!g; s!%%ICON%%!${icon##*/}!g;" < "$plist" > "$appname/Contents/Info.plist"
+		s!%%VERSION%%!${version}!g;\
+		s!%%ICON%%!${icon##*/}!g;" < "$plist" > "$appname/Contents/Info.plist"
 
 	if grep '%%[A-Z]*%%' "$appname/Contents/Info.plist"; then
 	echo "E: unsubstituted variables in $appname/Contents/Info.plist" >&2
@@ -105,7 +106,7 @@ if test "x$WANT_FLDIGI" = "xyes"; then
 	signature="$(echo $PACKAGE_TARNAME | sed 's/[aeiouAEIOU]//g; s/\(^....\).*/\1/')"
 	binary="$PACKAGE_TARNAME"
 	icon="$fldigi_icon"
-	version="${FLDIGI_VERSION_MAJOR}.${FLDIGI_VERSION_MINOR}"
+	version="${FLDIGI_VERSION_MAJOR}.${FLDIGI_VERSION_MINOR}.${FLDIGI_VERSION_PATCH}"
 	appversion="$FLDIGI_VERSION"
 
 	bundle
@@ -117,7 +118,7 @@ if test "x$WANT_FLARQ" = "xyes"; then
 	signature="flrq"
 	binary="flarq"
 	icon="$flarq_icon"
-	version="${FLARQ_VERSION_MAJOR}.${FLARQ_VERSION_MINOR}"
+	version="${FLARQ_VERSION_MAJOR}.${FLARQ_VERSION_MINOR}.${FLARQ_VERSION_PATCH}"
 	appversion="$FLARQ_VERSION"
 
 	bundle
