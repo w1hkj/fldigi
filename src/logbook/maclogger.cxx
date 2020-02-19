@@ -107,17 +107,27 @@ static string get_str(string s)
 static int get_freq(string s)
 {
 	string s2 = get_str(s);
-	float mhz;
-	sscanf(s2.c_str(), "%f", &mhz);
-	int hz = mhz * 1e6;
-	return hz;
+	size_t dpt = s2.find(".");
+	if (dpt == string::npos) return 0;
+	string sf = s2.substr(0, dpt);
+	string sm = s2.substr(dpt+1);
+	while(sm.length() < 6) sm.append("0");
+	sf.append(sm);
+	int fr = sf[0] - '0';
+	for (size_t n = 1; n < sf.length(); n++) {
+		fr *= 10;
+		fr += (sf[n] - '0');
+	}
+//std::cout << "string: " << sf << ", int freq: " << fr << std::endl;
+	return fr;
 }
 
 void maclogger_set_qsy()
 {
-	int hz = mclg_txhz;
-	if (hz <= 0) hz = mclg_rxhz;
+	long hz = mclg_rxhz;
+	if (hz <= 0 || !progdefaults.maclogger_spot_rx) hz = mclg_txhz;
 	if (hz <= 0) return;
+	sendFreq(hz);
 	wf->rfcarrier(hz);
 	wf->movetocenter();
 	show_frequency(hz);
@@ -243,9 +253,8 @@ void parse_report(string str)
 void parse_maclog()
 {
 	size_t p1, p2;
-	string str, srep;
-	static string sreport[20];
-	int repnbr = 0;
+	string str;
+	static string srep;
 	while (!mclg_str.empty()) {
 		p1 = mclg_str.find("[");
 		if (p1 == string::npos) return;
@@ -256,11 +265,7 @@ void parse_maclog()
 		str = mclg_str.substr(0, p2 + 1);
 		srep = str;
 		srep.append("\n");
-		if (repnbr < 20) {
-			sreport[repnbr] = srep;
-			REQ(maclogger_disp_report, sreport[repnbr].c_str());
-			repnbr++;
-		}
+		REQ(maclogger_disp_report, srep.c_str());
 
 		if (progdefaults.enable_maclogger_log) {
 			std::string pathname = TempDir;
@@ -270,23 +275,21 @@ void parse_maclog()
 			fclose(maclog);
 		}
 
-		if (progdefaults.capture_maclogger_radio &&
-			(mclg_str.find("[Radio Report:") == 0)) parse_report(str);
-
-		else if (progdefaults.capture_maclogger_spot_tune &&
-			(mclg_str.find("[SpotTune:") == 0)) parse_report(str);
-
-		else if (progdefaults.capture_maclogger_spot_report &&
-			(mclg_str.find("[Spot Report:") == 0)) parse_report(str);
-
-		else if (progdefaults.capture_maclogger_log &&
-			(mclg_str.find("[Log Report:") == 0)) parse_report(str);
-
-		else if (progdefaults.capture_maclogger_lookup &&
-			(mclg_str.find("[Lookup Report") == 0)) parse_report(str);
+		if ((progdefaults.capture_maclogger_radio &&
+			 mclg_str.find("[Radio Report:") != std::string::npos)  ||
+			(progdefaults.capture_maclogger_spot_tune &&
+			 mclg_str.find("[SpotTune:") != std::string::npos) ||
+			(progdefaults.capture_maclogger_spot_report &&
+			 mclg_str.find("[Spot Report:") != std::string::npos) ||
+			(progdefaults.capture_maclogger_log &&
+			 mclg_str.find("[Log Report:") != std::string::npos) ||
+			(progdefaults.capture_maclogger_lookup &&
+			 mclg_str.find("[Lookup Report") != std::string::npos) )
+			parse_report(str);
 
 		mclg_str.erase(0, p2 + 1);
 
+		MilliSleep(100);
 	}
 }
 
@@ -300,7 +303,7 @@ void parse_maclog()
 #ifdef TESTSTRINGS
 string tstring[6] = {
 	"[Radio Report:RxMHz:24.96400, TxMHz:24.96400, Band:12M, Mode:USB, Power:5]",
-	"[SpotTune:RxMHz:28.49500, TxMHz:28.49600, Band:10M, Mode:USB]",
+	"[SpotTune:RxMHz:3.5095, TxMHz:3.549525, Band:10M, Mode:USB]",
 	"[Log Report: Call:N2BJ, RxMHz:21.08580, TxMHz:21.08580, Band:15M, Mode:FSK, Power:5, dxcc_num:291, dxcc_string:United States, city:NEW LENOX, state:IL, first_name:Barry, last_name:COHEN]",
 	"[Spot Report: RxMHz:3.50300, TxMHz:3.50300, Band:80M, Mode:CW, Call:EP6T, dxcc_string:Iran, Comment:UP , TNX CARLO , GL]",
 	"[Rotor Report: Bearing:304.7, LongPath:0, Distance:0.0]",
@@ -311,18 +314,18 @@ int tnbr = 0;
 
 void get_maclogger_udp()
 {
-	if(!maclogger_socket) return;
-	if (!progdefaults.connect_to_maclogger) return;
-
 #ifdef TESTSTRINGS
 	if (tnbr == 0) {
-		mclg_str = "bogus start chars dkoe13.chfff ";
-		for (int n = 0; n < 6; n++) mclg_str.append(tstring[n]);
-		mclg_str.append(" and garbage at the end");
-		parse_maclog();
+		for (int n = 0; n < 6; n++) {
+			mclg_str = tstring[n];
+			parse_maclog();
+		}
 		tnbr = 1;
 	}
 #else
+	if(!maclogger_socket) return;
+	if (!progdefaults.connect_to_maclogger) return;
+
 	char buffer[MACLOGGER_BUFFER_SIZE];
 	size_t count = 0;
 
@@ -402,9 +405,10 @@ void maclogger_init(void)
 	maclogger_enabled = false;
 	maclogger_exit = false;
 
+#ifndef TESTSTRINGS
 	if(!maclogger_start()) return;
-
 	LOG_INFO("%s", "UDP Init - OK");
+#endif
 
 	if (pthread_create(&maclogger_thread, NULL, maclogger_loop, NULL) < 0) {
 		LOG_ERROR("MACLOGGER maclogger_thread: pthread_create failed");

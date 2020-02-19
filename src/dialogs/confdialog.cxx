@@ -1955,6 +1955,13 @@ static void cb_Clear(Fl_Button*, void*) {
   txt_UDP_data->buffer()->text("");
 }
 
+Fl_Check_Button *btn_maclogger_spot_rx=(Fl_Check_Button *)0;
+
+static void cb_btn_maclogger_spot_rx(Fl_Check_Button* o, void*) {
+  progdefaults.maclogger_spot_rx = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Text_Display *txt_N3FJP_data=(Fl_Text_Display *)0;
 
 static void cb_Clear1(Fl_Button*, void*) {
@@ -9454,6 +9461,12 @@ gured on the\n\"Notifications\" configure dialog."));
       { Fl_Button* o = new Fl_Button(661, 117, 129, 26, _("Clear UDP text"));
         o->callback((Fl_Callback*)cb_Clear);
       } // Fl_Button* o
+      { Fl_Check_Button* o = btn_maclogger_spot_rx = new Fl_Check_Button(406, 88, 186, 21, _("Tune to Rx Spot"));
+        btn_maclogger_spot_rx->tooltip(_("ON - use Rx spot freq\nOFF - use Tx spot freq"));
+        btn_maclogger_spot_rx->down_box(FL_DOWN_BOX);
+        btn_maclogger_spot_rx->callback((Fl_Callback*)cb_btn_maclogger_spot_rx);
+        o->value(progdefaults.maclogger_spot_rx);
+      } // Fl_Check_Button* btn_maclogger_spot_rx
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/MacLogger"));
       config_pages.push_back(p);
       tab_tree->add(_("Logging/MacLogger"));

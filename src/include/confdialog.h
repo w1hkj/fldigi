@@ -184,6 +184,7 @@ extern Fl_Check_Button *btn_enable_maclogger_log;
 #include <FL/Fl_Text_Display.H>
 extern Fl_Text_Display *txt_UDP_data;
 extern Fl_Output *txt_maclogger_log_filename;
+extern Fl_Check_Button *btn_maclogger_spot_rx;
 extern Fl_Text_Display *txt_N3FJP_data;
 extern Fl_Input2 *txt_N3FJP_ip_address;
 extern Fl_Input2 *txt_N3FJP_ip_port_no;

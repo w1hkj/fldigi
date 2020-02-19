@@ -2326,7 +2326,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Logging/MacLogger}
+      label {Logging/MacLogger} selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/MacLogger"));}
       code1 {config_pages.push_back(p);}
@@ -2400,6 +2400,14 @@ progdefaults.changed = true;}
         label {Clear UDP text}
         callback {txt_UDP_data->buffer()->text("");}
         xywh {661 117 129 26}
+      }
+      Fl_Check_Button btn_maclogger_spot_rx {
+        label {Tune to Rx Spot}
+        callback {progdefaults.maclogger_spot_rx = o->value();
+progdefaults.changed = true;}
+        tooltip {ON - use Rx spot freq
+OFF - use Tx spot freq} xywh {406 88 186 21} down_box DOWN_BOX
+        code0 {o->value(progdefaults.maclogger_spot_rx);}
       }
     }
     Fl_Group {} {
@@ -5608,7 +5616,7 @@ progdefaults.changed = true;} open
         Fl_Button btn_nanoio_clear_both {
           label {Clear Both}
           callback {brws_nanoio_rcvd->clear();
-brws_nanoio_sent->clear();} selected
+brws_nanoio_sent->clear();}
           xywh {457 319 85 20}
         }
         Fl_Button btn_nanoio_clear_rcvd {

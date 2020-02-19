@@ -1187,6 +1187,10 @@
         ELEM_(bool, enable_maclogger_log, "ENABLE_MACLOGGER_LOG",                       \
               "Enable UDP string capture to file",                                      \
               false)                                                                    \
+        ELEM_(bool, maclogger_spot_rx, "MACLOGGER_SPOT_RX",                             \
+              "true  - tune to spot Rx frequency\n"                                     \
+              "false - tune to spot Tx frequency\n",                                    \
+              true)                                                                     \
         ELEM_(std::string, maclogger_log_filename, "MACLOGGER_LOG_FILENAME",            \
               "Filename for maclogger UDP datastream file",                             \
               "maclogger_udp_strings.txt")                                              \
