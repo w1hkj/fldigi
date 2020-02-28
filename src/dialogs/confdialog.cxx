@@ -5785,9 +5785,9 @@ static void cb_btn_reconnect_flrig_server_mirror(Fl_Button*, void*) {
   reconnect_to_flrig();
 }
 
-Fl_Check_Button *btn_fldigi_client_to_fldigi=(Fl_Check_Button *)0;
+Fl_Check_Button *btn_fldigi_client_to_flrig=(Fl_Check_Button *)0;
 
-static void cb_btn_fldigi_client_to_fldigi(Fl_Check_Button* o, void*) {
+static void cb_btn_fldigi_client_to_flrig(Fl_Check_Button* o, void*) {
   progdefaults.fldigi_client_to_flrig=o->value();
 if (o->value()) {
   progdefaults.chkUSEHAMLIBis = false;
@@ -5798,6 +5798,13 @@ if (o->value()) {
 progdefaults.changed=true;
 }
 
+Fl_Check_Button *btn_flrig_auto_shutdown=(Fl_Check_Button *)0;
+
+static void cb_btn_flrig_auto_shutdown(Fl_Check_Button* o, void*) {
+  progdefaults.flrig_auto_shutdown=o->value();
+progdefaults.changed=true;
+}
+
 Fl_Group *grpRigCat=(Fl_Group *)0;
 
 Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
@@ -5805,7 +5812,7 @@ Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
 static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   if (o->value() == 1) {
   chkUSEHAMLIB->value(0);
-  btn_fldigi_client_to_fldigi->value(0);
+  btn_fldigi_client_to_flrig->value(0);
   progdefaults.chkUSERIGCATis = true;
   progdefaults.fldigi_client_to_flrig = false;
   btnInitRIGCAT->labelcolor(FL_RED);
@@ -6363,7 +6370,7 @@ static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
   progdefaults.chkUSEHAMLIBis = o->value();
 if (o->value() == 1) {
   chkUSERIGCAT->value(0);
-  btn_fldigi_client_to_fldigi->value(0);
+  btn_fldigi_client_to_flrig->value(0);
   progdefaults.chkUSERIGCATis = false;
   progdefaults.fldigi_client_to_flrig = false;
   btnInitHAMLIB->labelcolor(FL_RED);
@@ -14827,11 +14834,11 @@ ed)"));
       grpRigFlrig->box(FL_ENGRAVED_BOX);
       grpRigFlrig->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       grpRigFlrig->hide();
-      { Fl_Group* o = new Fl_Group(209, 196, 580, 90, _("\"Disable PTT keys modem if multiple instances of fldigi (client)\nare connec\
+      { Fl_Group* o = new Fl_Group(209, 233, 580, 90, _("\"Disable PTT keys modem if multiple instances of fldigi (client)\nare connec\
 ted to a single flrig (server)."));
         o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_Check_Button* o = chk_flrig_keys_modem = new Fl_Check_Button(439, 244, 183, 20, _("Flrig PTT keys modem"));
+        { Fl_Check_Button* o = chk_flrig_keys_modem = new Fl_Check_Button(439, 281, 183, 20, _("Flrig PTT keys modem"));
           chk_flrig_keys_modem->tooltip(_("\" \""));
           chk_flrig_keys_modem->down_box(FL_DOWN_BOX);
           chk_flrig_keys_modem->callback((Fl_Callback*)cb_chk_flrig_keys_modem);
@@ -14839,15 +14846,15 @@ ted to a single flrig (server)."));
         } // Fl_Check_Button* chk_flrig_keys_modem
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(209, 111, 580, 81, _("flrig xmlrpc server parameters\nthese controls are mirrored on the IO configu\
+      { Fl_Group* o = new Fl_Group(209, 148, 580, 81, _("flrig xmlrpc server parameters\nthese controls are mirrored on the IO configu\
 ration tab"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { btnDefault_flrig_ip_mirror = new Fl_Button(613, 157, 73, 24, _("Default"));
+        { btnDefault_flrig_ip_mirror = new Fl_Button(613, 194, 73, 24, _("Default"));
           btnDefault_flrig_ip_mirror->tooltip(_("Returns IP Address and port\nnumber to the default value."));
           btnDefault_flrig_ip_mirror->callback((Fl_Callback*)cb_btnDefault_flrig_ip_mirror);
         } // Fl_Button* btnDefault_flrig_ip_mirror
-        { Fl_Input2* o = txt_flrig_ip_address_mirror = new Fl_Input2(244, 157, 230, 24, _("Addr"));
+        { Fl_Input2* o = txt_flrig_ip_address_mirror = new Fl_Input2(244, 194, 230, 24, _("Addr"));
           txt_flrig_ip_address_mirror->tooltip(_("IP Address for flrig interface\nIP Address format: nnn.nnn.nnn.nnn\nor name: \
 i.e. localhost"));
           txt_flrig_ip_address_mirror->box(FL_DOWN_BOX);
@@ -14863,7 +14870,7 @@ i.e. localhost"));
           o->labelsize(FL_NORMAL_SIZE);
           o->value(progdefaults.flrig_ip_address.c_str());
         } // Fl_Input2* txt_flrig_ip_address_mirror
-        { Fl_Input2* o = txt_flrig_ip_port_mirror = new Fl_Input2(518, 157, 55, 24, _("Port"));
+        { Fl_Input2* o = txt_flrig_ip_port_mirror = new Fl_Input2(518, 194, 55, 24, _("Port"));
           txt_flrig_ip_port_mirror->tooltip(_("IP Address Port Number"));
           txt_flrig_ip_port_mirror->box(FL_DOWN_BOX);
           txt_flrig_ip_port_mirror->color(FL_BACKGROUND2_COLOR);
@@ -14878,21 +14885,27 @@ i.e. localhost"));
           o->labelsize(FL_NORMAL_SIZE);
           o->value(progdefaults.flrig_ip_port.c_str());
         } // Fl_Input2* txt_flrig_ip_port_mirror
-        { btn_reconnect_flrig_server_mirror = new Fl_Button(693, 157, 82, 24, _("Reconnect"));
+        { btn_reconnect_flrig_server_mirror = new Fl_Button(693, 194, 82, 24, _("Reconnect"));
           btn_reconnect_flrig_server_mirror->tooltip(_("Press only if you change the address/port"));
           btn_reconnect_flrig_server_mirror->callback((Fl_Callback*)cb_btn_reconnect_flrig_server_mirror);
         } // Fl_Button* btn_reconnect_flrig_server_mirror
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(209, 54, 580, 52, _("flrig is the preferred method of tranceiver control"));
+      { Fl_Group* o = new Fl_Group(209, 54, 580, 90, _("flrig is the preferred method of tranceiver control"));
         o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_Check_Button* o = btn_fldigi_client_to_fldigi = new Fl_Check_Button(234, 81, 70, 15, _("Enable flrig xcvr control with fldigi as client"));
-          btn_fldigi_client_to_fldigi->tooltip(_("Disable if flrig not used."));
-          btn_fldigi_client_to_fldigi->down_box(FL_DOWN_BOX);
-          btn_fldigi_client_to_fldigi->callback((Fl_Callback*)cb_btn_fldigi_client_to_fldigi);
+        { Fl_Check_Button* o = btn_fldigi_client_to_flrig = new Fl_Check_Button(234, 81, 70, 15, _("Enable flrig xcvr control with fldigi as client"));
+          btn_fldigi_client_to_flrig->tooltip(_("Disable if flrig not used."));
+          btn_fldigi_client_to_flrig->down_box(FL_DOWN_BOX);
+          btn_fldigi_client_to_flrig->callback((Fl_Callback*)cb_btn_fldigi_client_to_flrig);
           o->value(progdefaults.fldigi_client_to_flrig);
-        } // Fl_Check_Button* btn_fldigi_client_to_fldigi
+        } // Fl_Check_Button* btn_fldigi_client_to_flrig
+        { Fl_Check_Button* o = btn_flrig_auto_shutdown = new Fl_Check_Button(234, 112, 70, 15, _("Shutdown flrig with fldigi"));
+          btn_flrig_auto_shutdown->tooltip(_("Disable if flrig not used."));
+          btn_flrig_auto_shutdown->down_box(FL_DOWN_BOX);
+          btn_flrig_auto_shutdown->callback((Fl_Callback*)cb_btn_flrig_auto_shutdown);
+          o->value(progdefaults.flrig_auto_shutdown);
+        } // Fl_Check_Button* btn_flrig_auto_shutdown
         o->end();
       } // Fl_Group* o
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/flrig"));

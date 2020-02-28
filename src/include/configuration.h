@@ -1225,6 +1225,9 @@
         ELEM_(bool, fldigi_client_to_flrig, "CLIENT_TO_FLRIG",                          \
               "True if flrig xmlrpc server is used for xcvr control",                   \
               false)                                                                    \
+        ELEM_(bool, flrig_auto_shutdown, "FLRIG_AUTO_SHUTDOWN",                         \
+              "True to shutdown flrig when closing fldigi",                             \
+              false)                                                                    \
         ELEM_(bool, btnusb, "BTNUSB",                                                   \
               "This setting is currently unused",                                       \
               true)                                                                     \

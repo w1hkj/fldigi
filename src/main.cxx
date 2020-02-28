@@ -1257,6 +1257,10 @@ void exit_process() {
 
 	kiss_close(false);
 	maclogger_close();
+
+	if (progdefaults.flrig_auto_shutdown)
+		xmlrpc_shutdown_flrig();
+
 	XML_RPC_Server::stop();
 
 	if (progdefaults.usepskrep)

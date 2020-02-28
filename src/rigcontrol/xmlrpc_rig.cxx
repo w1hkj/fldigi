@@ -1083,3 +1083,17 @@ void xmlrpc_send_command(std::string cmd)
 	} catch (...) {}
 }
 
+void xmlrpc_shutdown_flrig()
+{
+	if (!connected_to_flrig) return;
+	guard_lock flrig_lock(&mutex_flrig);
+
+	XmlRpcValue val, result;
+	try {
+		if (!flrig_client->execute("rig.shutdown", XmlRpcValue(), result, timeout)) {
+			LOG_ERROR("%s", "rig.shutdown failed");
+		} else {
+			LOG_VERBOSE("%s", "rig.shutdown OK");
+		}
+	} catch (...) {}
+}

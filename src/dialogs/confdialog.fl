@@ -2326,7 +2326,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Logging/MacLogger} selected
+      label {Logging/MacLogger}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/MacLogger"));}
       code1 {config_pages.push_back(p);}
@@ -5524,7 +5524,7 @@ progdefaults.changed = true;} open
       }
     }
     Fl_Group {} {
-      label {Modem/TTY/nanoIO} open
+      label {Modem/TTY/nanoIO}
       xywh {200 0 600 350} box FLAT_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/nanoIO"));}
       code1 {config_pages.push_back(p);}
@@ -7443,20 +7443,20 @@ progdefaults.changed = true;} open
       Fl_Group {} {
         label {"Disable PTT keys modem if multiple instances of fldigi (client)
 are connected to a single flrig (server).} open
-        xywh {209 196 580 90} box ENGRAVED_BOX align 17
+        xywh {209 233 580 90} box ENGRAVED_BOX align 17
       } {
         Fl_Check_Button chk_flrig_keys_modem {
           label {Flrig PTT keys modem}
           callback {progdefaults.flrig_keys_modem = o->value();
 progdefaults.changed = true;}
-          tooltip {" "} xywh {439 244 183 20} down_box DOWN_BOX
+          tooltip {" "} xywh {439 281 183 20} down_box DOWN_BOX
           code0 {o->value(progdefaults.flrig_keys_modem);}
         }
       }
       Fl_Group {} {
         label {flrig xmlrpc server parameters
 these controls are mirrored on the IO configuration tab} open
-        xywh {209 111 580 81} box ENGRAVED_FRAME align 21
+        xywh {209 148 580 81} box ENGRAVED_FRAME align 21
       } {
         Fl_Button btnDefault_flrig_ip_mirror {
           label Default
@@ -7465,7 +7465,7 @@ txt_flrig_ip_address_mirror->value(progdefaults.flrig_ip_address.c_str());
 txt_flrig_ip_port_mirror->value(progdefaults.flrig_ip_port.c_str());
 progdefaults.changed = true;}
           tooltip {Returns IP Address and port
-number to the default value.} xywh {613 157 73 24}
+number to the default value.} xywh {613 194 73 24}
         }
         Fl_Input txt_flrig_ip_address_mirror {
           label Addr
@@ -7474,7 +7474,7 @@ txt_flrig_ip_address->value(progdefaults.flrig_ip_address.c_str());
 progdefaults.changed = true;}
           tooltip {IP Address for flrig interface
 IP Address format: nnn.nnn.nnn.nnn
-or name: i.e. localhost} xywh {244 157 230 24} align 8 when 1
+or name: i.e. localhost} xywh {244 194 230 24} align 8 when 1
           code0 {o->labelsize(FL_NORMAL_SIZE);}
           code1 {o->value(progdefaults.flrig_ip_address.c_str());}
           class Fl_Input2
@@ -7484,7 +7484,7 @@ or name: i.e. localhost} xywh {244 157 230 24} align 8 when 1
           callback {progdefaults.flrig_ip_port = o->value();
 txt_flrig_ip_port->value(progdefaults.flrig_ip_port.c_str());
 progdefaults.changed = true;}
-          tooltip {IP Address Port Number} xywh {518 157 55 24} align 8 when 1
+          tooltip {IP Address Port Number} xywh {518 194 55 24} align 8 when 1
           code0 {o->labelsize(FL_NORMAL_SIZE);}
           code1 {o->value(progdefaults.flrig_ip_port.c_str());}
           class Fl_Input2
@@ -7492,15 +7492,15 @@ progdefaults.changed = true;}
         Fl_Button btn_reconnect_flrig_server_mirror {
           label Reconnect
           callback {reconnect_to_flrig();}
-          tooltip {Press only if you change the address/port} xywh {693 157 82 24}
+          tooltip {Press only if you change the address/port} xywh {693 194 82 24}
           code0 {\#include "rigsupport.h"}
         }
       }
       Fl_Group {} {
         label {flrig is the preferred method of tranceiver control} open
-        xywh {209 54 580 52} box ENGRAVED_BOX align 17
+        xywh {209 54 580 90} box ENGRAVED_BOX align 17
       } {
-        Fl_Check_Button btn_fldigi_client_to_fldigi {
+        Fl_Check_Button btn_fldigi_client_to_flrig {
           label {Enable flrig xcvr control with fldigi as client}
           callback {progdefaults.fldigi_client_to_flrig=o->value();
 if (o->value()) {
@@ -7512,6 +7512,13 @@ if (o->value()) {
 progdefaults.changed=true;}
           tooltip {Disable if flrig not used.} xywh {234 81 70 15} down_box DOWN_BOX
           code0 {o->value(progdefaults.fldigi_client_to_flrig);}
+        }
+        Fl_Check_Button btn_flrig_auto_shutdown {
+          label {Shutdown flrig with fldigi}
+          callback {progdefaults.flrig_auto_shutdown=o->value();
+progdefaults.changed=true;}
+          tooltip {Disable if flrig not used.} xywh {234 112 70 15} down_box DOWN_BOX
+          code0 {o->value(progdefaults.flrig_auto_shutdown);}
         }
       }
     }
@@ -7526,7 +7533,7 @@ progdefaults.changed=true;}
         label {Use RigCAT}
         callback {if (o->value() == 1) {
   chkUSEHAMLIB->value(0);
-  btn_fldigi_client_to_fldigi->value(0);
+  btn_fldigi_client_to_flrig->value(0);
   progdefaults.chkUSERIGCATis = true;
   progdefaults.fldigi_client_to_flrig = false;
   btnInitRIGCAT->labelcolor(FL_RED);
@@ -8189,7 +8196,7 @@ progdefaults.changed=true;}
         callback {progdefaults.chkUSEHAMLIBis = o->value();
 if (o->value() == 1) {
   chkUSERIGCAT->value(0);
-  btn_fldigi_client_to_fldigi->value(0);
+  btn_fldigi_client_to_flrig->value(0);
   progdefaults.chkUSERIGCATis = false;
   progdefaults.fldigi_client_to_flrig = false;
   btnInitHAMLIB->labelcolor(FL_RED);
@@ -8199,7 +8206,7 @@ if (o->value() == 1) {
   progdefaults.initInterface();
 }
 
-progdefaults.changed = true;}
+progdefaults.changed = true;} selected
         tooltip {Hamlib used for rig control} xywh {451 31 100 20} down_box DOWN_BOX
       }
       Fl_Group grpHamlib {open
