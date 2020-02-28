@@ -6,6 +6,8 @@
 //
 // This file is part of fldigi.
 //
+// Modified for data file creation / analysis JC Gibbons N8OBJ  5/14/19
+//
 // Fldigi is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -32,16 +34,17 @@
 #include "fftfilt.h"
 #include "modem.h"
 
+
 #define ANAL_SAMPLERATE	8000
 #define FILT_LEN        4		//seconds
-#define PIPE_LEN		120
-#define DSP_CNT			1		//seconds
-#define ANAL_BW			4
+#define PIPE_LEN	120
+#define DSP_CNT		1		//seconds
+#define ANAL_BW		4
 
 class anal : public modem {
 private:
 
-	double		phaseacc;
+	double	phaseacc;
 
 	fftfilt *bpfilt;
 	Cmovavg *ffilt;
@@ -52,13 +55,14 @@ private:
 	double prevsymbol;
 	cmplx prevsmpl;
 
-	double		fout;
-	double		amp;
-	long int	wf_freq;
-	double      dspcnt;
-	long int	passno;
+	double	fout;
+	double	amp;
+	long int wf_freq;
+	double   dspcnt;
+	long int passno;
 
 	struct timespec start_time;
+	struct tm File_Start_Date;
 
 	double elapsed;
 
@@ -68,8 +72,10 @@ private:
 
 	double nco(double freq);
 	void writeFile();
+	void creatfilename();
 
-	std::string	analysisFilename;
+        char FileDate [10];
+        char FileData [12];
 
 public:
 	anal();
@@ -83,6 +89,8 @@ public:
 
 	int rx_process(const double *buf, int len);
 	int tx_process();
+	std::string	analysisFilename;
+	std::string 	OpenAnalalysisFile;
 
 };
 
