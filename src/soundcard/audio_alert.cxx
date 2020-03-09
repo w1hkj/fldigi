@@ -220,6 +220,8 @@ void center_rxfilt_at_track()
 
 void reset_audio_alerts()
 {
+	if (!audio_alert) return;
+
 	if (progdefaults.enable_audio_alerts && audio_alert) {
 		if (audio_alert->open())
 			LOG_INFO("Opened audio alert stream on %s", progdefaults.AlertDevice.c_str());
