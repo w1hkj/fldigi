@@ -31,7 +31,8 @@
 #include "morse.h"
 #include "ascii.h"
 
-#define	OUTBUFSIZE	16384
+#define	OUTBUFSIZE	65536  // needed for 5 WPM Farsnworth CW buffers
+
 // Constants for signal searching & s/n threshold
 #define SIGSEARCH 5
 
