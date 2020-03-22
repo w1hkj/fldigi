@@ -482,7 +482,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
         code2 {o->connectorstyle(FL_TREE_CONNECTOR_DOTTED); // default is NONE on Mac}
         code3 {o->connectorwidth(15); // default is 17}
       }
-      Fl_Group {} {
+      Fl_Group {} {open
         xywh {0 350 201 35}
       } {
         Fl_Group {} {open
@@ -501,7 +501,7 @@ tab_tree->close(_("Soundcard"));
 tab_tree->close(_("UI"));
 tab_tree->close(_("Waterfall"));
 tab_tree->close(_("Web"));}
-          xywh {100 353 100 22}
+          xywh {95 353 105 22}
         }
       }
     }
@@ -7310,7 +7310,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group grpOperator {
-      label {Operator-Station}
+      label {Operator-Station} selected
       xywh {200 0 600 350} box ENGRAVED_BOX color 50 align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Operator-Station"));}
       code1 {config_pages.push_back(p);}
@@ -7550,7 +7550,7 @@ progdefaults.changed=true;}
       } {
         Fl_Output txtXmlRigFilename {
           label {Rig description file:}
-          tooltip {Use Open to select descriptor file} xywh {254 79 130 22} color 52 align 21
+          tooltip {Use Open to select descriptor file} xywh {254 79 130 22} color 52 align 5
           code0 {o->value(fl_filename_name(progdefaults.XmlRigFilename.c_str()));}
         }
         Fl_Button btnSelectRigXmlFile {
@@ -7564,7 +7564,7 @@ selectRigXmlFilename();}
           label {Device:}
           callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();} open
-          xywh {580 79 144 22} box DOWN_BOX color 7 align 20
+          xywh {580 79 144 22} box DOWN_BOX color 7 align 4
           code0 {o->value(progdefaults.XmlRigDevice.c_str());
                        o->labelsize(FL_NORMAL_SIZE);}
           class Fl_ComboBox
@@ -7573,7 +7573,7 @@ btnInitRIGCAT->redraw_label();} open
           label Retries
           callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();}
-          tooltip {\# retries before giving up} xywh {269 122 60 22} align 21 maximum 1000 step 1
+          tooltip {\# retries before giving up} xywh {269 122 60 22} align 5 maximum 1000 step 1
           code0 {o->value(progdefaults.RigCatRetries);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_Value_Input2
@@ -7582,7 +7582,7 @@ btnInitRIGCAT->redraw_label();}
           label {Retry interval (ms)}
           callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();}
-          tooltip {Time between retires in msec} xywh {399 122 60 22} align 21 maximum 10000 step 1
+          tooltip {Time between retires in msec} xywh {399 122 60 22} align 5 maximum 10000 step 1
           code0 {o->value(progdefaults.RigCatTimeout);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_Value_Input2
@@ -7591,7 +7591,7 @@ btnInitRIGCAT->redraw_label();}
           label {Write delay (ms)}
           callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();}
-          tooltip {Wait for response to subsequent command} xywh {269 162 60 22} align 21 maximum 10000 step 1
+          tooltip {Wait for response to subsequent command} xywh {269 162 60 22} align 5 maximum 10000 step 1
           code0 {o->value(progdefaults.RigCatWait);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_Value_Input2
@@ -7600,7 +7600,7 @@ btnInitRIGCAT->redraw_label();}
           label {Baud rate:}
           callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();} open
-          xywh {625 122 99 22} box DOWN_BOX color 7 align 20
+          xywh {625 122 99 22} box DOWN_BOX color 7 align 4
           code0 {o->add(szBaudRates);}
           code1 {o->index(progdefaults.XmlRigBaudrate);
                        o->labelsize(FL_NORMAL_SIZE);}
@@ -7610,7 +7610,7 @@ btnInitRIGCAT->redraw_label();} open
           label Stopbits
           callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();}
-          xywh {627 156 95 21} type Simple align 20 minimum 1 maximum 2 step 1 value 1
+          xywh {627 156 95 21} type Simple align 4 minimum 1 maximum 2 step 1 value 1
           code0 {o->value(progdefaults.RigCatStopbits);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_Counter2
@@ -7725,7 +7725,7 @@ btnInitRIGCAT->redraw_label();}
           label {Init delay (ms)}
           callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();}
-          tooltip {Wait for response to first CAT command} xywh {399 162 75 22} align 21 maximum 10000 step 1
+          tooltip {Wait for response to first CAT command} xywh {399 162 75 22} align 5 maximum 10000 step 1
           code0 {o->value(progdefaults.RigCatInitDelay);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_Value_Input2
@@ -8206,7 +8206,7 @@ if (o->value() == 1) {
   progdefaults.initInterface();
 }
 
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
         tooltip {Hamlib used for rig control} xywh {451 31 100 20} down_box DOWN_BOX
       }
       Fl_Group grpHamlib {open
