@@ -8873,7 +8873,9 @@ int get_tx_char(void)
 					return (GET_TX_CHAR_NODATA);
 				}
 				REQ(do_que_execute, (void*)0);
-				while(que_waiting) { MilliSleep(10); Fl::awake(); }
+				MilliSleep(10);
+				while (do_tune_on) return (GET_TX_CHAR_NODATA);
+				while (que_waiting) { MilliSleep(10); Fl::awake(); }
 				return (GET_TX_CHAR_NODATA);
 			}
 			break;

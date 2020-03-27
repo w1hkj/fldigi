@@ -88,7 +88,7 @@ extern std::string macrochar;
 
 extern bool macro_idle_on;
 extern size_t repeatchar;
-
+extern bool do_tune_on;
 
 void set_macro_env(void);
 

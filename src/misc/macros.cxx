@@ -244,14 +244,17 @@ string testfilename;
 
 void CPS_report(int samples, int prepost)
 {
-	char results[1000];
+	char specs[1000];
+	memset(specs, 0, 1000);
+	std::string results = "\nCPS test\ntext:         ";
+	if (testfilename[0] != '\n')
+		results.append("\n");
+	results.append(testfilename).append("\n");
 	string strout;
 	double xmttime = 1.0 * samples / active_modem->get_samplerate();
 	double overhead = 1.0 * prepost / active_modem->get_samplerate();
 	num_cps_chars--;
-	snprintf(results, sizeof(results), "\n\
-CPS test\n\
-text:         %s\n\
+	snprintf(specs, sizeof(specs), "\
 mode:         %s\n\
 # chars:      %d\n\
 overhead:     %f sec\n\
@@ -259,7 +262,6 @@ xmt time:     %f sec\n\
 xmt samples:  %d\n\
 sample rate:  %d\n\
 chars/sec:    %f",
-			testfilename.c_str(),
 			mode_info[active_modem->get_mode()].name,
 			num_cps_chars,
 			overhead,
@@ -267,14 +269,15 @@ chars/sec:    %f",
 			samples,
 			active_modem->get_samplerate(),
 			num_cps_chars / (xmttime - overhead));
-	LOG_INFO("%s", results);
-	strcat(results, "\n");
+	results.append(specs);
+	LOG_INFO("%s", results.c_str());
+	results.append("\n");
 	if (active_modem->get_mode() == MODE_IFKP)
-		ifkp_rx_text->add(results, FTextBase::ALTR);
+		ifkp_rx_text->add(results.c_str(), FTextBase::ALTR);
 	else if (active_modem->get_mode() == MODE_FSQ)
-		fsq_rx_text->addstr(results, FTextBase::ALTR);
+		fsq_rx_text->addstr(results.c_str(), FTextBase::ALTR);
 	else
-		ReceiveText->add(results, FTextBase::ALTR);
+		ReceiveText->add(results.c_str(), FTextBase::ALTR);
 	PERFORM_CPS_TEST = false;
 }
 
@@ -1264,17 +1267,10 @@ static int idle_count = 0;
 static void doneIDLE(void *)
 {
 	idle_count++;
-//	if ((idle_count % 100) == 0)
-//		REQ(postQueue, "|");
-//	else if ((idle_count % 50) == 0)
-//		REQ(postQueue, ":");
-//	else if ((idle_count % 10) == 0)
-//		REQ(postQueue, ".");
 	if (idle_count == idle_time) {
 		Qidle_time = 0;
 		que_ok = true;
 		idle_time = idle_count = 0;
-//		REQ(postQueue, " done\n");
 		return;
 	}
 	Fl::repeat_timeout(0.1, doneIDLE);
@@ -1306,21 +1302,41 @@ static void pTxQueIDLE(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
+bool do_tune_on;
+static bool tune_on;
+static bool rx_tune_on;
+static float tune_timeout = 0;
+
+static void start_tune(void *)
+{
+	trx_tune();
+}
+
+static void end_tune(void *data = 0)
+{
+	if (data == 0)
+		trx_receive();
+	else
+		trx_transmit();
+	tune_on = false;
+}
+
+static void end_do_tune(void *)
+{
+	trx_transmit();
+	do_tune_on = false;
+}
+
 static void doTUNE(std::string s)
 {
-	int number;
 	std::string sTime = s.substr(7, s.length() - 8);
+
 	if (sTime.length() > 0) {
-		sscanf(sTime.c_str(), "%d", &number);
-		trx_tune();
-		number *= 1000/100;
-		while (number) {
-			if (trx_state != STATE_TUNE) break;
-			number--;
-			MilliSleep(100);
-			Fl::awake();
-		}
-		trx_transmit();
+		if (sscanf(sTime.c_str(), "%f", &tune_timeout) != 1)
+			tune_timeout = 1.0;
+		do_tune_on = true;
+		Fl::add_timeout(0, start_tune);
+		Fl::add_timeout(tune_timeout, end_do_tune);
 	}
 	que_ok = true;
 }
@@ -1336,9 +1352,52 @@ static void pTxQueTUNE(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
+static void end_rxtune(void *)
+{
+	trx_receive();
+	rx_tune_on = false;
+}
+
+static void doRxTUNE(std::string s)
+{
+std::cout << "doRxTUNE " << s << std::endl;
+	std::string sTime = s.substr(7, s.length() - 8);
+
+	if (sTime.length() > 0) {
+		if (sscanf(sTime.c_str(), "%f", &tune_timeout) != 1)
+			tune_timeout = 1.0;
+		rx_tune_on = true;
+		Fl::add_timeout(0, start_tune);
+		Fl::add_timeout(tune_timeout, end_rxtune);
+	}
+}
+
+static void pRxQueTUNE(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRxTUNE };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
+}
+
 static void pTUNE(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace(i, endbracket - i + 1, "^!");
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	std::string sTime = s.substr(i+6, endbracket - i - 6);
+	if (sTime.length() > 0) {
+		if (sscanf(sTime.c_str(), "%f", &tune_timeout) != 1)
+			tune_timeout = 1.0;
+		tune_on = true;
+		Fl::add_timeout(0, start_tune);
+	}
+
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pQSONBR(std::string &s, size_t &i, size_t endbracket)
@@ -4244,6 +4303,11 @@ bool queue_must_rx()
 int time_out = 400;
 void Rx_queue_execution(void *)
 {
+	if (rx_tune_on) {
+		Fl::repeat_timeout( .050, Rx_queue_execution );
+		return;
+	}
+
 	if (!Tx_cmds.empty()) {
 		Fl::remove_timeout(post_queue_execute);
 		Fl::remove_timeout(queue_execute_after_rx);
@@ -4251,6 +4315,7 @@ void Rx_queue_execution(void *)
 		Fl::remove_timeout(doneWAIT);
 		while (!Tx_cmds.empty()) Tx_cmds.pop();
 	}
+
 	if (trx_state != STATE_RX) {
 		if (time_out-- == 0) {
 			while (!Rx_cmds.empty()) Rx_cmds.pop();
@@ -4274,6 +4339,10 @@ void Rx_queue_execution(void *)
 		cmd.cmd.insert(0,"<!");
 		cmd.fp(cmd.cmd);
 		Fl::awake();
+		if (rx_tune_on) {
+			Fl::repeat_timeout( .050, Rx_queue_execution );
+			return;
+		}
 		if (macro_rx_wait) return;
 	}
 	return;
@@ -4468,6 +4537,7 @@ static const MTAGS mtags[] = {
     {"<@RIGLO:",    pRxQueRIGLO},
 	{"<@TXRSID:",	pRxQueTXRSID},
 	{"<@WAIT:",     pRxQueWAIT},
+	{"<@TUNE:",		pRxQueTUNE},
 	{"<@PUSH",		pRxQuePUSH},
 	{"<@POP>",		pRxQuePOP},
 
@@ -4849,7 +4919,16 @@ void MACROTEXT::execute(int n)
 				TransmitText->add_text( text2send );
 		}
 	}
+	bool keep_tx = !text2send.empty();
 	text2send.clear();
+
+	if (tune_on) {
+		if (tune_timeout > 0) {
+			Fl::add_timeout(tune_timeout, end_tune, (void *)keep_tx);
+			tune_timeout = 0;
+		}
+		return;
+	}
 
 	if (ToggleTXRX) {
 		text2send.clear();
