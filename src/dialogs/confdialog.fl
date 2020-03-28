@@ -469,7 +469,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {649 24 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
+    xywh {652 98 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
   } {
     Fl_Group {} {open
       xywh {0 0 201 385} resizable
@@ -2070,7 +2070,7 @@ progdefaults.changed=true;}
       }
     }
     Fl_Group {} {
-      label {IDs/CW}
+      label {IDs/CW} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("IDs/CW"));}
       code1 {config_pages.push_back(p);}
@@ -2102,7 +2102,7 @@ progdefaults.changed = true;}
 mode_browser->callback(0);
 mode_browser->show_(&progdefaults.cwid_modes);
 progdefaults.changed = true;}
-          xywh {485 121 120 24} hide
+          xywh {485 121 120 24}
         }
       }
     }
@@ -7310,7 +7310,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group grpOperator {
-      label {Operator-Station} selected
+      label {Operator-Station}
       xywh {200 0 600 350} box ENGRAVED_BOX color 50 align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Operator-Station"));}
       code1 {config_pages.push_back(p);}
