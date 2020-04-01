@@ -1285,7 +1285,7 @@ else ser->SetRTS(bit);\
 MilliSleep((len));}
 
 static int cwio_ch;
-static cMorse cwio_morse;
+static cMorse *cwio_morse = 0;
 static bool cwio_sending = false;
 
 void send_cwio(int c)
@@ -1318,7 +1318,7 @@ void send_cwio(int c)
 	}
 
 	string code;
-	code = cwio_morse.tx_lookup(c);
+	code = cwio_morse->tx_lookup(c);
 	for (size_t n = 0; n < code.length(); n++) {
 		if (code[n] == '.') {
 			cwio_bit(1, tc);
@@ -1372,6 +1372,9 @@ void stop_cwio_thread(void)
 
 	cwio_thread_running   = false;
 	cwio_terminate_flag   = false;
+
+	delete cwio_morse;
+	cwio_morse = 0;
 }
 
 void start_cwio_thread(void)
@@ -1412,7 +1415,8 @@ void cw::send_CW(int c)
 		if (--count <= 0) return;
 	}
 	cwio_ch = c;
-	cwio_morse.init();
+	if (cwio_morse == 0) cwio_morse = new cMorse;
+	cwio_morse->init();
 
 	pthread_cond_signal(&cwio_cond);
 }
