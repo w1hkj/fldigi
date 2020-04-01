@@ -1,15 +1,44 @@
 
 
+=Version 4.1.10=
+
+2020-03-30  David Freese  <w1hkj@bellsouth.net>
+
+	21bcf4e5f: MacOS
+	980c4fc7a: AWOL CW id button
+	da43e24cd: Macros
+	81261626a: RigCat config
+	1cc5d884c: CW 5 wpm
+	797f24382: audio alert
+
+2020-02-28  John Gibbons  <jcg66@case.edu>
+
+	e9a2ef2dd: analysis mode
+
+2020-02-28  David Freese  <w1hkj@bellsouth.net>
+
+	ece3e2486: flrig auto off
+	8cc4f134c: maclogger
+	43382303a: mkappbundle
+	db0427121: nanoIO
+	93b75e79d: start/stop transitions
+	f4dd622c5: CW DTR-RTS
+	f77503a87: Olivia 2 tones
+	f3ed9232e: Xmlrpc Xcvr
+	524e5f2b3: mp3
+	f754c087a: contestia cr
+	b9e0a9a7b: serial port
+	055d75602: Check Version
+
+
 =Version 4.1.09=
 
-2020-01-11  David Freese  <w1hkj@bellsouth.net>
-
 	fcc49c526: Alert/Rx-monitor playback
-	680ca1f77: Dialog closure
-	f07717816: PO updates
-	f2f602486: config-dialog-mod
+	74aab8a70: Dialog closure
+	88059a1d8: PO updates
+	eb96656be: config-dialog-mod
 	e7a384268: cw mods
-	d4872494d: MilliSleep
+	b4224b822: MilliSleep
 	8c9b3ddbc: New Install
 	7c1d1bb25: Audio alerts disable
 	7afdab54b: Winkeyer
