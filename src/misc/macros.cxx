@@ -797,6 +797,30 @@ static void pTIMER(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static void doAFTER(std::string s)
+{
+	int number;
+	std::string sTime = s.substr(7);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		progStatus.timer = number;
+		progStatus.timerMacro = mNbr;
+		progStatus.skip_sked_macro = true;
+	}
+	que_ok = true;
+}
+
+static void pAFTER(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doAFTER };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
+}
+
 static void pREPEAT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -4441,6 +4465,7 @@ static const MTAGS mtags[] = {
 	{"<CLRLOG>",	pCLRLOG},
 	{"<EQSL",		pEQSL},
 	{"<TIMER:",		pTIMER},
+	{"<AFTER:",		pAFTER},
 	{"<IDLE:",		pIDLE},
 	{"<TUNE:",		pTUNE},
 	{"<WAIT:",		pWAIT},
