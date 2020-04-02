@@ -9205,7 +9205,6 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Value_Slider2* sldrCWIDwpm
         { bCWIDModes = new Fl_Button(485, 121, 120, 24, _("CW ID modes"));
           bCWIDModes->callback((Fl_Callback*)cb_bCWIDModes);
-          bCWIDModes->hide();
         } // Fl_Button* bCWIDModes
         sld->end();
       } // Fl_Group* sld
