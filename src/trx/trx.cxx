@@ -191,18 +191,18 @@ void trx_xmit_wfall_queue(int samplerate, const double* buf, size_t len)
 	if (unlikely(wv[0].len + wv[1].len < len)) // not enough space
 		return;
 
-#define write_(vec_, len_)					\
-	for (size_t i = 0; i < len_; i++)			\
-		vec_[i] = buf[i] * progdefaults.TxMonitorLevel;
-
 	size_t n = MIN(wv[0].len, len);
-	write_(wv[0].buf, n);
-	if (len > n) { // write the rest to the second vector
+
+	for (size_t i = 0; i < n; i++)
+		wv[0].buf[i] = buf[i] * progdefaults.TxMonitorLevel;
+
+	if (len > n) { // write the remainder to the second vector
 		buf += n;
 		n = len - n;
-		write_(wv[1].buf, n);
+		for (size_t i = 0; i < n; i++)
+			wv[1].buf[i] = buf[i] * progdefaults.TxMonitorLevel;
+
 	}
-#undef write_
 
 	trxrb.write_advance(len);
 	if (trxrb.read_space() >= WFBLOCKSIZE)
