@@ -124,9 +124,12 @@ void PTT::set(bool ptt)
 	if (!ptt && progdefaults.PTT_off_delay)
 		MilliSleep(progdefaults.PTT_off_delay);
 
-	if (active_modem == cw_modem &&
-	    ((progdefaults.useCWkeylineRTS) || progdefaults.useCWkeylineDTR == true))
-		return;
+        if (active_modem == cw_modem &&
+            (progdefaults.useCWkeylineRTS ||
+             progdefaults.useCWkeylineDTR ||
+             // Let Winkeyer handle PTT so we don't loose QSK.
+             progStatus.WK_online))
+                return;
 //{ // uncomment block for debugging
 //	string sport =
 //		pttdev == PTT_NONE ? "NONE" :
