@@ -107,17 +107,10 @@ protected:
 	bool   new_playback;
 
 	sf_count_t  read_file(SNDFILE* file, float* buf, size_t count);
-	void        write_file(SNDFILE* file, float* buf_left, float *buf_right, size_t count);
-	void        write_file(SNDFILE* file, double* buf_left, double *buf_right, size_t count);
-
-	bool	 format_supported(int format);
-	void	 tag_file(SNDFILE *sndfile, const char *title);
+	void	write_file(SNDFILE* file, float* buf_left, float *buf_right, size_t count);
+	void	write_file(SNDFILE* file, double* buf_left, double *buf_right, size_t count);
 
 #endif
-
-	bool	capture;
-	bool	playback;
-	bool	generate;
 
 public:
 	SoundBase();
@@ -131,11 +124,17 @@ public:
 	virtual size_t	Read(float *, size_t) = 0;
 	virtual void    flush(unsigned dir = UINT_MAX) = 0;
 	virtual bool	must_close(int dir = 0) = 0;
+
 #if USE_SNDFILE
-	void	get_file_params(std::string def_fname, std::string &fname, int &format);
-	int		Capture(bool val);
-	int		Playback(bool val);
-	int		Generate(bool val);
+	int		startCapture(std::string fname, int format);
+	void	stopCapture();
+
+	int		startPlayback(std::string fname, int format);
+	void	stopPlayback();
+
+	int		startGenerate(std::string fname, int format);
+	void	stopGenerate();
+
 	int		AudioMP3(std::string fname);
 	int		AudioWAV(std::string fname);
 	int		Audio(std::string fname);
@@ -362,5 +361,12 @@ public:
 	bool	must_close(int dir = 0) { return false; }
 	void	flush(unsigned);
 };
+
+namespace SND_SUPPORT {
+	bool format_supported(int format);
+	void get_file_params(std::string def_fname, std::string &fname, int &format, bool check);
+	void tag_file(SNDFILE *sndfile, const char *title);
+};
+
 
 #endif // SOUND_H

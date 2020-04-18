@@ -81,8 +81,6 @@
 #define SND_BUF_LEN	 65536
 #define SND_RW_LEN	(8 * SND_BUF_LEN)
 
-// We never write duplicate/QSK/PTT tone/PseudoFSK data to the sound files
-//#define SNDFILE_CHANNELS 1
 #define SNDFILE_CHANNELS 2
 
 int sndfile_samplerate[7] = {8000, 11025, 16000, 22050, 24000, 44100, 48000};
@@ -91,15 +89,82 @@ using namespace std;
 
 LOG_FILE_SOURCE(debug::LOG_AUDIO);
 
+namespace SND_SUPPORT {
+	bool format_supported(int format) {
+		SF_INFO info = {
+			0,
+			sndfile_samplerate[progdefaults.wavSampleRate],
+			progdefaults.record_both_channels ? 2 : 1,
+			format, 0, 0 };
+		SNDFILE* sndf = sf_open("temp.audio", SFM_WRITE, &info);
+		sf_close(sndf);
+		remove("temp.audio");
+		if (sndf) return true;
+		return false;
+	}
+
+	void get_file_params(std::string def_fname, std::string &fname, int &format, bool check) {
+		std::string filters;
+		if (def_fname.find("playback") != std::string::npos)
+			filters = "Audio format\t*.{mp3,wav}\n";
+		else
+			filters = "Audio format\t*.wav\n";
+		if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16)) {
+			filters.append("FLAC format\t*.flac");
+		}
+		format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+		int fsel = 0;
+		const char *fn = 0;
+		if (def_fname.find("playback") != std::string::npos)
+			fn = FSEL::select(_("Audio file"), filters.c_str(), def_fname.c_str(), &fsel);
+		else
+			fn = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname.c_str(), &fsel);
+		if (!fn || !*fn) {
+			fname = "";
+			return;
+		}
+		fname = fn;
+
+		if (check) {
+			FILE *f = fopen(fname.c_str(), "r");
+			if (f) {
+				fclose(f);
+				int ans = fl_choice("Replace %s?", "Yes", "No", 0, fname.c_str());
+				if ( ans == 1) fname = "";
+			}
+		}
+	}
+
+	void tag_file(SNDFILE *sndfile, const char *title) {
+		int err;
+		if ((err = sf_set_string(sndfile, SF_STR_TITLE, title)) != 0) {
+			LOG_VERBOSE("sf_set_string STR_TITLE: %s", sf_error_number(err));
+			return;
+		}
+		sf_set_string(sndfile, SF_STR_COPYRIGHT, progdefaults.myName.c_str());
+		sf_set_string(sndfile, SF_STR_SOFTWARE, PACKAGE_NAME "-" PACKAGE_VERSION);
+		sf_set_string(sndfile, SF_STR_ARTIST, progdefaults.myCall.c_str());
+		char s[64];
+		snprintf(s, sizeof(s), "%s freq=%s",
+			active_modem->get_mode_name(), inpFreq->value());
+		sf_set_string(sndfile, SF_STR_COMMENT, s);
+		time_t t = time(0);
+		struct tm zt;
+		(void)gmtime_r(&t, &zt);
+		if (strftime(s, sizeof(s), "%Y-%m-%dT%H:%M:%Sz", &zt) > 0)
+			sf_set_string(sndfile, SF_STR_DATE, s);
+	}
+
+};
+
 SoundBase::SoundBase()
 		: sample_frequency(0),
 	  txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),
 		  tx_src_state(0), rx_src_state(0),
 		  wrt_buffer(new double[SND_BUF_LEN]),
 #if USE_SNDFILE
-		  ofCapture(0), ifPlayback(0), ofGenerate(0),
+		  ofCapture(0), ifPlayback(0), ofGenerate(0)
 #endif
-	  capture(false), playback(false), generate(false)
 {
 	memset(wrt_buffer, 0, SND_BUF_LEN * sizeof(*wrt_buffer));
 
@@ -167,89 +232,19 @@ SoundBase::~SoundBase()
 }
 
 #if USE_SNDFILE
-void SoundBase::get_file_params(std::string def_fname, std::string &fname, int &format)
+
+void SoundBase::stopCapture()
 {
-	std::string filters;
-	if (def_fname.find("playback") != std::string::npos)
-		filters = _("Waveform Audio Format]\t*.{mp3,wav}\n");
-	else
-		filters = _("Waveform Audio Format\t*.wav\n");
-	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16)) {
-		filters.append(_("Free Lossless Audio Codec\t*.flac"));
-	}
-
-	format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-	int fsel;
-	const char *fn = 0;
-	if (def_fname.find("playback") != std::string::npos)
-		fn = FSEL::select(_("Audio file"), filters.c_str(), def_fname.c_str(), &fsel);
-	else
-		fn = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname.c_str(), &fsel);
-
-	if (!fn || !*fn) {
-		fname = "";
-		return;
-	}
-	fname = fn;
-
-	bool check_replace = false;
-	fsel = 0;
-	switch (fsel) {
-		default:
-		case 0:
-			format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-			if (fname.find(".wav") == std::string::npos) {
-				fname.append(".wav");
-				check_replace = true;
-			}
-			break;
-		case 1:
-			format = SF_FORMAT_AU | SF_FORMAT_FLOAT | SF_ENDIAN_CPU;
-			if (fname.find(".au") == std::string::npos ||
-				fname.find(".snd") == std::string::npos) {
-				fname.append(".au");
-				check_replace = true;
-			}
-			break;
-		case 2:
-			format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
-			if (fname.find(".flac") == std::string::npos) {
-				fname.append(".flac");
-				check_replace = true;
-			}
-			break;
-	}
-
-	if (check_replace) {
-		FILE *f = fopen(fname.c_str(), "r");
-		if (f) {
-			fclose(f);
-			int ans = fl_choice("Replace %s?", "Yes", "No", 0, fname.c_str());
-			if ( ans == 1) fname = "";
-		}
+	if (ofCapture) {
+		int err;
+		if ((err = sf_close(ofCapture)) != 0)
+			LOG_ERROR("sf_close error: %s", sf_error_number(err));
+		ofCapture = 0;
 	}
 }
 
-int SoundBase::Capture(bool val)
+int SoundBase::startCapture(std::string fname, int format)
 {
-	if (!val) {
-		if (ofCapture) {
-			int err;
-			if ((err = sf_close(ofCapture)) != 0)
-				LOG_ERROR("sf_close error: %s", sf_error_number(err));
-			ofCapture = 0;
-		}
-		capture = false;
-		return 1;
-	}
-
-	std::string fname;
-	int format;
-	get_file_params("capture", fname, format);
-
-	if (fname.empty())
-		return 0;
-
 	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
 	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], 
 		progdefaults.record_both_channels ? 2 : 1,
@@ -261,31 +256,25 @@ int SoundBase::Capture(bool val)
 	}
 	if (sf_command(ofCapture, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
 		LOG_ERROR("ofCapture update header command failed: %s", sf_strerror(ofCapture));
-	tag_file(ofCapture, "Captured audio");
 
-	capture = true;
+	SND_SUPPORT::tag_file(ofCapture, "Captured audio");
+
 	return 1;
 }
 
-int SoundBase::Generate(bool val)
+void SoundBase::stopGenerate()
 {
-	if (!val) {
-		if (ofGenerate) {
-			int err;
-			if ((err = sf_close(ofGenerate)) != 0)
-				LOG_ERROR("sf_close error: %s", sf_error_number(err));
-			ofGenerate = 0;
-		}
-		generate = false;
-		return 1;
+	if (ofGenerate) {
+		int err;
+		if ((err = sf_close(ofGenerate)) != 0)
+			LOG_ERROR("sf_close error: %s", sf_error_number(err));
+		ofGenerate = 0;
 	}
+}
 
-	std::string fname;
-	int format;
-	get_file_params("generate", fname, format);
-	if (fname.empty())
-		return 0;
-
+//int SoundBase::startGenerate(bool val, std::string fname, int format)
+int SoundBase::startGenerate(std::string fname, int format)
+{
 	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], 
 		progdefaults.record_both_channels ? 2 : 1,
 //		SNDFILE_CHANNELS,
@@ -296,9 +285,8 @@ int SoundBase::Generate(bool val)
 	}
 	if (sf_command(ofGenerate, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
 		LOG_ERROR("ofGenerate update header command failed: %s", sf_strerror(ofGenerate));
-	tag_file(ofGenerate, "Generated audio");
 
-	generate = true;
+	SND_SUPPORT::tag_file(ofGenerate, "Generated audio");
 
 	modem_wr_sr = sample_frequency;
 
@@ -311,25 +299,19 @@ int SoundBase::Generate(bool val)
 	return 1;
 }
 
-
-int SoundBase::Playback(bool val)
+void SoundBase::stopPlayback()
 {
-	if (!val) {
-		if (ifPlayback) {
-			int err;
-			if ((err = sf_close(ifPlayback)) != 0)
-				LOG_ERROR("sf_close error: %s", sf_error_number(err));
-			ifPlayback = 0;
-		}
-		playback = false;
-		return 1;
+	if (ifPlayback) {
+		int err;
+		if ((err = sf_close(ifPlayback)) != 0)
+			LOG_ERROR("sf_close error: %s", sf_error_number(err));
+		ifPlayback = 0;
 	}
-	std::string fname;
-	int format;
-	get_file_params("playback", fname, format);
-	if (fname.empty())
-		return -1;
+	progdefaults.loop_playback = false;
+}
 
+int SoundBase::startPlayback(std::string fname, int format)
+{
 	play_info.frames = 0;
 	play_info.samplerate = 0;
 	play_info.channels = 0;
@@ -338,9 +320,10 @@ int SoundBase::Playback(bool val)
 	play_info.seekable = 0;
 
 	if ((ifPlayback = sf_open(fname.c_str(), SFM_READ, &play_info)) == NULL) {
-		LOG_ERROR("Could not read %s:%s", fname.c_str(), sf_strerror(NULL) );
-		return -2;
+		LOG_ERROR("Could not open %s:%s", fname.c_str(), sf_strerror(NULL) );
+		return 1;
 	}
+
 LOG_VERBOSE
 ("wav file stats:\n\
 frames     : %d\n\
@@ -359,12 +342,9 @@ play_info.seekable);
 	modem_play_sr = sample_frequency;
 	play_src_data->src_ratio = 1.0 * modem_play_sr / play_info.samplerate;
 	src_set_ratio(play_src_state, play_src_data->src_ratio);
-LOG_VERBOSE
-("src ratio %f", play_src_data->src_ratio);
 
-	progdefaults.loop_playback = fl_choice2(_("Playback continuous loop?"), _("No"), _("Yes"), NULL);
+	LOG_VERBOSE("src ratio %f", play_src_data->src_ratio);
 
-	playback = true;
 	new_playback = true;
 
 	return 0;
@@ -432,7 +412,7 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 		src_reset (play_src_state);
 		out_pointer = src_rd_out_buffer;
 		if (!progdefaults.loop_playback) {
-			Playback(0);
+			stopPlayback();
 			bHighSpeed = false;
 			REQ(reset_mnuPlayback);
 		} else {
@@ -703,45 +683,7 @@ void SoundBase::write_file(SNDFILE* file, double* bufleft, double *bufright, siz
 	return;
 }
 
-bool SoundBase::format_supported(int format)
-{
-	SF_INFO info = {
-		0,
-		sndfile_samplerate[progdefaults.wavSampleRate],
-		progdefaults.record_both_channels ? 2 : 1,
-		format, 0, 0 };
-	SNDFILE* sndf = sf_open("temp.audio", SFM_WRITE, &info);
-	sf_close(sndf);
-	remove("temp.audio");
-	if (sndf) return true;
-	return false;
-}
-
-void SoundBase::tag_file(SNDFILE *sndfile, const char *title)
-{
-	int err;
-	if ((err = sf_set_string(sndfile, SF_STR_TITLE, title)) != 0) {
-		LOG_VERBOSE("sf_set_string STR_TITLE: %s", sf_error_number(err));
-		return;
-	}
-
-	sf_set_string(sndfile, SF_STR_COPYRIGHT, progdefaults.myName.c_str());
-	sf_set_string(sndfile, SF_STR_SOFTWARE, PACKAGE_NAME "-" PACKAGE_VERSION);
-	sf_set_string(sndfile, SF_STR_ARTIST, progdefaults.myCall.c_str());
-
-	char s[64];
-	snprintf(s, sizeof(s), "%s freq=%s",
-		 active_modem->get_mode_name(), inpFreq->value());
-	sf_set_string(sndfile, SF_STR_COMMENT, s);
-
-	time_t t = time(0);
-	struct tm zt;
-	(void)gmtime_r(&t, &zt);
-	if (strftime(s, sizeof(s), "%Y-%m-%dT%H:%M:%Sz", &zt) > 0)
-		sf_set_string(sndfile, SF_STR_DATE, s);
-}
 #endif // USE_SNDFILE
-
 
 #if USE_OSS
 
@@ -991,9 +933,9 @@ size_t SoundOSS::Read(float *buffer, size_t buffersize)
 		buffer[i] = src_buffer[2*i + (progdefaults.ReverseRxAudio ? 1 : 0)];
 
 #if USE_SNDFILE
-	if (capture)
+	if (ofCapture)
 		write_file(ofCapture, buffer, NULL, buffersize);
-	if (playback) {
+	if (ifPlayback) {
 		read_file(ifPlayback, buffer, buffersize);
 		return buffersize;
 	}
@@ -1035,7 +977,7 @@ size_t SoundOSS::Write(double *buf, size_t count)
 	unsigned char *p;
 
 #if USE_SNDFILE
-	if (generate)
+	if (ofGenerate)
 		write_file(ofGenerate, buf, NULL, count);
 #endif
 
@@ -1112,7 +1054,7 @@ size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 	unsigned char *p;
 
 #if USE_SNDFILE
-	if (generate)
+	if (ofGenerate)
 		write_file(ofGenerate, bufleft, bufright, count);
 #endif
 
@@ -1536,9 +1478,9 @@ do { \
 size_t SoundPort::Read(float *buf, size_t count)
 {
 #if USE_SNDFILE
-	if (playback) {
+	if (ifPlayback) {
 		read_file(ifPlayback, buf, count);
-		if (!capture) {
+		if (!ofCapture) {
 			if (!bHighSpeed)
 				MilliSleep((long)ceil((1e3 * count) / req_sample_rate));
 			return count;
@@ -1624,7 +1566,7 @@ size_t SoundPort::Read(float *buf, size_t count)
 	}
 
 #if USE_SNDFILE
-	if (capture)
+	if (ofCapture)
 		write_file(ofCapture, buf, NULL, count);
 #endif
 
@@ -1634,7 +1576,7 @@ size_t SoundPort::Read(float *buf, size_t count)
 size_t SoundPort::Write(double *buf, size_t count)
 {
 #if USE_SNDFILE
-	if (generate)
+	if (ofGenerate)
 		write_file(ofGenerate, buf, NULL, count);
 #endif
 
@@ -1663,7 +1605,7 @@ size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
 		return Write(bufleft, count);
 
 #if USE_SNDFILE
-	if (generate)
+	if (ofGenerate)
 		write_file(ofCapture, bufleft, bufright, count);
 #endif
 
@@ -1758,7 +1700,6 @@ size_t SoundPort::resample_write(float* buf, size_t count)
 		pa_perror(3, "Portaudio write error #3");
 		throw SndException("Portaudio write error 3");
 	}
-//	if (active_modem->get_stopflag()) return count;
 
 	sd[1].rb->write(wbuf, sd[1].params.channelCount * count);
 
@@ -1995,7 +1936,6 @@ sp[dir]->suggestedLatency);
 			paNoFlag,
 			stream_process, &sd[dir]);
 	if (err != paNoError) {
-//		pa_perror(err, "Portaudio open stream error");
 		throw SndPortException(err);
 	}
 
@@ -2307,7 +2247,6 @@ void SoundPulse::flush(unsigned dir)
 	int err = PA_OK;
 	if ((dir == 1 || dir == UINT_MAX) && sd[1].stream) {
 		// wait for audio to finish playing
-//	  pa_simple_drain(sd[1].stream, &err);
 		MilliSleep(SCBLOCKSIZE * 1000 / sd[1].stream_params.rate);
 		pa_simple_flush(sd[1].stream, &err);
 	}
@@ -2337,7 +2276,7 @@ void SoundPulse::flush(unsigned dir)
 size_t SoundPulse::Write(double* buf, size_t count)
 {
 #if USE_SNDFILE
-	if (generate)
+	if (ofGenerate)
 		write_file(ofGenerate, buf, NULL, count);
 #endif
 
@@ -2366,7 +2305,7 @@ size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 		return Write(bufleft, count);
 
 #if USE_SNDFILE
-	if (generate)
+	if (ofGenerate)
 		write_file(ofGenerate, bufleft, bufright, count);
 #endif
 
@@ -2414,8 +2353,6 @@ size_t SoundPulse::resample_write(float* buf, size_t count)
 
 	if (!active_modem) return count;
 
-//	if (active_modem->get_stopflag()) return count;
-
 	if (pa_simple_write(sd[1].stream, wbuf, count * sd[1].stream_params.channels * sizeof(float), &err) == -1)
 		throw SndPulseException(err);
 
@@ -2424,7 +2361,7 @@ size_t SoundPulse::resample_write(float* buf, size_t count)
 
 long SoundPulse::src_read_cb(void* arg, float** data)
 {
-		SoundPulse* p = reinterpret_cast<SoundPulse*>(arg);
+	SoundPulse* p = reinterpret_cast<SoundPulse*>(arg);
 
 	int err;
 	int nread = 0;
@@ -2442,9 +2379,9 @@ long SoundPulse::src_read_cb(void* arg, float** data)
 size_t SoundPulse::Read(float *buf, size_t count)
 {
 #if USE_SNDFILE
-	if (playback) {
+	if (ifPlayback) {
 		read_file(ifPlayback, buf, count);
-		if (!capture) {
+		if (!ofCapture) {
 			flush(0);
 			if (!bHighSpeed)
 				MilliSleep((long)ceil((1e3 * count) / sample_frequency));
@@ -2487,8 +2424,8 @@ size_t SoundPulse::Read(float *buf, size_t count)
 	}
 
 #if USE_SNDFILE
-	if (capture)
-				write_file(ofCapture, buf, NULL, count);
+	if (ofCapture)
+		write_file(ofCapture, buf, NULL, count);
 #endif
 
 	return count;
@@ -2522,7 +2459,7 @@ void SoundPulse::src_data_reset(int mode)
 size_t SoundNull::Write(double* buf, size_t count)
 {
 #if USE_SNDFILE
-	if (generate)
+	if (ofGenerate)
 		write_file(ofGenerate, buf, NULL, count);
 #endif
 
@@ -2538,7 +2475,7 @@ size_t SoundNull::Write(double* buf, size_t count)
 size_t SoundNull::Write_stereo(double* bufleft, double* bufright, size_t count)
 {
 #if USE_SNDFILE
-	if (generate)
+	if (ofGenerate)
 		write_file(ofGenerate, bufleft, bufright, count);
 #endif
 
@@ -2550,14 +2487,13 @@ size_t SoundNull::Write_stereo(double* bufleft, double* bufright, size_t count)
 size_t SoundNull::Read(float *buf, size_t count)
 {
 #if USE_SNDFILE
-	if (playback) {
+	if (ifPlayback)
 		read_file(ifPlayback, buf, count);
-	}
 	else
 #endif
 		memset(buf, 0, count * sizeof(*buf));
 #if USE_SNDFILE
-	if (capture)
+	if (ofCapture)
 		write_file(ofCapture, buf, NULL, count);
 #endif
 	if (!bHighSpeed)
@@ -2570,7 +2506,7 @@ size_t SoundNull::Read(float *buf, size_t count)
 void SoundNull::flush(unsigned)
 {
 #if USE_SNDFILE
-	if (generate)
+	if (ofGenerate)
 		sf_close(ofGenerate);
 #endif
 }

@@ -306,9 +306,6 @@ void trx_trx_receive_loop()
 		if (trx_state != STATE_RX)
 			break;
 
-		if (trx_inhibit)
-			continue;
-
 		if (bHighSpeed) {
 			bool afc = progStatus.afconoff;
 			progStatus.afconoff = false;
@@ -323,11 +320,11 @@ void trx_trx_receive_loop()
 		} else {
 			trxrb.write_advance(numread);
 			wf->sig_data(rbvec[0].buf, current_RXsamplerate);
-			REQ(&waterfall::handle_sig_data, wf);
+			if (!trx_inhibit)
+				REQ(&waterfall::handle_sig_data, wf);
 			if (!bHistory) {
 				if (fft_modem && spectrum_viewer->visible())
 					fft_modem->rx_process(rbvec[0].buf, numread);
-
 				active_modem->rx_process(rbvec[0].buf, numread);
 
 				if (audio_alert)

@@ -2431,9 +2431,11 @@ void cb_view_hide_channels(Fl_Menu_ *w, void *d)
 }
 
 #if USE_SNDFILE
+
 static bool capval = false;
 static bool genval = false;
 static bool playval = false;
+
 void cb_mnuCapture(Fl_Widget *w, void *d)
 {
 	if (!RXscard) return;
@@ -2443,7 +2445,22 @@ void cb_mnuCapture(Fl_Widget *w, void *d)
 		return;
 	}
 	capval = m->value();
-	if(!RXscard->Capture(capval)) {
+
+	if (!m->value()) {
+		RXscard->stopCapture();
+		return;
+	}
+
+	std::string fname;
+	int format;
+	SND_SUPPORT::get_file_params("capture", fname, format, true);
+	if (fname.empty()) {
+		m->clear();
+		capval = 0;
+		return;
+	}
+
+	if(!RXscard->startCapture(fname, format)) {
 		m->clear();
 		capval = false;
 	}
@@ -2458,7 +2475,22 @@ void cb_mnuGenerate(Fl_Widget *w, void *d)
 	}
 	if (!TXscard) return;
 	genval = m->value();
-	if (!TXscard->Generate(genval)) {
+
+	if (!genval) {
+		TXscard->stopGenerate();
+		return;
+	}
+
+	std::string fname;
+	int format;
+	SND_SUPPORT::get_file_params("generate", fname, format, true);
+	if (fname.empty()) {
+		m->clear();
+		genval = 0;
+		return;
+	}
+
+	if (!TXscard->startGenerate(fname, format)) {
 		m->clear();
 		genval = false;
 	}
@@ -2483,27 +2515,32 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 		return;
 	}
 	playval = m->value();
-	if (!playval) bHighSpeed = false;
+	if (!playval) {
+		bHighSpeed = false;
+		RXscard->stopPlayback();
+		return;
+	}
 
-	int err = RXscard->Playback(playval);
+	std::string fname;
+	int format;
+	SND_SUPPORT::get_file_params("playback", fname, format, false);
 
-	if(err < 0) {
-		switch (err) {
-			case -1:
-				fl_alert2(_("No file name given"));
-				break;
-			case -2:
-				fl_alert2(_("Unsupported format"));
-				break;
-			case -3:
-				fl_alert2(_("channels != 1"));
-				break;
-			default:
-				fl_alert2(_("unknown wave file error"));
-		}
+	if (fname.empty()) {
+		m->clear();
+		playval = 0;
+		return;
+	}
+
+	progdefaults.loop_playback = fl_choice2(_("Playback continuous loop?"), _("No"), _("Yes"), NULL);
+
+	int err = RXscard->startPlayback(fname, format);
+
+	if(err) {
+		fl_alert2(_("Unsupported audio format"));
 		m->clear();
 		playval = false;
 		bHighSpeed = false;
+		progdefaults.loop_playback = false;
 	}
 	else if (btnAutoSpot->value()) {
 		put_status(_("Spotting disabled"), 3.0);
