@@ -80,7 +80,7 @@ anal::~anal()
 // used for checking file exists function
 #define F_OK 0
 
-void anal::creatfilename()
+void anal::createfilename()
 {
 // Function to find or create the working directory [if not exist yet]
 // also creates the filename that should be open for today's date [w and w/o full path]
@@ -94,53 +94,12 @@ void anal::creatfilename()
 // create the embedded file date image as YYYY-MM-DD
 	strftime((char*)FileData,sizeof(FileData),"%Y-%m-%d", &File_Start_Date);
 
-// create the home directory path 
-	string HomePath;
-	HomePath = getenv("HOME");
-
-// create the home directory path to the FLDanalysis filestructure
-		string FLDdataPath;
-		FLDdataPath = getenv("HOME");
-
-// append new working path for data storage
-		FLDdataPath += "/FLDanalysis/";
-
-// check for directory and if not there create it
-
-	if (fl_access(FLDdataPath.c_str(),F_OK) == -1)
-	//directory does not exist, so create it
-	{
-	//	printf("\n\nDirectory %s does NOT exist - creating it\n", FLDdataPath.c_str() ); // diag line
-		fl_make_path(FLDdataPath.c_str());
-		fl_chmod(FLDdataPath.c_str(),0775);
-	}
-//	else
-//	printf("\n\nDirectory %s does exist and will use it\n", FLDdataPath.c_str() ); // diag line
-
 // create the new analysis file name only
-		OpenAnalalysisFile="analysis";
-
-// embedded date YYMMDD
-		OpenAnalalysisFile.append(FileDate);
-
-// csv file type extension
-		OpenAnalalysisFile.append(".csv");
+	OpenAnalalysisFile.assign("analysis_").append(FileDate).append(".csv");
 
 // Full name with path
 // Added new file naming and storage by N8OBJ 5-7-19
-	analysisFilename = HomePath;
-	analysisFilename += "/FLDanalysis/";
-
-// create new analysis file name w/o path [for display in status line]
-	analysisFilename.append("analysis");
-
-// embedded date YYMMDD
-	analysisFilename.append(FileDate);
-
-// csv file type extension
-	analysisFilename.append(".csv");
-// now have full path and filename for today's data file
-// in variable analysisFilename
+	analysisFilename.assign(AnalysisDir).append(OpenAnalalysisFile);
 
 }
 
@@ -187,7 +146,7 @@ anal::anal()
 	ffilt = new Cmovavg(FILT_LEN * samplerate);
 	afilt = new Cmovavg(FILT_LEN * samplerate);
 
-	creatfilename();
+	createfilename();
 
 	cap &= ~CAP_TX;
 	write_to_csv = false;
@@ -212,75 +171,47 @@ cmplx anal::mixer(cmplx in)
 
 void anal::start_csv()
 {
-	// create path to info.txt file
+	string InfoPathname(AnalysisDir);
+	InfoPathname.append("info.txt");
 
-		string InfoPath;
+	createfilename();
 
-		InfoPath = getenv("HOME");
+//Open the data file for creation (write) operation
+//first check to see if already created
 
-		InfoPath += "/FLDanalysis/info.txt";
-
-	creatfilename();
-
-	//Open the data file for creation (write) operation
-	//first check to see if already created  (and don't destroy the same days data already gathered)
-
-	if (fl_access(analysisFilename.c_str(),F_OK) == 0) {
-	// file exists! - use it and keep adding to it
-
+	if (fl_access(analysisFilename.c_str(), F_OK) == 0) {	// file exists! - use it and keep adding to it
 	// indicate in status line that file write in progress
-		put_status("Using existing analysis file");
-//	printf("\n\nUsing existing %s analysis file\n\n", analysisFilename.c_str() );  //diag printout
 		write_to_csv = true;  //say to do writes to file
-	}
-
-	else
-
-	// file not there - create it and populate the header info in it
-	{
-	FILE *out = fl_fopen(analysisFilename.c_str(), "w"); //create [write] for new data file
+	} else {
+		FILE *out = fl_fopen(analysisFilename.c_str(), "w"); //create new data file
 		if (unlikely(!out)) {
 			LOG_PERROR("fl_fopen");
 			return;
 		}
 
-	// file opened - write out header info
-		put_status("Creating analysis file");
-
-
-	//Check for the existance of info.txt file in the ./FLDanalysis/ directory
-
 		string InfoText;
-
-		ifstream InfoTextFile( InfoPath.c_str() );
+		ifstream InfoTextFile( InfoPathname.c_str() );
 		if (InfoTextFile.is_open()) {
-		// files exists, obtain info in text file
-			getline (InfoTextFile,InfoText);
+// files exists, obtain info in text file
+			getline (InfoTextFile, InfoText);
 			InfoTextFile.close();
 
-		// since file exists, write out full ISO date as first element of todays header
-		// along with the contents of info.txt for 1st line of header info
-//		printf("info.txt exists - writing >%s,%s< into initial header\n",FileData,InfoText.c_str());//diag line
+// since file exists, write out full ISO date as first element of todays header
+// along with the contents of info.txt for 1st line of header info
 
-			fprintf(out, "%s,%s\n",FileData, InfoText.c_str());
+			fprintf(out, "%s, %s\n", FileData, InfoText.c_str());
 		}
-
-	// Always write out the normal column header to the new .csv file
-
-		fprintf(out, "UTC,Freq,Freq Err,Vpk,dBV(Vpk)\n");
+// Always write out the normal column header to the new .csv file
+		fprintf(out, "UTC, Freq, Freq Err, Vpk, dBV(Vpk)\n");
 		fclose(out);
 
-//	printf("Creating analysis file %s \n", analysisFilename.c_str());  //diag output
-
-		write_to_csv = true;  //say to do writes to file
-
+		write_to_csv = true;
 	}
 }
 
 void anal::stop_csv()
 {
 	write_to_csv = false;
-// clear status line
 	put_status("");
 }
 
@@ -314,37 +245,15 @@ void anal::writeFile()
 // Changed /added new .csv fields 
 //	header is: fprintf(out, "UTC,Freq,Freq Err,Vpk,dBV(Vpk)\n");
 
-// print realltime results to terminal window as well  N8OBJ - 7-9-19
-	// print just the time for UTC -->  HH:MM:SS
-	// diag print
-//        printf("%02d:%02d:%02d, %13.3f, %6.3f, %8.6f, %6.2f\n",
-//		tm.tm_hour, tm.tm_min, tm.tm_sec,
-//		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout)), fout,
-//		amp,  20.0 * log10( (amp == 0 ? 1e-6 : amp) ) );
-
 	fprintf(out, "%02d:%02d:%02d, %13.3f, %6.3f, %8.6f, %6.2f\n",
 		tm.tm_hour, tm.tm_min, tm.tm_sec,
 		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout)), fout, 
 		amp, 20.0 * log10( (amp == 0 ? 1e-6 : amp) ) );
 
-	// print date with full date and time for UTC --> YYYY-MM-DD HH:MM:SS
-	// diag print
-//        printf("%s %02d:%02d:%02d, %13.3f, %6.3f, %8.6f, %6.2f\n",
-//		FileData, tm.tm_hour, tm.tm_min, tm.tm_sec,
-//		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout)), fout,
-//		amp,  20.0 * log10( (amp == 0 ? 1e-6 : amp) ) );
-
-//        fprintf(out, "%s %02d:%02d:%02d, %13.3f, %6.3f, %8.6f, %6.2f\n",
-//		FileData, tm.tm_hour, tm.tm_min, tm.tm_sec,
-//		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout)), fout, 
-//		amp, 20.0 * log10( (amp == 0 ? 1e-6 : amp) ) );
-
-
 	fclose(out);
 
-//	indicate in status line the actual file name being written is in progress
 	char StatusMsg [80];
-	sprintf( StatusMsg, "Writing analysis file %s", OpenAnalalysisFile.c_str());
+	sprintf( StatusMsg, "Writing: %s", OpenAnalalysisFile.c_str());
 	put_status(StatusMsg);
 
 }

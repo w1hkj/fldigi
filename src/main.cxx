@@ -145,6 +145,7 @@ string DebugDir = "";
 string LoTWDir = "";
 string KmlDir = "";
 string PskMailDir = "";
+string AnalysisDir = "";
 
 string NBEMS_dir = "";
 string NBEMS_dir_default = "";
@@ -1049,6 +1050,7 @@ int main(int argc, char ** argv)
 	LOG_INFO("LogsDir: %s", LogsDir.c_str());
 	LOG_INFO("LoTWDir: %s", LoTWDir.c_str());
 	LOG_INFO("MacrosDir: %s", MacrosDir.c_str());
+	LOG_INFO("AnalysisDir: %s", AnalysisDir.c_str());
 	LOG_INFO("PalettesDir: %s", PalettesDir.c_str());
 	LOG_INFO("PicsDir: %s", PicsDir.c_str());
 	LOG_INFO("PskMailDir: %s", PskMailDir.c_str());
@@ -2096,6 +2098,7 @@ static void checkdirectories(void)
 		{ AvatarDir, "avatars", 0},
 		{ HelpDir, "help", 0 },
 		{ MacrosDir, "macros", create_new_macros },
+		{ AnalysisDir, "analysis", 0 },
 		{ WrapDir, "wrap", 0 },
 		{ TalkDir, "talk", 0 },
 		{ TempDir, "temp", 0 },

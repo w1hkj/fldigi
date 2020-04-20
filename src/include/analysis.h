@@ -36,7 +36,7 @@
 
 
 #define ANAL_SAMPLERATE	8000
-#define FILT_LEN        4		//seconds
+#define FILT_LEN 	4		//seconds
 #define PIPE_LEN	120
 #define DSP_CNT		1		//seconds
 #define ANAL_BW		4
@@ -72,10 +72,10 @@ private:
 
 	double nco(double freq);
 	void writeFile();
-	void creatfilename();
+	void createfilename();
 
-        char FileDate [10];
-        char FileData [12];
+	char FileDate [20];
+	char FileData [20];
 
 public:
 	anal();
