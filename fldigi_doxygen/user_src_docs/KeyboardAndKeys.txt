@@ -116,6 +116,18 @@ fldigi text widget supports some short cuts to make your life easier:
   
   see \ref xchar_page "Extended Characters"
 </li>
+<li> insert operating controls text, use combination of SHIFT-CONTROL-letter
+  <ul>
+  <li>'c': add <CALL></li>
+  <li>'m': add <MYCALL></li>
+  <li>'n': add <NAME></li>
+  <li>'r': add <RST> received</li>
+  <li>'s': add <RST> sent</li>
+  <li>'l': add <MYLOC></li>
+  <li>'h': add <MYQTH></li>
+  <li>'a': add <ANTENNA></li>
+  <li>'g': add <BEL> 0x07</li>
+  </ul>
 </ul>
 
 \section function_keys Function Keys
@@ -129,8 +141,6 @@ rotation through the 4 sets of macro keys.  The respective macro set can be
 made available by pressing the Alt-1, Alt-2, Alt-3 or Alt-4 key
 combination.  Note that this is not Alt-F1 etc.
 <br>
-
-
 <br>
 \ref keyboard_operation_page "Return to Top of Page"
 <br>

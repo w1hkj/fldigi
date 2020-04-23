@@ -2101,7 +2101,8 @@ int FTextTX::handle_key_shortcuts(int key)
 	case 'c': // add <CALL> for SC-c
 	case 'm': // add <MYCALL> for SC-m
 	case 'n': // add <NAME> for SC-n
-	case 'r': // add <RST> for SC-r
+	case 'r': // add <RST>rcvd for SC-r
+	case 's': // add <RST>sent for SC-s
 	case 'l': // add <MYLOC> for SC-l
 	case 'h': // add <MYQTH> for SC-h
 	case 'a': // add <ANTENNA> for SC-a
@@ -2124,6 +2125,12 @@ int FTextTX::handle_key_shortcuts(int key)
 				{
 					std::string s;
 					etag = (s = inpRstIn->value()).length() ? s : std::string("599");
+				}
+				break;
+			case 's':
+				{
+					std::string s;
+					etag = (s = inpRstOut->value()).length() ? s : std::string("599");
 				}
 				break;
 			case 'l':
