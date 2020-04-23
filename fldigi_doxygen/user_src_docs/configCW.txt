@@ -222,17 +222,6 @@ transmission.
 \section subsec_qsk QSK
 <br>
 
-You might ask why fldigi doesn't simply provide a keyline output on
-one of the parallel port pins or on RTS or DTR via a comm port.
-The answer is quite simple. Linux is a multi-tasking
-operating system and the interaction between the OS and the application
-causes the timing to be adversely effected.  The driver
-implementation of the audio sub system must be responsive and so the OS
-gives that sub system a very high priority in its multi-tasking
-structure.
-<br>
-<br>
-
 Many QSK operators use high speed diode antenna switching between
 receiver and antenna. fldigi generates a signal that can be used
 for that purpose. The left audio channel is always theAFCW
@@ -282,6 +271,7 @@ See \ref nanoIO_page for additional information on nanoIO interface.
 <br>
 See \ref cw_winkeyer_page for additional information on WinKeyer interface.
 <br>
+See \ref cw_dtr_rts_keying for additional information on DTR/RTS keying
 
 \ref cw_configuration_page "Return to Top of Page"
 <br>

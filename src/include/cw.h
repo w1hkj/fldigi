@@ -255,4 +255,12 @@ extern void close_CW_KEYLINE();
 extern int open_CW_KEYLINE();
 extern bool CW_KEYLINE_isopen;
 
+extern void cwio_ptt(int on);
+extern void cwio_key(int on);
+extern void cal_cwio();
+extern void cwio_display_calibration();
+extern void calibrate_cwio();
+
+extern pthread_mutex_t cwio_ptt_mutex;
+
 #endif

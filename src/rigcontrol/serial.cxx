@@ -356,7 +356,7 @@ void Cserial::FlushBuffer()
 //======================================================================
 // Win32 support code
 //======================================================================
-
+#include <winbase.h>
 #include "estrings.h"
 
 using namespace std;
@@ -788,28 +788,27 @@ void Cserial::SetPTT(bool b)
 
 	if (b == true) {				// ptt enabled
 		if (dtrptt && dtr)
-			dcb.fDtrControl = DTR_CONTROL_DISABLE;
+			SetDTR(0);
 		if (dtrptt && !dtr)
-			dcb.fDtrControl = DTR_CONTROL_ENABLE;
+			SetDTR(1);
 		if (rtscts == false) {
 			if (rtsptt && rts)
-				dcb.fRtsControl = RTS_CONTROL_DISABLE;
+				SetRTS(0);
 			if (rtsptt && !rts)
-				dcb.fRtsControl = RTS_CONTROL_ENABLE;
+				SetRTS(1);
 		}
 	} else {						// ptt disabled
 		if (dtrptt && dtr)
-			dcb.fDtrControl = DTR_CONTROL_ENABLE;
+			SetDTR(1);
 		if (dtrptt && !dtr)
-			dcb.fDtrControl = DTR_CONTROL_DISABLE;
+			SetDTR(0);
 		if (rtscts == false) {
 			if (rtsptt && rts)
-				dcb.fRtsControl = RTS_CONTROL_ENABLE;
+				SetRTS(1);
 			if (rtsptt && !rts)
-				dcb.fRtsControl = RTS_CONTROL_DISABLE;
+				SetRTS(0);
 		}
 	}
-	SetCommState(hComm, &dcb);
 }
 
 void Cserial::SetDTR(bool b)
@@ -818,11 +817,8 @@ void Cserial::SetDTR(bool b)
 		LOG_PERROR("Invalid handle");
 		return;
 	}
-	if (b == true)
-		dcb.fDtrControl = DTR_CONTROL_ENABLE;
-	else
-		dcb.fDtrControl = DTR_CONTROL_DISABLE;
-	SetCommState(hComm, &dcb);
+	if (b) EscapeCommFunction(hComm, SETDTR);
+	else   EscapeCommFunction(hComm, CLRDTR);
 }
 
 void Cserial::SetRTS(bool b)
@@ -831,11 +827,8 @@ void Cserial::SetRTS(bool b)
 		LOG_PERROR("Invalid handle");
 		return;
 	}
-	if (b == true)
-		dcb.fRtsControl = RTS_CONTROL_ENABLE;
-	else
-		dcb.fRtsControl = RTS_CONTROL_DISABLE;
-	SetCommState(hComm, &dcb);
+	if (b) EscapeCommFunction(hComm, SETRTS);
+	else   EscapeCommFunction(hComm, CLRRTS);
 }
 
 

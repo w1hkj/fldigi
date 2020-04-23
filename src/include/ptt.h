@@ -56,9 +56,9 @@
 
 struct termios;
 
-#ifdef __MINGW32__
+//#ifdef __MINGW32__
 #  include "serial.h"
-#endif
+//#endif
 
 class PTT {
 public:
@@ -73,6 +73,7 @@ public:
 	~PTT();
 	void set(bool on);
 	void reset(ptt_t dev);
+	Cserial serPort;
 private:
 	ptt_t pttdev;
 
@@ -84,10 +85,6 @@ private:
 	// uhrouter
 	int uhkfd[2]; // keyer
 	int uhfd[2];  // ptt
-#endif
-
-#ifdef __MINGW32__
-	Cserial serPort;
 #endif
 
 	void close_all(void);

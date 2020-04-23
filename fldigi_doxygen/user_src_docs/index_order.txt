@@ -15,6 +15,7 @@ rx_monitor.txt \
 configAutostart.txt \
 configContestia.txt \
 configCW.txt \
+config-cw-dtr-keying.txt \
 configDomEX.txt \
 configFSQ.txt \
 configFH.txt \

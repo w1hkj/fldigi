@@ -508,10 +508,15 @@ void trx_tune_loop()
 			if (active_modem->get_mode() == MODE_CW && 
 				(use_nanoIO ||
 				 progStatus.WK_online || 
+				 progdefaults.CW_KEYLINE_on_cat_port ||
 				 CW_KEYLINE_isopen)) {
-					if (CW_KEYLINE_isopen) active_modem->CW_KEYLINE(1);
-					else if (use_nanoIO) nanoCW_tune(1);
+					if (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)
+						active_modem->CW_KEYLINE(1);
+					else if (use_nanoIO)
+						nanoCW_tune(1);
 					else WK_tune(1);
+					cwio_ptt(1);
+					cwio_key(1);
 
 					REQ(&waterfall::set_XmtRcvBtn, wf, true);
 					while (trx_state == STATE_TUNE) MilliSleep(10);
@@ -519,6 +524,8 @@ void trx_tune_loop()
 					if (CW_KEYLINE_isopen) active_modem->CW_KEYLINE(0);
 					else if (use_nanoIO) nanoCW_tune(0);
 					else WK_tune(0);
+					cwio_key(0);
+					cwio_ptt(0);
 			} else {
 				while (trx_state == STATE_TUNE) {
 					if (_trx_tune == 0) {

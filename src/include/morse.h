@@ -40,6 +40,7 @@ private:
 	static CWstruct	cw_table[];
 	std::string utf8;
 	std::string toprint;
+	int ptr;
 public:
 	cMorse() { 
 		init(); 

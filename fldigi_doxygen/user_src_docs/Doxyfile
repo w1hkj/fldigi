@@ -54,7 +54,9 @@ INPUT                = \
 	rx_monitor.txt \
 	configAutostart.txt \
 	configcallsigndb.txt \
-	configContestia.txt configCW.txt \
+	configContestia.txt \
+	configCW.txt \
+	config-cw-dtr-keying.txt \
 	configDomEX.txt \
 	configFH.txt \
 	configFSQ.txt \

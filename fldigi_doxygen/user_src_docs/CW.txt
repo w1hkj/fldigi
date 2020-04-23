@@ -3,12 +3,17 @@
 
 \tableofcontents
 
-\section cw_freq Carrier Frequency
+\section cw_keying CW Keying
 
-Fldigi generates CW by inserting a keyed tone at the current
-waterfall audio frequency.  The CW carrier frequency is the USB
-carrier + the audio frequency, or the LSB carrier -
-the audio frequency.  If fldigi is tracking and receiving a CW
+Fldigi generates CW in one of several ways:
+<ul>
+<li>inserting a keyed tone at the current waterfall audio frequency, </li>
+<li>\ref cw_winkeyer_page keyline control via a Winkeyer (or compatible) unit, </li>
+<li>\ref nanoIO_page keyline control via a Mortty or NanoIO unit, </li>
+<li>\ref cw_dtr_rts_keying keyline control via DTR or RTS on a serial port, </li>
+</ul>
+The inserted keyed tone CW carrier frequency is the USB carrier + the audio 
+frequency, or the LSB carrier - the audio frequency.  If fldigi is tracking and receiving a CW
 signal on the waterfall your transmitted signal will be exactly on the
 frequency of the other operator.  You probably cannot use your
 transceivers CW filter unless that filter can be used with the SSB mode.<br>

@@ -222,7 +222,9 @@ void cMorse::init()
 		{ enable("Û", 1); enable("û", 1); }
 
 	CW_table_changed = false;
+	utf8.reserve(4);
 	utf8.clear();
+	ptr = 0;
 	toprint.clear();
 }
 
@@ -244,11 +246,14 @@ std::string cMorse::rx_lookup(std::string rx)
 std::string cMorse::tx_lookup(int c)
 {
 	if (CW_table_changed) init();
+	toprint.clear();
 
 	c &= 0xFF;
 	utf8 += c;
-	toprint.clear();
+//	if (ptr < 4) utf8[ptr++] = c;
 
+//	if ( c > 0x7F && ptr == 1 )
+//		return "";
 	if (((utf8[0] & 0xFF) > 0x7F) && (utf8.length() == 1)) {
 		return "";
 	}
@@ -257,14 +262,17 @@ std::string cMorse::tx_lookup(int c)
 		if (utf8 == cw_table[i].chr) {
 			if (!cw_table[i].enabled) {
 				utf8.clear();
+				ptr = 0;
 				return "";
 			}
 			toprint = cw_table[i].prt;
 			utf8.clear();
+			ptr = 0;
 			return cw_table[i].rpr;
 		}
 	}
 	utf8.clear();
+	ptr = 0;
 	return "";
 
 }

@@ -1,0 +1,46 @@
+/**
+\page cw_dtr_rts_keying  CW Keyline Configuration
+
+fldigi supports CW keying using a serial port DTR or RTS signal line.  The
+serial port may be on unique for keyline use or be a port shared with a PTT
+signal line.  Shared ports include
+<br>
+<ul>
+<li>RigCat serial port</li>
+<li>Separate PTT serial port</li>
+</ul>
+<br>
+fldigi must be in the CW mode, and the transceiver set to CW mode for the keyline
+to be active.
+<br>
+Configure the DTR/RTS keying on the "Modem/CW/DTR-RTS keying" tab:
+<br>
+<center>
+\image html  config-cw-dtr-keying.png "CW DTR/RTS keyline configuration"
+\image latex config-cw-dtr-keying.png "CW DTR/RTS keyline configuration" width=5.0in
+</center>
+<br>
+Select shared port use by enabling either the RIGCAT, or Separate PTT box.
+<br>
+<br>
+Select a unique serial port by selecting the port and enabling the Connect button.
+<br>
+<br>
+For all port selections you need to specifiy the signal line, DTR or RTS, which
+is used for the keyline.  If shared, it must not conflict with the PTT line.
+<br>
+<br>
+The CW keyline timing may require compensation.  This is highly dependent on both
+serial port hardware, pc architecture, and operating system.  The combined effect 
+of the three will be to lengthen the key down/up intervals.  The calibrate button
+is used to measure the timing inaccuracy.  The measurement is made by sending a sequence 
+of ten "PARIS " strings at the current CW WPM setting.  The time to transmit is
+measured and compared to the ideal timing, 1200 msec / WPM.  Be aware that this 
+may transmit the characters.  Use low power or a dummy load for the test.  If needed, 
+the computed compensation value will be entered in the Comp control.  You may also
+manually enter or change this value.
+
+<br>
+\ref main_page "Return to Main Page"
+
+*/

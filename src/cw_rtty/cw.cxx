@@ -41,6 +41,8 @@
 #include "fl_digi.h"
 #include "fftfilt.h"
 #include "serial.h"
+#include "ptt.h"
+#include "main.h"
 
 #include "cw.h"
 #include "misc.h"
@@ -253,13 +255,16 @@ void cw::init()
 	trackingfilter->reset();
 	two_dots = (long int)trackingfilter->run(2 * cw_send_dot_length);
 	put_cwRcvWPM(cw_send_speed);
-//	for (int i = 0; i < OUTBUFSIZE; i++)
-//		outbuf[i] = qskbuf[i] = 0.0;
+
 	memset(outbuf, 0, OUTBUFSIZE*sizeof(*outbuf));
 	memset(qskbuf, 0, OUTBUFSIZE*sizeof(*qskbuf));
-	rx_init();
+
+	morse.init();
 	use_paren = progdefaults.CW_use_paren;
 	prosigns = progdefaults.CW_prosigns;
+
+	rx_init();
+
 	stopflag = false;
 	maxval = 0;
 
@@ -699,6 +704,13 @@ static bool cwprocessing = false;
 
 int cw::rx_process(const double *buf, int len)
 {
+	if (use_paren != progdefaults.CW_use_paren ||
+		prosigns != progdefaults.CW_prosigns) {
+		use_paren = progdefaults.CW_use_paren;
+		prosigns = progdefaults.CW_prosigns;
+		morse.init();
+	}
+
 	if (cwprocessing)
 		return 0;
 
@@ -984,7 +996,9 @@ void cw::send_symbol(int bit, int len, int state)
 
 	if (bit == 1) { // keydown
 		tx_frequency = get_txfreq_woffset();
-		if (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)
+		if (CW_KEYLINE_isopen || 
+			progdefaults.CW_KEYLINE_on_cat_port ||
+			progdefaults.CW_KEYLINE_on_ptt_port)
 			tx_frequency = progdefaults.CWsweetspot;
 		for (int n = 0; n < len; n++) {
 			outbuf[n] = nco(tx_frequency);
@@ -1037,7 +1051,6 @@ void cw::send_symbol(int bit, int len, int state)
 // sends a morse character and the space afterwards
 //=======================================================================
 
-int lastch = 0;
 void cw::send_ch(int ch)
 {
 	string code;
@@ -1078,7 +1091,6 @@ void cw::send_ch(int ch)
 
 	code = morse.tx_lookup(ch);
 	if (!code.length()) {
-		lastch = ch;
 		return;
 	}
 
@@ -1112,7 +1124,6 @@ void cw::send_ch(int ch)
 				prtstr[n],
 				prtstr[0] == '<' ? FTextBase::CTRL : FTextBase::XMIT);
 	}
-	lastch = ch;
 }
 
 //=====================================================================
@@ -1122,16 +1133,7 @@ void cw::send_ch(int ch)
 //=======================================================================
 int cw::tx_process()
 {
-	int c;
-
-	if (use_paren != progdefaults.CW_use_paren ||
-		prosigns != progdefaults.CW_prosigns) {
-		use_paren = progdefaults.CW_use_paren;
-		prosigns = progdefaults.CW_prosigns;
-		morse.init();
-	}
-
-	c = get_tx_char();
+	int c = get_tx_char();
 
 	if (c == GET_TX_CHAR_NODATA) {
 		if (stopflag) {
@@ -1178,11 +1180,13 @@ int cw::tx_process()
 
 	acc_symbols = 0;
 
-	if (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)
+	if (CW_KEYLINE_isopen ||
+		progdefaults.CW_KEYLINE_on_cat_port ||
+		progdefaults.CW_KEYLINE_on_ptt_port)
 		send_CW(c);
 //	else {
-		send_ch(c);
-		first_char = false;
+	send_ch(c);
+	first_char = false;
 //	}
 	char_samples = acc_symbols;
 
@@ -1259,6 +1263,7 @@ flowcontrol: %c\n",
 
 	if (CW_KEYLINE_serial.OpenPort() == false) {
 		LOG_ERROR("Cannot open serial port %s", CW_KEYLINE_serial.Device().c_str());
+		CW_KEYLINE_isopen = false;
 		return 0;
 	}
 	CW_KEYLINE_isopen = true;
@@ -1272,37 +1277,85 @@ void close_CW_KEYLINE()
 }
 
 //----------------------------------------------------------------------
+#include <queue>
+
 static pthread_t       cwio_pthread;
 static pthread_cond_t  cwio_cond;
 static pthread_mutex_t cwio_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t fifo_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t        cwio_ptt_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static bool cwio_thread_running   = false;
 static bool cwio_terminate_flag   = false;
-//----------------------------------------------------------------------
+static bool cwio_calibrate_flag   = false;
 
-#define cwio_bit(bit, len) {if (progdefaults.CW_KEYLINE == 2) ser->SetDTR(bit);\
-else ser->SetRTS(bit);\
-MilliSleep((len));}
+//----------------------------------------------------------------------
 
 static int cwio_ch;
 static cMorse *cwio_morse = 0;
-static bool cwio_sending = false;
+static queue<int> fifo;
+static std::string cwio_prosigns;
+
+void cwio_key(int on)
+{
+	if (CW_KEYLINE_isopen ||
+		progdefaults.CW_KEYLINE_on_cat_port ||
+		progdefaults.CW_KEYLINE_on_ptt_port) {
+		Cserial *ser = &CW_KEYLINE_serial;
+		if (progdefaults.CW_KEYLINE_on_cat_port)
+			ser = &rigio;
+		else if (progdefaults.CW_KEYLINE_on_ptt_port)
+			ser = &push2talk->serPort;
+		switch (progdefaults.CW_KEYLINE) {
+			case 0: break;
+			case 1: ser->SetRTS(on); break;
+			case 2: ser->SetDTR(on); break;
+		}
+	}
+}
+
+void cwio_ptt(int on)
+{
+	if (CW_KEYLINE_isopen ||
+		progdefaults.CW_KEYLINE_on_cat_port ||
+		progdefaults.CW_KEYLINE_on_ptt_port) {
+		Cserial *ser = &CW_KEYLINE_serial;
+		if (progdefaults.CW_KEYLINE_on_cat_port)
+			ser = &rigio;
+		else if (progdefaults.CW_KEYLINE_on_ptt_port)
+			ser = &push2talk->serPort;
+		switch (progdefaults.PTT_KEYLINE) {
+			case 0: break;
+			case 1: ser->SetRTS(on); break;
+			case 2: ser->SetDTR(on); break;
+		}
+	}
+}
+
+#define cwio_bit(bit, len) {\
+switch (progdefaults.CW_KEYLINE) {\
+case 0: break;\
+case 1: ser->SetRTS(bit); break;\
+case 2: ser->SetDTR(bit); break;\
+}\
+MilliSleep(len);}
 
 void send_cwio(int c)
 {
-	cwio_sending = true;
 	if (c == GET_TX_CHAR_NODATA || c == 0x0d) {
-		cwio_sending = false;
 		return;
 	}
 
 	float tc = 1200.0 / progdefaults.CWspeed;
+	if (tc <= 0) tc = 1;
 	float ta = 0.0;
 	float tch = 3 * tc, twd = 4 * tc;
 
 	Cserial *ser = &CW_KEYLINE_serial;
 	if (progdefaults.CW_KEYLINE_on_cat_port)
 		ser = &rigio;
+	else if (progdefaults.CW_KEYLINE_on_ptt_port)
+		ser = &push2talk->serPort;
 
 	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth)) {
 		ta = 60000.0 / progdefaults.CWfarnsworth - 37200 / progdefaults.CWspeed;
@@ -1310,15 +1363,27 @@ void send_cwio(int c)
 		twd = 4 * ta / 19;
 	}
 
+	if (progdefaults.cwio_comp && progdefaults.cwio_comp < tc) {
+		tc -= progdefaults.cwio_comp;
+		tch -= progdefaults.cwio_comp;
+		twd -= progdefaults.cwio_comp;
+	}
+
 	if (c == 0x0a) c = ' ';
+
 	if (c == ' ') {
 		cwio_bit(0, twd);
-		cwio_sending = false;
 		return;
 	}
 
 	string code;
 	code = cwio_morse->tx_lookup(c);
+	if (!code.length()) {
+		return;
+	}
+
+	guard_lock lk(&cwio_ptt_mutex);
+
 	for (size_t n = 0; n < code.length(); n++) {
 		if (code[n] == '.') {
 			cwio_bit(1, tc);
@@ -1331,12 +1396,58 @@ void send_cwio(int c)
 			cwio_bit(0, tch);
 		}
 	}
-	cwio_sending = false;
+
+}
+
+unsigned long start_time = 0L;
+unsigned long end_time = 0L;
+int testwpm = 20;
+int testwords = 10;
+
+void cwio_calibrate_finished(void *)
+{
+	double ratio = (1200.0 * 50.0 * testwords / progdefaults.CWspeed) / (end_time - start_time);
+	int comp = round(testwpm * (1.0 - ratio));
+	progdefaults.cwio_comp = comp;
+	cnt_cwio_comp->value(comp);
+	btn_cw_dtr_calibrate->value(0);
+
+	LOG_INFO("\n\
+xmt %d words at %.0f wpm : %0.3f secs\n\
+compensation ratio:  %f\n\
+compensation (msec): %d",
+		testwords,
+		progdefaults.CWspeed,
+		(end_time - start_time) / 1000.0,
+		ratio,
+		comp);
+}
+
+void cwio_calibrate()
+{
+	std::string paris = "PARIS "; 
+	bool farnsworth = progdefaults.CWusefarnsworth;
+	progdefaults.CWusefarnsworth = false;
+	int comp = progdefaults.cwio_comp;
+	progdefaults.cwio_comp = 0;
+
+	guard_lock lk(&fifo_mutex);
+
+	start_time = zmsec();
+	for (int i = 0; i < testwords; i++)
+		for (size_t n = 0; n < paris.length(); n++)
+			send_cwio(paris[n]);
+	end_time = zmsec();
+
+	progdefaults.CWusefarnsworth = farnsworth;
+	progdefaults.cwio_comp = comp;
+
+	Fl::awake(cwio_calibrate_finished);
 }
 
 static void * cwio_loop(void *args)
 {
-//	SET_THREAD_ID(AUDIO_ALERT_TID);
+	SET_THREAD_ID(CWIO_TID);
 
 	cwio_thread_running   = true;
 	cwio_terminate_flag   = false;
@@ -1348,9 +1459,34 @@ static void * cwio_loop(void *args)
 
 		if (cwio_terminate_flag)
 			break;
-		send_cwio(cwio_ch);
+		if (cwio_calibrate_flag) {
+			cwio_calibrate();
+			cwio_calibrate_flag = false;
+		}
+		while (!fifo.empty()) {
+			{
+				guard_lock lk(&fifo_mutex);
+				cwio_ch = fifo.front();
+				fifo.pop();
+			}
+			send_cwio(cwio_ch);
+		}
 	}
 	return (void *)0;
+}
+
+void calibrate_cwio()
+{
+	if (!cwio_thread_running)
+		start_cwio_thread();
+
+	if (cwio_morse == 0) {
+		cwio_morse = new cMorse;
+		cwio_morse->init();
+	}
+
+	cwio_calibrate_flag = true;
+	pthread_cond_signal(&cwio_cond);
 }
 
 void stop_cwio_thread(void)
@@ -1409,15 +1545,21 @@ void cw::send_CW(int c)
 {
 	if (!cwio_thread_running)
 		start_cwio_thread();
-	int count = 400;
-	while (cwio_sending) {
-		MilliSleep(1);
-		if (--count <= 0) return;
+
+	if (cwio_morse == 0) {
+		cwio_morse = new cMorse;
+		cwio_morse->init();
 	}
-	cwio_ch = c;
-	if (cwio_morse == 0) cwio_morse = new cMorse;
-	cwio_morse->init();
+
+	if (cwio_prosigns != progdefaults.CW_prosigns) {
+		cwio_prosigns = progdefaults.CW_prosigns;
+		cwio_morse->init();
+	}
+
+	guard_lock lk(&fifo_mutex);
+	fifo.push(c);
 
 	pthread_cond_signal(&cwio_cond);
+
 }
 

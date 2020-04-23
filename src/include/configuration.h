@@ -209,11 +209,24 @@
         ELEM_(int, CW_KEYLINE, "CWKEYLINE",                                             \
               "0 - none, 1 - RTS, 2 - DTR",                                             \
               0)                                                                        \
+        ELEM_(int, cwio_comp, "cwio_comp",                                              \
+              "compensate delays in set/clr DTR/RTS serial line\n"                      \
+              "most likely required for Windows operating system\n"                     \
+              "compensation value in msec",                                             \
+              0)                                                                        \
         ELEM_(int, PTT_KEYLINE, "PTTKEYLINE",                                           \
               "0 - none, 1 - RTS, 2 - DTR",                                             \
               0)                                                                        \
+        ELEM_(bool, CW_KEYLINE_changed, "CW_KEYLINE_CHANGED",                           \
+              "serial keyline parameter changed",                                       \
+              0)                                                                        \
         ELEM_(bool, CW_KEYLINE_on_cat_port, "CW_KEYLINE_on_cat_port",                   \
               "DTR/RTS keying shares RigCat serial port",                               \
+              false)                                                                    \
+        ELEM_(bool, CW_KEYLINE_on_ptt_port, "CW_KEYLINE_on_ptt_port",                   \
+              "DTR/RTS keying shares ptt serial port\n"                                 \
+              "Note: ptt on DTR, keying on RTS or\n"                                    \
+              "      ptt on RTS, keying on DTR",                                        \
               false)                                                                    \
         ELEM_(bool, WaterfallHistoryDefault, "WATERFALLHISTORYDEFAULT",                 \
               "Replay audio history when changing frequency by clicking on\n"           \
@@ -365,12 +378,6 @@
         ELEM_(std::string, FSK_serial_port_name, "RTTY_SERIAL_PORT_NAME",               \
               "Independent serial port EXPERIMENTAL - NOT USED",                        \
               "")                                                                       \
-        ELEM_(int, FSK_keyline, "FSK_KEYLINE",                                          \
-              "0 - none, 1 - RTS, 2 - DTR EXPERIMENTAL -NOT USED",                      \
-              0)                                                                        \
-        ELEM_(bool, FSK_on_cat_port, "FSK_on_cat_port",                                 \
-              "DTR/RTS keying shares RigCat serial port EXPERIMENTAL - NOT USED",       \
-              false)                                                                    \
         ELEM_(bool, PreferXhairScope, "PREFERXHAIRSCOPE",                               \
               "Default to crosshair digiscope",                                         \
               false)                                                                    \
@@ -405,8 +412,6 @@
               "Ring TTY bell tone when \a decoded",                                     \
               true)                                                                     \
         /* CW */                                                                        \
-        ELEM_(bool, useCWkeylineRTS, "", "",  false)                                    \
-        ELEM_(bool, useCWkeylineDTR, "", "",  false)                                    \
         ELEM_(double, CWspeed, "CWSPEED",                                               \
               "Transmit speed (WPM)",                                                   \
               18)                                                                       \

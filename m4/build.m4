@@ -95,6 +95,9 @@ $BFD_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEBUG_CFLAGS"
   fi
 # LDADD
   FLARQ_BUILD_LDADD="$FLTK_LIBS $X_LIBS $INTL_LIBS $PTW32_LIBS $BFD_LIBS $EXTRA_LIBS $FLXMLRPC_LIBS"
+  if test "x$target_mingw32" = "xyes"; then
+      FLARQ_BUILD_LDADD="-lwinmm $FLARQ_BUILD_LDADD"
+  fi
 
   if test "x$ac_cv_debug" = "xyes"; then
       FLDIGI_BUILD_CXXFLAGS="$FLDIGI_BUILD_CXXFLAGS -UNDEBUG"

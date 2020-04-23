@@ -41,6 +41,10 @@
 
 #ifdef __MINGW32__
 #  include "compat.h"
+
+/// This includes Windows.h
+#include <winbase.h>
+
 #endif
 
 /** ********************************************************************
@@ -466,15 +470,23 @@ const char* uint2bin(unsigned u, size_t len)
 /** ********************************************************************
  *
  ***********************************************************************/
+#ifndef __MINGW32__
+
 void MilliSleep(long msecs)
 {
-//#ifndef __MINGW32__
 	struct timespec tv[2] = { {msecs / 1000L, msecs % 1000L * 1000000L} };
 	nanosleep(&tv[0], &tv[1]);
-//#else
-//	Sleep(msecs);
-//#endif
 }
+#else
+
+void MilliSleep(long msecs)
+{
+    struct timespec tv[2] = { {msecs / 1000L, msecs % 1000L * 1000000L} };
+    timeBeginPeriod(1);
+    nanosleep(&tv[0], &tv[1]);
+    timeEndPeriod(1);
+}
+#endif
 
 /** ********************************************************************
  * Returns 0 if a process is running, 0 if not there and -1 if the
@@ -508,8 +520,6 @@ int test_process(int pid)
 }
 
 #ifdef __MINGW32__
-/// This includes Windows.h
-#include <winbase.h>
 
 /** ********************************************************************
  * Retrieve the system error message for the last-error code

@@ -89,8 +89,6 @@ void PTT::reset(ptt_t dev)
 {
 	close_all();
 
-//	LOG_VERBOSE("Setting PTT to %d", dev);
-
 	switch (pttdev = dev) {
 #if HAVE_UHROUTER
         case PTT_UHROUTER:
@@ -137,9 +135,9 @@ void PTT::set(bool ptt)
 	if (!ptt && progdefaults.PTT_off_delay)
 		MilliSleep(progdefaults.PTT_off_delay);
 
-	if (active_modem == cw_modem &&
-	    ((progdefaults.useCWkeylineRTS) || progdefaults.useCWkeylineDTR == true))
-		return;
+	if (active_modem == cw_modem && (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)) {
+		guard_lock lk(&cwio_ptt_mutex);
+	}
 
 	switch (pttdev) {
 	case PTT_NONE: default:
@@ -359,7 +357,6 @@ void PTT::set_gpio(bool ptt)
 
 void PTT::open_tty(void)
 {
-#ifdef __MINGW32__
 	serPort.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
 	serPort.Device(progdefaults.PTTdev);
 	serPort.RTS(progdefaults.RTSplus);
@@ -373,111 +370,19 @@ void PTT::open_tty(void)
 		pttfd = -1;
 		return;
 	}
-//	pttfd = -1; // just a dummy return for this implementation
 	LOG_INFO("Serial port %s open", progdefaults.PTTdev.c_str());
-
-#else
-
-#  if HAVE_TTYPORT
-	string pttdevName = progdefaults.PTTdev;
-#    ifdef __CYGWIN__
-	// convert to Linux serial port naming
-	com_to_tty(pttdevName);
-#    endif
-
-	int oflags = O_RDWR | O_NOCTTY | O_NDELAY | O_NONBLOCK;
-#	ifdef HAVE_O_CLOEXEC
-		oflags = oflags | O_CLOEXEC;
-#	endif
-
-	if ((pttfd = fl_open(pttdevName.c_str(), oflags)) < 0) {
-		LOG_ERROR("Could not open \"%s\": %s", pttdevName.c_str(), strerror(errno));
-		return;
-	}
-
-	oldtio = new struct termios;
-	tcgetattr(pttfd, oldtio);
-
-	int status;
-	ioctl(pttfd, TIOCMGET, &status);
-
-	if (progdefaults.RTSplus)
-		status |= TIOCM_RTS;		// set RTS bit
-	else
-		status &= ~TIOCM_RTS;		// clear RTS bit
-	if (progdefaults.DTRplus)
-		status |= TIOCM_DTR;		// set DTR bit
-	else
-		status &= ~TIOCM_DTR;		// clear DTR bit
-
-	ioctl(pttfd, TIOCMSET, &status);
-	LOG_DEBUG("Serial port %s open; status = %02X, %s",
-		  progdefaults.PTTdev.c_str(), status, uint2bin(status, 8));
-#  endif // HAVE_TTYPORT
-#endif // __MINGW32__
 }
 
 void PTT::close_tty(void)
 {
-#ifdef __MINGW32__
 	serPort.ClosePort();
-	LOG_DEBUG("Serial port %s closed", progdefaults.PTTdev.c_str());
-#else
-#  if HAVE_TTYPORT
-	if (pttfd >= 0) {
-		tcsetattr(pttfd, TCSANOW, oldtio);
-		close(pttfd);
-	}
-	delete oldtio;
 	pttfd = -1;
-#  endif // HAVE_TTYPORT
-#endif // __MINGW32__
+	LOG_DEBUG("Serial port %s closed", progdefaults.PTTdev.c_str());
 }
 
 void PTT::set_tty(bool ptt)
 {
-#ifdef __MINGW32__
 	serPort.SetPTT(ptt);
-#else
-#  if HAVE_TTYPORT
-	if (pttfd == -1){
-		LOG_ERROR("PTT::set_tty pttfd = -1. error.");
-		return;
-	}
-	static int status;
-	int retval = ioctl(pttfd, TIOCMGET, &status);
-    	if (retval != 0) {
-        	LOG_ERROR("ioctl error return %d, %s", errno, strerror(errno));
-        	close_tty();
-    	}
-
-	if (ptt) {
-		if (progdefaults.RTSptt == true && progdefaults.RTSplus == false)
-			status |= TIOCM_RTS;
-		if (progdefaults.RTSptt == true && progdefaults.RTSplus == true)
-			status &= ~TIOCM_RTS;
-		if (progdefaults.DTRptt == true && progdefaults.DTRplus == false)
-			status |= TIOCM_DTR;
-		if (progdefaults.DTRptt == true && progdefaults.DTRplus == true)
-			status &= ~TIOCM_DTR;
-	} else {
-		if (progdefaults.RTSptt == true && progdefaults.RTSplus == false)
-			status &= ~TIOCM_RTS;
-		if (progdefaults.RTSptt == true && progdefaults.RTSplus == true)
-			status |= TIOCM_RTS;
-		if (progdefaults.DTRptt == true && progdefaults.DTRplus == false)
-			status &= ~TIOCM_DTR;
-		if (progdefaults.DTRptt == true && progdefaults.DTRplus == true)
-			status |= TIOCM_DTR;
-	}
-	LOG_DEBUG("Status %02X, %s", status & 0xFF, uint2bin(status, 8));
-	retval = ioctl(pttfd, TIOCMSET, &status);
-    	if (retval != 0) {
-        	LOG_ERROR("ioctl error return %d, %s", errno, strerror(errno));
-        	close_tty();
-    	}
-#  endif // HAVE_TTYPORT
-#endif // __MINGW32__
 }
 
 #if HAVE_PARPORT
