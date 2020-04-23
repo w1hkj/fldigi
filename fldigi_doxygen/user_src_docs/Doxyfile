@@ -2,7 +2,7 @@
 #
 #
 # Copyright (C) 2013 Robert Stiles, KK5VD.
-#           (c) 2017 David Freese, W1HKJ
+#           (c) 2020 David Freese, W1HKJ
 #
 # Permission to use, copy, modify, and distribute this software and its
 # documentation under the terms of the GNU General Public License is hereby
@@ -14,7 +14,7 @@
 # input used in their production; they are not affected by this license.
 
 PROJECT_NAME         = "Fldigi Users Manual"
-PROJECT_NUMBER       = 4.1.09
+PROJECT_NUMBER       = 4.1.12
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = NO

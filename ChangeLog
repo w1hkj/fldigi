@@ -1,8 +1,20 @@
 
 
-=Version 4.1.11=
+=Version 4.1.12=
 
-2020-04-01  David Freese  <w1hkj@bellsouth.net>
+2020-04-23  David Freese  <w1hkj@bellsouth.net>
+
+	21c86db27: CW/DTR/RTS
+	762213faf: TX auto RST-sent
+	24c10fd93: wwv
+	a6dc3db26: File/Audio
+	ddeb2db19: Win10 Socket debug
+	375b4252c: trx testing
+	db57f4b4a: AFTER macro
+	ddfb5e61a: CWID button
+
+
+=Version 4.1.11=
 
 	d11526ad6: cwio_morse
 
