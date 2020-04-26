@@ -39,14 +39,6 @@
 #else
 #  include "compat.h"
 #define socklen_t int
-/*
-//#define _WIN32_WINNT    0x0501
-#define NI_NOFQDN       0x01
-#define NI_NUMERICHOST  0x02
-#define NI_NAMEREQD	    0x04
-#define NI_NUMERICSERV  0x08
-#define NI_DGRAM        0x10
-*/
 #endif
 
 #define DEFAULT_BUFFER_SIZE 1024
@@ -64,7 +56,6 @@
 #include <cstdio>
 #include <errno.h>
 
-//#undef NDEBUG
 #include "debug.h"
 
 #ifdef BUILD_FLARQ
@@ -321,8 +312,6 @@ Address& Address::operator=(const Address& rhs)
 
 void Address::lookup(const char* proto_name)
 {
-//std::cout << "proto_name: " << proto_name << std::endl;
-
 	int proto;
 	if (!strcasecmp(proto_name, "tcp"))
 		proto = IPPROTO_TCP;
@@ -343,7 +332,6 @@ void Address::lookup(const char* proto_name)
 	if (service.find_first_not_of("0123456789") == string::npos)
 		hints.ai_flags |= AI_NUMERICSERV;
 
-//std::cout << "getaddrinfo(" << node << ", " << service << ")" << std::endl;
 	int r = getaddrinfo(node.empty() ? NULL : node.c_str(), service.c_str(), &hints, &info);
 	if (r != 0) {
 		throw SocketException(gai_strerror(r));
@@ -416,7 +404,7 @@ const addr_info_t* Address::get(size_t n) const
 	for (size_t i = 0; i < n; i++)
 		p = p->ai_next;
 
-	LOG_INFO("Found address %s", get_str(p).c_str());
+	LOG_VERBOSE("Found address %s", get_str(p).c_str());
 
 	return p;
 #else
@@ -438,7 +426,7 @@ const addr_info_t* Address::get(size_t n) const
 	addr.ai_addrlen = sizeof(saddr);
 	addr.ai_addr = (struct sockaddr*)&saddr;
 
-	LOG_INFO("Found address %s", get_str(&addr).c_str());
+	LOG_VERBOSE("Found address %s", get_str(&addr).c_str());
 
 	return &addr;
 #endif
@@ -636,7 +624,7 @@ void Socket::open(const Address& addr)
 	for (anum = 0; anum < n; anum++) {
 		info = address.get(anum);
 
-	LOG_INFO("\n\
+	LOG_VERBOSE("\n\
    Address    %s\n\
    Family     %s\n\
    Sock type  %s\n\
@@ -657,11 +645,11 @@ address.get_str(info).c_str(),
 		throw SocketException("Cannot find IPv4 address");
 	}
 
-	LOG_INFO("Trying %s", address.get_str(ainfo).c_str());
+	LOG_VERBOSE("Trying %s", address.get_str(ainfo).c_str());
 	if ((sockfd = socket(ainfo->ai_family, ainfo->ai_socktype, ainfo->ai_protocol)) == -1) {
 		throw SocketException(errno, "Open socket");
 	}
-	LOG_INFO("Socket address: %d", sockfd);
+	LOG_VERBOSE("Socket address: %d", sockfd);
 	set_close_on_exec(true);
 }
 
@@ -670,7 +658,7 @@ address.get_str(info).c_str(),
 ///
 void Socket::close(void)
 {
-LOG_INFO("sockfd %d", sockfd);
+LOG_VERBOSE("sockfd %d", sockfd);
 #ifdef __MINGW32__
 	::closesocket(sockfd);
 #else
@@ -941,13 +929,13 @@ int Socket::connect(void)
 
 	if (res == -1) {
 		if (errno == 0 || errno == EISCONN) {
-			LOG_INFO("Connected to sockfd %d: %s : %s", sockfd, address.get_str(ainfo).c_str(),
+			LOG_VERBOSE("Connected to sockfd %d: %s : %s", sockfd, address.get_str(ainfo).c_str(),
 				strerror(errno) );
 			connected_flag = true;
 			return errno;
 		}
 		if (errno == EWOULDBLOCK || errno == EINPROGRESS || errno == EALREADY) {
-			LOG_INFO("Connect attempt to %s : %d, %s",
+			LOG_VERBOSE("Connect attempt to %s : %d, %s",
 				address.get_str(ainfo).c_str(),
 				errno, strerror(errno));
 			return errno;
@@ -957,7 +945,7 @@ int Socket::connect(void)
 			errno, strerror(errno));
 		throw SocketException(errno, "connect");
 	}
-	LOG_INFO(" Connected to sockfd %d: %s", sockfd, address.get_str(ainfo).c_str());
+	LOG_VERBOSE(" Connected to sockfd %d: %s", sockfd, address.get_str(ainfo).c_str());
 	connected_flag = true;
 	return EISCONN;
 }
@@ -970,7 +958,7 @@ bool Socket::connect1(void)
 {
     connected_flag = false;
 
-	LOG_INFO("Connecting to %s", address.get_str(ainfo).c_str());
+	LOG_VERBOSE("Connecting to %s", address.get_str(ainfo).c_str());
 
 	if (::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1) {
 		return false;
@@ -1193,7 +1181,7 @@ size_t Socket::sendTo(const void* buf, size_t len)
 		unsigned long host_addr = get_address4((struct sockaddr *)useAddr);
 		unsigned int  host_port = get_port((struct sockaddr *) useAddr);
 
-		LOG_INFO("HAP:%lX:%d count=%d buf=%s", host_addr, host_port, len, buf);
+		LOG_VERBOSE("HAP:%lX:%d count=%d buf=%s", host_addr, host_port, len, buf);
 	}
 #endif
 
@@ -1225,7 +1213,7 @@ size_t Socket::sendTo(const void* buf, size_t len)
 				throw SocketException(errno, "send");
 			} else if (r == -1) {
 				if (errno != EAGAIN && errno != 0) {
-					LOG_INFO("errno = %d (%s) r %d buff %s", errno, strerror(errno), r, sp);
+					LOG_VERBOSE("errno = %d (%s) r %d buff %s", errno, strerror(errno), r, sp);
 				}
 				r = 0;
 			}
@@ -1347,12 +1335,12 @@ size_t Socket::recvFrom(void* buf, size_t len)
 			shutdown(sockfd, SHUT_RD);
 		else if (r < 0) {
 			if((errno == EAGAIN) || (errno == 0)) {
-				if (errno) LOG_INFO("ErrorNo: %d (%s)", errno, strerror(errno));
+				if (errno) LOG_VERBOSE("ErrorNo: %d (%s)", errno, strerror(errno));
 				memset(buf, 0, len);
 				return 0;
 			}
 			else {
-				LOG_INFO("ErrorNo: %d (%s)", errno, strerror(errno));
+				LOG_VERBOSE("ErrorNo: %d (%s)", errno, strerror(errno));
 				throw SocketException(errno, "recv");
 			}
 		}
@@ -1376,7 +1364,7 @@ size_t Socket::recvFrom(void* buf, size_t len)
 
 		if((srvr_port == host_port) && (srvr_to_addr == host_addr)) {
 			if((srvr_addr == host_addr) && (local_port == host_port)) {
-				LOG_INFO("Loopback Warning: %X:%u", (unsigned int)host_addr, host_port);
+				LOG_VERBOSE("Loopback Warning: %X:%u", (unsigned int)host_addr, host_port);
 				memset(buf, 0, len);
 				return 0;
 			}

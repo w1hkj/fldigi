@@ -79,7 +79,7 @@ static Fl_Browser*  btext;
 static string linebuf;
 
 debug* debug::inst = 0;
-debug::level_e debug::level = debug::DEBUG_LEVEL;//INFO_LEVEL;
+debug::level_e debug::level = debug::INFO_LEVEL;
 uint32_t debug::mask = ~0u;
 
 bool debug_pskmail = false;
