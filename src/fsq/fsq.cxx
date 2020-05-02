@@ -207,9 +207,6 @@ fsq::fsq(trx_mode md) : modem()
 
 	init_nibbles();
 
-	sounder_interval = progdefaults.fsq_sounder;
-	start_sounder(sounder_interval);
-
 	start_aging();
 
 	show_mode();
@@ -282,6 +279,10 @@ void  fsq::rx_init()
 void fsq::init()
 {
 	modem::init();
+
+	sounder_interval = progdefaults.fsq_sounder;
+	start_sounder(sounder_interval);
+
 	rx_init();
 }
 
