@@ -1638,12 +1638,126 @@ LOG_VERBOSE("%s", "main.rx_only");
 //----------------------------------------------------------------------
 // flmsg i/o
 //----------------------------------------------------------------------
-bool flmsg_online = false;
+bool flmsg_is_online = false;
 void flmsg_defeat(void *)
 {
-	flmsg_online = false;
+	flmsg_is_online = false;
 }
 
+static void reset_flmsg()
+{
+	flmsg_is_online = true;
+	Fl::remove_timeout(flmsg_defeat);
+	Fl::add_timeout(5.0, flmsg_defeat);
+}
+
+class flmsg_online : public xmlrpc_c::method
+{
+public:
+	flmsg_online()
+	{
+		_signature = "n:n";
+		_help = "flmsg online indication";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		reset_flmsg();
+LOG_VERBOSE("main.flmsg_online: %s", "true");
+	}
+};
+
+class flmsg_get_data : public xmlrpc_c::method
+{
+public:
+	flmsg_get_data()
+	{
+		_signature = "6:n";
+		_help = "Returns all RX data received since last query.";
+	}
+	static void get_rx(char **text, int *size)
+	{
+		// the get* methods may throw but this function is not allowed to do so
+		*text = get_rx_data();
+		*size = strlen(*text);
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		char *text;
+		int size;
+		REQ_SYNC(get_rx, &text, &size);
+
+		vector<unsigned char> bytes;
+		if (size) {
+			bytes.resize(size, 0);
+			memcpy(&bytes[0], text, size);
+		}
+		reset_flmsg();
+LOG_VERBOSE("flmsg_get_data: %s", text);
+		*retval = xmlrpc_c::value_bytestring(bytes);
+	}
+};
+
+string flmsg_data;
+
+class flmsg_available : public xmlrpc_c::method
+{
+public:
+	flmsg_available()
+	{
+		_signature = "n:n";
+		_help = "flmsg data available";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		int data_ready = (int)flmsg_data.size();
+		reset_flmsg();
+LOG_VERBOSE("main.flmsg_available: %d", data_ready);
+		*retval = xmlrpc_c::value_int(data_ready);
+	}
+};
+
+class flmsg_transfer : public xmlrpc_c::method
+{
+public:
+	flmsg_transfer()
+	{
+		_signature = "n:n";
+		_help = "data transfer to flmsg";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		string tempstr = flmsg_data;
+		reset_flmsg();
+LOG_VERBOSE("main.flmsg_transfer:\n%s", tempstr.c_str());
+		*retval = xmlrpc_c::value_string(tempstr);
+		flmsg_data.clear();
+	}
+};
+
+class flmsg_squelch : public xmlrpc_c::method
+{
+public:
+	flmsg_squelch()
+	{
+		_signature = "b:n";
+		_help = "Returns the squelch state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		reset_flmsg();
+LOG_VERBOSE("main.flmsg_squelch: %s",
+(active_modem->get_metric() > progStatus.sldrSquelchValue ? "ACTIVE" : "NOT ACTIVE"));
+		*retval = xmlrpc_c::value_boolean(active_modem->get_metric() > progStatus.sldrSquelchValue);
+	}
+};
+
+//----------------------------------------------------------------------
+// BACKWARD COMPATABILITY
+//----------------------------------------------------------------------
 class Main_flmsg_online : public xmlrpc_c::method
 {
 public:
@@ -1655,14 +1769,10 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
+		reset_flmsg();
 LOG_VERBOSE("main.flmsg_online: %s", "true");
-		flmsg_online = true;
-		Fl::remove_timeout(flmsg_defeat);
-		Fl::add_timeout(0.5, flmsg_defeat);
 	}
 };
-
-string flmsg_data;
 
 class Main_flmsg_available : public xmlrpc_c::method
 {
@@ -1676,6 +1786,7 @@ public:
 	{
 		XMLRPC_LOCK;
 		int data_ready = (int)flmsg_data.size();
+		reset_flmsg();
 LOG_VERBOSE("main.flmsg_available: %d", data_ready);
 		*retval = xmlrpc_c::value_int(data_ready);
 	}
@@ -1693,6 +1804,7 @@ public:
 	{
 		XMLRPC_LOCK;
 		string tempstr = flmsg_data;
+		reset_flmsg();
 LOG_VERBOSE("main.flmsg_transfer:\n%s", tempstr.c_str());
 		*retval = xmlrpc_c::value_string(tempstr);
 		flmsg_data.clear();
@@ -1709,6 +1821,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
+		reset_flmsg();
 LOG_VERBOSE("main.flmsg_squelch: %s",
 (active_modem->get_metric() > progStatus.sldrSquelchValue ? "ACTIVE" : "NOT ACTIVE"));
 		*retval = xmlrpc_c::value_boolean(active_modem->get_metric() > progStatus.sldrSquelchValue);
@@ -3708,6 +3821,12 @@ ELEM_(Main_flmsg_online, "main.flmsg_online")                          \
 ELEM_(Main_flmsg_available, "main.flmsg_available")                    \
 ELEM_(Main_flmsg_transfer, "main.flmsg_transfer")                      \
 ELEM_(Main_flmsg_squelch, "main.flmsg_squelch")                        \
+\
+ELEM_(flmsg_online, "flmsg.online")                                    \
+ELEM_(flmsg_available, "flmsg.available")                              \
+ELEM_(flmsg_transfer, "flmsg.transfer")                                \
+ELEM_(flmsg_squelch, "flmsg.squelch")                                  \
+ELEM_(flmsg_get_data, "flmsg.get_data")                                \
 \
 ELEM_(Io_in_use, "io.in_use")                                          \
 ELEM_(Io_enable_kiss, "io.enable_kiss")                                \

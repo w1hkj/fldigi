@@ -58,7 +58,7 @@ extern bool xmltest_char_available;
 extern void reset_xmlchars();
 extern int number_of_samples(std::string s);
 
-extern bool flmsg_online;
+extern bool flmsg_is_online;
 extern std::string flmsg_data;
 extern pthread_mutex_t* server_mutex;
 

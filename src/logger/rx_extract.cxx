@@ -138,7 +138,7 @@ void invoke_flmsg()
 	if (audio_alert && progdefaults.ENABLE_RX_EXTRACT_MSG_RCVD)
 		audio_alert->alert(progdefaults.RX_EXTRACT_MSG_RCVD);
 
-	if (flmsg_online && progdefaults.flmsg_transfer_direct) {
+	if (flmsg_is_online && progdefaults.flmsg_transfer_direct) {
 		guard_lock autolock(server_mutex);
 		flmsg_data.append(rx_buff);
 		return;
@@ -347,7 +347,7 @@ void rx_extract_add(int c)
 
 	if ( (p1 != string::npos) && (p2 != string::npos) && (p3 != string::npos) &&
 		 (p1 < p2) && (p2 < p3)) {
-		if (!flmsg_online) start_flmsg();
+		if (!flmsg_is_online) start_flmsg();
 		rx_extract_buff.assign(' ', bufsize);
 		return;
 	}
