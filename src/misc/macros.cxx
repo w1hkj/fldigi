@@ -1384,7 +1384,6 @@ static void end_rxtune(void *)
 
 static void doRxTUNE(std::string s)
 {
-std::cout << "doRxTUNE " << s << std::endl;
 	std::string sTime = s.substr(7, s.length() - 8);
 
 	if (sTime.length() > 0) {
@@ -4189,7 +4188,6 @@ void do_timed_execute(void *)
 	long dt, tm;
 	dt = atol(zdate());
 	tm = atol(ztime());
-//std::cout << dt << " >= " << sk_xdt << " && " << tm << " >= " << sk_xtm << std::endl;
 	if (dt >= sk_xdt && tm >= sk_xtm) {
 		Qwait_time = 0;
 		start_tx();

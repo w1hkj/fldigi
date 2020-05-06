@@ -797,7 +797,6 @@ int FTextEdit::handle_dnd_drop(void)
 	string::size_type p, len;
 
 	text = Fl::event_text();
-std::cout << "dnd text: '" << text << "'" << std::endl;
 
 	const char sep[] = "\n";
 #if defined(__APPLE__) || defined(__WOE32__)

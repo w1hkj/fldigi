@@ -4201,7 +4201,6 @@ void macro_timed_execute(void *)
 	long dt, tm;
 	dt = atol(zdate());
 	tm = atol(ztime());
-//std::cout << dt << " >= " << mt_xdt << " && " << tm << " >= " << mt_xtm << std::endl;
 	if (dt >= mt_xdt && tm >= mt_xtm) {
 		macros.timed_execute();
 		btnMacroTimer->label(0);
@@ -8624,7 +8623,6 @@ void set_CWwpm()
 {
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
 	cntCW_WPM->value(progdefaults.CWspeed);
-std::cout << "set_CWwpm()" << std::endl;
 	if (use_nanoIO) set_nanoWPM(progdefaults.CWspeed);
 }
 

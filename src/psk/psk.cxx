@@ -1207,10 +1207,6 @@ void psk::vestigial_afc() {
 	std::setprecision(2); std::setw(5);
 	for (i = 0; i < 11; i++) if (abs(sfft_bins[i]) > 2.0*avg) break;
 	if (i < 11) {
-//		std::cout	<< "bin: " << i
-//					<< ", freq offset: " << (i - 5)*samplerate/16384.0
-//					<< ", amp: " << abs(sfft_bins[i])
-//					<< ", avg: " << avg << "\n";
 		if (i != 5) {
 			frequency -= 1.0*(i-5)*samplerate/sfft_size;
 			set_freq (frequency);
@@ -1519,8 +1515,6 @@ void psk::signalquality()
 	r1 = sqrtf(r1*r1 + i1*i1);
 	r2 = sqrtf(r2*r2 + i2*i2);
 	r3 = sqrtf(r3*r3 + i3*i3);
-//std::cout << r0 << ", " << r1 << ", " << r2 << ", " << r3 << std::endl;
-//	if (r0 > r1) r1 = r0;
 
 	e0 = e0_filt->run(r0);
 	e1 = e1_filt->run(r1);
@@ -1554,12 +1548,10 @@ void psk::signalquality()
 
 	if (r0 > r1) {
 		if ((r0 / r2 < 0.1 * snratio ) || (r0 / r2 < 2.0)) {
-//std::cout << "r0 / r2 " << r0/r2 << ", snratio " << snratio << std::endl;
 			displaysn = false;
 		}
 	} else {
 		if ((r1 / r2 < 0.1 * snratio ) || (r1 / r2 < 2.0)) {
-//std::cout << "r1 / r2 " << r1/r2 << ", snratio " << snratio << std::endl;
 			displaysn = false;
 		}
 	}

@@ -494,7 +494,6 @@ void xmlrpc_rig_post_bw(void *)
 		qso_opBW->value(posted_bw);//.c_str());
 		qso_opBW->redraw();
 		LOG_VERBOSE("Update BW %s", posted_bw.c_str());
-std::cout << "Update BW " << posted_bw << std::endl;
 	}
 	qso_opBW->show();
 }

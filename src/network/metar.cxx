@@ -373,8 +373,6 @@ int Metar::get()
 	std::string metar_url = "https://tgftp.nws.noaa.gov/data/observations/metar/decoded/";
 	metar_url.append(_metar_station).append(".TXT");
 	int ret = url.get(metar_url, _metar_text);
-	if (_debug)
-		std::cout << "url.get(...) returned " << ret << std::endl;
 	if (ret == 0) parse();
 	return ret;
 }

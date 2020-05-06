@@ -624,21 +624,19 @@ void adjust_for_contest(void *)
 
 	update_main_title();
 
-	return;
-
-std::cout << "QSOparties.qso_parties[" << n << "]\n"
-		  << QSOparties.qso_parties[n].contest << std::endl
-		  << "instate: " << progdefaults.SQSOinstate << std::endl
-		  << "ST:      " << QSOparties.qso_parties[n].state << std::endl
-		  << "rRST:    " << QSOparties.qso_parties[n].rst << std::endl
-		  << "rST:     " << QSOparties.qso_parties[n].st << std::endl
-		  << "rCY:     " << QSOparties.qso_parties[n].cnty << std::endl
-		  << "rSER:    " << QSOparties.qso_parties[n].serno << std::endl
-		  << "rXCHG:   " << QSOparties.qso_parties[n].xchg << std::endl
-		  << "rNAM:    " << QSOparties.qso_parties[n].name << std::endl
-		  << "rCAT:    " << QSOparties.qso_parties[n].cat << std::endl
-		  << "STCTY:   " << QSOparties.qso_parties[n].stcty << std::endl
-		  << "Notes:   " << QSOparties.qso_parties[n].notes << std::endl;
+//std::cout << "QSOparties.qso_parties[" << n << "]\n"
+//		  << QSOparties.qso_parties[n].contest << std::endl
+//		  << "instate: " << progdefaults.SQSOinstate << std::endl
+//		  << "ST:      " << QSOparties.qso_parties[n].state << std::endl
+//		  << "rRST:    " << QSOparties.qso_parties[n].rst << std::endl
+//		  << "rST:     " << QSOparties.qso_parties[n].st << std::endl
+//		  << "rCY:     " << QSOparties.qso_parties[n].cnty << std::endl
+//		  << "rSER:    " << QSOparties.qso_parties[n].serno << std::endl
+//		  << "rXCHG:   " << QSOparties.qso_parties[n].xchg << std::endl
+//		  << "rNAM:    " << QSOparties.qso_parties[n].name << std::endl
+//		  << "rCAT:    " << QSOparties.qso_parties[n].cat << std::endl
+//		  << "STCTY:   " << QSOparties.qso_parties[n].stcty << std::endl
+//		  << "Notes:   " << QSOparties.qso_parties[n].notes << std::endl;
 
 }
 

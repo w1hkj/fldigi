@@ -283,7 +283,6 @@ LOG_INFO("%f WPM", progdefaults.CWspeed);
 
 void nano_sendString (const string &s)
 {
-std::cout << s << std::endl;
 	REQ(sent, s);
 
 	nano_serial.WriteBuffer((unsigned char *)(s.c_str()), s.length());
