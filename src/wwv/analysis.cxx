@@ -252,8 +252,12 @@ void anal::writeFile()
 
 	fclose(out);
 
+	char TimeNow[9];
+	snprintf( TimeNow, sizeof(TimeNow), "%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec );
+	put_Status1( TimeNow, 5, STATUS_CLEAR);
+
 	char StatusMsg [80];
-	sprintf( StatusMsg, "Writing: %s", OpenAnalalysisFile.c_str());
+	sprintf( StatusMsg, "File: %s", OpenAnalalysisFile.c_str());
 	put_status(StatusMsg);
 
 }
