@@ -52,6 +52,8 @@
 #include "FL/fl_ask.H"
 #include "FL/Fl_Check_Button.H"
 
+LOG_FILE_SOURCE(debug::LOG_DATASOURCES);
+
 Fl_Double_Window *dlgRecordLoader = (Fl_Double_Window *)0;
 
 /// Loads a file and stores it for later lookup.
@@ -62,8 +64,7 @@ int RecordLoaderInterface::LoadAndRegister()
 	std::string filnam = storage_filename().first;
 
 	time_t cntTim = time(NULL);
-	if (bMOREINFO)
-		LOG_INFO("Opening:%s", filnam.c_str());
+	LOG_INFO("Opening:%s", filnam.c_str());
 
 	std::ifstream ifs( filnam.c_str() );
 
@@ -96,10 +97,9 @@ int RecordLoaderInterface::LoadAndRegister()
 		}
 	}
 	ifs.close();
-	if (bMOREINFO)
-		LOG_INFO( "Read:%s with %d records in %d seconds",
-			filnam.c_str(), static_cast<int>(nbRec),
-			static_cast<int>( time(NULL) - cntTim ) );
+	LOG_INFO( "Read:%s with %d records in %d seconds",
+		filnam.c_str(), static_cast<int>(nbRec),
+		static_cast<int>( time(NULL) - cntTim ) );
 	return nbRec ;
 }
 
@@ -224,9 +224,8 @@ std::pair< std::string, bool > RecordLoaderInterface::storage_filename(bool crea
 
 	// Second try with a file maybe installed by "make install".
 	std::string filnam_inst = PKGDATADIR "/" + base_filename();
-	if (bMOREINFO)
-		LOG_INFO("Errno=%s with %s. Trying %s",
-			strerror(errno), filnam_data.c_str(), filnam_inst.c_str() );
+	LOG_INFO("Errno=%s with %s. Trying %s",
+		strerror(errno), filnam_data.c_str(), filnam_inst.c_str() );
 	ifs.open( filnam_inst.c_str() );
 	if( ifs )
 	{
@@ -459,9 +458,8 @@ void DerivedRecordLst::cbGuiUpdate()
 		// Consider truncating the HTTP header.
 //		int res = get_http_gui(url, reply, timeout );
 		int res = get_http(url, reply, 5.0);
-		if (bMOREINFO)
-			LOG_INFO("Loaded %s : %d chars. res=%d",
-				url.c_str(), (int)reply.size(), res );
+		LOG_INFO("Loaded %s : %d chars. res=%d",
+			url.c_str(), (int)reply.size(), res );
 		if (reply.empty()) {
 			int ok = fl_choice2(
 					_("Could not download %s"),
@@ -537,8 +535,7 @@ void DerivedRecordLst::cbGuiReset()
 			fl_alert("Cannot erase installed data file %s", stofil );
 			continue ;
 		} else {
-			if (bMOREINFO)
-				LOG_INFO("Erasing %s", stofil );
+			LOG_INFO("Erasing %s", stofil );
 			int res = ::remove( stofil );
 			if( ( res != 0 ) && ( res != ENOENT ) ) {
 				fl_alert("Error erasing data file %s:%s", stofil, strerror(errno) );

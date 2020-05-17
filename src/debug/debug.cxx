@@ -48,6 +48,9 @@
 #include <FL/Fl_Browser.H>
 
 #include "debug.h"
+#include "debug_dialog.h"
+#include "status.h"
+
 #include "timeops.h"
 #include "icons.h"
 #include "gettext.h"
@@ -75,70 +78,16 @@ static int rfd;
 static bool tty;
 
 static Fl_Double_Window* window;
-static Fl_Browser*  btext;
-
 static string linebuf;
 
 debug* debug::inst = 0;
 debug::level_e debug::level = debug::INFO_LEVEL;
 
-bool debug_pskmail = false;
-bool debug_audio = false;
-
 static const char* prefix[] = {
 	_("Quiet"), _("Error"), _("Warning"), _("Info"), _("Verbose"), _("Debug")
 };
 
-static void slider_cb(Fl_Widget* w, void*);
-static void src_menu_cb(Fl_Widget* w, void*);
-
-static void clear_cb(Fl_Widget *w, void*);
-
-uint32_t debug::mask = 0;
-
-#ifdef FLARQ_DEBUG
-Fl_Menu_Item src_menu[] = {
-	{ _("ARQ control"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("Xmlrpc"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("Other"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ 0 }
-};
-#else
-// 000000000000000
-// ||||||||||||||_ARQ control
-// |||||||||||||__Audio
-// ||||||||||||___Modem
-// |||||||||||____Rig Control
-// ||||||||||_____Xmlrpc
-// |||||||||______Spotter
-// ||||||||_______Data Sources
-// |||||||________Synop
-// ||||||_________KML
-// |||||__________KISS control
-// ||||___________Mac Logger
-// |||____________Field Day Logger
-// ||_____________N3FJP Logger
-// |______________Other
-
-Fl_Menu_Item src_menu[] = {
-	{ _("ARQ control"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("Audio"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("Modem"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("Rig control"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("Xmlrpc"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("Spotter"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("Data Sources"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("Synop"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("KML"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("KISS control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER  },
-	{ _("Mac Logger"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("Field Day Logger"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ _("N3FJP Logger"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER  },
-	{ _("Other"), 0, 0, 0, FL_MENU_TOGGLE },
-	{ 0 }
-};
-//	{ _("Flrig i/o"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER  },
-#endif
+unsigned int debug::mask = 0;
 
 #include <iostream>
 
@@ -185,33 +134,7 @@ void debug::start(const char* filename)
 	rotate_log(filename);
 	inst = new debug(filename);
 
-	window = new Fl_Double_Window(800, 400, _("Event log"));
-	window->xclass(PACKAGE_TARNAME);
-
-	int pad = 2;
-	Fl_Menu_Button* button = new Fl_Menu_Button(pad, pad, 128, 22, _("Log sources"));
-	button->menu(src_menu);
-	button->callback(src_menu_cb);
-
-	Fl_Slider* slider = new Fl_Slider(button->x() + button->w() + pad, pad, 128, 22, prefix[level]);
-	slider->tooltip(_("Change log level"));
-	slider->align(FL_ALIGN_RIGHT);
-	slider->type(FL_HOR_NICE_SLIDER);
-	slider->range(0.0, LOG_NLEVELS - 1);
-	slider->step(1.0);
-	slider->value(level);
-	slider->callback(slider_cb);
-
-	Fl_Button* clearbtn = new Fl_Button(window->w() - 64, pad, 60, 22, "clear");
-	clearbtn->callback(clear_cb);
-
-	btext = new Fl_Browser(pad,  slider->h()+pad, window->w()-2*pad, window->h()-slider->h()-2*pad, 0);
-	btext->textfont(FL_HELVETICA);
-	btext->textsize(14);
-	window->resizable(btext);
-
-	window->end();
-
+	window = debug_dialog();
 }
 
 void debug::stop(void)
@@ -369,30 +292,34 @@ debug::~debug()
 	if (rfile) fclose(rfile);
 }
 
-static void slider_cb(Fl_Widget* w, void*)
+void mnu_debug_level_cb()
 {
-	debug::level = (debug::level_e)((Fl_Slider*)w)->value();
-	w->label(prefix[debug::level]);
-	w->parent()->redraw();
+	debug::level = (debug::level_e)(mnu_debug_level->value());
 }
 
-static void src_menu_cb(Fl_Widget* w, void*)
+void btn_debug_source_cb(int n)
 {
-	debug::mask ^= 1 << ((Fl_Menu_*)w)->value();
+	int mask = 1 << n;
+	if (source_code[n]->value())
+		debug::mask |= mask;
+	else
+		debug::mask &= ~mask;
 }
 
-void set_debug_mask(int mask)
-{
-	debug::mask = mask;
-	for (int n = 0; n < 15; n++)
-		src_menu[n].flags ^= ((debug::mask & 1 << n) ? FL_MENU_VALUE : 0);
-}
-
-
-static void clear_cb(Fl_Widget* w, void*)
+void clear_debug()
 {
 	guard_lock debug_lock(&debug_mutex);
 	btext->clear();
 	linebuf.clear();
 }
 
+void set_debug_mask(int mask)
+{
+	debug::mask = mask;
+	for (int n = 0; n < 15; n++) {
+		source_code[n]->value( (mask & (1 << n)) ? 1 : 0);
+		source_code[n]->redraw();
+	}
+	mnu_debug_level->value(progStatus.debug_level);
+	debug::level = debug::level_e(progStatus.debug_level);
+}

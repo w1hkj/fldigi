@@ -1,0 +1,117 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0305
+header_name {.h}
+code_name {.cxx}
+Function {debug_dialog()} {open
+} {
+  Fl_Window {} {
+    label {Event Log} open selected
+    xywh {641 62 570 240} type Double resizable size_range {570 240 0 0} visible
+  } {
+    Fl_Group {} {open
+      xywh {0 0 570 60} box ENGRAVED_BOX
+    } {
+      Fl_Group {} {open
+        xywh {0 0 140 60} resizable
+      } {
+        Fl_Group {} {open
+          xywh {0 0 130 60}
+        } {
+          Fl_Choice mnu_debug_level {
+            callback {mnu_debug_level_cb();} open
+            xywh {6 5 120 22} down_box BORDER_BOX align 20
+            code0 {o->add("Quiet|Error|Warning|Info|Verbose|Debug");}
+            code1 {o->value(3);}
+            code2 {\#include "debug.h"}
+          } {}
+          Fl_Button btn_clear_debug {
+            label clear
+            callback {clear_debug();}
+            xywh {5 34 60 21}
+          }
+        }
+        Fl_Group {} {open
+          xywh {130 0 10 60} resizable
+        } {}
+      }
+      Fl_Check_Button {source_code[0]} {
+        label ARQ
+        callback {btn_debug_source_cb(0);}
+        tooltip {ARQ server} xywh {145 5 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[1]} {
+        label Audio
+        callback {btn_debug_source_cb(1);}
+        tooltip {Audio: OSS, PortAudio, PulseAudio} xywh {145 22 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[2]} {
+        label Modem
+        callback {btn_debug_source_cb(2);}
+        tooltip {All Modem code} xywh {145 40 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[3]} {
+        label {Rig i/o}
+        callback {btn_debug_source_cb(3);}
+        tooltip {Rigcat, Hamlib, serial port i/o} xywh {228 5 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[4]} {
+        label Server
+        callback {btn_debug_source_cb(4);}
+        tooltip {XMLRPC server} xywh {228 22 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[5]} {
+        label Client
+        callback {btn_debug_source_cb(5);}
+        tooltip {XMLRPC client (flrig i/o)} xywh {228 40 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[6]} {
+        label Spotter
+        callback {btn_debug_source_cb(6);}
+        tooltip {Spotter client} xywh {311 5 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[7]} {
+        label Data
+        callback {btn_debug_source_cb(7);}
+        tooltip {Data sources i/o} xywh {311 22 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[8]} {
+        label Synop
+        callback {btn_debug_source_cb(8);}
+        tooltip {Synop code} xywh {311 40 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[9]} {
+        label KML
+        callback {btn_debug_source_cb(9);}
+        tooltip {KML code} xywh {394 5 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[10]} {
+        label KISS
+        callback {btn_debug_source_cb(10);}
+        tooltip {KISS code} xywh {394 22 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[11]} {
+        label MacLog
+        callback {btn_debug_source_cb(11);}
+        tooltip {Mac Logger i/o} xywh {394 40 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[12]} {
+        label {FD Log}
+        callback {btn_debug_source_cb(12);}
+        tooltip {FD log i/o} xywh {477 5 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[13]} {
+        label {N3FJP log}
+        callback {btn_debug_source_cb(13);}
+        tooltip {N3FJP log i/o} xywh {477 22 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button {source_code[14]} {
+        label Other
+        callback {btn_debug_source_cb(14);}
+        tooltip {All other code} xywh {477 40 70 15} down_box DOWN_BOX
+      }
+    }
+    Fl_Browser btext {
+      xywh {0 60 570 180} resizable
+    }
+  }
+}

@@ -193,7 +193,6 @@ FILE	*client;
 bool	mailserver = false, mailclient = false, arqmode = false;
 static bool show_cpucheck = false;
 static bool iconified = false;
-bool	bMOREINFO = false;
 
 string option_help, version_text, build_text;
 
@@ -1117,15 +1116,6 @@ int main(int argc, char ** argv)
 	progStatus.loadLastState();
 	create_fl_digi_main(argc, argv);
 
-std::cout << "##############################################" << std::endl;
-std::cout << "rx_scroll: "
-<< wefax_pic_rx_scroll->x() << ", " 
-<< wefax_pic_rx_scroll->y() << ", "
-<< wefax_pic_rx_scroll->w() << ", "
-<< wefax_pic_rx_scroll->h() << ", " << std::endl;
-std::cout << "##############################################" << std::endl;
-
-
 	if (!have_config || show_cpucheck) {
 		double speed = speed_test(SRC_SINC_FASTEST, 8);
 
@@ -1434,12 +1424,6 @@ void generate_option_help(void) {
 		 << "  --debug-level LEVEL\n"
 		 << "    Set the event log verbosity\n\n"
 
-		 << "  --debug-pskmail\n"
-		 << "    Enable logging for pskmail / arq events\n\n"
-
-		 << "  --debug-audio\n"
-		 << "    Enable logging for sound-card events\n\n"
-
 		 << "  --version\n"
 		 << "    Print version information\n\n"
 
@@ -1543,8 +1527,7 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
 			   OPT_FRAMES_PER_BUFFER,
 #endif
-		   OPT_MORE_INFO,
-		   OPT_DEBUG_LEVEL, OPT_DEBUG_PSKMAIL, OPT_DEBUG_AUDIO,
+		   OPT_DEBUG_LEVEL,
 			   OPT_EXIT_AFTER,
 			   OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
 
@@ -1603,12 +1586,9 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
 		{ "frames-per-buffer",1, 0, OPT_FRAMES_PER_BUFFER },
 #endif
-		{ "more-info",     1, 0, OPT_MORE_INFO },
 		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
 
 		{ "debug-level",   1, 0, OPT_DEBUG_LEVEL },
-		{ "debug-pskmail", 0, 0, OPT_DEBUG_PSKMAIL },
-		{ "debug-audio", 0, 0, OPT_DEBUG_AUDIO },
 
 		{ "help",	   0, 0, OPT_HELP },
 		{ "version",	   0, 0, OPT_VERSION },
@@ -1824,10 +1804,6 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 #endif // USE_PORTAUDIO
 
-		case OPT_MORE_INFO:
-			bMOREINFO = true;
-			break;
-
 		case OPT_EXIT_AFTER:
 			Fl::add_timeout(strtod(optarg, 0), exit_cb);
 			break;
@@ -1849,14 +1825,6 @@ int parse_args(int argc, char **argv, int& idx)
 			int v = strtol(optarg, 0, 10);
 			debug::level = (debug::level_e)CLAMP(v, 0, debug::LOG_NLEVELS-1);
 		}
-			break;
-
-		case OPT_DEBUG_PSKMAIL:
-			debug_pskmail = true;
-			break;
-
-		case OPT_DEBUG_AUDIO:
-			debug_audio = true;
 			break;
 
 		case OPT_DEPRECATED:

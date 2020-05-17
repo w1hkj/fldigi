@@ -23,7 +23,9 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
-#define DEBUG_PSKMAIL 1
+#define DEBUG_PSKMAIL 0
+
+#include <config.h>
 
 #include <string>
 #include <iostream>
@@ -39,20 +41,31 @@ public:
 		QUIET_LEVEL, ERROR_LEVEL, WARN_LEVEL, INFO_LEVEL,
 		VERBOSE_LEVEL, DEBUG_LEVEL, LOG_NLEVELS
 	};
+#ifdef FLARQ_DEBUG
+	enum source_e {
+		LOG_ARQCONTROL = 1 << 0,
+		LOG_RPC_SERVER = 1 << 1,
+		LOG_OTHER = 1 << 2
+	};
+#else
 	enum source_e {
 		LOG_ARQCONTROL = 1 << 0,
 		LOG_AUDIO = 1 << 1,
 		LOG_MODEM = 1 << 2,
 		LOG_RIGCONTROL = 1 << 3,
-		LOG_XMLRPC_RIG = 1 << 4,
-		LOG_RPC = 1 << 5,
+		LOG_RPC_CLIENT = 1 << 4,
+		LOG_RPC_SERVER = 1 << 5,
 		LOG_SPOTTER = 1 << 6,
-		LOG_KISSCONTROL = 1 << 7,
-		LOG_MACLOGGER = 1 << 8,
-		LOG_FD = 1 << 9,
-		LOG_N3FJP = 1 << 10,
-		LOG_OTHER = 1 << 11
+		LOG_DATASOURCES = 1 << 7,
+		LOG_SYNOP = 1 << 8,
+		LOG_KML = 1 << 9,
+		LOG_KISSCONTROL = 1 << 10,
+		LOG_MACLOGGER = 1 << 11,
+		LOG_FD = 1 << 12,
+		LOG_N3FJP = 1 << 13,
+		LOG_OTHER = 1 << 14
 	};
+#endif
 	static void start(const char* filename);
 	static void stop(void);
 	static void hex_dump(const char * func, const char * data, int len);
@@ -61,7 +74,7 @@ public:
 	static void elog(const char* func, const char* srcf, int line, const char* text);
 	static void show(void);
 	static level_e level;
-	static uint32_t mask;
+	static unsigned int mask;
 private:
 	static void sync_text(void*);
 	debug(const char* filename);
@@ -98,7 +111,7 @@ private:
 			debug::elog(__func__, __FILE__, __LINE__, msg__);		\
 	} while (0)
 
-unused__ static uint32_t log_source_ = debug::LOG_OTHER;
+unused__ static unsigned int log_source_ = debug::LOG_OTHER;
 #if defined(__GNUC__) && (__GNUC__ >= 3)
 #  define LOG_FILE_SOURCE(source__)						\
 	__attribute__((constructor))						\
@@ -109,8 +122,10 @@ unused__ static uint32_t log_source_ = debug::LOG_OTHER;
 
 #define LOG_SET_SOURCE(source__) log_source_ = source__
 
-extern bool	debug_pskmail;
-extern bool	debug_audio;
+extern void mnu_debug_level_cb();
+extern void btn_debug_source_cb(int n);
+extern void clear_debug();
+extern void set_debug_mask(int mask);
 
 #endif // _DEBUG_H_
 

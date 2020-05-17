@@ -253,6 +253,8 @@ struct status {
 
 	bool	useCW_KEYLINE;
 
+	int		debug_mask;
+	int		debug_level;
 //----------------------------------------------------------------------
 
 	bool	bLastStateRead;

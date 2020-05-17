@@ -47,7 +47,7 @@
 #include "status.h"
 #include "icons.h"
 
-LOG_FILE_SOURCE(debug::debug::LOG_XMLRPC_RIG);
+LOG_FILE_SOURCE(debug::debug::LOG_RPC_CLIENT);
 
 using namespace XmlRpc;
 using namespace std;

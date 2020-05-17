@@ -76,9 +76,6 @@ void generate_option_help(void)
 	     << "    Set the ARQ TCP server port\n"
 	     << "    The default is: " << arq_port << "\n\n"
 
-	     << "  --debug\n"
-	     << "    Enable debugging messages\n\n"
-
 	     << "  --version\n"
 	     << "    Print version information\n\n"
 
@@ -163,8 +160,6 @@ int parse_args(int argc, char** argv, int& idx)
 		{ "arq-server-port",    1, 0, OPT_ARQ_PORT },
 
 		{ "font",	   1, 0, OPT_FONT },
-
-		{ "debug",         0, 0, OPT_DEBUG },
 
 		{ "help",	   0, 0, OPT_HELP },
 		{ "version",	   0, 0, OPT_VERSION },

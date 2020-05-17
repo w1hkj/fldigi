@@ -412,6 +412,7 @@ if WANT_FLARQ
 endif
 
 FLDIGI_FL_SRC = \
+		debug/debug_dialog.fl \
 		dialogs/confdialog.fl \
 		dialogs/notifydialog.fl \
 		dialogs/record_browse.fl \
@@ -516,6 +517,8 @@ fldigi_SOURCES += \
 	cw_rtty/view_cw.cxx \
 	cw_rtty/view_rtty.cxx \
 	cw_rtty/winkeyer.cxx \
+	debug/debug.cxx \
+	debug/debug_dialog.cxx \
 	dialogs/confdialog.cxx \
 	dialogs/fl_digi.cxx \
 	dialogs/font_browser.cxx \
@@ -588,7 +591,6 @@ fldigi_SOURCES += \
 	misc/charsetlist.cxx \
 	misc/configuration.cxx \
 	misc/coordinate.cxx \
-	misc/debug.cxx \
 	misc/dxcc.cxx \
 	misc/estrings.cxx \
 	misc/icons.cxx \
@@ -759,6 +761,7 @@ EXTRA_fldigi_SOURCES += \
 	include/data_io.h \
 	include/date.h \
 	include/debug.h \
+	include/debug_dialog.h \
 	include/digiscope.h \
 	include/dominoex.h \
 	include/dominovar.h \
@@ -980,7 +983,6 @@ flarq_SOURCES += \
 	include/Fl_Text_Display_mod.H \
 	include/Fl_Text_Editor_mod.H \
 	include/FTextView.h \
-	include/debug.h \
 	include/fileselect.h \
 	include/flinput2.h \
 	include/flmisc.h \
@@ -998,7 +1000,6 @@ flarq_SOURCES += \
 	fileselector/fileselect.cxx \
 	logbook/table.cxx \
 	misc/ascii.cxx \
-	misc/debug.cxx \
 	misc/stacktrace.cxx \
 	misc/threads.cxx \
 	misc/timeops.cxx \

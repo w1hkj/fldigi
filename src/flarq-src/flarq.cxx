@@ -2052,3 +2052,23 @@ void open_nbems_file_folder()
 {
 	cb_mnuVisitURL(0, (void*)NBEMS_dir.c_str());
 }
+
+//----------------------------------------------------------------------
+// dummy class debug included to allow sharing source with fldigi
+//----------------------------------------------------------------------
+struct debug
+{
+	enum level_e {
+		QUIET_LEVEL, ERROR_LEVEL, WARN_LEVEL, INFO_LEVEL,
+		VERBOSE_LEVEL, DEBUG_LEVEL, LOG_NLEVELS
+	};
+	static void log(debug::level_e, const char*, const char*, int line, const char* ...);
+	static level_e level;
+	static int mask;
+};
+
+debug::level_e debug::level = debug::INFO_LEVEL;
+
+int debug::mask;
+
+void debug::log(debug::level_e, const char*, const char*, int line, const char* ...) {}

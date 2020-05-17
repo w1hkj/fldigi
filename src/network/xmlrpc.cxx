@@ -81,7 +81,7 @@ struct XmlRpcImpl;
 #include "arq_io.h"
 #include "status.h"
 
-LOG_FILE_SOURCE(debug::LOG_RPC);
+LOG_FILE_SOURCE(debug::LOG_RPC_SERVER);
 
 using namespace std;
 using namespace XmlRpc;

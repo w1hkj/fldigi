@@ -69,8 +69,6 @@ extern Fl_Double_Window *rxaudio_dialog;
 extern bool first_use;
 extern bool bEXITING;
 
-extern bool		bMOREINFO;
-
 extern FTextRX			*ReceiveText;
 extern FTextTX			*TransmitText;
 extern Raster			*FHdisp;

@@ -38,6 +38,7 @@
 #include "configuration.h"
 #include "confdialog.h"
 #include "fl_digi.h"
+#include "debug.h"
 
 #include "waterfall.h"
 
@@ -294,6 +295,25 @@ status progStatus = {
 	false,			// 	bool	nanoFSK_online;
 
 	false,			// 	bool	useCW_KEYLINE;
+	046,			//	debug_mask
+
+//  046
+// 0000000000010110
+//   ||||||||||||||_ARQ control
+//   |||||||||||||__Audio
+//   ||||||||||||___Modem
+//   |||||||||||____Rig Control
+//   ||||||||||_____Xmlrpc
+//   |||||||||______Spotter
+//   ||||||||_______Data Sources
+//   |||||||________Synop
+//   ||||||_________KML
+//   |||||__________KISS control
+//   ||||___________Mac Logger
+//   |||____________Field Day Logger
+//   ||_____________N3FJP Logger
+//   |______________Other
+	3,				// debug_level : INFO(3)
 //----------------------------------------------------------------------
 	false				// bool bLastStateRead;
 };
@@ -662,6 +682,11 @@ if (!bWF_only) {
 
 	spref.set("useCW_KEYLINE", useCW_KEYLINE);
 
+	debug_mask = debug::mask;
+	spref.set("debug_mask", debug_mask);
+
+	debug_level = debug::level;
+	spref.set("debug_level", debug_level);
 }
 
 void status::loadLastState()
@@ -971,6 +996,10 @@ void status::loadLastState()
 		spref.get("nanoFSK_online", i, nanoFSK_online); nanoFSK_online = i;
 
 		spref.get("useCW_KEYLINE", i, useCW_KEYLINE); useCW_KEYLINE = i;
+
+		spref.get("debug_level", debug_level, debug_level);
+		spref.get("debug_mask", debug_mask, debug_mask);
+		set_debug_mask(debug_mask);
 }
 
 void status::initLastState()

@@ -41,9 +41,6 @@
 #include <FL/Fl_Box.H>
 #include <FL/Enumerations.H>
 
-//#include "support.h"
-//#include "debug.h"
-
 #include "arq.h"
 #include "flarq.h"
 
