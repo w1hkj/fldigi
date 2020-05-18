@@ -167,7 +167,7 @@ CWstruct cMorse::cw_table[] = {
 void cMorse::enable(std::string s, bool val)
 {
 	for (int i = 0; cw_table[i].rpr.length(); i++) {
-		if (cw_table[i].chr == s) {
+		if (cw_table[i].chr == s || cw_table[i].prt == s) {
 			cw_table[i].enabled = val;
 			return;
 		}

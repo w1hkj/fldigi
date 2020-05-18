@@ -1377,8 +1377,7 @@ void send_cwio(int c)
 	}
 
 	string code;
-	code = cwio_morse->tx_lookup(c);
-	if (!code.length()) {
+	code = cwio_morse->tx_lookup(c);	if (!code.length()) {
 		return;
 	}
 
