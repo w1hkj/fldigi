@@ -142,7 +142,7 @@ bool WK_readByte(unsigned char &byte);
 int WK_readString();
 int WK_sendString (string &s);
 void WK_clearSerialPort();
-void WK_display_byte(void *d);
+void WK_display_byte(int);
 
 bool WK_bypass_serial_thread_loop = true;
 bool WK_run_serial_thread = true;
@@ -246,8 +246,6 @@ int WK_send_char(int c)
 			n += 2;
 		}
 	}
-//	if (btn_WK_serial_echo->value())
-//		n *= 2; // needed for ZLP clone compatibility
 	n *= 1200 / cntCW_WPM->value();
 
 	lastchar = c;
@@ -295,7 +293,7 @@ int WK_send_char(int c)
 			}
 			if (n % 50 == 0) Fl::awake();
 		}
-		Fl::awake(WK_display_byte, reinterpret_cast<void*>(c));
+		REQ(WK_display_byte, c);
 	}
 
 	return 0;
@@ -348,18 +346,14 @@ WK_serial_bypass_loop: ;
 	return NULL;
 }
 
-void WK_display_byte(void *d)
+void WK_display_byte(int ch)
 {
-	long lch = (long)d;
-	char ch = (char)lch;
-LOG_WKEY("echo: %02x", ch);
 	ReceiveText->add(ch, FTextBase::XMIT);
 }
 
-void WK_display_chars(void *d)
+void WK_display_chars(std::string s)
 {
-	char *sz_chars = (char *)d;
-	ReceiveText->add(sz_chars);
+	ReceiveText->add(s.c_str());
 }
 
 void WK_echo_(int byte)
@@ -368,7 +362,7 @@ void WK_echo_(int byte)
 		if (byte == ' ' && lastchar == '\n')
 			byte = lastchar;
 	}
-	Fl::awake(WK_display_byte, reinterpret_cast<void*>(byte));
+	REQ(WK_display_byte, byte);
 	lastchar = byte;
 	WK_wait_for_char = false;
 }
@@ -387,14 +381,12 @@ void WK_version_(int byte)
 		byte & 0xFF);
 	WK_host_is_up = true;
 	WK_get_version = false;
-	Fl::awake(WK_display_chars, ver);
+	REQ(WK_display_chars, ver);
 	progStatus.WK_version = byte;
 }
 
-void WK_show_status_change(void *d)
+void WK_show_status_change(int byte)
 {
-	int byte = reinterpret_cast<long>(d) & 0xFF;
-
 	box_WK_wait->color((byte & 0x10) == 0x10 ? FL_DARK_GREEN : FL_BACKGROUND2_COLOR);
 	box_WK_wait->redraw();
 
@@ -421,26 +413,24 @@ void WK_status_(int byte)
 		byte & 0x04 ? 'T' : 'F',
 		byte & 0x02 ? 'T' : 'F',
 		byte & 0x01 ? 'T' : 'F');
-	Fl::awake(WK_show_status_change, reinterpret_cast<void*>(byte));
+	REQ(WK_show_status_change, byte);
 }
 
-void WK_show_speed_change(void *d)
+void WK_show_speed_change(int wpm)
 {
 	if (!progStatus.WK_use_pot) {
 		return;
 	}
-	long wpm = (long)d;
-	int iwpm = (int)wpm;
 	static char szwpm[8];
-	snprintf(szwpm, sizeof(szwpm), "%3d", iwpm);
+	snprintf(szwpm, sizeof(szwpm), "%3d", wpm);
 
 	txt_WK_wpm->value(szwpm);
 	txt_WK_wpm->redraw();
 
-	cntCW_WPM->value(iwpm);
+	cntCW_WPM->value(wpm);
 	cntCW_WPM->redraw();
 
-	progdefaults.CWspeed = iwpm;
+	progdefaults.CWspeed = wpm;
 
 	sync_cw_parameters();
 
@@ -455,7 +445,7 @@ LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 void WK_speed_(int byte)
 {
 	int val = (byte & 0x3F) + progStatus.WK_min_wpm;
-	Fl::awake(WK_show_speed_change, reinterpret_cast<void*>(val));
+	REQ(WK_show_speed_change, val);
 }
 
 void WK_set_wpm()
@@ -507,8 +497,6 @@ void WK_eeprom_(int byte)
 
 void load_defaults()
 {
-//	progStatus.WK_mode_register |= 0x04; // Winkeyer must echo characters
-
 	string cmd = LOAD_DEFAULTS;
 
 	cmd += progStatus.WK_mode_register;
@@ -666,26 +654,7 @@ LOG_WKEY("ECHO_TEST : %s", hexstr(cmd).c_str());
 
 		LOG_WKEY("Echo response in %d msec", 5000 - cnt);
 
-//		cmd = "  ";
-//		cmd[0] = ADMIN;
-//		cmd[1] = DUMP_EEPROM;
-//		WK_send_command(cmd);
-//		read_EEPROM = true;
-
-//		cnt = 4000;
-//		while (read_EEPROM == true && cnt) {
-//			MilliSleep(10);
-//			cnt--;
-//		}
-//		LOG_WKEY("EEprom read time %.2f sec", (4000 - cnt) * 0.01);
 	}
-//	else {
-//		cmd = "  ";
-//		cmd[0] = ADMIN;
-//		cmd[1] = ECHO_TEST;
-//		cmd += 'U';
-//		WK_send_command(cmd);
-//	}
 
 	cmd = "  ";
 	cmd[0] = ADMIN;
@@ -834,8 +803,6 @@ void WK_change_btn_ptt_on()
 void WK_change_cntr_min_wpm()
 {
 	progStatus.WK_min_wpm = cntr_WK_min_wpm->value();
-//	cntr_WK_wpm->minimum(progStatus.WK_min_wpm);
-//	cntr_WK_wpm->maximum(progStatus.WK_rng_wpm + progStatus.WK_min_wpm);
 	if (progStatus.WK_speed_wpm < progStatus.WK_min_wpm) {
 		progStatus.WK_speed_wpm = progStatus.WK_min_wpm;
 		cntCW_WPM->value(progStatus.WK_speed_wpm);
@@ -848,8 +815,6 @@ void WK_change_cntr_min_wpm()
 void WK_change_cntr_rng_wpm()
 {
 	progStatus.WK_rng_wpm = cntr_WK_rng_wpm->value();
-//	cntr_WK_wpm->minimum(progStatus.WK_min_wpm);
-//	cntr_WK_wpm->maximum(progStatus.WK_rng_wpm + progStatus.WK_min_wpm);
 	if (progStatus.WK_speed_wpm > progStatus.WK_min_wpm + progStatus.WK_rng_wpm) {
 		progStatus.WK_speed_wpm = progStatus.WK_min_wpm + progStatus.WK_rng_wpm;
 		cntCW_WPM->value(progStatus.WK_speed_wpm);
@@ -970,19 +935,6 @@ void WK_change_choice_output_pins()
 //----------------------------------------------------------------------
 
 extern bool test;
-
-//static const char *nuline = "\n";
-
-//static int iWK_BaudRates[] = { 300, 600, 1200, 2400, 4800, 9600,
-//	19200, 38400, 57600, 115200, 230400, 460800 };
-//static const char *szWK_BaudRates[] = { "300", "600", "1200", "2400", "4800", "9600",
-//	"19200", "38400", "57600", "115200", "230400", "460800", NULL };
-
-//int WK_BaudRate(int n)
-//{
-//	if (n > (int)sizeof(iWK_BaudRates)) return 1200;
-//	return (iWK_BaudRates[n]);
-//}
 
 bool WK_start_wkey_serial()
 {
