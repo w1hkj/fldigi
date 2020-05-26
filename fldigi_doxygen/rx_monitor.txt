@@ -1,0 +1,5 @@
+Rx monitor
+  * add monitor audio stream to allow user to listen to unprocessed Rx audio stream
+  * add Rx audio stream filter
+  * create separate Rx Audio dialog
+    - open on View menu pull down
