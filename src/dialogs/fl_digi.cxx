@@ -46,6 +46,11 @@
 #include <sys/wait.h>
 #endif
 
+//++++++++++++++++++
+#include <FL/Fl_Scroll.H>
+extern Fl_Scroll       *wefax_pic_rx_scroll;
+
+
 #include "gettext.h"
 #include "fl_digi.h"
 
@@ -200,7 +205,6 @@
 #define MFSK_IMAGE_MLABEL      _("MFSK Image")
 #define THOR_IMAGE_MLABEL      _("THOR Raw Image")
 #define IFKP_IMAGE_MLABEL      _("IFKP Raw Image")
-#define WEFAX_RX_IMAGE_MLABEL  _("Weather Fax Image RX")
 #define WEFAX_TX_IMAGE_MLABEL  _("Weather Fax Image TX")
 #define CONTEST_MLABEL         _("Contest")
 #define COUNTRIES_MLABEL       _("C&ountries")
@@ -1581,7 +1585,8 @@ void remove_windows()
 		"thor rxwin", "thor txwin",
 		"fsq monitor", "fsq rxwin", "fsq txwin",
 		"ifkp rxwin", "ifkp txwin",
-		"macro editor", "test signals", "rx audio"
+		"macro editor", "test signals", "rx audio",
+		"wefax tx dialog"
 	};
 	Fl_Double_Window *w[] = {
 		scopeview, dlgRecordLoader,
@@ -1595,7 +1600,7 @@ void remove_windows()
 		ifkppicRxWin, ifkppicTxWin,
 		MacroEditDialog,
 		test_signal_window,
-		rxaudio_dialog };
+		rxaudio_dialog, wefax_pic_tx_win };
 		std::string sdeleting = "\nDeleting dialogs / Stopping debug session";
 	for (size_t n = 0; n < sizeof(w) / sizeof(*w); n++) {
 		if (w[n]) {
@@ -2876,6 +2881,14 @@ void cb_ShowFLMSG(Fl_Widget*, void*)
 		check_nbems_dirs();
 	}
 	cb_mnuVisitURL(0, (void*)FLMSG_dir.c_str());
+}
+
+void cb_ShowWEFAX_images(Fl_Widget*, void*)
+{
+	if (progdefaults.wefax_save_dir.empty())
+		cb_mnuVisitURL(0, (void*)PicsDir.c_str());
+	else
+		cb_mnuVisitURL(0, (void*)progdefaults.wefax_save_dir.c_str());
 }
 
 void cbTune(Fl_Widget *w, void *) {
@@ -5724,6 +5737,7 @@ static Fl_Menu_Item menu_[] = {
 { icons::make_icon_label(_("Fldigi config..."), folder_open_icon), 0, cb_ShowConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("FLMSG files..."), folder_open_icon), 0, cb_ShowFLMSG, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("NBEMS files..."), folder_open_icon), 0, cb_ShowNBEMS, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("WEFAX images..."), folder_open_icon), 0, cb_ShowWEFAX_images, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Data files..."), folder_open_icon), 0, cb_ShowDATA, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -6017,7 +6031,6 @@ static Fl_Menu_Item menu_[] = {
 { icons::make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(THOR_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuThorViewRaw,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(IFKP_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuIfkpViewRaw,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(COUNTRIES_MLABEL), 0, (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
@@ -6233,9 +6246,6 @@ void activate_wefax_image_item(bool b)
 		return ;
 	}
 
-	Fl_Menu_Item *wefax_rx_item = getMenuItem(WEFAX_RX_IMAGE_MLABEL);
-	if (wefax_rx_item)
-		icons::set_active(wefax_rx_item, b);
 	Fl_Menu_Item *wefax_tx_item = getMenuItem(WEFAX_TX_IMAGE_MLABEL);
 	if (wefax_tx_item)
 		icons::set_active(wefax_tx_item, b);
@@ -7515,7 +7525,6 @@ static Fl_Menu_Item alt_menu_[] = {
 { icons::make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(THOR_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuThorViewRaw,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(IFKP_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuIfkpViewRaw,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -9287,6 +9296,13 @@ void set_default_btn_color()
 			buttons[i]->redraw();
 		}
 	}
+	trx_mode md = active_modem->get_mode();
+	if ((md > MODE_WEFAX_FIRST) && (md <= MODE_WEFAX_LAST)) {
+		wefax_round_rx_noise_removal->selection_color(progdefaults.default_btn_color);
+		wefax_round_rx_binary->selection_color(progdefaults.default_btn_color);
+		wefax_round_rx_non_stop->selection_color(progdefaults.default_btn_color);
+	}
+
 }
 
 void set_colors()

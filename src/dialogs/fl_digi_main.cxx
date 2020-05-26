@@ -1,4 +1,3 @@
-
 void create_fl_digi_main_primary() {
 // bx used as a temporary spacer
 	Fl_Box *bx;
@@ -2533,10 +2532,14 @@ Logging_frame->resizable(NFtabs);
 			text_group->end();
 			text_group->resizable(text_panel);
 
-		wefax_group = new Fl_Group(0, Y, W, Htext);
-			wefax_group->box(FL_FLAT_BOX);
-			wefax_pic::create_both( true );
+//		wefax_group = new Fl_Group(0, Y, W, Htext);
+//			wefax_group->box(FL_FLAT_BOX);
+//		wefax_group = wefax_pic::create_wefax_rx_viewer(wefax_group->x(), wefax_group->y(), wefax_group->w(), wefax_group->h());
+		wefax_group = create_wefax_rx_viewer(0, Y, W, Htext);
 		wefax_group->end();
+//			wefax_pic::create_both( true );
+//		wefax_group->end();
+//		wefax_pic::	wefax_pic::create_wefax_tx_viewer(0, 0, 800, 400 );
 
 		fsq_group = new Fl_Group(0, Y, W, Htext);
 			fsq_group->box(FL_FLAT_BOX);
@@ -2841,6 +2844,7 @@ Logging_frame->resizable(NFtabs);
 		wefax_group->hide();
 		fsq_group->hide();
 		ifkp_group->hide();
+
 }
 { // Bottom Macro group
 		Y += center_group->h();
@@ -3217,5 +3221,7 @@ Logging_frame->resizable(NFtabs);
 	}
 
 	set_mode_controls(active_modem->get_mode());
+
+	create_wefax_tx_viewer(0, 0, 800, 400 );
 
 }

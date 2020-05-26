@@ -24,6 +24,10 @@
 
 #include <config.h>
 
+//++++++++++++++++++
+#include <FL/Fl_Scroll.H>
+extern Fl_Scroll       *wefax_pic_rx_scroll;
+
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -1112,6 +1116,15 @@ int main(int argc, char ** argv)
 
 	progStatus.loadLastState();
 	create_fl_digi_main(argc, argv);
+
+std::cout << "##############################################" << std::endl;
+std::cout << "rx_scroll: "
+<< wefax_pic_rx_scroll->x() << ", " 
+<< wefax_pic_rx_scroll->y() << ", "
+<< wefax_pic_rx_scroll->w() << ", "
+<< wefax_pic_rx_scroll->h() << ", " << std::endl;
+std::cout << "##############################################" << std::endl;
+
 
 	if (!have_config || show_cpucheck) {
 		double speed = speed_test(SRC_SINC_FASTEST, 8);

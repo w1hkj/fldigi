@@ -2379,8 +2379,8 @@
        ELEM_(int, wefax_filter, "WEFAXFILTER",                                          \
              "Input filter for image reception",                                        \
              0)                                                                         \
-       ELEM_(bool, WEFAX_EmbeddedGui, "WEFAXEMBEDDEDGUI",                               \
-             "Embedded GUI",                                                            \
+       ELEM_(bool, wefax_autocenter, "WEFAX_AUTOCENTER",                                \
+             "Enable image autocentering",                                              \
              true)                                                                      \
        ELEM_(bool, WEFAX_HideTx, "WEFAXHIDETX",                                         \
              "Hide transmission window",                                                \
@@ -2389,23 +2389,36 @@
              "Shift (Standard 800Hz)",                                                  \
              800 )                                                                      \
        ELEM_(int, WEFAX_Center, "WEFAXCENTER",                                          \
-             "Signal centered on freq (Standard 1500Hz)",                               \
-             1500 )                                                                     \
+             "Signal centered on freq (Standard 1900Hz)",                               \
+             1900 )                                                                     \
        ELEM_(int, WEFAX_MaxRows, "WEFAXMAXROWS",                                        \
-             "Received fax maximum number of rows",                                     \
-             2900 )                                                                     \
+             "Received fax maximum number of rows\n"                                    \
+             "1200 rows standard for IOC576 transmission.",                             \
+             4000 )                                                                     \
        ELEM_(int, WEFAX_NoiseMargin, "WEFAXNOISEMARGIN",                                \
              "Pixel margin for noise removal",                                          \
              1 )                                                                        \
        ELEM_(int, WEFAX_NoiseThreshold, "WEFAXNOISETHRESHOLD",                          \
              "Threshold level for noise detection and removal",                         \
              5 )                                                                        \
-       ELEM_(int, WEFAX_SaveMonochrome, "WEFAXSAVEMONOCHROME",                          \
-             "Save fax image as monochrome",                                            \
-             true )                                                                     \
+       ELEM_(double, wefax_correlation, "WEFAX_CORRELATION",                            \
+             "Threshold level for signal detection",                                    \
+             0.05 )                                                                     \
+       ELEM_(int, wefax_correlation_rows, "WEFAX_CORR_ROWS",                            \
+             "Compute correlation on NN (2 ... 25)",                                    \
+             15 )                                                                       \
        ELEM_(bool, WEFAX_AdifLog, "WEFAXADIFLOG",                                       \
              "Logs wefax file names in Adif log file",                                  \
              false)                                                                     \
+       ELEM_(int, wefax_auto_after, "WEFAX_auto_after",                                 \
+             "Enable autoalign after NN rows",                                          \
+             30 )                                                                       \
+       ELEM_(int, wefax_align_stop, "WEFAX_align_stop",                                 \
+             "Stop auto alignment after NN rows",                                       \
+             500 )                                                                      \
+       ELEM_(int, wefax_align_rows, "WEFAX_align_rows",                                 \
+             "Enable autoalign every NN rows",                                          \
+             10 )                                                                       \
        /* NAVTEX configuration items */                                                 \
        ELEM_(bool, NVTX_AdifLog, "NAVTEXADIFLOG",                                       \
              "Logs Navtex messages in Adig log file",                                   \

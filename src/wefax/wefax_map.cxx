@@ -43,6 +43,7 @@
 #include <sys/types.h>
 
 #include <FL/Fl.H>
+#include <FL/Fl_Box.H>
 #include <FL/fl_draw.H>
 
 #include <zlib.h>
@@ -59,6 +60,7 @@ using namespace std;
 wefax_map::wefax_map (int X, int Y, int W, int H, int bg_col) :
 	Fl_Widget (X, Y, W, H) 
 {
+	box(FL_FLAT_BOX);
 	width = W;
 	height = H;
 	bufsize = W * H * depth;
@@ -479,7 +481,7 @@ static inline unsigned char avg_pix( const unsigned char * vidbuf )
 	return ( vidbuf[ 0 ] + vidbuf[ 1 ] + vidbuf[ 2 ] ) / wefax_map::depth ;
 }
 
-int wefax_map::save_png(const char* filename, bool monochrome, const char *extra_comments)
+int wefax_map::save_png(const char* filename, const char *extra_comments)
 {
 	FILE* fp;
 	if ((fp = open_file(filename, ".png")) == NULL)
@@ -515,9 +517,9 @@ int wefax_map::save_png(const char* filename, bool monochrome, const char *extra
 	png_init_io(png, fp);
 
 	// set png header
-	int color_type = monochrome ? PNG_COLOR_TYPE_GRAY : PNG_COLOR_TYPE_RGB ;
+	int color_type = PNG_COLOR_TYPE_RGB ;
 	/// Color images must take eight bits per pixel.
-	const int bit_depth = ( monochrome && binary ) ? 1 : 8 ;
+	const int bit_depth = 8;//( monochrome && binary ) ? 1 : 8 ;
 	png_set_IHDR(png, info, width, height, bit_depth,
 		     color_type, PNG_INTERLACE_NONE,
 		     PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
@@ -557,6 +559,7 @@ int wefax_map::save_png(const char* filename, bool monochrome, const char *extra
 	}
 
 	// write image
+/*
 	if(monochrome)
 	{
 		unsigned char tmp_row[width];
@@ -596,6 +599,7 @@ int wefax_map::save_png(const char* filename, bool monochrome, const char *extra
 		}
 	}
 	else
+*/
 	{
 		png_bytep row;
 		for (int i = 0; i < height; i++) {
@@ -650,36 +654,6 @@ void wefax_map::erosion( int row )
 		new_pix = std::min( new_pix, line_next[ depth * ( col - 1 ) ] );
 		new_pix = std::min( new_pix, line_next[ depth * ( col     ) ] );
 		new_pix = std::min( new_pix, line_next[ depth * ( col + 1 ) ] );
-
-		/// Use this channel as a buffer. Beware that if we change the slant,
-		// this component might not be restored
-		// because the line position changed. Not a big problem.
-		// We might forbid slanting when de-noising.
-		line_curr[ col * depth + 1 ] = new_pix;
-	}
-}
-
-void wefax_map::dilatation( int row )
-{
-	static const size_t margin_one = 1 ;
-	if( restore( row, margin_one ) ) return ;
-
-	const unsigned char * line_prev = vidbuf + (row - noise_height_margin + 1) * width * depth;
-	      unsigned char * line_curr = vidbuf + (row - noise_height_margin + 2) * width * depth;
-	const unsigned char * line_next = vidbuf + (row - noise_height_margin + 3) * width * depth;
-
-	for( size_t col = margin_one ; col < width - margin_one; ++col )
-	{
-		unsigned char new_pix = 0 ;
-		new_pix = std::max( new_pix, line_prev[ depth * ( col - 1 ) ] );
-		new_pix = std::max( new_pix, line_prev[ depth * ( col     ) ] );
-		new_pix = std::max( new_pix, line_prev[ depth * ( col + 1 ) ] );
-		new_pix = std::max( new_pix, line_curr[ depth * ( col - 1 ) ] );
-		new_pix = std::max( new_pix, line_curr[ depth * ( col     ) ] );
-		new_pix = std::max( new_pix, line_curr[ depth * ( col + 1 ) ] );
-		new_pix = std::max( new_pix, line_next[ depth * ( col - 1 ) ] );
-		new_pix = std::max( new_pix, line_next[ depth * ( col     ) ] );
-		new_pix = std::max( new_pix, line_next[ depth * ( col + 1 ) ] );
 
 		/// Use this channel as a buffer. Beware that if we change the slant,
 		// this component might not be restored

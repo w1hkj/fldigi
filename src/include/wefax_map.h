@@ -71,7 +71,7 @@ public:
 	void    resize_height(int new_height, bool clear_img);
 	void    shift_horizontal_center(int hShift);
 	void    stretch(double the_ratio);
-	int	save_png(const char * filename, bool monochrome = false, const char * extra_comments = NULL);
+	int	save_png(const char * filename, const char * extra_comments = NULL);
 	void    set_zoom(int the_zoom);
 	void    set_binary(bool bin_mode) { binary = bin_mode ;}
 	int     pix_width(void) const {
@@ -92,7 +92,6 @@ public:
 private:
 	bool restore( int row, int margin );
 public:
-	void dilatation( int row );
 	void erosion( int row );
 	void set_binary_threshold(unsigned char thres) {
 		binary_threshold = thres ;

@@ -6070,56 +6070,36 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/Wefax}
+      label {Modem/Wefax} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Wefax"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Modem/Wefax"));}
       code3 {tab_tree->close(_("Modem"));}
     } {
-      Fl_Check_Button btnWefaxEmbeddedGui {
-        label {Embedded Wefax Gui}
-        callback {progdefaults.WEFAX_EmbeddedGui=o->value();
-progdefaults.changed = true;}
-        tooltip {Display tx and rx in main fldigi window.
-Change requires restart of fldigi} xywh {270 37 235 30} down_box DOWN_BOX
-        code0 {o->value(progdefaults.WEFAX_EmbeddedGui);}
-      }
-      Fl_Check_Button btnWefaxHideTx {
-        label {Hide Transmission window}
-        callback {progdefaults.WEFAX_HideTx=o->value();
-progdefaults.changed = true;}
-        tooltip {Hide transmission window by default.} xywh {270 73 235 30} down_box DOWN_BOX
-        code0 {o->value(progdefaults.WEFAX_HideTx);}
-      }
-      Fl_Check_Button btnWefaxAdifLog {
-        label {Log Wefax messages to Adif file}
-        callback {progdefaults.WEFAX_AdifLog=o->value();
-progdefaults.changed = true;}
-        tooltip {Sent and received faxes are logged to Adif file.} xywh {270 110 235 30} down_box DOWN_BOX
-        code0 {o->value(progdefaults.WEFAX_AdifLog);}
-      }
       Fl_Counter cntrWEFAX_Shift {
-        label {Frequency shift (800 Hz)}
+        label {Frequency shift}
         callback {progdefaults.WEFAX_Shift=o->value();
 progdefaults.changed = true;}
-        xywh {271 146 150 24} align 8 minimum 750 maximum 900 step 10 value 800
+        tooltip {Frequency shift of WEFAX signal
+Nominal 800 Hz} xywh {262 50 150 24} align 1 minimum 750 maximum 900 step 10 value 800
         code0 {o->value(progdefaults.WEFAX_Shift);}
         code1 {o->lstep(100.0);}
       }
       Fl_Counter cntrWEFAX_Center {
-        label {Center freq (1500 Hz)}
+        label {Center freq}
         callback {progdefaults.WEFAX_Center=o->value();
 progdefaults.changed = true;}
-        xywh {271 177 150 24} align 8 minimum 1000 maximum 2000 step 10 value 1500
+        tooltip {Center of WEFAX signal
+Nominal 1900 Hz} xywh {262 99 150 24} align 1 minimum 1000 maximum 2000 step 10 value 1900
         code0 {o->value(progdefaults.WEFAX_Center);}
         code1 {o->lstep(100.0);}
       }
       Fl_Counter cntrWEFAX_MaxRows {
-        label {\# rows before autosave splits image}
+        label {Max Image Rows}
         callback {progdefaults.WEFAX_MaxRows=o->value();
 progdefaults.changed = true;}
-        xywh {270 207 150 24} align 8 minimum 1000 maximum 10000 step 100 value 5000
+        tooltip {Force save split image} xywh {588 50 150 24} align 1 minimum 1000 maximum 10000 step 100 value 1500
         code0 {o->value(progdefaults.WEFAX_MaxRows);}
         code1 {o->lstep(1000.0);}
       }
@@ -6127,7 +6107,7 @@ progdefaults.changed = true;}
         label {Fax images destination directory}
         callback {progdefaults.wefax_save_dir=o->value();
 progdefaults.changed = true;}
-        xywh {270 255 400 24} align 5
+        tooltip {Store images in this directory} xywh {216 267 470 24} align 5
         code0 {o->value(progdefaults.wefax_save_dir.c_str());}
       }
       Fl_Button btnSelectFaxDestDir {
@@ -6135,14 +6115,77 @@ progdefaults.changed = true;}
         callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
 fc->callback(WefaxDestDirSet);
 fc->show();}
-        xywh {678 255 80 24}
+        tooltip {Select destination directory} xywh {695 267 90 24}
       }
-      Fl_Check_Button btnWefaxSaveMonochrome {
-        label {Save image as monochrome file}
-        callback {progdefaults.WEFAX_SaveMonochrome=o->value();
+      Fl_Check_Button btnWefaxAdifLog {
+        label {Log Wefax messages to Adif file}
+        callback {progdefaults.WEFAX_AdifLog=o->value();
 progdefaults.changed = true;}
-        tooltip {Save the fax image as a gray-level PNG file.} xywh {270 282 235 30} down_box DOWN_BOX
-        code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
+        tooltip {Sent and received faxes are logged to Adif file.} xywh {216 298 235 30} down_box DOWN_BOX
+        code0 {o->value(progdefaults.WEFAX_AdifLog);}
+      }
+      Fl_Choice wefax_choice_rx_filter {
+        label Filter
+        callback {progdefaults.wefax_filter=o->value();} open
+        xywh {302 137 110 24} down_box BORDER_BOX
+        code0 {o->add("Narrow|Middle|Wide|Blackman|Hanning|Hamming");}
+        code1 {o->value(progdefaults.wefax_filter);}
+      } {}
+      Fl_Counter auto_after_nrows {
+        label {Enable Auto-align after}
+        callback {progdefaults.wefax_auto_after = o->value();
+progdefaults.changed = true;}
+        xywh {588 81 150 24} align 4 minimum 5 maximum 100 step 5 value 50
+        code0 {o->value(progdefaults.wefax_auto_after);}
+        code1 {o->lstep(50);}
+      }
+      Fl_Counter align_stop_after {
+        label {Stop Auto-align after}
+        callback {progdefaults.wefax_align_stop = o->value();
+progdefaults.changed = true;}
+        xywh {588 113 150 24} align 4 minimum 50 maximum 500 step 5 value 500
+        code0 {o->value(progdefaults.wefax_align_stop);}
+        code1 {o->lstep(50);}
+      }
+      Fl_Counter align_every_nrows {
+        label {Auto-align every}
+        callback {progdefaults.wefax_align_rows = o->value();
+if (auto_after_nrows->minimum() < progdefaults.wefax_align_rows) {
+  auto_after_nrows->minimum(progdefaults.wefax_align_rows);
+  auto_after_nrows->value(progdefaults.wefax_align_rows);
+}
+progdefaults.changed = true;}
+        xywh {624 145 80 24} type Simple align 4 minimum 5 maximum 100 step 5 value 25
+        code0 {o->value(progdefaults.wefax_align_rows);}
+      }
+      Fl_Box {} {
+        label rows
+        xywh {743 81 42 22} align 20
+      }
+      Fl_Box {} {
+        label rows
+        xywh {743 113 42 22} align 20
+      }
+      Fl_Box {} {
+        label rows
+        xywh {706 146 42 22} align 20
+      }
+      Fl_Counter wefax_correlation {
+        label Correlation
+        callback {progdefaults.wefax_correlation = o->value();
+progdefaults.changed = true;}
+        tooltip {Row-to-row correlation
+Used to detect presence of WEFAX signal
+Lower: more false detections} xywh {589 179 150 24} align 4 minimum 0.01 maximum 0.1 step 0.001 value 0.05
+        code0 {o->value(progdefaults.wefax_correlation);}
+        code1 {o->lstep (0.01);}
+      }
+      Fl_Counter cntr_correlation_rows {
+        label {\# Correlation rows}
+        callback {progdefaults.wefax_correlation_rows = o->value();
+progdefaults.changed = true;}
+        tooltip {Compute correlation factor over this \# rows} xywh {624 213 80 24} type Simple align 4 minimum 2 maximum 50 step 1 value 10
+        code0 {o->value(progdefaults.wefax_correlation_rows);}
       }
     }
     Fl_Group {} {
@@ -8196,7 +8239,7 @@ progdefaults.changed=true;}
       }
     }
     Fl_Group grpRigHamlib {
-      label {Rig Control/Hamlib} selected
+      label {Rig Control/Hamlib}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/Hamlib"));}
       code1 {config_pages.push_back(p);}
