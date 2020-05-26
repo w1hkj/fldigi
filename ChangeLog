@@ -1,11 +1,26 @@
 
 
+=Version 4.1.13=
+
+2020-05-26  David Freese  <w1hkj@bellsouth.net>
+
+	a09931a2e: doxygen
+	1caa2a467: wefax
+	c5060a315: cw prosign
+	5116d99bd: fedora 64 build
+	785e295ad: Debug Sources
+	2f4bad6e9: Analysis mode
+	a4845d914: README update
+	2e3d22390: Code cleanup
+	4bdb42cc8: fsq sounder
+	30af9e2d8: rx_extract
+	62cf2acff: Default event log level
+
+
 =Version 4.1.12=
 
-2020-04-23  David Freese  <w1hkj@bellsouth.net>
-
+	60fb347ef: TX auto RST-sent
 	21c86db27: CW/DTR/RTS
-	762213faf: TX auto RST-sent
 	24c10fd93: wwv
 	a6dc3db26: File/Audio
 	ddeb2db19: Win10 Socket debug
