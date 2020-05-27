@@ -2977,7 +2977,14 @@ void toggleRSID()
 	cbRSID(NULL, NULL);
 }
 
+static notify_dialog *rx_monitor_alert = 0;
 void cb_mnuRxAudioDialog(Fl_Menu_ *w, void *d) {
+	if (!progdefaults.enable_audio_alerts) {
+		if (!rx_monitor_alert) rx_monitor_alert = new notify_dialog;
+		rx_monitor_alert->notify("Audio-Alert / Rx-Monitor device NOT enabled", 10.0);
+		show_notifier(rx_monitor_alert);
+		return;
+	}
 	if (rxaudio_dialog)
 		rxaudio_dialog->show();
 }

@@ -469,7 +469,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {503 32 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
+    xywh {604 42 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
   } {
     Fl_Group {} {
       xywh {0 0 201 385} resizable
@@ -6070,7 +6070,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/Wefax} open selected
+      label {Modem/Wefax}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Wefax"));}
       code1 {config_pages.push_back(p);}
@@ -8961,7 +8961,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group grpSoundDevices {
-      label {Soundcard/Devices}
+      label {Soundcard/Devices} open selected
       xywh {200 -4 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Devices"));}
       code1 {config_pages.push_back(p);}
@@ -9058,24 +9058,27 @@ resetSoundCard();}
           code0 {o->value(progdefaults.is_full_duplex);}
         }
       }
-      Fl_Group AudioAlerts {
-        label {Alerts / Rx Audio} open
-        xywh {255 235 500 80} box ENGRAVED_FRAME align 21
+      Fl_Group AudioAlerts {open
+        xywh {255 235 500 90} box ENGRAVED_FRAME align 0
       } {
         Fl_Choice menuAlertsDev {
-          label Playback
+          label {Audio device shared by Audio Alerts and Rx Monitor}
           callback {progdefaults.AlertDevice = o->text();
 progdefaults.AlertIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 progdefaults.changed = true;} open
-          tooltip {Audio output device} xywh {427 255 310 25} down_box BORDER_BOX
+          tooltip {Audio output device} xywh {265 260 365 25} down_box BORDER_BOX align 5
         } {}
         Fl_Round_Button btn_enable_audio_alerts {
-          label {Enable Audio alerts}
+          label Enable
           callback {progdefaults.enable_audio_alerts = o->value();
 progdefaults.changed = true;
 reset_audio_alerts();}
-          tooltip {First select audio alert playback device} xywh {427 283 225 25} down_box DOWN_BOX selection_color 1
+          tooltip {First select audio alert playback device} xywh {657 260 76 25} down_box DOWN_BOX selection_color 1
           code0 {o->value(progdefaults.enable_audio_alerts);}
+        }
+        Fl_Box {} {
+          label {Note: must be selected and enabled for Rx Audio monitoring!}
+          xywh {265 295 473 22} align 16
         }
       }
     }

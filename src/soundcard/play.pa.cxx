@@ -308,11 +308,11 @@ c_portaudio::c_portaudio()
 	b_len = 0;
 	rc = src_new (progdefaults.sample_converter, 1, &rc_error) ;
 	monitor_rb = new ringbuffer<float>(RBUFF_SIZE);
+
+	bpfilt = new C_FIR_filter();
+
 	start_alert_thread();
 	start_filelist_thread();
-
-	bpfilt = 0;
-
 }
 
 c_portaudio::~c_portaudio()
@@ -625,6 +625,8 @@ void c_portaudio::mon_write(double *buffer, int len, int mon_sr)
 {
 	float vol = 0.01 * progdefaults.RxFilt_vol;
 	float *rsbuffer = 0;
+
+	if (!bpfilt) init_filter();
 
 	try {
 

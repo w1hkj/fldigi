@@ -16112,21 +16112,25 @@ i.e. localhost"));
         } // Fl_Round_Button* btn_is_full_duplex
         AudioDuplex->end();
       } // Fl_Group* AudioDuplex
-      { AudioAlerts = new Fl_Group(255, 235, 500, 80, _("Alerts / Rx Audio"));
+      { AudioAlerts = new Fl_Group(255, 235, 500, 90);
         AudioAlerts->box(FL_ENGRAVED_FRAME);
-        AudioAlerts->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { menuAlertsDev = new Fl_Choice(427, 255, 310, 25, _("Playback"));
+        AudioAlerts->align(Fl_Align(FL_ALIGN_CENTER));
+        { menuAlertsDev = new Fl_Choice(265, 260, 365, 25, _("Audio device shared by Audio Alerts and Rx Monitor"));
           menuAlertsDev->tooltip(_("Audio output device"));
           menuAlertsDev->down_box(FL_BORDER_BOX);
           menuAlertsDev->callback((Fl_Callback*)cb_menuAlertsDev);
+          menuAlertsDev->align(Fl_Align(FL_ALIGN_TOP_LEFT));
         } // Fl_Choice* menuAlertsDev
-        { Fl_Round_Button* o = btn_enable_audio_alerts = new Fl_Round_Button(427, 283, 225, 25, _("Enable Audio alerts"));
+        { Fl_Round_Button* o = btn_enable_audio_alerts = new Fl_Round_Button(657, 260, 76, 25, _("Enable"));
           btn_enable_audio_alerts->tooltip(_("First select audio alert playback device"));
           btn_enable_audio_alerts->down_box(FL_DOWN_BOX);
           btn_enable_audio_alerts->selection_color((Fl_Color)1);
           btn_enable_audio_alerts->callback((Fl_Callback*)cb_btn_enable_audio_alerts);
           o->value(progdefaults.enable_audio_alerts);
         } // Fl_Round_Button* btn_enable_audio_alerts
+        { Fl_Box* o = new Fl_Box(265, 295, 473, 22, _("Note: must be selected and enabled for Rx Audio monitoring!"));
+          o->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
+        } // Fl_Box* o
         AudioAlerts->end();
       } // Fl_Group* AudioAlerts
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Devices"));
