@@ -49,7 +49,7 @@ using namespace std;
 
 //struc entries:
 // mode, **modem, *sname, *name, *pskmail_name, *adif_name, *export_mode, *export_submode, *vid_name, iface_io
-
+// *** DO NOT PUT A '/' in the name string
 
 const struct mode_info_t mode_info[NUM_MODES] = {
 {MODE_NULL,&null_modem,"NULL","NULL","","NULL","","","", DISABLED_IO },
@@ -174,7 +174,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 {MODE_OLIVIA_16_500,&olivia_16_500_modem,"OLIVIA-16/500","OL 16-500","OLIV 16-500","OLIVIA 16/500","OLIVIA","OLIVIA 16/500","OL16/500", ARQ_IO | KISS_IO },
 {MODE_OLIVIA_16_1000,&olivia_16_1000_modem,"OLIVIA-16/1K","OL 16-1K","OLIV 16-1K","OLIVIA 16/1K","OLIVIA","OLIVIA 16/1K","OL16/1K", ARQ_IO | KISS_IO  },
-{MODE_OLIVIA_16_1000,&olivia_16_2000_modem,"OLIVIA-16/2K","OL 16-2K","OLIV 16-2K","OLIVIA 16/2K","OLIVIA","OLIVIA 16/2K","OL16/2K", ARQ_IO | KISS_IO  },
+{MODE_OLIVIA_16_2000,&olivia_16_2000_modem,"OLIVIA-16/2K","OL 16-2K","OLIV 16-2K","OLIVIA 16/2K","OLIVIA","OLIVIA 16/2K","OL16/2K", ARQ_IO | KISS_IO  },
 
 {MODE_OLIVIA_32_1000,&olivia_32_1000_modem,"OLIVIA-32/1K","OL 32-1K","OLIV 32-1K","OLIVIA 32/1K","OLIVIA","OLIVIA 32/1K","OL32/1K", ARQ_IO | KISS_IO  },
 {MODE_OLIVIA_32_2000,&olivia_32_2000_modem,"OLIVIA-32/2K","OL 32-2K","OLIV 32-2K","OLIVIA 32/2K","OLIVIA","OLIVIA 32/2K","OL32/2K", ARQ_IO | KISS_IO  },

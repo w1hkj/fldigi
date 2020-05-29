@@ -1538,8 +1538,9 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
 	switch (op) {
 		case SELECT:
 			m = qrg_list[elem];
-			if (active_modem != *mode_info[m.mode].modem)
+			if (active_modem != *mode_info[m.mode].modem) {
 				init_modem_sync(m.mode);
+			}
 			if (m.rfcarrier && m.rfcarrier != wf->rfcarrier())
 				qsy(m.rfcarrier, m.carrier);
 			else
@@ -1568,7 +1569,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
 // write the menu item text
 			{
 				ostringstream o;
-				o << mode_info[m.mode].sname << " @@ ";
+				o << mode_info[m.mode].name << " @@ ";
 				if (m.rfcarrier > 0) { // write 1000s separators
 					char s[20], *p = s + sizeof(s) - 1;
 					int i = 0;
@@ -1584,10 +1585,11 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
 					o << p << (wf->USB() ? " + " : " - ");
 				}
 				o << m.carrier;
-				if (op == APPEND)
+				if (op == APPEND) {
 					wf->mbtnMem->add(o.str().c_str());
-				else
+				} else {
 					wf->mbtnMem->replace(elem, o.str().c_str());
+				}
 			}
 			break;
 	}
