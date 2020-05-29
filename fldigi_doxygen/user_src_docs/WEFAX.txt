@@ -81,12 +81,9 @@ Select an input FIR (Finite Impulse Response) filter:
 <li> narrow</li>
 <li> medium</li>
 <li> wide</li>
-<li> Blackman</li>
-<li> Hamming</li>
-<li> Hanning</li>
 </ul>
 There is rarely any QRM on a government WEFAX broadcast, but the filter selection might
-improve the decoded signal to noise ratio.  My preference is to use the Blackman filter.
+improve the decoded signal to noise ratio.  Start with the medium filter setting.
 <br>
 \image html wefax-filter-impulse.png ""
 \image latex wefax-filter-impulse.png "" width=5.0in

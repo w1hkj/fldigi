@@ -6070,7 +6070,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/Wefax}
+      label {Modem/Wefax} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Wefax"));}
       code1 {config_pages.push_back(p);}
@@ -6128,8 +6128,8 @@ progdefaults.changed = true;}
         label Filter
         callback {progdefaults.wefax_filter=o->value();} open
         xywh {302 137 110 24} down_box BORDER_BOX
-        code0 {o->add("Narrow|Middle|Wide|Blackman|Hanning|Hamming");}
-        code1 {o->value(progdefaults.wefax_filter);}
+        code0 {o->add("Narrow|Medium|Wide");}
+        code1 {o->value(progdefaults.wefax_filter < 3 ? progdefaults.wefax_filter : 0);}
       } {}
       Fl_Counter auto_after_nrows {
         label {Enable Auto-align after}
@@ -8961,7 +8961,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group grpSoundDevices {
-      label {Soundcard/Devices} open selected
+      label {Soundcard/Devices}
       xywh {200 -4 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Devices"));}
       code1 {config_pages.push_back(p);}

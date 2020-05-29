@@ -13549,8 +13549,8 @@ le Earth)"));
       { Fl_Choice* o = wefax_choice_rx_filter = new Fl_Choice(302, 137, 110, 24, _("Filter"));
         wefax_choice_rx_filter->down_box(FL_BORDER_BOX);
         wefax_choice_rx_filter->callback((Fl_Callback*)cb_wefax_choice_rx_filter);
-        o->add("Narrow|Middle|Wide|Blackman|Hanning|Hamming");
-        o->value(progdefaults.wefax_filter);
+        o->add("Narrow|Medium|Wide");
+        o->value(progdefaults.wefax_filter < 3 ? progdefaults.wefax_filter : 0);
       } // Fl_Choice* wefax_choice_rx_filter
       { Fl_Counter* o = auto_after_nrows = new Fl_Counter(588, 81, 150, 24, _("Enable Auto-align after"));
         auto_after_nrows->minimum(5);
