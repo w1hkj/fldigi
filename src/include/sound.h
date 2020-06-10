@@ -31,9 +31,7 @@
 #include <cstring>
 #include <climits>
 
-#if USE_SNDFILE
 #  include <sndfile.h>
-#endif
 
 #include <samplerate.h>
 
@@ -74,8 +72,6 @@ protected:
 	SRC_STATE	*rx_src_state;
 	double		*wrt_buffer;
 
-#if USE_SNDFILE
-
 	SNDFILE* ofCapture;
 	SNDFILE* ifPlayback;
 	SNDFILE* ofGenerate;
@@ -105,12 +101,9 @@ protected:
 	float modem_play_sr;
 
 	bool   new_playback;
-
 	sf_count_t  read_file(SNDFILE* file, float* buf, size_t count);
 	void	write_file(SNDFILE* file, float* buf_left, float *buf_right, size_t count);
 	void	write_file(SNDFILE* file, double* buf_left, double *buf_right, size_t count);
-
-#endif
 
 public:
 	SoundBase();
@@ -125,7 +118,6 @@ public:
 	virtual void    flush(unsigned dir = UINT_MAX) = 0;
 	virtual bool	must_close(int dir = 0) = 0;
 
-#if USE_SNDFILE
 	int		startCapture(std::string fname, int format);
 	void	stopCapture();
 
@@ -138,7 +130,6 @@ public:
 	int		AudioMP3(std::string fname);
 	int		AudioWAV(std::string fname);
 	int		Audio(std::string fname);
-#endif
 };
 
 

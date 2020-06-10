@@ -233,8 +233,11 @@ fi
 # Set ac_cv_sndfile to yes/no
 # Define USE_SNDFILE in config.h
 # Substitute SNDFILE_CFLAGS and SNDFILE_LIBS in Makefile
-AC_FLDIGI_PKG_CHECK([sndfile], [sndfile >= 1.0.10], [yes], [yes],
+# name, version, show-in-help?, optional?, help-text, [am-cond]
+if test "x$ac_cv_want_fldigi" = "xyes"; then
+    AC_FLDIGI_PKG_CHECK([sndfile], [sndfile >= 1.0.10], [yes], [no],
                     [enable reading/writing of audio files via libsndfile @<:@autodetect@:>@] )
+fi
 
 ### portaudio
 # Set ac_cv_portaudio to yes/no
@@ -358,7 +361,6 @@ fi
 if test "x$ac_cv_want_fldigi" = "xyes"; then
   AC_MSG_RESULT([ fldigi build options:
 
-  sndfile ..................... $ac_cv_sndfile
   oss ......................... $ac_cv_oss
   portaudio ................... $ac_cv_portaudio
   pulseaudio .................. $ac_cv_pulseaudio

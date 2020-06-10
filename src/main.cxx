@@ -1397,10 +1397,8 @@ void generate_option_help(void) {
 		 << "    Specify the input\n"
 		 << "    Must be a positive integer indicating the number of samples\n"
 		"    of silence to generate as the input"
-#  if USE_SNDFILE
 		", or a filename containing\n"
 		"    non-digit characters"
-#endif
 		"\n\n"
 
 		 << "  --benchmark-output FILE\n"
@@ -1882,9 +1880,7 @@ void generate_version_text(void)
 
 	  << "  libraries      : " "FLTK " FLTK_BUILD_VERSION "\n"
 	  << "                   " "libsamplerate " << SAMPLERATE_BUILD_VERSION "\n";
-#if USE_SNDFILE
 	s << "                   " "libsndfile " << SNDFILE_BUILD_VERSION "\n";
-#endif
 #if USE_PORTAUDIO
 	s << "                   " "PortAudio " << PORTAUDIO_BUILD_VERSION "\n";
 #endif
@@ -1903,11 +1899,9 @@ void generate_version_text(void)
 	}
 
 	s << "  libraries      : " << src_get_version() << '\n';
-#if USE_SNDFILE
 	char sndfile_version[32];
 	sf_command(NULL, SFC_GET_LIB_VERSION, sndfile_version, sizeof(sndfile_version));
 	s << "                   " << sndfile_version << '\n';
-#endif
 #if USE_PORTAUDIO
 	s << "                   " << Pa_GetVersionText() << ' ' << Pa_GetVersion() << '\n';
 #endif

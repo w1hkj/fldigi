@@ -39,9 +39,7 @@
 #  include "compat.h"
 #endif
 
-#if USE_SNDFILE
 #  include <sndfile.h>
-#endif
 
 #include "fl_digi.h"
 #include "modem.h"
@@ -70,13 +68,8 @@ int setup_benchmark(void)
 		char* p;
 		benchmark.samples = (size_t)strtol(benchmark.input.c_str(), &p, 10);
 		if (*p != '\0') { // invalid char in input string
-#if USE_SNDFILE
 			// treat as filename
 			benchmark.samples = 0;
-#else
-			LOG_ERROR("Bad input string, \"%s\"", benchmark.input.c_str());
-			return 1;
-#endif
 		}
 	}
 	if (!benchmark.output.empty())
@@ -104,9 +97,7 @@ int setup_benchmark(void)
 	return 0;
 }
 
-#if USE_SNDFILE
 SNDFILE* infile = 0;
-#endif
 
 static size_t do_rx(struct rusage ru[2], struct timespec wall_time[2]);
 static size_t do_rx_src(struct rusage ru[2], struct timespec wall_time[2]);
@@ -129,7 +120,6 @@ void do_benchmark(void)
 			 << " rate=" << active_modem->get_samplerate();
 	LOG_INFO("%s", info.str().c_str());
 
-#if USE_SNDFILE
 	if (!benchmark.samples) {
 		SF_INFO info = { 0, 0, 0, 0, 0, 0 };
 		if ((infile = sf_open(benchmark.input.c_str(), SFM_READ, &info)) == NULL) {
@@ -137,7 +127,6 @@ void do_benchmark(void)
 			return;
 		}
 	}
-#endif
 
 	struct rusage ru[2];
 	struct timespec wall_time[2];
@@ -151,12 +140,10 @@ void do_benchmark(void)
 	ru[1].ru_utime -= ru[0].ru_utime;
 	wall_time[1] -= wall_time[0];
 
-#if USE_SNDFILE
 	if (infile) {
 		sf_close(infile);
 		infile = 0;
 	}
-#endif
 
 	info << "processed: " << nproc << " samples (decoded " << nrx << ") in "
 		 << precision(3)
@@ -180,7 +167,6 @@ static size_t do_rx(struct rusage ru[2], struct timespec wall_time[2])
 	size_t inlen = 1 << 19;
 	double* inbuf = new double[inlen];
 
-#if USE_SNDFILE
 	if (infile) {
 		nread = 0;
 		clock_gettime(CLOCK_MONOTONIC, &wall_time[0]);
@@ -189,9 +175,7 @@ static size_t do_rx(struct rusage ru[2], struct timespec wall_time[2])
 		for (size_t n; (n = sf_readf_double(infile, inbuf, inlen)); nread += n)
 			active_modem->rx_process(inbuf, n);
 	}
-	else
-#endif
-	{
+	else {
 		memset(inbuf, 0, sizeof(double) * inlen);
 		clock_gettime(CLOCK_MONOTONIC, &wall_time[0]);
 		getrusage(RUSAGE_SELF, &ru[0]);
@@ -218,25 +202,21 @@ static long src_read(void* arg, float** data)
 	*data = inbuf;
 	return inlen;
 }
-#if USE_SNDFILE
 static long src_readf(void* arg, float** data)
 {
 	long n = (long)sf_readf_float(infile, inbuf, inlen);
 	*data = n ? inbuf : 0;
 	return n;
 }
-#endif
 
 static size_t do_rx_src(struct rusage ru[2], struct timespec wall_time[2])
 {
 	int err;
 	SRC_STATE* src_state;
 
-#if USE_SNDFILE
 	if (infile)
 		src_state = src_callback_new(src_readf, benchmark.src_type, 1, &err, NULL);
 	else
-#endif
 		src_state = src_callback_new(src_read, benchmark.src_type, 1, &err, NULL);
 
 	if (!src_state) {
@@ -251,7 +231,6 @@ static size_t do_rx_src(struct rusage ru[2], struct timespec wall_time[2])
 
 	long n;
 	size_t nread;
-#if USE_SNDFILE
 	if (infile) { // read until src returns 0
 		nread = 0;
 		clock_gettime(CLOCK_MONOTONIC, &wall_time[0]);
@@ -266,9 +245,7 @@ static size_t do_rx_src(struct rusage ru[2], struct timespec wall_time[2])
 
 		nread = (size_t)round(nread * benchmark.src_ratio);
 	}
-	else
-#endif
-	{ // read benchmark.samples * benchmark.src_ratio
+	else { // read benchmark.samples * benchmark.src_ratio
 		nread = (size_t)round(benchmark.samples * benchmark.src_ratio);
 		clock_gettime(CLOCK_MONOTONIC, &wall_time[0]);
 		getrusage(RUSAGE_SELF, &ru[0]);

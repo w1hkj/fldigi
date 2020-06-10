@@ -2435,7 +2435,6 @@ void cb_view_hide_channels(Fl_Menu_ *w, void *d)
 	return;
 }
 
-#if USE_SNDFILE
 
 static bool capval = false;
 static bool genval = false;
@@ -2553,7 +2552,6 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 		btnAutoSpot->do_callback();
 	}
 }
-#endif // USE_SNDFILE
 
 bool first_tab_select = true;
 
@@ -5762,13 +5760,11 @@ static Fl_Menu_Item menu_[] = {
 { LOG_TO_FILE_MLABEL, 0, cb_logfile, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-#if USE_SNDFILE
 { icons::make_icon_label(_("Audio")), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 {_("RX capture"),  0, (Fl_Callback*)cb_mnuCapture,  0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {_("TX generate"), 0, (Fl_Callback*)cb_mnuGenerate, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {_("Playback"),    0, (Fl_Callback*)cb_mnuPlayback, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
-#endif
 
 { icons::make_icon_label(_("Exit"), log_out_icon), 'x',  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
