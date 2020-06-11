@@ -2190,9 +2190,9 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	if (btnCabMode->value()) {
 		mode = adif2export(rec->getField(ADIF_MODE));
 		if (mode.compare("USB") == 0 || mode.compare("LSB") == 0 ||
+			mode.compare("FM") == 0 ||
 			mode.compare("SSB") == 0 || mode.compare("PH") == 0 ) mode = "PH";
-		else if (mode.compare("FM") == 0 || mode.compare("CW") == 0 ) ;
-		else mode = "RY";
+		else if (mode.compare("RTTY") == 0) mode = "RY";
 		qsoline.append(mode); qsoline.append(" ");
 	}
 
