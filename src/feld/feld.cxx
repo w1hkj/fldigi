@@ -101,13 +101,19 @@ void feld::init()
 
 }
 
+static void set_HellBW(double val)
+{
+	sldrHellBW->value(val);
+}
+
 void feld::restart()
 {
-	set_bandwidth(hell_bandwidth);
+//	set_bandwidth(hell_bandwidth);
 
 RxColumnLen = progdefaults.HellRcvHeight;
 TxColumnLen = FELD_COLUMN_LEN;
 
+	int fbw;
 	switch (mode) {
 // Amplitude modulation modes
 		case MODE_FELDHELL:
@@ -117,7 +123,10 @@ TxColumnLen = FELD_COLUMN_LEN;
 			downsampleinc = (double)(rxpixrate/samplerate);
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = txpixrate;
-			filter_bandwidth = progdefaults.HELL_BW_FH;
+			fbw = 1.2 * hell_bandwidth;
+			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
+			else fbw -= (fbw % 5);
+			progdefaults.HELL_BW_FH = filter_bandwidth = fbw;
 			break;
 		case MODE_SLOWHELL:
 			feldcolumnrate = 2.1875;
@@ -126,7 +135,10 @@ TxColumnLen = FELD_COLUMN_LEN;
 			downsampleinc = (double)(rxpixrate/samplerate);
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = txpixrate;
-			filter_bandwidth = progdefaults.HELL_BW_SH;
+			fbw = 1.2 * hell_bandwidth;
+			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
+			else fbw -= (fbw % 5);
+			progdefaults.HELL_BW_SH = filter_bandwidth = fbw;
 			break;
 		case MODE_HELLX5:
 			feldcolumnrate = 87.5;
@@ -135,7 +147,10 @@ TxColumnLen = FELD_COLUMN_LEN;
 			downsampleinc = (double)(rxpixrate/samplerate);
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = txpixrate;
-			filter_bandwidth = progdefaults.HELL_BW_X5;
+			fbw = 1.2 * hell_bandwidth;
+			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
+			else fbw -= (fbw % 5);
+			progdefaults.HELL_BW_X5 = filter_bandwidth = fbw;
 			break;
 		case MODE_HELLX9:
 			feldcolumnrate = 157.5;
@@ -144,10 +159,13 @@ TxColumnLen = FELD_COLUMN_LEN;
 			downsampleinc = (double)(rxpixrate/samplerate);
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = txpixrate;
-			filter_bandwidth = progdefaults.HELL_BW_X9;
+			fbw = 1.2 * hell_bandwidth;
+			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
+			else fbw -= (fbw % 5);
+			progdefaults.HELL_BW_X9 = filter_bandwidth = fbw;
 			break;
 // Frequency modulation modes
-		case MODE_FSKHELL:
+		case MODE_FSKH245:
 			feldcolumnrate = 17.5;
 			rxpixrate = (RxColumnLen * feldcolumnrate);
 			txpixrate = (TxColumnLen * feldcolumnrate);
@@ -155,7 +173,10 @@ TxColumnLen = FELD_COLUMN_LEN;
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = 122.5;
 			phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
-			filter_bandwidth = progdefaults.HELL_BW_FSK;
+			fbw = 3.0 * hell_bandwidth;
+			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
+			else fbw -= (fbw % 5);
+			progdefaults.HELL_BW_FSKH245 = filter_bandwidth = fbw;
 			cap |= CAP_REV;
 			break;
 		case MODE_FSKH105:
@@ -166,7 +187,10 @@ TxColumnLen = FELD_COLUMN_LEN;
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = 55;
 			phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
-			filter_bandwidth = progdefaults.HELL_BW_FSK105;
+			fbw = 4.0 * hell_bandwidth;
+			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
+			else fbw -= (fbw % 5);
+			progdefaults.HELL_BW_FSKH105 = filter_bandwidth = fbw;
 			cap |= CAP_REV;
 			break;
 		case MODE_HELL80:
@@ -177,13 +201,20 @@ TxColumnLen = FELD_COLUMN_LEN;
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = 300;
 			phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
-			filter_bandwidth = progdefaults.HELL_BW_HELL80;
+			fbw = 2.5 * hell_bandwidth;
+			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
+			else fbw -= (fbw % 5);
+			progdefaults.HELL_BW_HELL80 = filter_bandwidth = fbw;
 			cap |= CAP_REV;
 			break;
 		default :
 			feldcolumnrate = 17.5;
 			break;
 	}
+	set_bandwidth(hell_bandwidth);
+	progdefaults.HELL_BW = filter_bandwidth;
+
+	REQ(set_HellBW, filter_bandwidth);
 /*
 std::cout <<
 "HellRcvHeight:      " << progdefaults.HellRcvHeight << "\n" <<
@@ -204,7 +235,7 @@ std::cout <<
 feld::~feld()
 {
 	if (hilbert) delete hilbert;
-	if (bpfilt) delete bpfilt;
+	if (lpfilt) delete lpfilt;
 	if (bbfilt) delete bbfilt;
 	if (minmaxfilt) delete minmaxfilt;
 }
@@ -219,17 +250,16 @@ feld::feld(trx_mode m)
 
 	restart();
 
-	progdefaults.HELL_BW = filter_bandwidth;
+//	progdefaults.HELL_BW = filter_bandwidth;
+//	set_bandwidth(hell_bandwidth);
 
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
 
-	set_bandwidth(hell_bandwidth);
-
 	wf->redraw_marker();
 
-	lp = filter_bandwidth / samplerate;
-	bpfilt = new fftfilt(0, lp, 1024);
+	lp = 0.5 * filter_bandwidth / samplerate;
+	lpfilt = new fftfilt(0, lp, 1024);
 
 	bbfilt = new Cmovavg(8);
 	average = new Cmovavg( static_cast<int>(500 / downsampleinc));
@@ -261,7 +291,7 @@ cmplx feld::mixer(cmplx in)
 	return z;
 }
 
-void feld::FSKHELL_rx(cmplx z)
+void feld::FSKH_rx(cmplx z)
 {
 	guard_lock raster_lock(&feld_mutex);
 
@@ -299,8 +329,7 @@ void feld::FSKHELL_rx(cmplx z)
 
 	vid = f + 0.5;
 	vid = CLAMP(vid, 0.0, 1.0);
-	if (mode == MODE_HELL80)
-		vid = 1.0 - vid;
+
 	if (reverse)
 		vid = 1.0 - vid;
 	if (progdefaults.HellBlackboard)
@@ -419,18 +448,18 @@ int feld::rx_process(const double *buf, int len)
 			case MODE_HELLX9:
 				progdefaults.HELL_BW_X9 = filter_bandwidth;
 				break;
-			case MODE_FSKHELL:
-				progdefaults.HELL_BW_FSK = filter_bandwidth;
+			case MODE_FSKH245:
+				progdefaults.HELL_BW_FSKH245 = filter_bandwidth;
 				break;
 			case MODE_FSKH105:
-				progdefaults.HELL_BW_FSK105 = filter_bandwidth;
+				progdefaults.HELL_BW_FSKH105 = filter_bandwidth;
 				break;
 			case MODE_HELL80:
 				progdefaults.HELL_BW_HELL80 = filter_bandwidth;
 		}
 
-		lp = filter_bandwidth / samplerate;
-		bpfilt->create_filter(0, lp);
+		lp = 0.5 * filter_bandwidth / samplerate;
+		lpfilt->create_filter(0, lp);
 		wf->redraw_marker();
 	}
 
@@ -439,19 +468,19 @@ int feld::rx_process(const double *buf, int len)
 		z = cmplx( *buf, *buf );
 		buf++;
 
-		hilbert->run(z, z);
+/// hilbert transform need for complex frequency shift
 
-		/* ...so it can be shifted in frequency */
+		hilbert->run(z, z);
 		z = mixer(z);
 
-		n = bpfilt->run(z, &zp);
+		n = lpfilt->run(z, &zp);
 
 		switch (mode) {
-			case MODE_FSKHELL:
+			case MODE_FSKH245:
 			case MODE_FSKH105:
 			case MODE_HELL80:
 				for (i = 0; i < n; i++) {
-					FSKHELL_rx(zp[i]);
+					FSKH_rx(zp[i]);
 				}
 				break;
 			default:
@@ -538,11 +567,11 @@ void feld::send_symbol(int currsymb, int nextsymb)
 		initKeyWaveform();
 	}
 
-	if (mode == MODE_FSKHELL || mode == MODE_FSKH105 || mode == MODE_HELL80)
+	if (mode == MODE_FSKH245 || mode == MODE_FSKH105 || mode == MODE_HELL80)
 		tone += (reverse ? -1 : 1) * (currsymb ? -1 : 1) * bandwidth / 2.0;
 	for (;;) {
 		switch (mode) {
-			case MODE_FSKHELL : case MODE_FSKH105 : case MODE_HELL80 :
+			case MODE_FSKH245 : case MODE_FSKH105 : case MODE_HELL80 :
 				break;
 			case MODE_HELLX5 : case MODE_HELLX9 :
 				Amp = currsymb;

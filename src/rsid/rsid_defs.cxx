@@ -185,7 +185,7 @@
         ELEM_(105, PSK_HELL, NUM_MODES)                 \
         ELEM_(106, HELL_80, MODE_HELL80)                \
         ELEM_(107, FM_HELL_105, MODE_FSKH105)           \
-        ELEM_(108, FM_HELL_245, NUM_MODES)              \
+        ELEM_(108, FM_HELL_245, MODE_FSKH245)           \
                                                         \
         ELEM_(114, MODE_141A, NUM_MODES)                \
         ELEM_(123, DTMF, NUM_MODES)                     \

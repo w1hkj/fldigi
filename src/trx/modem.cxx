@@ -455,7 +455,7 @@ double modem::sigmaN (double es_ovr_n0)
 //	case MODE_MFSK64: case MODE_MFSK8: case MODE_MFSK16: case MODE_MFSK32:
 //	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
 //	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
-//	case MODE_FSKHELL: case MODE_FSKH105: case MODE_HELL80:
+//	case MODE_FSKH245: case MODE_FSKH105: case MODE_HELL80:
 	default: break;
 	}
 	if (trx_state == STATE_TUNE) mode_factor = 0.707;

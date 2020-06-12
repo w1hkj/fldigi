@@ -95,8 +95,8 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 {MODE_SLOWHELL,&feld_slowmodem,"SLOWHELL","Slow Hell","","HELL","HELL","","SHLL", DISABLED_IO },
 {MODE_HELLX5,&feld_x5modem,"HELLX5","Feld Hell X5","","HELL","HELL","","HLX5", DISABLED_IO },
 {MODE_HELLX9,&feld_x9modem,"HELLX9","Feld Hell X9","","HELL","HELL","","HLX9", DISABLED_IO },
-{MODE_FSKHELL,&feld_FMmodem,"FSKHELL","FSK Hell","","FSKHELL","HELL","FSKHELL","FSKHL", DISABLED_IO  },
-{MODE_FSKH105,&feld_FM105modem,"FSKH105","FSK Hell-105","","FMHELL","HELL","FMHELL","H105", DISABLED_IO },
+{MODE_FSKH245,&feld_FMmodem,"FSKH245","FSK Hell-245","","FSKH245","HELL","FSKH245","FSKHL", DISABLED_IO  },
+{MODE_FSKH105,&feld_FM105modem,"FSKH105","FSK Hell-105","","FSKH105","HELL","FSKH105","H105", DISABLED_IO },
 {MODE_HELL80,&feld_80modem,"HELL80","Hell 80","","HELL80","HELL","HELL80","HL80", DISABLED_IO },
 
 {MODE_MFSK8,&mfsk8_modem,"MFSK8","MFSK-8","MFSK8","MFSK8","MFSK","MFSK8","MK 8", DISABLED_IO  },

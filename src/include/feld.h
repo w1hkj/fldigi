@@ -62,7 +62,7 @@ protected:
 	double phi2freq;
 
 	C_FIR_filter	*hilbert;
-	fftfilt			*bpfilt;
+	fftfilt			*lpfilt;
 	Cmovavg			*bbfilt;
 	Cmovavg			*minmaxfilt;
 	Cmovavg			*average;
@@ -92,7 +92,7 @@ protected:
 	cmplx mixer(cmplx);
 	double nco(double);
 	void	rx(cmplx);
-	void	FSKHELL_rx(cmplx);
+	void	FSKH_rx(cmplx);
 	void	send_symbol(int currsymbol, int nextsymbol);
 	void	send_null_column();
 	void	tx_char(char);

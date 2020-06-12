@@ -985,7 +985,7 @@ static const Fl_Menu_Item quick_change_feld[] = {
 	{ mode_info[MODE_SLOWHELL].name, 0, cb_init_mode, (void *)MODE_SLOWHELL },
 	{ mode_info[MODE_HELLX5].name,   0, cb_init_mode, (void *)MODE_HELLX5 },
 	{ mode_info[MODE_HELLX9].name,   0, cb_init_mode, (void *)MODE_HELLX9 },
-	{ mode_info[MODE_FSKHELL].name,  0, cb_init_mode, (void *)MODE_FSKHELL },
+	{ mode_info[MODE_FSKH245].name,  0, cb_init_mode, (void *)MODE_FSKH245 },
 	{ mode_info[MODE_FSKH105].name,  0, cb_init_mode, (void *)MODE_FSKH105 },
 	{ mode_info[MODE_HELL80].name,   0, cb_init_mode, (void *)MODE_HELL80 },
 	{ 0 }
@@ -1668,7 +1668,7 @@ void init_modem(trx_mode mode, int freq)
 			mode == MODE_SLOWHELL ||
 			mode == MODE_HELLX5 ||
 			mode == MODE_HELLX9 ||
-			mode == MODE_FSKHELL ||
+			mode == MODE_FSKH245 ||
 			mode == MODE_FSKH105 ||
 			mode == MODE_HELL80 ||
 			mode == MODE_WEFAX_576 ||
@@ -1753,7 +1753,7 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_SLOWHELL:
 	case MODE_HELLX5:
 	case MODE_HELLX9:
-	case MODE_FSKHELL:
+	case MODE_FSKH245:
 	case MODE_FSKH105:
 	case MODE_HELL80:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -2288,7 +2288,7 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 			open_config(TAB_DOMINOEX);
 			break;
 		case MODE_FELDHELL: case MODE_SLOWHELL: case MODE_HELLX5: case MODE_HELLX9:
-		case MODE_FSKHELL: case MODE_FSKH105:case MODE_HELL80:
+		case MODE_FSKH245: case MODE_FSKH105:case MODE_HELL80:
 			open_config(TAB_FELDHELL);
 			break;
 		case MODE_WEFAX_576: case MODE_WEFAX_288:
@@ -5828,7 +5828,7 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_SLOWHELL].name, 0,  cb_init_mode, (void *)MODE_SLOWHELL, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_HELLX5].name, 0,  cb_init_mode, (void *)MODE_HELLX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_HELLX9].name, 0,  cb_init_mode, (void *)MODE_HELLX9, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_FSKHELL].name, 0, cb_init_mode, (void *)MODE_FSKHELL, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_FSKH245].name, 0, cb_init_mode, (void *)MODE_FSKH245, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_FSKH105].name, 0, cb_init_mode, (void *)MODE_FSKH105, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_HELL80].name, 0, cb_init_mode, (void *)MODE_HELL80, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},

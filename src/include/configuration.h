@@ -570,9 +570,9 @@
         ELEM_(double, HELL_BW_SH, "HELL_BW2", "Slow Hell bandwidth",  30.0)             \
         ELEM_(double, HELL_BW_X5, "HELL_BW3", "X5 Hell bandwidth",  1225.)              \
         ELEM_(double, HELL_BW_X9, "HELL_BW4", "X9 Hell bandwidth",  2205.0)             \
-        ELEM_(double, HELL_BW_FSK, "HELL_BW5", "FSK Hell bandwidth",  180.0)            \
-        ELEM_(double, HELL_BW_FSK105, "HELL_BW6", "FSK105 Hell bandwidth",  100.0)      \
-        ELEM_(double, HELL_BW_HELL80, "HELL_BW7", "HELL80 bandwidth",  450.0)           \
+        ELEM_(double, HELL_BW_FSKH245, "HELL_BW5", "FSKH-245 bandwidth",  250.0)        \
+        ELEM_(double, HELL_BW_FSKH105, "HELL_BW6", "FSKH-105 Hell bandwidth",  120.0)   \
+        ELEM_(double, HELL_BW_HELL80, "HELL_BW7", "HELL-80 bandwidth",  450.0)          \
         ELEM_(int, HellRcvWidth, "HELLRCVWIDTH",                                        \
               "Horizontal size multiplier for each hell character, 1, 2, or 3",         \
               2)                                                                        \
