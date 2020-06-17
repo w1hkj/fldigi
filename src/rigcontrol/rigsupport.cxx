@@ -414,7 +414,7 @@ void qso_movFreq(Fl_Widget* w, void *data)
 {
 	cFreqControl *fc = (cFreqControl *)w;
 	long int f;
-	long restore = reinterpret_cast<long>(data);
+	long restore = reinterpret_cast<intptr_t>(data);
 	f = fc->value();
 	if (fc == qsoFreqDisp1) {
 		qsoFreqDisp2->value(f);

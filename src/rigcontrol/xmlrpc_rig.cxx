@@ -192,7 +192,7 @@ pthread_mutex_t mutex_flrig_ptt = PTHREAD_MUTEX_INITIALIZER;
 void xmlrpc_rig_show_ptt(void *data)
 {
 	guard_lock flrig_lock(&mutex_flrig_ptt);
-	int on = reinterpret_cast<long>(data);
+	int on = reinterpret_cast<intptr_t>(data);
 	if (wf && (trx_state != STATE_TUNE)) {
 		wf->xmtrcv->value(on);
 		wf->xmtrcv->do_callback();
@@ -242,7 +242,7 @@ void xmlrpc_rig_show_freq(void * fr)
 {
 	guard_lock flrig_lock(&mutex_flrig_freq);
 	if (!wf) return;
-	long freq = reinterpret_cast<long>(fr);
+	long freq = reinterpret_cast<intptr_t>(fr);
 	wf->rfcarrier(freq);
 	wf->movetocenter();
 	show_frequency(freq);
@@ -824,7 +824,7 @@ static void xmlrpc_rig_set_smeter(void *data)
 			pwrmeter->hide();
 			smeter->show();
 		}
-		int val = reinterpret_cast<long>(data);
+		int val = reinterpret_cast<intptr_t>(data);
 		smeter->value(val);
 	}
 }
@@ -852,7 +852,7 @@ static void xmlrpc_rig_set_pwrmeter(void *data)
 			smeter->hide();
 			pwrmeter->show();
 		}
-		int val = reinterpret_cast<long>(data);
+		int val = reinterpret_cast<intptr_t>(data);
 		pwrmeter->value(val);
 	}
 }

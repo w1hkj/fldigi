@@ -111,7 +111,7 @@ qrunner::~qrunner()
 
 void qrunner::attach(int id_no, std::string id_string)
 {
-	Fl::add_fd(pfd[0], FL_READ, qrunner::execute, this);
+	Fl::add_fd(pfd[0], FL_READ, reinterpret_cast<Fl_FD_Handler>(qrunner::execute), this);
 	attached = true;
 	_id_no = id_no;
 	_id_string.assign(id_string);
@@ -119,7 +119,7 @@ void qrunner::attach(int id_no, std::string id_string)
 
 void qrunner::attach(void)
 {
-	Fl::add_fd(pfd[0], FL_READ, qrunner::execute, this);
+	Fl::add_fd(pfd[0], FL_READ, reinterpret_cast<Fl_FD_Handler>(qrunner::execute), this);
 	attached = true;
 }
 void qrunner::detach(void)

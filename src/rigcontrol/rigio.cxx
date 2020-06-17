@@ -1376,7 +1376,7 @@ static void rigcat_set_smeter(void *data)
 			pwrmeter->hide();
 			smeter->show();
 		}
-		int val = reinterpret_cast<long>(data);
+		int val = reinterpret_cast<intptr_t>(data);
 		smeter->value(val);
 	}
 }
@@ -1528,7 +1528,7 @@ static void rigcat_set_pmeter(void *data)
 			smeter->hide();
 			pwrmeter->show();
 		}
-		int val = reinterpret_cast<long>(data);
+		int val = reinterpret_cast<intptr_t>(data);
 		pwrmeter->value(val);
 	}
 }
@@ -1635,7 +1635,7 @@ void rigCAT_get_pwrmeter()
 
 static void rigcat_notch(void *data)
 {
-	int val = reinterpret_cast<long>(data);
+	int val = reinterpret_cast<intptr_t>(data);
 	notch_frequency = val;
 }
 
@@ -2150,7 +2150,7 @@ int pwrlevel_val(int pwr)
 
 static void rigCAT_update_pwrlevel(void *v)
 {
-	long pwr = reinterpret_cast<long>(v);
+	long pwr = reinterpret_cast<intptr_t>(v);
 	char szpwr[10];
 	snprintf(szpwr, sizeof(szpwr), "%ld", pwr);
 	progdefaults.mytxpower = szpwr;

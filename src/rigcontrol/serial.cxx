@@ -395,7 +395,7 @@ BOOL Cserial::OpenPort()
 		LOG_PERROR(win_error_string(errno).c_str());
 		return FALSE;
 	}
-	LOG_INFO("COM port %s opened, handle = %d", device.c_str(), (int)hComm);
+	LOG_INFO("COM port %s opened, handle = %p", device.c_str(), hComm);
 
 	FlushBuffer();
 
@@ -410,7 +410,7 @@ BOOL Cserial::OpenPort()
 ///////////////////////////////////////////////////////
 void Cserial::ClosePort()
 {
-	LOG_INFO("Closing COM port, handle = %d", (int)hComm);
+	LOG_INFO("Closing COM port, handle = %p", hComm);
 
 	if (hComm != INVALID_HANDLE_VALUE) {
 		if (restore_tio)

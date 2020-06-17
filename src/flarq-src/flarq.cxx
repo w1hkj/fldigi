@@ -2043,7 +2043,7 @@ void cb_mnuVisitURL(Fl_Widget*, void* arg)
 	// be done with the returned HINSTANCE is to cast it to an
 	// int and compare it with the value 32 or one of the error
 	// codes below." (Error codes omitted to preserve sanity).
-	if ((int)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
+	if ((INT_PTR)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
 		fl_alert2(_("Could not open url:\n%s\n"), url);
 #endif
 }
