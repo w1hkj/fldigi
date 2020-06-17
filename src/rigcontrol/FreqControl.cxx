@@ -44,14 +44,14 @@ const char *cFreqControl::Label[10] = {
 
 void cFreqControl::IncFreq (int nbr) {
 	double v = (double)val + (double)mult[nbr] * precision;
-	if (v <= maxVal) val = (long int)v;
+	if (v <= maxVal) val = (unsigned long int)v;
 	updatevalue();
 	do_callback();
 }
 
 void cFreqControl::DecFreq (int nbr) {
 	double v = (double)val - (double)mult[nbr] * precision;
-	if (v >= minVal) val = (long int)v;
+	if (v >= minVal) val = (unsigned long int)v;
 	updatevalue();
 	do_callback();
 }
@@ -132,7 +132,7 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 
 	minVal = 0;
 	double fmaxval = (pow(10.0, nD) - 1) * precision;
-	long int UMAX = maximum();
+	unsigned long int UMAX = maximum();
 	if (fmaxval > UMAX) fmaxval = UMAX;
 	maxVal = fmaxval;
 	fmaxval /= 1000.0;
@@ -222,7 +222,7 @@ cFreqControl::~cFreqControl()
 
 void cFreqControl::updatevalue()
 {
-	long int v = val / precision;
+	unsigned long int v = val / precision;
 	int i;
 	if (likely(v > 0L)) {
 		for (i = 0; i < nD; i++) {
@@ -332,16 +332,16 @@ static void blink_point(Fl_Widget* w)
 	Fl::add_timeout(0.2, (Fl_Timeout_Handler)blink_point, w);
 }
 
-void cFreqControl::value(long lv)
+void cFreqControl::value(unsigned long int lv)
 {
 	oldval = val = lv;
 	Fl::remove_timeout((Fl_Timeout_Handler)blink_point, decbx);
 	updatevalue();
 }
 
-long int cFreqControl::maximum(void)
+unsigned long int cFreqControl::maximum(void)
 {
-	return (long int)(pow(2.0, 31) - 1);
+	return (unsigned long int)(pow(2.0, 32) - 1);
 }
 
 
@@ -549,7 +549,7 @@ void cFreqControl::freq_input_cb(Fl_Widget*, void* arg)
 {
 	cFreqControl* fc = reinterpret_cast<cFreqControl*>(arg);
 	double val = strtod(fc->finp->value(), NULL);
-	long int lval;
+	unsigned long int lval;
 	val *= 1e3;
 	val += 0.5;
 	lval = (long)val;
@@ -619,7 +619,7 @@ void cFreqControl::set_ndigits(int nbr)
 
 	minVal = 0;
 	double fmaxval = (pow(10.0, nD) - 1) * precision;
-	long int UMAX = (long int)(pow(2.0, 31) - 1);
+	unsigned long int UMAX = (unsigned long int)(pow(2.0, 32) - 1);
 	if (fmaxval > UMAX) fmaxval = UMAX;
 	maxVal = fmaxval;
 	fmaxval /= 1000.0;

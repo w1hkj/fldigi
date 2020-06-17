@@ -1083,9 +1083,10 @@ LOG_VERBOSE("main.set_wf_sideband %s", s.c_str());
 
 void xmlrpc_set_qsy(long long rfc)
 {
-	wf->rfcarrier(rfc);
+	unsigned long int freq = static_cast<unsigned long int>(rfc);
+	wf->rfcarrier(freq);
 	wf->movetocenter();
-	show_frequency(rfc);
+	show_frequency(freq);
 }
 
 class Main_set_freq : public xmlrpc_c::method
@@ -2215,8 +2216,8 @@ public:
 	{
 		XMLRPC_LOCK;
 		double rfc = wf->rfcarrier();
-long int f = (long int)(params.getDouble(0,0.0));
-LOG_VERBOSE("rig.set_frequency: %ld", f);
+		unsigned long int f = (long int)(params.getDouble(0,0.0));
+		LOG_VERBOSE("rig.set_frequency: %lu", f);
 		REQ(set_frequency, (long long int)params.getDouble(0, 0.0));
 		*retval = xmlrpc_c::value_double(rfc);
 	}

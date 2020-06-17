@@ -60,9 +60,9 @@ public:
 	cFreqControl(int x, int y, int w, int h, const char *lbl = "9");
 	~cFreqControl();
 	void updatevalue();
-	void value(long lv);
-	long value(){return val;};
-	long int maximum(void);
+	void value(unsigned long int lv);
+	unsigned long int value() {return val;};
+	unsigned long int maximum(void);
 	void font(Fl_Font fnt);
 	void SetONCOLOR (uchar r, uchar g, uchar b);
 	void SetOFFCOLOR (uchar r, uchar g, uchar b);
@@ -122,7 +122,7 @@ private:
 	Fl_Repeat_Button	  	*Digit[MAX_DIGITS];
 	Fl_Float_Input			*finp;
 	static const char	 	*Label[];
-	long int		mult[MAX_DIGITS];
+	unsigned long int		mult[MAX_DIGITS];
 	Fl_Box				*decbx;
 	Fl_Box				*hfill1;
 	Fl_Box				*hfill2;
@@ -135,8 +135,8 @@ private:
 	Fl_Color REVOFFCOLOR;
 	int nD;
 	//int active;
-	long int maxVal;
-	long int minVal;
+	unsigned long int maxVal;
+	unsigned long int minVal;
 
 	int pw; // decimal width
 	int wfill;
@@ -153,7 +153,7 @@ private:
 	void cancel_kb_entry(void);
 
 protected:
-	long int val, oldval;
+	unsigned long int val, oldval;
 	int  precision;
 	int  dpoint;
 

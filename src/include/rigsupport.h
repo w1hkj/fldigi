@@ -95,7 +95,7 @@ extern void FLRIG_start_flrig_thread();
 extern void stop_flrig_thread();
 extern void reconnect_to_flrig();
 extern void set_flrig_ptt(int on);
-extern void set_flrig_freq(long int fr);
+extern void set_flrig_freq(unsigned long int fr);
 extern void set_flrig_mode(const char *md);
 extern void set_flrig_bw(int bw1, int bw2 = 0);
 extern void set_flrig_notch();
