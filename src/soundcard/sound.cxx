@@ -104,18 +104,16 @@ namespace SND_SUPPORT {
 	}
 
 	void get_file_params(std::string def_fname, std::string &fname, int &format, bool check) {
+		bool isplayback = (def_fname.find("playback") != std::string::npos);
 		std::string filters;
-		if (def_fname.find("playback") != std::string::npos)
+		if (isplayback)
 			filters = "Audio format\t*.{mp3,wav}\n";
 		else
 			filters = "Audio format\t*.wav\n";
-		if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16)) {
-			filters.append("FLAC format\t*.flac");
-		}
 		format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 		int fsel = 0;
 		const char *fn = 0;
-		if (def_fname.find("playback") != std::string::npos)
+		if (isplayback)
 			fn = FSEL::select(_("Audio file"), filters.c_str(), def_fname.c_str(), &fsel);
 		else
 			fn = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname.c_str(), &fsel);
@@ -124,6 +122,9 @@ namespace SND_SUPPORT {
 			return;
 		}
 		fname = fn;
+
+		if (!isplayback && (fname.find(".wav") == std::string::npos))
+			fname.append(".wav");
 
 		if (check) {
 			FILE *f = fopen(fname.c_str(), "r");
