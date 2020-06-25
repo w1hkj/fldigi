@@ -66,6 +66,7 @@ extern long		iwaittime;
 extern long		itimeout;
 extern int		bcnInterval;
 extern int		idtimer;
+extern bool		restart_beacon;
 
 extern void		cb_idtimer();
 

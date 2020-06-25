@@ -980,9 +980,7 @@ flarq_SOURCES += \
 	flarq-src/include/flarq.h \
 	flarq-src/include/flarqenv.h \
 	flarq-src/include/xml_server.h \
-	include/Fl_Text_Display_mod.H \
-	include/Fl_Text_Editor_mod.H \
-	include/FTextView.h \
+	include/F_Edit.h \
 	include/fileselect.h \
 	include/flinput2.h \
 	include/flmisc.h \
@@ -1015,7 +1013,8 @@ flarq_SOURCES += \
 	widgets/Fl_Text_Buffer_mod.cxx \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \
-	widgets/FTextView.cxx
+	widgets/FTextView.cxx \
+	widgets/F_Edit.cxx
 
 # Additional files that we distribute
 EXTRA_DIST = \

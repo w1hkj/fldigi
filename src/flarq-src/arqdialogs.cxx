@@ -91,7 +91,7 @@ Fl_Box *indCONNECT=(Fl_Box *)0;
 
 Fl_Input2 *txtState=(Fl_Input2 *)0;
 
-Fl_Text_Display *txtARQ=(Fl_Text_Display *)0;
+FTextView *txtARQ=(FTextView *)0;
 
 Fl_Input2 *txtStatus=(Fl_Input2 *)0;
 
@@ -105,7 +105,7 @@ static void cb_btnClearText(Fl_Button*, void*) {
   cbClearText();
 }
 
-Fl_Text_Display *txtRX=(Fl_Text_Display *)0;
+FTextView *txtRX=(FTextView *)0;
 
 Fl_Input2 *txtTX=(Fl_Input2 *)0;
 
@@ -194,11 +194,19 @@ Fl_Double_Window* arq_dialog() {
       } // Fl_Group* o
       o->end();
     } // Fl_Group* o
-    { txtARQ = new Fl_Text_Display(0, 87, 515, 117);
+    { txtARQ = new FTextView(0, 87, 515, 117);
       txtARQ->box(FL_DOWN_BOX);
+      txtARQ->color(FL_BACKGROUND2_COLOR);
+      txtARQ->selection_color(FL_SELECTION_COLOR);
+      txtARQ->labeltype(FL_NORMAL_LABEL);
+      txtARQ->labelfont(0);
+      txtARQ->labelsize(14);
+      txtARQ->labelcolor(FL_FOREGROUND_COLOR);
       txtARQ->textfont(4);
+      txtARQ->align(Fl_Align(FL_ALIGN_TOP));
+      txtARQ->when(FL_WHEN_RELEASE);
       Fl_Group::current()->resizable(txtARQ);
-    } // Fl_Text_Display* txtARQ
+    } // FTextView* txtARQ
     { Fl_Group* o = new Fl_Group(0, 206, 516, 26);
       o->box(FL_DOWN_BOX);
       { Fl_Input2* o = txtStatus = new Fl_Input2(5, 208, 220, 22);
@@ -242,11 +250,19 @@ Fl_Double_Window* arq_dialog() {
     { Fl_Group* o = new Fl_Group(0, 235, 515, 180, "Plain Talk");
       o->box(FL_ENGRAVED_FRAME);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-      { txtRX = new Fl_Text_Display(5, 255, 505, 130);
+      { txtRX = new FTextView(5, 255, 505, 130);
         txtRX->box(FL_DOWN_BOX);
+        txtRX->color(FL_BACKGROUND2_COLOR);
+        txtRX->selection_color(FL_SELECTION_COLOR);
+        txtRX->labeltype(FL_NORMAL_LABEL);
+        txtRX->labelfont(0);
+        txtRX->labelsize(14);
+        txtRX->labelcolor(FL_FOREGROUND_COLOR);
         txtRX->textfont(4);
+        txtRX->align(Fl_Align(FL_ALIGN_TOP));
+        txtRX->when(FL_WHEN_RELEASE);
         Fl_Group::current()->resizable(txtRX);
-      } // Fl_Text_Display* txtRX
+      } // FTextView* txtRX
       { Fl_Group* o = new Fl_Group(0, 387, 515, 28);
         o->box(FL_ENGRAVED_FRAME);
         { txtTX = new Fl_Input2(5, 390, 450, 22, "input:");
@@ -344,11 +360,18 @@ static void cb_btnOK(Fl_Button*, void*) {
   closeConfig();
 }
 
+Fl_Check_Button *btn_restart_beacon=(Fl_Check_Button *)0;
+
+static void cb_btn_restart_beacon(Fl_Check_Button* o, void*) {
+  restart_beacon = (int)(o->value());
+cbSetConfig();
+}
+
 Fl_Double_Window* arq_configure() {
   Fl_Double_Window* w;
   { Fl_Double_Window* o = new Fl_Double_Window(480, 190, "Configure flarq");
     w = o; if (w) {/* empty */}
-    { Fl_Input2* o = txtMyCall = new Fl_Input2(98, 13, 150, 24, "My Call:");
+    { Fl_Input2* o = txtMyCall = new Fl_Input2(98, 13, 150, 22, "My Call:");
       txtMyCall->box(FL_DOWN_BOX);
       txtMyCall->color(FL_BACKGROUND2_COLOR);
       txtMyCall->selection_color(FL_SELECTION_COLOR);
@@ -361,7 +384,7 @@ Fl_Double_Window* arq_configure() {
       txtMyCall->when(FL_WHEN_RELEASE);
       o->value(MyCall.c_str());
     } // Fl_Input2* txtMyCall
-    { Fl_Input2* o = txtBEACONTXT = new Fl_Input2(98, 42, 370, 24, "Beacon Text");
+    { Fl_Input2* o = txtBEACONTXT = new Fl_Input2(98, 42, 370, 22, "Beacon Text");
       txtBEACONTXT->tooltip("Text for the beacon 64 chars max");
       txtBEACONTXT->box(FL_DOWN_BOX);
       txtBEACONTXT->color(FL_BACKGROUND2_COLOR);
@@ -427,7 +450,7 @@ Fl_Double_Window* arq_configure() {
       o->step(15);
       o->value(itimeout / 1000);
     } // Fl_Spinner2* spnTimeout
-    { Fl_Spinner2* o = spnTxDelay = new Fl_Spinner2(317, 98, 70, 22, "Tx delay (msec):");
+    { Fl_Spinner2* o = spnTxDelay = new Fl_Spinner2(317, 126, 70, 22, "Tx delay (msec):");
       spnTxDelay->tooltip("delay from Rx to Tx");
       spnTxDelay->box(FL_NO_BOX);
       spnTxDelay->color(FL_BACKGROUND_COLOR);
@@ -472,6 +495,7 @@ Fl_Double_Window* arq_configure() {
       spnIDtimer->labelcolor(FL_FOREGROUND_COLOR);
       spnIDtimer->minimum(0);
       spnIDtimer->maximum(10);
+      spnIDtimer->value(10);
       spnIDtimer->callback((Fl_Callback*)cb_spnIDtimer);
       spnIDtimer->align(Fl_Align(FL_ALIGN_LEFT));
       spnIDtimer->when(FL_WHEN_RELEASE);
@@ -480,7 +504,7 @@ Fl_Double_Window* arq_configure() {
       o->step(1);
       o->value(idtimer);
     } // Fl_Spinner2* spnIDtimer
-    { choiceBlockSize = new Fl_ComboBox(314, 126, 72, 24, "Block Size:");
+    { choiceBlockSize = new Fl_ComboBox(314, 155, 72, 22, "Block Size:");
       choiceBlockSize->box(FL_DOWN_BOX);
       choiceBlockSize->color(FL_BACKGROUND2_COLOR);
       choiceBlockSize->selection_color(FL_BACKGROUND_COLOR);
@@ -496,6 +520,13 @@ Fl_Double_Window* arq_configure() {
     { btnOK = new Fl_Button(406, 154, 62, 24, "Ok");
       btnOK->callback((Fl_Callback*)cb_btnOK);
     } // Fl_Button* btnOK
+    { Fl_Check_Button* o = btn_restart_beacon = new Fl_Check_Button(448, 101, 20, 20, "Restart Beacon");
+      btn_restart_beacon->tooltip("Restart beacon after disconnect");
+      btn_restart_beacon->down_box(FL_DOWN_BOX);
+      btn_restart_beacon->callback((Fl_Callback*)cb_btn_restart_beacon);
+      btn_restart_beacon->align(Fl_Align(FL_ALIGN_LEFT));
+      o->value(restart_beacon);
+    } // Fl_Check_Button* btn_restart_beacon
     o->end();
   } // Fl_Double_Window* o
   return w;
@@ -543,11 +574,13 @@ Fl_Double_Window* arq_SendSelect() {
   return w;
 }
 
+Fl_Input2 *inpMailFrom=(Fl_Input2 *)0;
+
 Fl_Input2 *inpMailTo=(Fl_Input2 *)0;
 
 Fl_Input2 *inpMailSubj=(Fl_Input2 *)0;
 
-Fl_Text_Editor *txtMailText=(Fl_Text_Editor *)0;
+F_Edit *txtMailText=(F_Edit *)0;
 
 Fl_Button *btnOpenComposedMail=(Fl_Button *)0;
 
@@ -581,9 +614,20 @@ static void cb_btnSaveComposedMail(Fl_Button*, void*) {
 
 Fl_Double_Window* arq_composer() {
   Fl_Double_Window* w;
-  { Fl_Double_Window* o = new Fl_Double_Window(515, 275, "Flarq Mail Composer");
+  { Fl_Double_Window* o = new Fl_Double_Window(515, 300, "Flarq Mail Composer");
     w = o; if (w) {/* empty */}
-    { inpMailTo = new Fl_Input2(48, 4, 460, 24, "To:");
+    { inpMailFrom = new Fl_Input2(47, 5, 460, 24, "From");
+      inpMailFrom->box(FL_DOWN_BOX);
+      inpMailFrom->color(FL_BACKGROUND2_COLOR);
+      inpMailFrom->selection_color(FL_SELECTION_COLOR);
+      inpMailFrom->labeltype(FL_NORMAL_LABEL);
+      inpMailFrom->labelfont(0);
+      inpMailFrom->labelsize(14);
+      inpMailFrom->labelcolor(FL_FOREGROUND_COLOR);
+      inpMailFrom->align(Fl_Align(FL_ALIGN_LEFT));
+      inpMailFrom->when(FL_WHEN_RELEASE);
+    } // Fl_Input2* inpMailFrom
+    { inpMailTo = new Fl_Input2(48, 32, 460, 24, "To");
       inpMailTo->box(FL_DOWN_BOX);
       inpMailTo->color(FL_BACKGROUND2_COLOR);
       inpMailTo->selection_color(FL_SELECTION_COLOR);
@@ -594,7 +638,7 @@ Fl_Double_Window* arq_composer() {
       inpMailTo->align(Fl_Align(FL_ALIGN_LEFT));
       inpMailTo->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpMailTo
-    { inpMailSubj = new Fl_Input2(48, 30, 460, 24, "Subj:");
+    { inpMailSubj = new Fl_Input2(48, 59, 460, 24, "Subj");
       inpMailSubj->box(FL_DOWN_BOX);
       inpMailSubj->color(FL_BACKGROUND2_COLOR);
       inpMailSubj->selection_color(FL_SELECTION_COLOR);
@@ -605,42 +649,51 @@ Fl_Double_Window* arq_composer() {
       inpMailSubj->align(Fl_Align(FL_ALIGN_LEFT));
       inpMailSubj->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpMailSubj
-    { txtMailText = new Fl_Text_Editor(0, 56, 510, 188);
+    { txtMailText = new F_Edit(0, 85, 510, 188);
+      txtMailText->box(FL_DOWN_FRAME);
+      txtMailText->color(FL_BACKGROUND2_COLOR);
+      txtMailText->selection_color(FL_SELECTION_COLOR);
+      txtMailText->labeltype(FL_NORMAL_LABEL);
+      txtMailText->labelfont(0);
+      txtMailText->labelsize(14);
+      txtMailText->labelcolor(FL_FOREGROUND_COLOR);
+      txtMailText->textfont(4);
+      txtMailText->align(Fl_Align(FL_ALIGN_TOP));
+      txtMailText->when(FL_WHEN_RELEASE);
       Fl_Group::current()->resizable(txtMailText);
-    } // Fl_Text_Editor* txtMailText
-    { Fl_Pack* o = new Fl_Pack(0, 247, 515, 28);
-      o->type(1);
-      { btnOpenComposedMail = new Fl_Button(4, 251, 70, 20, "Open");
+    } // F_Edit* txtMailText
+    { Fl_Group* o = new Fl_Group(0, 274, 515, 28);
+      { btnOpenComposedMail = new Fl_Button(4, 278, 70, 20, "Open");
         btnOpenComposedMail->tooltip("Open existing Composed email");
         btnOpenComposedMail->callback((Fl_Callback*)cb_btnOpenComposedMail);
       } // Fl_Button* btnOpenComposedMail
-      { new Fl_Box(75, 251, 5, 20);
+      { new Fl_Box(75, 278, 5, 20);
       } // Fl_Box* o
-      { btnClearComposer = new Fl_Button(81, 251, 70, 20, "Clear");
+      { btnClearComposer = new Fl_Button(81, 278, 70, 20, "Clear");
         btnClearComposer->tooltip("Clear all fields");
         btnClearComposer->callback((Fl_Callback*)cb_btnClearComposer);
       } // Fl_Button* btnClearComposer
-      { new Fl_Box(152, 251, 5, 20);
+      { new Fl_Box(152, 278, 5, 20);
       } // Fl_Box* o
-      { btnUseTemplate = new Fl_Button(159, 251, 70, 20, "Template");
+      { btnUseTemplate = new Fl_Button(159, 278, 70, 20, "Template");
         btnUseTemplate->tooltip("Use template file");
         btnUseTemplate->callback((Fl_Callback*)cb_btnUseTemplate);
       } // Fl_Button* btnUseTemplate
-      { Fl_Box* o = new Fl_Box(230, 251, 127, 20);
+      { Fl_Box* o = new Fl_Box(230, 278, 127, 20);
         Fl_Group::current()->resizable(o);
       } // Fl_Box* o
-      { btnCancelComposedMail = new Fl_Button(358, 251, 70, 20, "Cancel");
+      { btnCancelComposedMail = new Fl_Button(358, 278, 70, 20, "Cancel");
         btnCancelComposedMail->tooltip("Close Dialog");
         btnCancelComposedMail->callback((Fl_Callback*)cb_btnCancelComposedMail);
       } // Fl_Button* btnCancelComposedMail
-      { new Fl_Box(429, 251, 5, 20);
+      { new Fl_Box(429, 278, 5, 20);
       } // Fl_Box* o
-      { btnSaveComposedMail = new Fl_Button(436, 251, 70, 20, "Save");
+      { btnSaveComposedMail = new Fl_Button(436, 278, 70, 20, "Save");
         btnSaveComposedMail->tooltip("Save this message (shift click Save Template)");
         btnSaveComposedMail->callback((Fl_Callback*)cb_btnSaveComposedMail);
       } // Fl_Button* btnSaveComposedMail
       o->end();
-    } // Fl_Pack* o
+    } // Fl_Group* o
     o->end();
   } // Fl_Double_Window* o
   return w;

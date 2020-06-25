@@ -8426,7 +8426,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	if (mailclient || mailserver)
 		rx_chd.rx((unsigned char *)ascii2[data & 0xFF]);
 
-	else if (progdefaults.show_all_codes)
+	else if (progdefaults.show_all_codes && iscntrl(data & 0xFF))
 		rx_chd.rx((unsigned char *)ascii3[data & 0xFF]);
 
 	else if (mode == MODE_RTTY)
@@ -8437,7 +8437,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 		} else
 			rx_chd.rx((unsigned char *)ascii[data & 0xFF]);
 	else
-		rx_chd.rx(data);
+		rx_chd.rx(data & 0xFF);
 
 	// feed the decoded data into the RX parser
 	if (rx_chd.data_length() > 0) {
@@ -8972,20 +8972,16 @@ void put_echo_char(unsigned int data, int style)
 	if (mode == MODE_CW && progdefaults.QSKadjust)
 		return;
 
-	REQ(&add_tx_char, data);
+	REQ(&add_tx_char, data & 0xFF);
 
 	// select a byte translation table
 	const char **asc = NULL;//ascii;
-	if (mailclient || mailserver || arq_text_available)
+	if (mailclient || mailserver) {
 		asc = ascii2;
-	else if (progdefaults.show_all_codes)
-		asc = ascii3;
-	else if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST)
-		asc = ascii3;
-
-	// assign a style to the data
-	if (asc == ascii2 && iscntrl(data))
 		style = FTextBase::CTRL;
+	} else if ((progdefaults.show_all_codes && iscntrl(data & 0xFF)) ||
+				PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST)
+		asc = ascii3;
 
 	// receive and convert the data
 	static unsigned int lastdata = 0;
@@ -8993,12 +8989,12 @@ void put_echo_char(unsigned int data, int style)
 	if (data == '\r' && lastdata == '\r') // reject multiple CRs
 		return;
 
-	if (data == '\a') {
+	if (mode == MODE_RTTY && data == '\a') {
 		if (progdefaults.visibleBELL)
 			echo_chd.rx((unsigned char *)ascii2[7]);
 		REQ(TTY_bell);
 	} else if (asc == NULL)
-		echo_chd.rx(data);
+		echo_chd.rx(data & 0xFF);
 	else
 		echo_chd.rx((unsigned char *)asc[data & 0xFF]);
 

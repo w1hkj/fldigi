@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0304
+version 1.0305
 header_name {.h}
 code_name {.cxx}
 decl {\#include <config.h>} {private local
@@ -20,12 +20,11 @@ decl {\#include "flslider2.h"} {public local
 decl {\#include "combo.h"} {public local
 }
 
-Function {arq_dialog()} {open
-} {
+Function {arq_dialog()} {} {
   Fl_Window {} {
     label flarq
-    callback {arqCLOSE();}
-    xywh {825 38 515 415} type Double color 50 resizable visible
+    callback {arqCLOSE();} open
+    xywh {848 29 515 415} type Double color 50 resizable visible
   } {
     Fl_Menu_Bar mnu {open
       xywh {0 0 516 22}
@@ -142,6 +141,8 @@ Function {arq_dialog()} {open
     }
     Fl_Text_Display txtARQ {
       xywh {0 87 515 117} box DOWN_BOX textfont 4 resizable
+      code0 {\#include "FTextView.h"}
+      class FTextView
     }
     Fl_Group {} {open
       xywh {0 206 516 26} box DOWN_BOX
@@ -173,6 +174,7 @@ Function {arq_dialog()} {open
     } {
       Fl_Text_Display txtRX {
         xywh {5 255 505 130} box DOWN_BOX textfont 4 resizable
+        class FTextView
       }
       Fl_Group {} {open
         xywh {0 387 515 28} box ENGRAVED_FRAME
@@ -199,26 +201,26 @@ Function {arq_configure()} {open
 } {
   Fl_Window {} {
     label {Configure flarq} open
-    xywh {741 499 480 190} type Double resizable visible
+    xywh {658 503 480 190} type Double resizable visible
   } {
     Fl_Input txtMyCall {
       label {My Call:}
       callback {changeMyCall(o->value());}
-      xywh {98 13 150 24}
+      xywh {98 13 150 22}
       code0 {o->value(MyCall.c_str());}
       class Fl_Input2
     }
     Fl_Input txtBEACONTXT {
       label {Beacon Text}
       callback {changeBeaconText(o->value());}
-      tooltip {Text for the beacon 64 chars max} xywh {98 42 370 24} resizable
+      tooltip {Text for the beacon 64 chars max} xywh {98 42 370 22} resizable
       code0 {o->value(beacontext.c_str());}
       class Fl_Input2
     }
     Fl_Spinner spnRetries {
       label {Retries:}
       callback {iretries = (int)o->value();
-cbSetConfig();} selected
+cbSetConfig();}
       tooltip {\# retries before connection declared down} xywh {146 71 45 22}
       code0 {o->minimum(2);}
       code1 {o->maximum(20);}
@@ -252,7 +254,7 @@ cbSetConfig();}
       label {Tx delay (msec):}
       callback {txdelay = (int)o->value();
 cbSetConfig();}
-      tooltip {delay from Rx to Tx} xywh {317 98 70 22}
+      tooltip {delay from Rx to Tx} xywh {317 126 70 22}
       code0 {o->minimum(200);}
       code1 {o->maximum(2000);}
       code2 {o->step(100);}
@@ -273,7 +275,7 @@ cbSetConfig();}
       label {ID timer (min):}
       callback {idtimer = (int)(o->value());
 cb_idtimer();}
-      tooltip {ID timer\\n0 = disable} xywh {121 155 70 22} minimum 0 maximum 10
+      tooltip {ID timer\\n0 = disable} xywh {121 155 70 22} minimum 0 maximum 10 value 10
       code0 {o->minimum(0);}
       code1 {o->maximum(10);}
       code2 {o->step(1);}
@@ -283,14 +285,21 @@ cb_idtimer();}
     Fl_Group choiceBlockSize {
       label {Block Size:}
       callback {exponent = (int)o->index() + 4;
-cbSetConfig();} open
-      xywh {314 126 72 24} box DOWN_BOX color 7 align 4
+cbSetConfig();} open selected
+      xywh {314 155 72 22} box DOWN_BOX color 7 align 4
       class Fl_ComboBox
     } {}
     Fl_Button btnOK {
       label Ok
       callback {closeConfig();}
       xywh {406 154 62 24}
+    }
+    Fl_Check_Button btn_restart_beacon {
+      label {Restart Beacon}
+      callback {restart_beacon = (int)(o->value());
+cbSetConfig();}
+      tooltip {Restart beacon after disconnect} xywh {448 101 20 20} down_box DOWN_BOX align 4
+      code0 {o->value(restart_beacon);}
     }
   }
 }
@@ -323,64 +332,71 @@ Function {arq_SendSelect()} {} {
 Function {arq_composer()} {} {
   Fl_Window {} {
     label {Flarq Mail Composer} open
-    xywh {575 537 515 275} type Double hide resizable
+    xywh {848 430 515 300} type Double hide resizable
   } {
+    Fl_Input inpMailFrom {
+      label From
+      xywh {47 5 460 24}
+      class Fl_Input2
+    }
     Fl_Input inpMailTo {
-      label {To:}
-      xywh {48 4 460 24}
+      label To
+      xywh {48 32 460 24}
       class Fl_Input2
     }
     Fl_Input inpMailSubj {
-      label {Subj:}
-      xywh {48 30 460 24}
+      label Subj
+      xywh {48 59 460 24}
       class Fl_Input2
     }
     Fl_Text_Editor txtMailText {
-      xywh {0 56 510 188} resizable
+      xywh {0 85 510 188} textfont 4 resizable
+      code0 {\#include "F_Edit.h"}
+      class F_Edit
     }
-    Fl_Pack {} {open
-      xywh {0 247 515 28} type HORIZONTAL
+    Fl_Group {} {open
+      xywh {0 274 515 28}
     } {
       Fl_Button btnOpenComposedMail {
         label Open
         callback {cb_OpenComposeMail();}
-        tooltip {Open existing Composed email} xywh {4 251 70 20}
+        tooltip {Open existing Composed email} xywh {4 278 70 20}
         code0 {extern void cb_OpenComposeMail();}
       }
       Fl_Box {} {
-        xywh {75 251 5 20}
+        xywh {75 278 5 20}
       }
       Fl_Button btnClearComposer {
         label Clear
         callback {cb_ClearComposer();}
-        tooltip {Clear all fields} xywh {81 251 70 20}
+        tooltip {Clear all fields} xywh {81 278 70 20}
         code0 {extern void cb_ClearComposer();}
       }
       Fl_Box {} {
-        xywh {152 251 5 20}
+        xywh {152 278 5 20}
       }
       Fl_Button btnUseTemplate {
         label Template
         callback {cb_UseTemplate();}
-        tooltip {Use template file} xywh {159 251 70 20}
+        tooltip {Use template file} xywh {159 278 70 20}
         code0 {extern void cb_UseTemplate();}
       }
       Fl_Box {} {
-        xywh {230 251 127 20} resizable
+        xywh {230 278 127 20} resizable
       }
       Fl_Button btnCancelComposedMail {
         label Cancel
         callback {cb_CancelComposeMail();}
-        tooltip {Close Dialog} xywh {358 251 70 20}
+        tooltip {Close Dialog} xywh {358 278 70 20}
         code0 {extern void cb_CancelComposeMail();}
       }
       Fl_Box {} {
-        xywh {429 251 5 20}
+        xywh {429 278 5 20}
       }
       Fl_Button btnSaveComposedMail {
         label Save
         callback {cb_SaveComposeMail();}
-        tooltip {Save this message (shift click Save Template)} xywh {436 251 70 20}
+        tooltip {Save this message (shift click Save Template)} xywh {436 278 70 20}
         code0 {extern void cb_SaveComposeMail();}
       }
     }
