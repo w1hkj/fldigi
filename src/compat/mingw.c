@@ -30,6 +30,7 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
+#include <winsock2.h>
 
 #include <ctype.h>
 #include "compat.h"
@@ -124,7 +125,7 @@ static void wsa_init(void)
 	atexit((void(*)(void)) WSACleanup);
 }
 
-int socketpair(int family, int type, int protocol, int *sv)
+int socketpair(int family, int type, int protocol, SOCKET *sv)
 {
 	struct sockaddr_in addr;
 	SOCKET sfd;

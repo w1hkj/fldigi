@@ -56,6 +56,7 @@ extern void qrunner_debug(int tid, const char * name);
 extern const char *sztid[];
 
 #ifndef __MINGW32__
+typedef int SOCKET;
 #  define QRUNNER_READ(fd__, buf__, len__) read(fd__, buf__, len__)
 #  define QRUNNER_WRITE(fd__, buf__, len__) write(fd__, buf__, len__)
 #else
@@ -167,7 +168,7 @@ public:
 
 protected:
 	fqueue *fifo;
-	int pfd[2];
+	SOCKET pfd[2];
 	bool attached;
 	int _id_no;
 	std::string _id_string;
