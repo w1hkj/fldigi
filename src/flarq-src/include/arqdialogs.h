@@ -22,14 +22,14 @@ extern Fl_Input2 *txtBeaconing;
 #include <FL/Fl_Box.H>
 extern Fl_Box *indCONNECT;
 extern Fl_Input2 *txtState;
-#include <FL/Fl_Text_Display.H>
-extern Fl_Text_Display *txtARQ;
+#include "FTextView.h"
+extern FTextView *txtARQ;
 extern Fl_Input2 *txtStatus;
 extern Fl_Input2 *txtStatus2;
 #include <FL/Fl_Progress.H>
 extern Fl_Progress *prgStatus;
 extern Fl_Button *btnClearText;
-extern Fl_Text_Display *txtRX;
+extern FTextView *txtRX;
 extern Fl_Input2 *txtTX;
 extern Fl_Button *btnSendTalk;
 Fl_Double_Window* arq_dialog();
@@ -56,6 +56,8 @@ extern Fl_Spinner2 *spnBcnInterval;
 extern Fl_Spinner2 *spnIDtimer;
 extern Fl_ComboBox *choiceBlockSize;
 extern Fl_Button *btnOK;
+#include <FL/Fl_Check_Button.H>
+extern Fl_Check_Button *btn_restart_beacon;
 Fl_Double_Window* arq_configure();
 #include "table.h"
 extern Table *tblOutgoing;
@@ -65,11 +67,11 @@ extern Fl_Button *send_Cancel;
 extern void sendOK();
 extern Fl_Return_Button *send_OK;
 Fl_Double_Window* arq_SendSelect();
+extern Fl_Input2 *inpMailFrom;
 extern Fl_Input2 *inpMailTo;
 extern Fl_Input2 *inpMailSubj;
-#include <FL/Fl_Text_Editor.H>
-extern Fl_Text_Editor *txtMailText;
-#include <FL/Fl_Pack.H>
+#include "F_Edit.h"
+extern F_Edit *txtMailText;
 extern void cb_OpenComposeMail();
 extern Fl_Button *btnOpenComposedMail;
 extern void cb_ClearComposer();

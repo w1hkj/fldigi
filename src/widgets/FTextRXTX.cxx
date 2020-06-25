@@ -2413,6 +2413,7 @@ void FTextTX::handle_context_menu(void)
 
 	bool modify_text_ok = insert_position() >= txpos;
 	bool selected = tbuf->selected();
+std::cout << "FTextTX::tbuf " << (selected ? "selected" : "not selected") << std::endl;
  	icons::set_active(&menu[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
 	icons::set_active(&menu[TX_MENU_CLEAR], tbuf->length());
 	icons::set_active(&menu[TX_MENU_CUT], selected && modify_text_ok);

@@ -79,6 +79,8 @@
 
 #include "xml_server.h"
 
+#include "FTextView.h"
+
 #define FLDIGI_port "7322"
 #define MPSK_port "3122"
 
@@ -128,19 +130,9 @@ bool SHOWDEBUG = false;
 
 extern void STATUSprint(string s);
 
-Fl_Text_Buffer *txtbuffARQ;
-Fl_Text_Buffer *stylebufARQ;
-Fl_Text_Buffer *txtbuffRX;
-Fl_Text_Buffer *stylebufRX;
-Fl_Text_Buffer *txtbuffComposer;
-//Fl_Text_Buffer *styleComposer;
-
-Fl_Text_Display::Style_Table_Entry styletable[] = {     // Style table
-  { FL_BLACK,      FL_SCREEN,        FL_NORMAL_SIZE }, // A - RX
-  { FL_DARK_RED,   FL_SCREEN,        FL_NORMAL_SIZE }, // B - TX
-  { FL_DARK_GREEN, FL_SCREEN,        FL_NORMAL_SIZE }, // C - DEBUG rx text
-  { FL_MAGENTA,    FL_SCREEN,        FL_NORMAL_SIZE }  // D - DEBUG tx text
-};
+Fl_Text_Buffer_mod *txtbuffARQ;
+Fl_Text_Buffer_mod *txtbuffRX;
+Fl_Text_Buffer_mod *txtbuffComposer;
 
 Fl_Double_Window *arqwin = 0;
 Fl_Double_Window *dlgconfig = 0;
@@ -194,8 +186,10 @@ long   itimeout = 60000;
 int    idtimer = 10;
 int	   bcnInterval = 30;
 
-bool   autobeacon = false;
+enum {OFF, ON, WAIT};
+int    autobeacon = OFF;
 bool   beaconrcvd = false;
+bool   restart_beacon = false;
 
 int    blocksSent = 0;
 
@@ -411,14 +405,25 @@ void readComposedFile(string filename)
 		char szline[10000];
 		string fline, tempstr;
 		size_t p;
-		txtbuffComposer->text("");
+		txtMailText->clear();
+		inpMailFrom->value("");
+		inpMailTo->value("");
+		inpMailSubj->value("");
 		while (!textfile.eof()) {
 			memset(szline,0, 10000);
 			textfile.getline(szline,10000);
 			fline = szline;
-			if ((p = fline.find("//FLARQ COMPOSER")) != string::npos) continue;
-			if ((p = fline.find("Date: ")) != string::npos) continue;
-			if ((p = fline.find("From:")) != string::npos) continue;
+			if ((p = fline.find("//FLARQ COMPOSER")) != string::npos)
+				continue;
+			if ((p = fline.find("Date: ")) != string::npos)
+				continue;
+			if ((p = fline.find("Content-Type:")) != string::npos)
+				continue;
+			if ((p = fline.find("From: ")) != string::npos) {
+				tempstr = fline.substr(p + 6);
+				inpMailFrom->value(tempstr.c_str());
+				continue;
+			}
 			if ((p = fline.find("To: ")) != string::npos) {
 				tempstr = fline.substr(p + 4);
 				p = tempstr.find("<");
@@ -433,8 +438,8 @@ void readComposedFile(string filename)
 				continue;
 			}
 			if (strlen(szline) == 0 && txtbuffComposer->length() == 0) continue;
-			txtbuffComposer->append(szline);
-			txtbuffComposer->append("\n");
+			txtMailText->add(szline);
+			txtMailText->add("\n");
 		}
 		textfile.close();
 	}
@@ -452,7 +457,8 @@ void cb_UseTemplate()
 void cb_ClearComposer()
 {
 	sendfilename.clear();
-	txtbuffComposer->text("");
+	txtMailText->clear();
+	inpMailFrom->value("");
 	inpMailTo->value("");
 	inpMailSubj->value("");
 }
@@ -499,10 +505,12 @@ void saveComposedText(string filename)
 	struct tm *gmt = gmtime(&maildt);
 	strftime(szmaildt, sizeof(szmaildt), "%x %X", gmt);
 	textfile << "Date: " << szmaildt << endl;
+	textfile << "From: " << inpMailFrom->value() << endl;
 	textfile << "To: " << inpMailTo->value() << endl;
-	textfile << "From: " << endl;
 	textfile << "Subject: " << inpMailSubj->value() << endl;
-	textfile << endl << txtbuffComposer->text() << endl;
+	textfile << "Content-Type: text/plain; charset=\"UTF-8\"" << endl;
+	textfile << endl;
+	textfile << txtbuffComposer->text() << endl;
 	textfile.close();
 	cb_ClearComposer();
 }
@@ -552,11 +560,11 @@ void ComposeMail()
 	if (composer == 0) {
 		composer = arq_composer();
 		composer->xclass(PACKAGE_TARNAME);
-		txtbuffComposer = new Fl_Text_Buffer();
-		txtMailText->buffer(txtbuffComposer);
+		txtbuffComposer = txtMailText->buffer();
 		txtMailText->wrap_mode(1,80);
 	}
 	txtbuffComposer->text("");
+	inpMailFrom->value("");
 	inpMailTo->value("");
 	inpMailSubj->value("");
 
@@ -580,7 +588,7 @@ void createAsciiChars()
 	AsciiChars += 0x09; // tab
 	AsciiChars += 0x0A; // lf
 	AsciiChars += 0x0D; // cr
-	for (int n = 20; n < 128; n++) AsciiChars += n;
+	for (int n = 20; n < 256; n++) AsciiChars += n;
 }
 
 void initVals()
@@ -637,6 +645,8 @@ void readConfig()
 			configfile.ignore();
 			configfile.getline(tempstr, 200);
 			beacontext = tempstr;
+			configfile >> restart_beacon;
+
 			digi_arq->myCall(MyCall.c_str());
 			digi_arq->setExponent(exponent);
 			digi_arq->setRetries(iretries);
@@ -673,6 +683,7 @@ void saveConfig()
 		configfile << mainW << endl;
 		configfile << mainH << endl;
 		configfile << beacontext.c_str() << endl;
+		configfile << restart_beacon << endl;
 		configfile.close();
 	}
 }
@@ -891,7 +902,7 @@ char bcnMsg[40];
 
 void arqAutoBeacon(void *)
 {
-	if (autobeacon == true) {
+	if (autobeacon == ON) {
 		int currstate = digi_arq->state();
 		btnCONNECT->deactivate();
 		btnCONNECT->redraw();
@@ -926,7 +937,7 @@ void arqAutoBeacon(void *)
 			btnBEACON->redraw();
 			txtBeaconing->value("Beacon Off");
 		}
-	} else {
+	} else if (autobeacon == OFF) {
 		autobeaconcounter = 0;
 		btnCONNECT->activate();
 		btnCONNECT->redraw();
@@ -936,16 +947,22 @@ void arqAutoBeacon(void *)
 		btnBEACON->activate();
 		btnBEACON->redraw();
 		txtBeaconing->value("Beacon Off");
+	} else { // autobeacon == WAIT
+		btnBEACON->deactivate();
+		btnBEACON->redraw();
+		Fl::repeat_timeout(1.0, arqAutoBeacon);
 	}
 }
 
 void arqBEACON()
 {
-	if (autobeacon == false) {
-		autobeacon = true;
+	if (autobeacon != ON) {
+		autobeacon = ON;
+		btnBEACON->value(1);
 		Fl::add_timeout(0.01, arqAutoBeacon);
 	} else {
-		autobeacon = false;
+		autobeacon = OFF;
+		btnBEACON->value(0);
 	}
 }
 
@@ -1107,10 +1124,7 @@ void payloadText(string s)
 {
 	static char szPercent[10];
 	string text = noCR(s);
-	string style;
 
-	style.append(text.length(), 'A');
-	stylebufARQ->append(style.c_str());
 	txtARQ->insert(text.c_str());
 	txtARQ->show_insert_position();
 	txtARQ->redraw();
@@ -1278,11 +1292,15 @@ void sendEmailFile()
 		TX.append(sendfilename.substr(p));
 		TX.append("\n");
 		TX.append(arqemail);
-		while (textfile.get(cin))
+
 // only allow ASCII printable characters
-			if ((cin >= ' ' && cin <= '~') ||
-				(cin == 0x09 || (cin == 0x0a) || cin == 0x0d) )
-			textin += cin;
+		while (textfile.get(cin)) textin += (cin & 0xFF);
+		textfile.close();
+		if ( textin.find_first_not_of(AsciiChars) != string::npos) {
+			fl_alert2("File contains non-ASCII bytes and must be sent as binary.");
+			return;
+		}
+
 		textfile.close();
 		txtsize = textin.length();
 		arqPayloadSize = txtsize;
@@ -1332,13 +1350,14 @@ void sendAsciiFile()
 			TX.append(p);
 			TX.append("\n");
 			TX.append(arqascii);
-			while (textfile.get(cin))
-				textin += cin;
+
+			while (textfile.get(cin)) textin += (cin & 0xFF);
 			textfile.close();
 			if ( textin.find_first_not_of(AsciiChars) != string::npos) {
 				fl_alert2("File contains non-ASCII bytes and must be sent as binary.");
 				return;
 			}
+
 			txtsize = textin.length();
 			arqPayloadSize = txtsize;
 			blocksSent = 0;
@@ -1367,7 +1386,7 @@ void sendImageFile()
 		fl_alert2("Not connected");
 		return;
 	}
-	const char *p = FSEL::select("ARQ image file", "*.{png,jpg,bmp}\t*", "");
+	const char *p = FSEL::select(_("ARQ image file"), "Images\t*.{png,jpg,bmp}", "");
 	char cin;
 	size_t b64size;
 	string textin = "";
@@ -1496,89 +1515,103 @@ void send_xml_text(std::string fname, std::string txt)
 	sendingfile = false;
 }
 
-char statemsg[80];
+static char statemsg[80];
 
 void dispState()
 {
+	static int last_state = DOWN;
 	int currstate = digi_arq->state();
 	static char xfrmsg[80];
 	static char szPercent[10];
 
 	arqstate = currstate & 0x7F;
-
-	if (arqstate == DOWN  || arqstate == TIMEDOUT) {
-		if (btnCONNECT->active())
-			btnCONNECT->label("Connect");
-		if (!autobeacon)
+	if (last_state != currstate) {
+		last_state = currstate;
+		if (arqstate == DOWN  || arqstate == TIMEDOUT) {
+			if (btnCONNECT->active()) {
+				btnCONNECT->label("Connect");
+			}
 			btnBEACON->activate();
-//		mnuSend->deactivate();
-		mnu->redraw();
-	}
-	else if (arqstate == ARQ_CONNECTED || arqstate == WAITING) {
-		if (btnCONNECT->active())
-			btnCONNECT->label("Disconnect");
-		if (!autobeacon)
-			btnBEACON->deactivate();
-		mnuSend->activate();
-		mnu->redraw();
-	}
-	if (rxARQfile || sendingfile) {
-		if (btnCONNECT->active())
-			btnCONNECT->label("Abort");
-	}
-	if (btnCONNECT->active())
-		btnCONNECT->redraw_label();
-
-	if (currstate <= 0x7F) // receiving
-		switch (currstate) {
-			case ARQ_CONNECTING :
-				snprintf(statemsg, sizeof(statemsg), "CONNECTING: %d", digi_arq->getTimeLeft());
-				txtState->value(statemsg);
-				txtState->redraw();
-				autobeacon = false;
-				break;
-			case WAITFORACK :
-				snprintf(statemsg, sizeof(statemsg), "WAITING FOR ACK   ");
-				txtState->value(statemsg);
-				txtState->redraw();
-				autobeacon = false;
-				break;
-			case ABORT:
-			case ABORTING :
-				txtState->value("ABORTING XFR");
-				txtState->redraw();
-				autobeacon = false;
-				break;
-			case WAITING :
-			case ARQ_CONNECTED :
-				char szState[80];
-				snprintf(szState, sizeof(szState),"CONNECTED - Quality = %4.2f",
-					digi_arq->quality());
-				indCONNECT->color(FL_GREEN);
-				indCONNECT->redraw();
-				txtState->value(szState);
-				txtURCALL->value( digi_arq->urCall().c_str() );
-				autobeacon = false;
-				break;
-			case TIMEDOUT :
-				indCONNECT->color(FL_WHITE);
-				indCONNECT->redraw();
-				txtState->value("TIMED OUT");
-				txtStatus->value("");
-				autobeacon = false;
-				beaconrcvd = false;
-				break;
-			case DISCONNECT:
-			case DISCONNECTING:
-				txtState->value("DISCONNECTING");
-				break;
-			case DOWN :
-			default :
-				indCONNECT->color(FL_WHITE);
-				indCONNECT->redraw();
-				txtState->value("NOT CONNECTED");
-				txtStatus->value("");
+			mnu->redraw();
 		}
+		else if (arqstate == ARQ_CONNECTED || arqstate == WAITING) {
+			if (btnCONNECT->active())
+				btnCONNECT->label("Disconnect");
+			if (!autobeacon)
+				btnBEACON->deactivate();
+			mnuSend->activate();
+			mnu->redraw();
+		}
+		if (rxARQfile || sendingfile) {
+			if (btnCONNECT->active())
+				btnCONNECT->label("Abort");
+		}
+		if (btnCONNECT->active())
+			btnCONNECT->redraw_label();
+
+		if (currstate <= 0x7F) { // receiving
+			switch (currstate) {
+				case ARQ_CONNECTING :
+					snprintf(statemsg, sizeof(statemsg), "CONNECTING: %d", digi_arq->getTimeLeft());
+					txtState->value(statemsg);
+					txtState->redraw();
+					autobeacon = WAIT;
+					break;
+				case WAITFORACK :
+					snprintf(statemsg, sizeof(statemsg), "WAITING FOR ACK   ");
+					txtState->value(statemsg);
+					txtState->redraw();
+					autobeacon = WAIT;
+					break;
+				case ABORT:
+				case ABORTING :
+					txtState->value("ABORTING XFR");
+					txtState->redraw();
+					autobeacon = WAIT;
+					break;
+				case WAITING :
+				case ARQ_CONNECTED :
+					char szState[80];
+					snprintf(szState, sizeof(szState),"CONNECTED - Quality = %4.2f",
+						digi_arq->quality());
+					indCONNECT->color(FL_GREEN);
+					indCONNECT->redraw();
+					txtBeaconing->value("");
+					txtState->value(szState);
+					txtURCALL->value( digi_arq->urCall().c_str() );
+					autobeacon = WAIT;
+					break;
+				case TIMEDOUT :
+					indCONNECT->color(FL_WHITE);
+					indCONNECT->redraw();
+					txtState->value("TIMED OUT");
+					txtStatus->value("");
+					if (restart_beacon && autobeacon != ON) {
+						autobeacon = ON;
+						Fl::remove_timeout(arqAutoBeacon);
+						Fl::add_timeout(1.0 + txdelay / 1000.0, arqAutoBeacon);
+					}
+					beaconrcvd = false;
+					break;
+				case DISCONNECT:
+				case DISCONNECTING:
+					txtState->value("DISCONNECTING");
+					break;
+				case DOWN :
+				default :
+					if (autobeacon != ON && restart_beacon) {
+						btnBEACON->activate();
+						Fl::remove_timeout(arqAutoBeacon);
+						Fl::add_timeout(1.0 + txdelay / 1000.0, arqAutoBeacon);
+					}
+					indCONNECT->color(FL_WHITE);
+					indCONNECT->redraw();
+					autobeacon = ON;
+					txtState->value("NOT CONNECTED");
+					txtStatus->value("");
+			}
+		}
+	}
 
 	if (sendingfile == true) {
 		if (digi_arq->transferComplete()) {
@@ -1671,9 +1704,6 @@ void changeBeaconText(const char *txt)
 
 void TALKprint(string s)
 {
-	string style;
-	style.append(s.length(), 'A');
-	stylebufRX->append(style.c_str());
 	txtRX->insert(s.c_str());
 	txtRX->show_insert_position();
 	txtRX->redraw();
@@ -1697,14 +1727,11 @@ void STATUSprint(string s, double disptime)
 void cbSendTalk()
 {
 	string tosend;
-	string style;
 	tosend = txtTX->value();
 	if (tosend.empty()) return;
 	tosend += '\n';
 	digi_arq->sendPlainText(tosend);
 	txtTX->value("");
-	style.append(tosend.length(), 'B');
-	stylebufRX->append(style.c_str());
 	txtRX->insert(tosend.c_str());
 	txtRX->show_insert_position();
 	txtRX->redraw();
@@ -1733,10 +1760,7 @@ void arqlog(string nom,string s)
 
 void DEBUGrxprint(string s)
 {
-	string style;
 	string text = noCR(s);
-	style.append(text.length(), 'C');
-	stylebufRX->append(style.c_str());
 	txtRX->insert(text.c_str());
 	txtRX->show_insert_position();
 	txtRX->redraw();
@@ -1745,10 +1769,7 @@ void DEBUGrxprint(string s)
 
 void DEBUGtxprint(string s)
 {
-	string style;
 	string text = noCR(s);
-	style.append(text.length(), 'D');
-	stylebufRX->append(style.c_str());
 	txtRX->insert(text.c_str());
 	txtRX->show_insert_position();
 	txtRX->redraw();
@@ -1757,11 +1778,8 @@ void DEBUGtxprint(string s)
 
 void TXecho(string s)
 {
-	string style;
 	blocksSent += s.length();
 	string text = noCR(s);
-	style.append(text.length(), 'B');
-	stylebufARQ->append(style.c_str());
 	txtARQ->insert(text.c_str());
 	txtARQ->show_insert_position();
 	txtARQ->redraw();
@@ -1774,7 +1792,6 @@ void style_unfinished_cb(int, void*) {
 void cbClearTalk()
 {
 	txtbuffRX->text("");
-	stylebufRX->text("");
 }
 
 void cb_arqwin(Fl_Widget *, void*)
@@ -1865,21 +1882,11 @@ int main (int argc, char *argv[] )
 			menu_mnu[i].labelsize(FL_NORMAL_SIZE);
 
 
-	txtbuffRX = new Fl_Text_Buffer();
-	txtRX->buffer(txtbuffRX);
+	txtbuffRX = txtRX->buffer();
 	txtRX->wrap_mode(1,80);
-	stylebufRX = new Fl_Text_Buffer();
-	txtRX->highlight_data(stylebufRX, styletable,
-                          sizeof(styletable) / sizeof(styletable[0]),
-                          'A', style_unfinished_cb, 0);
 
-	txtbuffARQ = new Fl_Text_Buffer();
-	txtARQ->buffer(txtbuffARQ);
+	txtbuffARQ = txtARQ->buffer();
 	txtARQ->wrap_mode(1,80);
-	stylebufARQ = new Fl_Text_Buffer();
-	txtARQ->highlight_data(stylebufARQ, styletable,
-                          sizeof(styletable) / sizeof(styletable[0]),
-                          'A', style_unfinished_cb, 0);
 
 	digi_arq = new arq();
 
