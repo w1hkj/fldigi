@@ -16,6 +16,7 @@ fi
 PWD=`pwd`
 data="${PWD}/$1"
 build="${PWD}/$2"
+dist="${PWD}/../dist/bin"
 
 # more sanity checks
 for d in "$data" "$build"; do
@@ -53,6 +54,8 @@ fi
 if test "x$USE_NLS" = "xyes" && make -C "$srcdir/../po" install prefix="$build" >/dev/null; then
     def="$def -DFLDIGI_LOCALE_PATH=$build/share -DFLDIGI_LOCALE_DIR=locale"
 fi
+
+def="$def -DDIST_DEPS=$dist"
 
 $MAKENSIS -V2 -NOCD -D"INSTALLER_FILE=$INSTALLER_FILE" -D"LICENSE_FILE=$data/../COPYING" \
     -D"SUPPORT_URL=$PACKAGE_HOME" -D"UPDATES_URL=$PACKAGE_DL" -D"FLDIGI_DOCS_URL=$PACKAGE_DOCS" \

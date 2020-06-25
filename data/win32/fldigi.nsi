@@ -121,6 +121,7 @@ SectionEnd
         SectionIn RO
         SetOutPath $INSTDIR
         File "${FLDIGI_BINARY}"
+	File /nonfatal "${DIST_DEPS}/*"
         !ifdef FLDIGI_LOCALE_DIR
 	    File /r "${FLDIGI_LOCALE_PATH}/${FLDIGI_LOCALE_DIR}"
         !endif
