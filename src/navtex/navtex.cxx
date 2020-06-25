@@ -1231,7 +1231,7 @@ private:
 			// the average of the two is a valid character.
 			for (i = 0; i < 7; i++) {
 				int a = m_bit_values[m_bit_cursor + i];
-				int r = m_bit_values[rep + i];
+				int r = m_bit_values[reppos + i];
 				avg[i] = a + r;
 			}
 
