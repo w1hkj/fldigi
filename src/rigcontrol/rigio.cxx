@@ -2148,7 +2148,7 @@ int pwrlevel_val(int pwr)
 // called by rigio thread
 // must use REQ(...) to set the power level control
 
-static void rigCAT_update_pwrlevel(const long v)
+static void rigCAT_update_pwrlevel(long &v)
 {
 	long pwr = v;
 	char szpwr[10];
