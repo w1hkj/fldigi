@@ -2080,9 +2080,9 @@ void rigCAT_set_notch(int freq)
 		LOG_ERROR("%s failed", symbol);
 }
 
-int pwrlevel_data(DATA d, size_t p)
+long pwrlevel_data(DATA d, size_t p)
 {
-	int val = 0;
+	long val = 0;
 
 	if (d.dtype == "BCD") {
 		if (d.reverse == true)
@@ -2102,7 +2102,7 @@ int pwrlevel_data(DATA d, size_t p)
 	}
 
 	size_t n;
-	int pwr1, pwr2, val1, val2;
+	long pwr1, pwr2, val1, val2;
 	for (n = 0; n < xmlrig.pwrlevel.size() - 1; n++) {
 		if ((val > xmlrig.pwrlevel[n].val) && (val <= xmlrig.pwrlevel[n+1].val))
 			break;
@@ -2148,9 +2148,9 @@ int pwrlevel_val(int pwr)
 // called by rigio thread
 // must use REQ(...) to set the power level control
 
-static void rigCAT_update_pwrlevel(void *v)
+static void rigCAT_update_pwrlevel(long &v)
 {
-	long pwr = reinterpret_cast<intptr_t>(v);
+	long pwr = v;
 	char szpwr[10];
 	snprintf(szpwr, sizeof(szpwr), "%ld", pwr);
 	progdefaults.mytxpower = szpwr;
@@ -2253,7 +2253,7 @@ void rigCAT_get_pwrlevel()
 // convert the data field
 	pwr = pwrlevel_data(rTemp.data, pData);
 
-	REQ(rigCAT_update_pwrlevel, (void *)pwr);
+	REQ(rigCAT_update_pwrlevel, pwr);
 }
 
 void rigCAT_set_pwrlevel(int pwr)
