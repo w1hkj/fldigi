@@ -1,18 +1,15 @@
+2020-06-26  David Freese  <w1hkj@bellsouth.net>
 
+	ca67a417e: alpha
+	9a6c2ae4c: Field Day Logger
+	a9ccff775: flarq update
 
-=Version 4.1.14=
+2020-06-25  Rik van Riel  <riel@surriel.com>
 
-2020-07-11  David Freese  <w1hkj@bellsouth.net>
+	a38bb1e36: Navtex
 
-	018618b6c: fonts
-	35a0af45b: Navtex
-	a626371f2: Navigator
-	c37af9c93: hamlib
-	606684fdf: Build scripts
-	2adcc0184: localtime_r
-	2b5f464f1: Freq Analysis
-	0e1aa47fc: Field Day Logger
-	a984f7ad9: flarq update
+2020-06-22  David Freese  <w1hkj@bellsouth.net>
+
 	85c25e27f: Sound Record
 	f952c0808: Freq Control
 
