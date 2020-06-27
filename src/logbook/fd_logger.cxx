@@ -496,7 +496,8 @@ void FD_logoff()
 void FD_band_check() {
 	if (fd_band != FD_opband()) {
 		FD_logoff();
-//		FD_start();
+		MilliSleep(50);
+		FD_start();
 		FD_logon();
 	}
 }
@@ -507,7 +508,8 @@ void FD_band_check() {
 void FD_mode_check() {
 	if (fd_mode != FD_opmode()) {
 		FD_logoff();
-//		FD_start();
+		MilliSleep(50);
+		FD_start();
 		FD_logon();
 	}
 }

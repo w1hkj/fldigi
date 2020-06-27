@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0304
+version 1.0305
 i18n_type 1
 i18n_include "gettext.h"
 i18n_function _
@@ -11,312 +11,312 @@ decl {\#include "configuration.h"} {private local
 Function {make_fd_view()} {open
 } {
   Fl_Window {} {
-    label {Field Day Viewer - use with program 'fdserver'} open
-    xywh {745 38 785 270} type Double align 5 visible
+    label {Field Day Viewer - use with program 'fdserver'} open selected
+    xywh {603 168 670 270} type Double align 5 visible
   } {
     Fl_Output view_FD_call {
       label {FD Call}
-      xywh {98 6 77 24}
+      xywh {59 6 77 24}
       code0 {o->value(progdefaults.my_FD_call.c_str());}
     }
     Fl_Output view_FD_class {
       label {FD Class}
-      xywh {277 5 38 24}
+      xywh {219 5 38 24}
       code0 {o->value(progdefaults.my_FD_class.c_str());}
     }
     Fl_Output view_FD_section {
       label {FD Section}
-      xywh {417 5 38 24}
+      xywh {341 5 38 24}
       code0 {o->value(progdefaults.my_FD_section.c_str());}
     }
     Fl_Output view_FD_mult {
       label {FD Mult}
-      xywh {557 5 38 24}
+      xywh {462 5 38 24}
       code0 {o->value(progdefaults.my_FD_mult.c_str());}
     }
     Fl_Output view_FD_score {
       label Score
-      xywh {698 5 80 24}
-    }
-    Fl_Box {} {
-      label 160
-      xywh {55 33 50 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 80
-      xywh {114 33 50 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 40
-      xywh {174 33 50 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 20
-      xywh {233 33 50 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 17
-      xywh {293 33 50 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 15
-      xywh {352 33 50 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 12
-      xywh {414 33 50 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 10
-      xywh {476 33 50 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 6
-      xywh {538 33 50 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 2
-      xywh {600 33 50 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 220
-      xywh {660 33 60 17} box FLAT_BOX
-    }
-    Fl_Box {} {
-      label 440
-      xywh {720 33 60 17} box FLAT_BOX
+      xywh {584 5 80 24}
     }
     Fl_Output {view_FD_CW[0]} {
       label CW
-      xywh {55 49 60 24}
+      xywh {55 49 50 24} textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[1]} {
-      xywh {115 49 60 24} align 20
+      xywh {106 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[2]} {
-      xywh {174 49 60 24} align 20
+      xywh {156 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[3]} {
-      xywh {234 49 60 24} align 20
+      xywh {207 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[4]} {
-      xywh {293 49 60 24} align 20
+      xywh {258 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[5]} {
-      xywh {353 49 60 24} align 20
+      xywh {309 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[6]} {
-      xywh {415 49 60 24} align 20
+      xywh {360 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[7]} {
-      xywh {475 49 60 24} align 20
+      xywh {411 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[8]} {
-      xywh {536 49 60 24} align 20
+      xywh {462 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[9]} {
-      xywh {598 49 60 24} align 20
+      xywh {513 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[10]} {
-      xywh {659 49 60 24} align 20
+      xywh {564 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW[11]} {
-      xywh {719 49 60 24} align 20
+      xywh {615 49 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[0]} {
       label {Oper'}
-      xywh {55 73 60 24}
+      xywh {55 75 50 24} textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[1]} {
-      xywh {115 73 60 24} align 20
+      xywh {106 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[2]} {
-      xywh {174 73 60 24} align 20
+      xywh {156 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[3]} {
-      xywh {234 73 60 24} align 20
+      xywh {207 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[4]} {
-      xywh {293 73 60 24} align 20
+      xywh {258 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[5]} {
-      xywh {353 73 60 24} align 20
+      xywh {309 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[6]} {
-      xywh {415 73 60 24} align 20
+      xywh {360 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[7]} {
-      xywh {475 73 60 24} align 20
+      xywh {411 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[8]} {
-      xywh {536 73 60 24} align 20
+      xywh {462 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[9]} {
-      xywh {598 73 60 24} align 20
+      xywh {513 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[10]} {
-      xywh {659 73 60 24} align 20
+      xywh {564 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_CW_OP[11]} {
-      xywh {719 73 60 24} align 20
+      xywh {615 73 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[0]} {
       label DIG
-      xywh {55 103 60 24}
+      xywh {55 102 50 24} textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[1]} {
-      xywh {115 103 60 24} align 20
+      xywh {106 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[2]} {
-      xywh {174 103 60 24} align 20
+      xywh {156 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[3]} {
-      xywh {234 103 60 24} align 20
+      xywh {207 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[4]} {
-      xywh {293 103 60 24} align 20
+      xywh {258 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[5]} {
-      xywh {353 103 60 24} align 20
+      xywh {309 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[6]} {
-      xywh {415 103 60 24} align 20
+      xywh {360 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[7]} {
-      xywh {475 103 60 24} align 20
+      xywh {411 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[8]} {
-      xywh {536 103 60 24} align 20
+      xywh {462 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[9]} {
-      xywh {598 103 60 24} align 20
+      xywh {513 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[10]} {
-      xywh {659 103 60 24} align 20
+      xywh {564 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG[11]} {
-      xywh {719 103 60 24} align 20
+      xywh {615 103 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[0]} {
       label {Oper'}
-      xywh {55 128 60 24}
+      xywh {55 129 50 24} textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[1]} {
-      xywh {115 128 60 24} align 20
+      xywh {106 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[2]} {
-      xywh {174 128 60 24} align 20
+      xywh {156 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[3]} {
-      xywh {234 128 60 24} align 20
+      xywh {207 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[4]} {
-      xywh {293 128 60 24} align 20
+      xywh {258 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[5]} {
-      xywh {353 128 60 24} align 20
+      xywh {309 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[6]} {
-      xywh {415 128 60 24} align 20
+      xywh {360 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[7]} {
-      xywh {475 128 60 24} align 20
+      xywh {411 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[8]} {
-      xywh {536 128 60 24} align 20
+      xywh {462 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[9]} {
-      xywh {598 128 60 24} align 20
+      xywh {513 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[10]} {
-      xywh {659 128 60 24} align 20
+      xywh {564 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_DIG_OP[11]} {
-      xywh {719 128 60 24} align 20
+      xywh {615 128 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[0]} {
       label PHONE
-      xywh {55 158 60 24}
+      xywh {55 156 50 24} textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[1]} {
-      xywh {115 158 60 24} align 20
+      xywh {106 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[2]} {
-      xywh {174 158 60 24} align 20
+      xywh {156 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[3]} {
-      xywh {234 158 60 24} align 20
+      xywh {207 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[4]} {
-      xywh {293 158 60 24} align 20
+      xywh {258 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[5]} {
-      xywh {353 158 60 24} align 20
+      xywh {309 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[6]} {
-      xywh {415 158 60 24} align 20
+      xywh {360 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[7]} {
-      xywh {475 158 60 24} align 20
+      xywh {411 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[8]} {
-      xywh {536 158 60 24} align 20
+      xywh {462 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[9]} {
-      xywh {598 158 60 24} align 20
+      xywh {513 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[10]} {
-      xywh {659 158 60 24} align 20
+      xywh {564 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE[11]} {
-      xywh {719 158 60 24} align 20
+      xywh {615 158 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[0]} {
       label {Oper'}
-      xywh {55 183 60 24}
+      xywh {55 183 50 24} textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[1]} {
-      xywh {115 183 60 24} align 20
+      xywh {106 183 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[2]} {
-      xywh {174 183 60 24} align 20
+      xywh {156 183 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[3]} {
-      xywh {234 183 60 24} align 20
+      xywh {207 183 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[4]} {
-      xywh {293 183 60 24} align 20
+      xywh {258 183 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[5]} {
-      xywh {353 183 60 24} align 20
+      xywh {309 183 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[6]} {
-      xywh {415 183 60 24} align 20
+      xywh {360 183 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[7]} {
-      xywh {475 183 60 24} align 20
+      xywh {411 183 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[8]} {
-      xywh {536 183 60 24} align 20
+      xywh {462 183 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[9]} {
-      xywh {598 183 60 24} align 20
+      xywh {513 183 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[10]} {
-      xywh {659 183 60 24} align 20
+      xywh {564 183 50 24} align 20 textfont 4 textsize 12
     }
     Fl_Output {view_FD_PHONE_OP[11]} {
-      xywh {719 183 60 24} align 20
+      xywh {615 183 50 24} align 20 textfont 4 textsize 12
+    }
+    Fl_Box {} {
+      label 160
+      xywh {60 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 80
+      xywh {111 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 40
+      xywh {161 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 20
+      xywh {212 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 17
+      xywh {263 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 15
+      xywh {314 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 12
+      xywh {365 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 10
+      xywh {416 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 6
+      xywh {467 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 2
+      xywh {518 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 220
+      xywh {569 33 40 17} box FLAT_BOX
+    }
+    Fl_Box {} {
+      label 440
+      xywh {620 33 40 17} box FLAT_BOX
     }
     Fl_Group {} {
       label {"fdserver" Client} open
-      xywh {5 212 775 55} box ENGRAVED_BOX align 21
+      xywh {5 212 660 55} box ENGRAVED_BOX align 21
     } {
       Fl_Input inp_fd_tcpip_addr {
         label {tcpip addr}
         callback {progdefaults.fd_tcpip_addr=o->value();
 progdefaults.changed = true;}
-        tooltip {fdserver tcipip address} xywh {85 234 198 24}
+        tooltip {fdserver tcipip address} xywh {85 234 150 24}
         code0 {o->value(progdefaults.fd_tcpip_addr.c_str());}
         code1 {\#include "flinput2.h"}
         class Fl_Input2
@@ -325,15 +325,15 @@ progdefaults.changed = true;}
         label port
         callback {progdefaults.fd_tcpip_port=o->value();
 progdefaults.changed = true;}
-        tooltip {fdserver tcpip port} xywh {325 234 75 24}
+        tooltip {fdserver tcpip port} xywh {273 234 75 24}
         code0 {o->value(progdefaults.fd_tcpip_port.c_str());}
         class Fl_Input2
       }
       Fl_Input inp_fd_op_call {
-        label {OP callsign}
+        label {OP call}
         callback {progdefaults.fd_op_call=o->value();
 progdefaults.changed = true;}
-        tooltip {free form exchange} xywh {500 234 90 24}
+        tooltip {free form exchange} xywh {402 234 90 24}
         code0 {o->value(progdefaults.fd_op_call.c_str());}
         class Fl_Input2
       }
@@ -348,15 +348,15 @@ if (progdefaults.connect_to_fdserver) {
 	progdefaults.logging = LOG_QSO;
 }
 UI_select();}
-        tooltip {Connect / Disconnect^jAddr/Port/OP required} xywh {608 236 70 20} down_box DOWN_BOX
+        tooltip {Connect / Disconnect^jAddr/Port/OP required} xywh {502 236 70 20} down_box DOWN_BOX
         code0 {o->value(progdefaults.connect_to_fdserver);}
         code1 {\#include "confdialog.h"}
         code2 {\#include "fl_digi.h"}
         code3 {\#include "logsupport.h"}
       }
       Fl_Box box_fdserver_connected {
-        label Connected selected
-        xywh {722 237 18 18} box ROUND_DOWN_BOX color 31 align 1
+        label Connected
+        xywh {608 237 18 18} box ROUND_DOWN_BOX color 31 align 1
       }
     }
   }

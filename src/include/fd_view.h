@@ -10,13 +10,13 @@ extern Fl_Output *view_FD_class;
 extern Fl_Output *view_FD_section;
 extern Fl_Output *view_FD_mult;
 extern Fl_Output *view_FD_score;
-#include <FL/Fl_Box.H>
 extern Fl_Output *view_FD_CW[12];
 extern Fl_Output *view_FD_CW_OP[12];
 extern Fl_Output *view_FD_DIG[12];
 extern Fl_Output *view_FD_DIG_OP[12];
 extern Fl_Output *view_FD_PHONE[12];
 extern Fl_Output *view_FD_PHONE_OP[12];
+#include <FL/Fl_Box.H>
 #include <FL/Fl_Group.H>
 #include "flinput2.h"
 extern Fl_Input2 *inp_fd_tcpip_addr;
