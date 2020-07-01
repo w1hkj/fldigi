@@ -95,7 +95,9 @@ void cLogfile::log_to_file(log_t type, const string& s)
 	else {
 		time(&t);
 		gmtime_r(&t, &tm);
-		strftime(timestr, sizeof(timestr), "%a %b %e %H:%M:%S %Y UTC", &tm);
+        // Was %e (space padded month) but it's not available in the MS C
+        // runtime library, %d (zero-padded) is more portable.
+		strftime(timestr, sizeof(timestr), "%a %b %d %H:%M:%S %Y UTC", &tm);
 		fprintf(logfile, "\n--- Logging %s at %s ---\n", s.c_str(), timestr);
 	}
 
