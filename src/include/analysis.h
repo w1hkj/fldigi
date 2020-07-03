@@ -60,6 +60,7 @@ private:
 	long int wf_freq;
 	double   dspcnt;
 	long int passno;
+	int		rxcorr;
 
 	struct timespec start_time;
 	struct tm File_Start_Date;

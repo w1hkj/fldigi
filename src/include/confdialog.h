@@ -821,6 +821,7 @@ extern Fl_ListBox *menuSampleConverter;
 extern Fl_Spinner2 *cntRxRateCorr;
 extern Fl_Spinner2 *cntTxRateCorr;
 extern Fl_Spinner2 *cntTxOffset;
+extern Fl_Counter *cntRIT;
 extern Fl_ListBox *listbox_wav_samplerate;
 extern Fl_Check_Button *btn_record_both;
 extern Fl_Spinner2 *cntChannels;

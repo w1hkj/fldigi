@@ -32,6 +32,7 @@
 #include <cstdio>
 #include <ctime>
 
+#include "configuration.h"
 #include "analysis.h"
 #include "modem.h"
 #include "misc.h"
@@ -68,6 +69,7 @@ void anal::init()
 	modem::init();
 	rx_init();
 	set_scope_mode(Digiscope::RTTY);
+	rxcorr = progdefaults.RX_corr;
 }
 
 anal::~anal()
@@ -75,6 +77,7 @@ anal::~anal()
 	delete bpfilt;
 	delete ffilt;
 	delete afilt;
+	progdefaults.RX_corr = rxcorr;
 }
 
 // used for checking file exists function
@@ -247,7 +250,7 @@ void anal::writeFile()
 
 	fprintf(out, "%02d:%02d:%02d, %13.3f, %6.3f, %8.6f, %6.2f\n",
 		tm.tm_hour, tm.tm_min, tm.tm_sec,
-		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout)), fout, 
+		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout) + progdefaults.RIT), fout + progdefaults.RIT, 
 		amp, 20.0 * log10( (amp == 0 ? 1e-6 : amp) ) );
 
 	fclose(out);
@@ -310,9 +313,9 @@ int anal::rx_process(const double *buf, int len)
 				set_scope(pipe, PIPE_LEN, false);
 
 				if (wf->USB())
-					snprintf(msg1, sizeof(msg1), "%13.3f", wf->rfcarrier() + frequency + fout );
+					snprintf(msg1, sizeof(msg1), "%13.3f", wf->rfcarrier() + frequency + fout + progdefaults.RIT);
 				else
-					snprintf(msg1, sizeof(msg1), "%13.3f", wf->rfcarrier() - frequency - fout );
+					snprintf(msg1, sizeof(msg1), "%13.3f", wf->rfcarrier() - frequency - fout + progdefaults.RIT);
 				put_Status2(msg1, 2.0);
 				writeFile();
 			}
