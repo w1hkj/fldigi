@@ -9191,8 +9191,8 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Soundcard/Settings} selected
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      label {Soundcard/Settings} open selected
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Settings"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Soundcard/Settings"));}
