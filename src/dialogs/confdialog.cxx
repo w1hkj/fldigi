@@ -17029,7 +17029,6 @@ nce.\nYou may change the state from either location.\n..."));
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Soundcard/Settings"));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-      o->hide();
       { grpAudioSampleRate = new Fl_Group(260, 48, 490, 90, _("Sample rate"));
         grpAudioSampleRate->box(FL_ENGRAVED_FRAME);
         grpAudioSampleRate->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
