@@ -7264,6 +7264,12 @@ static void cb_cntTxOffset(Fl_Spinner2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Counter *cntRIT=(Fl_Counter *)0;
+
+static void cb_cntRIT(Fl_Counter* o, void*) {
+  progdefaults.RIT=o->value();
+}
+
 Fl_ListBox *listbox_wav_samplerate=(Fl_ListBox *)0;
 
 static void cb_listbox_wav_samplerate(Fl_ListBox* o, void*) {
@@ -16207,7 +16213,7 @@ nce.\nYou may change the state from either location.\n..."));
       { grpAudioSampleRate = new Fl_Group(260, 48, 490, 90, _("Sample rate"));
         grpAudioSampleRate->box(FL_ENGRAVED_FRAME);
         grpAudioSampleRate->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { Fl_ListBox* o = menuInSampleRate = new Fl_ListBox(270, 77, 100, 22, _("Capture"));
+        { Fl_ListBox* o = menuInSampleRate = new Fl_ListBox(284, 77, 100, 22, _("Capture"));
           menuInSampleRate->tooltip(_("Force a specific sample rate. Select \"Native\" if \"Auto\"\ndoes not work we\
 ll with your audio device."));
           menuInSampleRate->box(FL_DOWN_BOX);
@@ -16224,7 +16230,7 @@ ll with your audio device."));
           o->labelsize(FL_NORMAL_SIZE);
           menuInSampleRate->end();
         } // Fl_ListBox* menuInSampleRate
-        { Fl_ListBox* o = menuOutSampleRate = new Fl_ListBox(270, 107, 100, 22, _("Playback"));
+        { Fl_ListBox* o = menuOutSampleRate = new Fl_ListBox(284, 107, 100, 22, _("Playback"));
           menuOutSampleRate->box(FL_DOWN_BOX);
           menuOutSampleRate->color(FL_BACKGROUND2_COLOR);
           menuOutSampleRate->selection_color(FL_BACKGROUND_COLOR);
@@ -16260,7 +16266,7 @@ ll with your audio device."));
       { Fl_Group* o = new Fl_Group(260, 138, 490, 62, _("Corrections"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { Fl_Spinner2* o = cntRxRateCorr = new Fl_Spinner2(270, 168, 85, 20, _("RX ppm"));
+        { Fl_Spinner2* o = cntRxRateCorr = new Fl_Spinner2(284, 165, 85, 20, _("RX ppm"));
           cntRxRateCorr->tooltip(_("RX sound card correction"));
           cntRxRateCorr->box(FL_NO_BOX);
           cntRxRateCorr->color(FL_BACKGROUND_COLOR);
@@ -16277,7 +16283,7 @@ ll with your audio device."));
           o->maximum(50000);
           o->labelsize(FL_NORMAL_SIZE);
         } // Fl_Spinner2* cntRxRateCorr
-        { Fl_Spinner2* o = cntTxRateCorr = new Fl_Spinner2(431, 168, 85, 20, _("TX ppm"));
+        { Fl_Spinner2* o = cntTxRateCorr = new Fl_Spinner2(431, 165, 85, 20, _("TX ppm"));
           cntTxRateCorr->tooltip(_("TX sound card correction"));
           cntTxRateCorr->box(FL_NO_BOX);
           cntTxRateCorr->color(FL_BACKGROUND_COLOR);
@@ -16294,7 +16300,7 @@ ll with your audio device."));
           o->maximum(50000);
           o->labelsize(FL_NORMAL_SIZE);
         } // Fl_Spinner2* cntTxRateCorr
-        { Fl_Spinner2* o = cntTxOffset = new Fl_Spinner2(593, 168, 85, 20, _("TX offset"));
+        { Fl_Spinner2* o = cntTxOffset = new Fl_Spinner2(591, 165, 85, 20, _("TX offset"));
           cntTxOffset->tooltip(_("Difference between Rx & Tx freq (rig offset)"));
           cntTxOffset->box(FL_NO_BOX);
           cntTxOffset->color(FL_BACKGROUND_COLOR);
@@ -16311,6 +16317,21 @@ ll with your audio device."));
           o->minimum(-50); o->maximum(50);
           o->labelsize(FL_NORMAL_SIZE);
         } // Fl_Spinner2* cntTxOffset
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(260, 200, 490, 62, _("Frequency Analysis Rx Correction"));
+        o->box(FL_ENGRAVED_FRAME);
+        o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        { Fl_Counter* o = cntRIT = new Fl_Counter(284, 226, 130, 20, _("RIT"));
+          cntRIT->tooltip(_("Used ONLY for frequency analysis mode"));
+          cntRIT->minimum(-5);
+          cntRIT->maximum(5);
+          cntRIT->step(0.01);
+          cntRIT->callback((Fl_Callback*)cb_cntRIT);
+          cntRIT->align(Fl_Align(FL_ALIGN_RIGHT));
+          o->value(progdefaults.RIT);
+          o->lstep(0.1);
+        } // Fl_Counter* cntRIT
         o->end();
       } // Fl_Group* o
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Settings"));

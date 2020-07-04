@@ -6070,7 +6070,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/Wefax} open selected
+      label {Modem/Wefax}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Wefax"));}
       code1 {config_pages.push_back(p);}
@@ -9191,7 +9191,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Soundcard/Settings}
+      label {Soundcard/Settings} selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Settings"));}
       code1 {config_pages.push_back(p);}
@@ -9207,7 +9207,7 @@ progdefaults.changed = true;}
 resetSoundCard();
 progdefaults.changed = true;} open
           tooltip {Force a specific sample rate. Select "Native" if "Auto"
-does not work well with your audio device.} xywh {270 77 100 22} box DOWN_BOX color 7 align 8
+does not work well with your audio device.} xywh {284 77 100 22} box DOWN_BOX color 7 align 8
           code0 {o->clear_changed();}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_ListBox
@@ -9217,7 +9217,7 @@ does not work well with your audio device.} xywh {270 77 100 22} box DOWN_BOX co
           callback {progdefaults.out_sample_rate = o->index() > 1 ? strtol(o->value(), 0, 10) : o->index();
 resetSoundCard();
 progdefaults.changed = true;} open
-          xywh {270 107 100 22} box DOWN_BOX color 7 align 8
+          xywh {284 107 100 22} box DOWN_BOX color 7 align 8
           code0 {o->clear_changed();}
           code1 {o->tooltip(menuInSampleRate->tooltip());}
           code2 {o->labelsize(FL_NORMAL_SIZE);}
@@ -9245,7 +9245,7 @@ o->tooltip(src_get_description(progdefaults.sample_converter));} open
           label {RX ppm}
           callback {progdefaults.RX_corr = (int)o->value();
 progdefaults.changed = true;}
-          tooltip {RX sound card correction} xywh {270 168 85 20} align 8
+          tooltip {RX sound card correction} xywh {284 165 85 20} align 8
           code0 {o->step(1);}
           code1 {o->minimum(-50000);}
           code2 {o->maximum(50000);}
@@ -9256,7 +9256,7 @@ progdefaults.changed = true;}
           label {TX ppm}
           callback {progdefaults.TX_corr = (int)o->value();
 progdefaults.changed = true;}
-          tooltip {TX sound card correction} xywh {431 168 85 20} align 8
+          tooltip {TX sound card correction} xywh {431 165 85 20} align 8
           code0 {o->step(1);}
           code1 {o->minimum(-50000);}
           code2 {o->maximum(50000);}
@@ -9267,12 +9267,24 @@ progdefaults.changed = true;}
           label {TX offset}
           callback {progdefaults.TxOffset = (int)o->value();
 progdefaults.changed = true;}
-          tooltip {Difference between Rx & Tx freq (rig offset)} xywh {593 168 85 20} align 8
+          tooltip {Difference between Rx & Tx freq (rig offset)} xywh {591 165 85 20} align 8
           code0 {o->value(progdefaults.TxOffset);}
           code1 {o->step(1);}
           code2 {o->minimum(-50); o->maximum(50);}
           code3 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_Spinner2
+        }
+      }
+      Fl_Group {} {
+        label {Frequency Analysis Rx Correction} open
+        xywh {260 200 490 62} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Counter cntRIT {
+          label RIT
+          callback {progdefaults.RIT=o->value();}
+          tooltip {Used ONLY for frequency analysis mode} xywh {284 226 130 20} align 8 minimum -5 maximum 5 step 0.01
+          code0 {o->value(progdefaults.RIT);}
+          code1 {o->lstep(0.1);}
         }
       }
     }

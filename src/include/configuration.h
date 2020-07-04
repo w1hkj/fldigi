@@ -1581,6 +1581,9 @@
         ELEM_(int, TxOffset, "TXOFFSET",                                                \
               "Difference between RX and TX freq (rig offset)",                         \
               0)                                                                        \
+        ELEM_(double, RIT, "RIT",                                                       \
+              "Linear frequency correction applied to frequency analysis",              \
+              0)                                                                        \
         ELEM_(int, wavSampleRate, "WAV_SAMPLERATE",                                     \
               "Wave file record sample rate\n"                                          \
               "0 - 8000, 1 - 11025, 2 - 16000, 3 - 22050\n"                             \
