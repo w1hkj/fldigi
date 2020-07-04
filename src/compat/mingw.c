@@ -37,11 +37,13 @@
 /* default mode for stdin, stdout and stderr */
 unsigned int _CRT_fmode = _O_BINARY;
 
+/*
 unsigned sleep(unsigned seconds)
 {
 	Sleep(seconds*1000);
 	return 0;
 }
+*/
 
 #undef getcwd
 char *mingw_getcwd(char *pointer, int len)

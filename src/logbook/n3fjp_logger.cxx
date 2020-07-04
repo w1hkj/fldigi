@@ -60,6 +60,7 @@
 #include "confdialog.h"
 #include "rigsupport.h"
 #include "contest.h"
+#include "timeops.h"
 
 LOG_FILE_SOURCE(debug::LOG_N3FJP);
 
