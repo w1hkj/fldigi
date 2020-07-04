@@ -21,7 +21,7 @@ make clean
   --with-libiconv-prefix=$PREFIX/iconv \
   --enable-static \
   --with-libintl-prefix=$PREFIX/gettext \
-  PTW32_LIBS="-lpthread -lpcreposix -lpcre -lregex" \
+  PTW32_LIBS="-lpthread -lpcreposix -lpcre" \
   FLTK_CONFIG=$PREFIX/bin/i686-w64-mingw32.static-fltk-config \
 
 make
