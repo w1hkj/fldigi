@@ -298,6 +298,13 @@ AC_FLDIGI_PKG_CHECK([libmbedtls], [libmbedtls >= 2.16.0],
   [yes], [yes], [use mbedtls libraries @<:@autodetect@:>@],
   [ENABLE_LIBMBEDTLS])
 
+### regex
+# Does no provide a pkgconf file, so find manually
+AC_SEARCH_LIBS([regcomp], [regex], [], [
+        AC_MSG_ERROR([Unable to find a compatible regex library.])
+])
+
+
 ### libintl
 # Substitute INTL_CFLAGS in Makefile
 # Substitute INTL_LIBS in Makefile
