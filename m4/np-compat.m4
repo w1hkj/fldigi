@@ -17,9 +17,6 @@ AC_DEFUN([AC_FLDIGI_NP_COMPAT], [
   if test "x$target_mingw32" = "xyes"; then
       # Newer versions of mingw32 comes with pthread.
       sem_libs="pthreadGC2 pthread"
-     # pretend that the regex.h check failed so that we use the bundled regex code
-     ac_cv_header_regex_h=no
-     AC_DEFINE([HAVE_REGEX_H], 0, [Define to 1 if you have the <regex.h> header file.])
   else
       sem_libs="pthread rt"
   fi

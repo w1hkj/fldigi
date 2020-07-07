@@ -8,12 +8,15 @@ case "$target_os" in
       ;;
 esac
 
-if test "$target_darwin" = "yes"; then
-   AC_MSG_NOTICE([using bundled GNU regex on $target_os])
-   # pretend that the regex.h check failed so that we use the bundled regex code
-   ac_cv_header_regex_h=no
-   AC_DEFINE([HAVE_REGEX_H], 0, [Define to 1 if you have the <regex.h> header file.])
-fi
+### Try to use system regex
+#
+#if test "$target_darwin" = "yes"; then
+#   AC_MSG_NOTICE([using bundled GNU regex on $target_os])
+#   # pretend that the regex.h check failed so that we use the bundled regex code
+#   ac_cv_header_regex_h=no
+#   AC_DEFINE([HAVE_REGEX_H], 0, [Define to 1 if you have the <regex.h> header file.])
+#fi
+
 
 AC_ARG_ENABLE([mac-universal], AC_HELP_STRING([--enable-mac-universal],
                                               [build a universal binary on Mac OS X @<:@no@:>@]),
