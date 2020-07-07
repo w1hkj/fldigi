@@ -98,42 +98,40 @@ void hamlib_get_defaults()
 	rigmodel = hamlib_get_rig_model(cboHamlibRig->index());
 	testrig.init(rigmodel);
 
-	if (testrig.getCaps()->port_type != RIG_PORT_SERIAL) {
-		testrig.close();
-		return;
+	if (testrig.getCaps()->port_type == RIG_PORT_SERIAL) {
+
+		testrig.getConf("serial_speed", szParam);
+		listbox_baudrate->value(szParam);
+
+		testrig.getConf("post_write_delay", szParam);
+		sscanf(szParam, "%d", &i);
+		cntHamlibWait->value(i);
+
+		testrig.getConf("write_delay", szParam);
+		sscanf(szParam, "%d", &i);
+		cntHamlibWriteDelay->value(i);
+
+		testrig.getConf("timeout", szParam);
+		sscanf(szParam, "%d", &i);
+		cntHamlibTimeout->value(i);	
+
+		testrig.getConf("retry", szParam);
+		sscanf(szParam, "%d", &i);
+		cntHamlibRetries->value(i);
+
+		testrig.getConf("rts_state", szParam);
+		chkHamlibRTSplus->value( strcmp(szParam, "ON") == 0 ? true : false);
+
+		testrig.getConf("dtr_state", szParam);
+		btnHamlibDTRplus->value( strcmp(szParam, "ON") == 0 ? true : false);
+
+		testrig.getConf("serial_handshake", szParam);
+		chkHamlibRTSCTSflow->value(strcmp(szParam, "Hardware") == 0 ? true : false);
+		chkHamlibXONXOFFflow->value(strcmp(szParam, "XONXOFF") == 0 ? true : false);
+
+		testrig.getConf("stop_bits", szParam);
+		valHamRigStopbits->value(strcmp(szParam, "1") == 0 ? 1 : 2);
 	}
-
-	testrig.getConf("serial_speed", szParam);
-	listbox_baudrate->value(szParam);
-
-	testrig.getConf("post_write_delay", szParam);
-	sscanf(szParam, "%d", &i);
-	cntHamlibWait->value(i);
-
-	testrig.getConf("write_delay", szParam);
-	sscanf(szParam, "%d", &i);
-	cntHamlibWriteDelay->value(i);
-
-	testrig.getConf("timeout", szParam);
-	sscanf(szParam, "%d", &i);
-	cntHamlibTimeout->value(i);
-
-	testrig.getConf("retry", szParam);
-	sscanf(szParam, "%d", &i);
-	cntHamlibRetries->value(i);
-
-	testrig.getConf("rts_state", szParam);
-	chkHamlibRTSplus->value( strcmp(szParam, "ON") == 0 ? true : false);
-
-	testrig.getConf("dtr_state", szParam);
-	btnHamlibDTRplus->value( strcmp(szParam, "ON") == 0 ? true : false);
-
-	testrig.getConf("serial_handshake", szParam);
-	chkHamlibRTSCTSflow->value(strcmp(szParam, "Hardware") == 0 ? true : false);
-	chkHamlibXONXOFFflow->value(strcmp(szParam, "XONXOFF") == 0 ? true : false);
-
-	testrig.getConf("stop_bits", szParam);
-	valHamRigStopbits->value(strcmp(szParam, "1") == 0 ? 1 : 2);
 
 	if (!testrig.canSetPTT()) {
 		btnHamlibCMDptt->value(0);
@@ -170,8 +168,6 @@ void hamlib_init_defaults()
 bool hamlib_init(bool bPtt)
 {
 	freq_t freq;
-//	rmode_t mode;
-//	pbwidth_t width;
 
 	hamlib_ptt = bPtt;
 
@@ -279,11 +275,7 @@ bool hamlib_init(bool bPtt)
 
 	LOG_INFO("trying mode request");
 	try {
-		if ( !xcvr->canGetMode() ) need_mode = false;
-		else {
-			need_mode = true;
-//			mode = xcvr->getMode(width);
-		}
+		need_mode = xcvr->canGetMode();
 	}
 	catch (const RigException& Ex) {
 		LOG_ERROR("Get Mode %s", Ex.what());
