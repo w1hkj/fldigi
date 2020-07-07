@@ -48,7 +48,7 @@ COMMON_WIN32_RES_SRC = common.rc
 
 BENCHMARK_SRC = include/benchmark.h misc/benchmark.cxx
 
-REGEX_SRC = compat/regex.h compat/regex.c
+#REGEX_SRC = compat/regex.h compat/regex.c
 
 STACK_SRC = include/stack.h misc/stack.cxx
 
