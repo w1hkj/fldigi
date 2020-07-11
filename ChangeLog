@@ -1,8 +1,37 @@
 
 
-=Version 4.1.13=
+=Version 4.1.14=
 
-2020-05-26  David Freese  <w1hkj@bellsouth.net>
+2020-07-11  David Freese  <w1hkj@bellsouth.net>
+
+	018618b6c: fonts
+	35a0af45b: Navtex
+	a626371f2: Navigator
+	c37af9c93: hamlib
+	606684fdf: Build scripts
+	2adcc0184: localtime_r
+	2b5f464f1: Freq Analysis
+	0e1aa47fc: Field Day Logger
+	a984f7ad9: flarq update
+	85c25e27f: Sound Record
+	f952c0808: Freq Control
+
+2020-06-17  Richard Shaw  <hobbes1069@gmail.com>
+
+	c5ffb269c: MinGW64
+
+2020-06-12  David Freese  <w1hkj@bellsouth.net>
+
+	d9f379f4e: FSK HELL
+	b3f5f6b16: Cabrillo logs
+	ed7c443ec: sound.cxx warning
+	84f1f3679: SNDFILE
+	05000ef4b: Store/Recall
+	b70cc0b68: wefax
+	5a06abd08: Rx Monitor
+
+
+=Version 4.1.13=
 
 	a09931a2e: doxygen
 	1caa2a467: wefax
