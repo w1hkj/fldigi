@@ -831,12 +831,11 @@ class navtex ;
 class navtex_implementation {
 
 	enum State {
-		NOSIGNAL, SYNC_SETUP, SYNC, READ_DATA
+		SYNC_SETUP, SYNC, READ_DATA
 	};
 
 	static const char * state_to_str( State s ) {
 		switch( s ) {
-			case NOSIGNAL  : return "NOSIGNAL";
 			case SYNC_SETUP: return "SYNC_SETUP";
 			case SYNC   : return "SYNC";
 			case READ_DATA : return "READ_DATA";
@@ -869,9 +868,6 @@ class navtex_implementation {
 	double               m_prompt_accumulator ;
 	double               m_late_accumulator ;
 	double               m_mark_f, m_space_f;
-	double               m_audio_average ;
-	double               m_audio_average_tc;
-	double               m_audio_minimum ;
 	double               m_time_sec;
 
 	double               m_baud_rate ;
@@ -913,20 +909,17 @@ public:
 		m_message_counter = 1 ;
 		m_metric = 0.0 ;
 		m_time_sec = 0.0 ;
-		m_state = NOSIGNAL;
+		m_state = SYNC_SETUP;
 		m_message_time = 0.0 ;
 		m_early_accumulator = 0;
 		m_prompt_accumulator = 0;
 		m_late_accumulator = 0;
-		m_audio_average = 0;
-		m_audio_minimum = 0.15;
 		m_sample_rate = the_sample_rate;
 		m_bit_duration = 0;
 		m_shift = false;
 		m_alpha_phase = false;
 		m_header_found = false;
 		m_center_frequency_f = dflt_center_freq;
-		m_audio_average_tc = 1000.0 / m_sample_rate;
 		// this value must never be zero and bigger than 10.
 		m_baud_rate = 100;
 		double m_bit_duration_seconds = 1.0 / m_baud_rate;
@@ -1231,7 +1224,7 @@ private:
 			// the average of the two is a valid character.
 			for (i = 0; i < 7; i++) {
 				int a = m_bit_values[m_bit_cursor + i];
-				int r = m_bit_values[rep + i];
+				int r = m_bit_values[reppos + i];
 				avg[i] = a + r;
 			}
 
@@ -1397,7 +1390,6 @@ private:
 			}
 		}
 		switch( lingering_state ) {
-			case NOSIGNAL:
 			case SYNC_SETUP:
 				next_carr = max_carrier ;
 				break;
@@ -1449,10 +1441,20 @@ private:
 		double slope = m_average_late_signal - m_average_early_signal;
 
 		if (m_average_prompt_signal < m_average_early_signal &&
-		    m_average_prompt_signal < m_average_late_signal)
+		    m_average_prompt_signal < m_average_late_signal) {
 			// At a signal minimum. Get out quickly.
-			slope /= 2;
-		else if (m_average_prompt_signal > m_average_late_signal &&
+			if (m_average_early_signal > m_average_late_signal) {
+				// move prompt to where early is
+				slope = m_next_early_event - m_next_prompt_event;
+				m_average_late_signal = m_average_prompt_signal;
+				m_average_prompt_signal = m_average_early_signal;
+			} else {
+				// move prompt to where late is
+				slope = m_next_late_event - m_next_prompt_event;
+				m_average_early_signal = m_average_prompt_signal;
+				m_average_prompt_signal = m_average_late_signal;
+			}
+		} else if (m_average_prompt_signal > m_average_late_signal &&
 			 m_average_prompt_signal > m_average_late_signal)
 			// Limit the adjustment, to ride out noise
 			slope /= 128;
@@ -1552,10 +1554,6 @@ private:
 
 			process_multicorrelator();
 
-			m_audio_average += (std::max(mark_abs, space_abs) - m_audio_average) * m_audio_average_tc;
-
-			m_audio_average = std::max(.1, m_audio_average);
-
 			// determine noise floor & envelope for mark & space
 			mark_env = envelope_decay(mark_env, mark_abs);
 			mark_noise = noise_decay(mark_noise, mark_abs);
@@ -1622,14 +1620,7 @@ private:
 				m_prompt_accumulator = 0;
 			}
 
-			if (m_audio_average < m_audio_minimum) {
-				set_state(NOSIGNAL);
-			} else if (m_state == NOSIGNAL) {
-				set_state(SYNC_SETUP);
-			}
-
 			switch (m_state) {
-				case NOSIGNAL: break;
 				case SYNC_SETUP:
 					m_error_count = 0;
 					m_shift = false;
