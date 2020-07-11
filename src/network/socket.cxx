@@ -1181,7 +1181,7 @@ size_t Socket::sendTo(const void* buf, size_t len)
 		unsigned long host_addr = get_address4((struct sockaddr *)useAddr);
 		unsigned int  host_port = get_port((struct sockaddr *) useAddr);
 
-		LOG_VERBOSE("HAP:%lX:%d count=%d buf=%s", host_addr, host_port, len, buf);
+		LOG_VERBOSE("HAP:%lX:%d count=%d buf=%s", host_addr, host_port, (int)len, (char*)buf);
 	}
 #endif
 
