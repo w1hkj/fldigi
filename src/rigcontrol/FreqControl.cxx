@@ -29,6 +29,8 @@
 
 #include <cstdlib>
 #include <cmath>
+#include <fstream>
+
 #include <stdio.h>
 
 #include "fl_digi.h"
@@ -79,6 +81,11 @@ void cbSelectDigit (Fl_Widget *btn, void * nbr)
 	fc->redraw();
 }
 
+//#define FCDEBUG 1
+#ifdef FCDEBUG
+	static int instance = 0;
+#endif
+
 cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 			  Fl_Group(x,y,w,h,"") {
 	font_number = progdefaults.FreqControlFontnbr;
@@ -99,25 +106,74 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 	fcHeight = h - 2 * bdr;
 
 	int fw, fh, ht = fcHeight;
+	char widest = '0';
 
 	fl_font(font_number, ++ht);
-	fh = fl_height();// + 1;
+	fh = fl_height() + 1;
+
+	fw = fl_width(widest);
+	for (char ch = '1'; ch <= '9'; ch++) {
+		if (fl_width(ch) > fw) {
+			widest = ch;
+			fw = fl_width(ch);
+		}
+	}
+#ifdef FCDEBUG
+	std::ofstream fc_dump;
+	if (instance++ == 0) {
+		fc_dump.open("fc_dump.txt", std::ios::out);
+	} else {
+		fc_dump.open("fc_dump.txt", std::ios::app);
+	}
+
+	fc_dump << "=========================================================" << std::endl;
+	fc_dump << "Frequency Control widget: # " << instance << " : " << this << std::endl;
+	fc_dump << "---------------------------------------------------------" << std::endl;
+	fc_dump << "adjust for height" << std::endl;
+	fc_dump << "fh = font height, fc = control height" << std::endl;
+	fc_dump << "font " << font_number << ", size " << ht << ", fh >? fc " << fh << " ? " << fcHeight << std::endl;
+	fc_dump << "widest numeral is " << widest << std::endl;
+#endif
 	while (fh > fcHeight) {
-		ht--;
+		--ht;
+		assert(ht > 0);
 		fl_font(font_number, ht);
 		fh = fl_height();
+#ifdef FCDEBUG
+	fc_dump << "font " << font_number << ", size " << ht << ", fh >? fc " << fh << " ? " << fcHeight << std::endl;
+#endif
 	}
 
 	fl_font(font_number, ht);
-	fw = fl_width("9") + 2;
+	fw = fl_width(widest) + 4;
 	pw = fw / 2;
+#ifdef FCDEBUG
+	fc_dump << "---------------------------------------------------------" << std::endl;
+	fc_dump << "adjust for width" << std::endl;
+	fc_dump << "fw = font width of '0' + 4 pixels for font size 'ht'" << std::endl;
+	fc_dump << "ht = " << ht << ", fw = " << fw << ", (nD*fw+pw): " << (nD*fw+pw) << ", (W-2*bdr): " << (W-2*bdr) << std::endl;
+#endif
 	while( (nD * fw + pw) >= (W - 2*bdr)) {
-		ht--;
+		--ht;
+		assert(ht > 0);
 		fl_font(font_number, ht);
-		fw = fl_width("9") + 2;
+		fw = fl_width(widest) + 4;
+#ifdef FCDEBUG
+	fc_dump << "ht = " << ht << ", fw = " << fw << std::endl;
+#endif
 		pw = fw / 2;
 	}
 	fh = fl_height();
+#ifdef FCDEBUG
+	fc_dump << "---------------------------------------------------------" << std::endl;
+	fc_dump << 
+	"font " << font_number << "\n" <<
+	"size " << ht << "\n" <<
+	"height in pixels: " << fh << "\n" <<
+	"width in pixels: " << fw << std::endl;
+	fc_dump << "=========================================================" << std::endl;
+	fc_dump.close();
+#endif
 
 	wfill = (w - nD * fw - pw - 2*bdr) / 2;
 	int wf2 = w - nD * fw - pw - 2*bdr - wfill;

@@ -29,12 +29,15 @@
 #ifndef FONTBROWSER_H
 #define FONTBROWSER_H
 
+#include <string>
+
 #include <FL/Enumerations.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Return_Button.H>
+#include <FL/Fl_Check_Button.H>
 #include "flslider2.h"
 
 // Preview box for showing font
@@ -55,6 +58,18 @@ public:
 class Font_Browser : public Fl_Window
 {
 public:
+	struct font_pair {
+		int  nbr;
+		std::string *name;
+		font_pair() {
+			nbr = 0;
+			name = 0;
+		}
+		~font_pair() {
+			if (name) delete name;
+		}
+	};
+
     enum filter_t { FIXED_WIDTH, VARIABLE_WIDTH, ALL_TYPES };
 
 private:
@@ -65,19 +80,25 @@ private:
     filter_t	filter;
     void	*data_;
 
+    static int *fixed;
+    static font_pair *font_pairs;
+    static int instance;
+
     Fl_Browser	*lst_Font;
     Fl_Browser	*lst_Size;
     Fl_Value_Input2 *txt_Size;
     Fl_Return_Button *btn_OK;
     Fl_Button	*btn_Cancel;
     Fl_Button	*btn_Color;
+    Fl_Check_Button	*btn_fixed;
     Preview_Box	*box_Example;
 
-    void	FontSort();
     Fl_Callback* callback_;
 
 public:
     Font_Browser(int x = 100, int y = 100, int w = 430, int h = 225, const char *lbl = "Font Browser");
+    ~Font_Browser();
+
     void callback(Fl_Callback* cb, void *d = 0) { callback_ = cb; data_ = d; }
     static void fb_callback(Fl_Widget* w, void* arg);
     void	FontNameSelect();
