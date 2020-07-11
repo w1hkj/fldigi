@@ -40,6 +40,10 @@
 #define DAMAGE_HEADER  FL_DAMAGE_ALL
 #define DAMAGE_ROWS  FL_DAMAGE_ALL
 
+#ifndef nullptr
+#define nullptr NULL
+#endif
+
 using namespace std;
 
 
