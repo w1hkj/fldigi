@@ -50,7 +50,7 @@
 
 #include "fileselect.h"
 
-//#include "logsupport.h"
+#include "logsupport.h"
 #include "dx_dialog.h"
 #include "dx_cluster.h"
 
@@ -855,6 +855,7 @@ void DXcluster_select()
 	}
 
 	inpCall->value(dxcall.c_str());
+	DupCheck();
 
 	long freq = (long)(atof(sfreq.c_str()) * 1000.0 + 0.5);
 // does remark section have a [nn] block?
