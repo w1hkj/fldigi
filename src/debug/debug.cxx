@@ -65,6 +65,8 @@
 static pthread_mutex_t debug_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t debug_hd_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+static pthread_mutex_t rotate_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 extern Fl_Double_Window *fl_digi_main;
 extern void update_main_title();
 
@@ -99,10 +101,12 @@ void fcopy(std::string from, std::string to)
 	if ((fp_from = fopen(from.c_str(), "rb")) != NULL) {
 		if ((fp_to = fopen(to.c_str(), "wb")) != NULL) {
 			while(1) {
-				memset(buffer, 0, sizeof(buffer));
-				n = fread(buffer, 1, sizeof(buffer), fp_from);
-				n = fwrite(buffer, 1, n, fp_to);
 				if (feof(fp_from))
+					break;
+//				memset(buffer, 0, sizeof(buffer));
+				if ((n = fread(buffer, 1, sizeof(buffer), fp_from)) > 0)
+					n = fwrite(buffer, 1, n, fp_to);
+				else
 					break;
 			}
 			fflush(fp_to);
@@ -114,6 +118,8 @@ void fcopy(std::string from, std::string to)
 
 void rotate_log(std::string filename)
 {
+	guard_lock rlock(&rotate_mutex);
+
 	std::string oldfn, newfn;
 	const char *ext[] = {".1", ".2", ".3", ".4", ".5"};
 
@@ -140,15 +146,21 @@ void debug::start(const char* filename)
 void debug::stop(void)
 {
 	guard_lock debug_lock(&debug_mutex);
+
+	if (inst) {
+		delete inst;
+		inst = 0;
+	}
 	if (window) {
 		window->hide();
 		delete window;
 		window = 0;
 	}
-	if (inst) {
-		delete inst;
-		inst = 0;
-	}
+//	if (inst) {
+//		delete inst;
+//		inst = 0;
+//	}
+std::cout << "debug stopped" << std::endl;
 }
 
 static char fmt[1024];
@@ -158,7 +170,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 {
 	guard_lock debug_lock(&debug_mutex);
 
-	if (!inst)
+	if (!debug::inst)
 		return;
 
 // always annotate with date/time & line number
@@ -290,6 +302,10 @@ debug::~debug()
 {
 	if (wfile) fclose(wfile);
 	if (rfile) fclose(rfile);
+	delete inst;
+	if (window)
+		window->hide();
+	delete window;
 }
 
 void mnu_debug_level_cb()
