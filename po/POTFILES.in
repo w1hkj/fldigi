@@ -2,6 +2,7 @@
 
 
 src/main.cxx
+src/debug/debug.cxx
 src/dialogs/fl_digi.cxx
 src/dialogs/Viewer.cxx
 src/globals/globals.cxx
@@ -12,7 +13,6 @@ src/logger/rx_extract.cxx
 src/logger/speak.cxx
 src/misc/configuration.cxx
 src/misc/status.cxx
-src/misc/debug.cxx
 src/misc/macroedit.cxx
 src/misc/macros.cxx
 src/network/network.cxx
