@@ -109,6 +109,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(LINE_SEP);
 	w->add(_("<CLRRX>\tclear RX pane"));
 	w->add(_("<CLRTX>\tclear TX pane"));
+	w->add(_("<CLRQSO>\tclear QSO fields"));
 
 	w->add(LINE_SEP);
 	w->add(_("<GET>\ttext to NAME/QTH"));
