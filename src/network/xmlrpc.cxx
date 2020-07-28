@@ -490,6 +490,7 @@ public:
 		if (how & TERM_SAVE_OPTIONS)
 			progdefaults.saveDefaults();
 		progdefaults.changed = false;
+		progdefaults.confirmExit = false;
 
 		extern bool oktoclear;
 		if (how & TERM_SAVE_LOG && !oktoclear)
