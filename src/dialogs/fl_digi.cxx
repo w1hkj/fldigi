@@ -1617,6 +1617,7 @@ void remove_windows()
 		font_browser = 0;
 	}
 	LOG_INFO("%s", sdeleting.c_str());
+	MilliSleep(50);
 	debug::stop();
 }
 
