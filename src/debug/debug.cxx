@@ -145,22 +145,18 @@ void debug::start(const char* filename)
 
 void debug::stop(void)
 {
-	guard_lock debug_lock(&debug_mutex);
-
-	if (inst) {
-		delete inst;
-		inst = 0;
-	}
 	if (window) {
 		window->hide();
 		delete window;
 		window = 0;
+std::cout << "debug window deleted" << std::endl;
 	}
 //	if (inst) {
 //		delete inst;
 //		inst = 0;
+//std::cout << "instance deleted" << std::endl;
 //	}
-std::cout << "debug stopped" << std::endl;
+//std::cout << "debug stopped" << std::endl;
 }
 
 static char fmt[1024];
@@ -302,10 +298,15 @@ debug::~debug()
 {
 	if (wfile) fclose(wfile);
 	if (rfile) fclose(rfile);
-	delete inst;
-	if (window)
-		window->hide();
-	delete window;
+//	if (window) {
+//		window->hide();
+//		delete window;
+//		window = 0;
+//	}
+//	if (inst) {
+//		delete inst;
+//		inst = 0;
+//	}
 }
 
 void mnu_debug_level_cb()
