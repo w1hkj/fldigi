@@ -9191,7 +9191,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Soundcard/Settings} selected
+      label {Soundcard/Settings}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Settings"));}
       code1 {config_pages.push_back(p);}
@@ -10320,7 +10320,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Waterfall/FFT Processing}
+      label {Waterfall/FFT Processing} selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/FFT Processing"));}
       code1 {config_pages.push_back(p);}
@@ -10343,14 +10343,14 @@ setwfrange();}
           label {FFT averaging}
           callback {progdefaults.WFaveraging = o->value();
 progdefaults.changed = true;}
-          tooltip {Use averaging to decrease waterfall noise} xywh {296 79 120 20} down_box DOWN_BOX
+          tooltip {Use averaging to decrease waterfall noise} xywh {296 79 120 20} down_box DOWN_BOX hide deactivate
           code0 {o->value(progdefaults.WFaveraging);}
         }
         Fl_Group listboxFFTPrefilter {
           label {FFT prefilter window function}
           callback {progdefaults.wfPreFilter = o->index();
 progdefaults.changed = true;} open
-          tooltip {Select the type of FFT prefilter} xywh {296 109 120 24} box DOWN_BOX color 7 align 8
+          tooltip {Select the type of FFT prefilter} xywh {296 109 120 24} box DOWN_BOX color 7 align 8 hide deactivate
           code0 {listboxFFTPrefilter->add(_("Rectangular")); listboxFFTPrefilter->add("Blackman");}
           code1 {listboxFFTPrefilter->add("Hamming"); listboxFFTPrefilter->add("Hanning");}
           code2 {listboxFFTPrefilter->add(_("Triangular"));}
@@ -10374,7 +10374,7 @@ setwfrange();}
 progdefaults.changed = true;}
           tooltip {Signal averaging over time
 0 - least
-4 - greatest} xywh {519 78 95 22} type Simple align 8 minimum 1 maximum 16 step 1 value 8
+4 - greatest} xywh {519 78 95 22} type Simple align 8 minimum 1 maximum 16 step 1 value 8 hide deactivate
           code0 {o->value(progdefaults.wf_latency);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_Counter2

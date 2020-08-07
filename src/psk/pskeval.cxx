@@ -55,7 +55,7 @@ void pskeval::sigdensity() {
 	int low = progdefaults.LowFreqCutoff;
 	if (low < ihbw) low = ihbw;
 	int high = progdefaults.HighFreqCutoff;
-	if (high > FFT_LEN - ihbw) high = FFT_LEN - ihbw;
+	if (high > WF_FFTLEN - ihbw) high = WF_FFTLEN - ihbw;
 	int nbr = high - low;
 
 	sigmin = 1e6;
@@ -139,5 +139,5 @@ double pskeval::peak(int &f0, int f1, int f2, double db)
 }
 
 void pskeval::clear() {
-	for (int i = 0; i < FFT_LEN; i++) sigpwr[i] = 0.0;
+	for (int i = 0; i < WF_FFTLEN; i++) sigpwr[i] = 0.0;
 }

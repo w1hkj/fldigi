@@ -279,7 +279,7 @@ void CW_CHANNEL::detect_tone()
 					ch, 
 					(int)ch_freq, 
 					decode_str[n], (int)MODE_CW);
-			timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
+			timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WF_BLOCKSIZE;
 			decode_str.clear();
 			rx_rep_buf.clear();
 		}
