@@ -33,7 +33,7 @@
 
 class pskeval {
 private:
-	double	sigpwr[FFT_LEN];
+	double	sigpwr[WF_FFTLEN];
 	double	sigmin;
 	double	bw;
 public:

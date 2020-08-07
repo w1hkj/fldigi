@@ -381,7 +381,7 @@ void view_rtty::Metric(int ch)
 
 	if (channel[ch].state == RCVNG)
 		if (channel[ch].metric < rtty_squelch) {
-			channel[ch].timeout = progdefaults.VIEWERtimeout * samplerate / WFBLOCKSIZE;
+			channel[ch].timeout = progdefaults.VIEWERtimeout * samplerate / WF_BLOCKSIZE;
 			channel[ch].state = WAITING;
 		}
 

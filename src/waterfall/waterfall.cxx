@@ -143,13 +143,15 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	pwr				= new wf_fft_type[IMAGE_WIDTH];
 	fft_db			= new short int[image_area];
 	tmp_fft_db		= new short int[image_area];
-	circbuff		= new double[FFT_LEN];
-	wfbuf			= new wf_cpx_type[FFT_LEN];
-	wfft			= new g_fft<wf_fft_type>(FFT_LEN);
-	fftwindow		= new double[FFT_LEN];
+//	circbuff		= new double[WF_FFTLEN];
+	circbuff		= new wf_fft_type[WF_FFTLEN];
+	wfbuf			= new wf_cpx_type[WF_FFTLEN];
+	wfft			= new g_fft<wf_fft_type>(WF_FFTLEN);
+//	fftwindow		= new double[WF_FFTLEN];
+	fftwindow		= new wf_fft_type[WF_FFTLEN];
 	setPrefilter(progdefaults.wfPreFilter);
 
-	memset(circbuff, 0, FFT_LEN * sizeof(double));
+	memset(circbuff, 0, WF_FFTLEN * sizeof(double));
 
 	mag = 1;
 	step = 4;
@@ -172,17 +174,15 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	rfc = 0L;
 	usb = true;
 	wfspeed = NORMAL;
-	srate = 8000;
 	wfspdcnt = 0;
-	dispcnt = 1.0 * WFBLOCKSIZE / SC_SMPLRATE;
-	dispdec = 1.0 * WFBLOCKSIZE / srate;
+	dispcnt = 1.0 * WF_BLOCKSIZE / WF_SAMPLERATE;
+	dispdec = 1.0 * WF_BLOCKSIZE / WF_SAMPLERATE;
 	wantcursor = false;
 	cursormoved = false;
-//	usebands = false;
 	for (int i = 0; i < IMAGE_WIDTH; i++)
 		pwr[i] = 0.0;
 
-	carrier(1000);
+	carrier(1500);
 
 	oldcarrier = newcarrier = 0;
 	tmp_carrier = false;
@@ -191,6 +191,29 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 
 	for (int i = 0; i < 256; i++)
 		mag2RGBI[i].I = mag2RGBI[i].R = mag2RGBI[i].G = mag2RGBI[i].B = 0;
+
+	int error = 0;
+
+// use fastest sync converter
+//	SRC_SINC_BEST_QUALITY		= 0,
+//	SRC_SINC_MEDIUM_QUALITY		= 1,
+//	SRC_SINC_FASTEST			= 2,
+//	SRC_ZERO_ORDER_HOLD			= 3,
+//	SRC_LINEAR					= 4,
+
+	src_state = src_new(2, 1, &error);
+	if (error) {
+		LOG_ERROR("src_new error %d: %s", error, src_strerror(error));
+		abort();
+	}
+
+	error = src_reset(src_state);
+	if (error)
+		LOG_ERROR("src_reset error %d: %s", error, src_strerror(error));
+
+	src_data.end_of_input = 0;
+	src_data.src_ratio = 0.0;
+	genptr = 0;
 }
 
 WFdisp::~WFdisp() {
@@ -501,13 +524,14 @@ double WFdisp::powerDensityMaximum(int bw_nb, const int (*bw)[2]) const
 
 void WFdisp::setPrefilter(int v)
 {
-	switch (v) {
-	case WF_FFT_RECTANGULAR: RectWindow(fftwindow, FFT_LEN); break;
-	case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, FFT_LEN); break;
-	case WF_FFT_HAMMING: HammingWindow(fftwindow, FFT_LEN); break;
-	case WF_FFT_HANNING: HanningWindow(fftwindow, FFT_LEN); break;
-	case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, FFT_LEN); break;
-	}
+//	switch (v) {
+//	case WF_FFT_RECTANGULAR: RectWindow(fftwindow, WF_FFTLEN); break;
+//	case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, WF_FFTLEN); break;
+//	case WF_FFT_HAMMING: HammingWindow(fftwindow, WF_FFTLEN); break;
+//	case WF_FFT_HANNING: HanningWindow(fftwindow, WF_FFTLEN); break;
+//	case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, WF_FFTLEN); break;
+//	}
+	BlackmanWindow(fftwindow, WF_FFTLEN);
 	prefilter = v;
 }
 
@@ -520,27 +544,30 @@ int WFdisp::log2disp(int v)
 }
 
 void WFdisp::processFFT() {
-	if (prefilter != progdefaults.wfPreFilter)
-		setPrefilter(progdefaults.wfPreFilter);
+//	if (prefilter != progdefaults.wfPreFilter)
+//		setPrefilter(progdefaults.wfPreFilter);
 
-	wf_fft_type scale = ( 1.0 * SC_SMPLRATE / srate ) * ( FFT_LEN / 8000.0);
+	wf_fft_type scale = WF_FFTLEN / 8000.0;
 
 	if ((wfspeed != PAUSE) && ((dispcnt -= dispdec) <= 0)) {
 		static const int log2disp100 = log2disp(-100);
-		double vscale = 2.0 / FFT_LEN;
+		double vscale = 2.0 / WF_FFTLEN;
 
-		for (int i = 0; i < FFT_LEN; i++) wfbuf[i] = 0;
+		for (int i = 0; i < WF_FFTLEN; i++) wfbuf[i] = 0;
 
 		void *pv = static_cast<void*>(wfbuf);
 		wf_fft_type *pbuf = static_cast<wf_fft_type*>(pv);
 
-		int latency = progdefaults.wf_latency;
-		if (latency < 1) latency = 1;
-		if (latency > 16) latency = 16;
-		int nsamples = FFT_LEN * latency / 16;
-		vscale *= sqrt(16.0 / latency);
-		for (int i = 0; i < nsamples; i++)
-			pbuf[i] = fftwindow[i * 16 / latency] * circbuff[i] * vscale;
+//		int latency = progdefaults.wf_latency;
+//		if (latency < 1) latency = 1;
+//		if (latency > 16) latency = 16;
+//		int nsamples = WF_FFTLEN * latency / 16;
+//		vscale *= sqrt(16.0 / latency);
+//		for (int i = 0; i < nsamples; i++)
+//			pbuf[i] = fftwindow[i * 16 / latency] * circbuff[i] * vscale;
+
+		for (int i = 0; i < WF_FFTLEN; i++)
+			pbuf[i] = fftwindow[i] * circbuff[i] * vscale;
 
 		wfft->RealFFT(wfbuf);
 
@@ -567,8 +594,8 @@ void WFdisp::processFFT() {
 					 IMAGE_WIDTH * sizeof(short int));
 		}
 
-		dispdec = 1.0 * WFBLOCKSIZE / srate;
-		dispcnt = 1.0 * WFBLOCKSIZE / SC_SMPLRATE; // FAST
+		dispdec = 1.0 * WF_BLOCKSIZE / WF_SAMPLERATE;
+		dispcnt = 1.0 * WF_BLOCKSIZE / WF_SAMPLERATE; // FAST
 		if (wfspeed == NORMAL) dispcnt *= NORMAL;
 		if (wfspeed == SLOW) dispcnt *= progdefaults.drop_speed;
 	}
@@ -594,7 +621,7 @@ void WFdisp::process_analog (wf_fft_type *sig, int len) {
 		ynext = (int)(h2 * sig[cbc]);
 		if (ynext < -h2) ynext = -h2;
 		if (ynext > h2) ynext = h2;
-		cbc = (cbc + 1) % (FFT_LEN);
+		cbc = (cbc + 1) % (WF_FFTLEN);
 		for (; sigy < ynext; sigy++) sig_img[sigpixel -= IMAGE_WIDTH] = graylevel;
 		for (; sigy > ynext; sigy--) sig_img[sigpixel += IMAGE_WIDTH] = graylevel;
 		sig_img[sigpixel++] = graylevel;
@@ -611,20 +638,64 @@ void WFdisp::process_analog (wf_fft_type *sig, int len) {
 extern state_t trx_state;
 static pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
 struct AUDIO_BLOCK {
-	double sig[WFBLOCKSIZE];
-	int sr;
+	wf_fft_type sig[WF_BLOCKSIZE];
+//	int sr;
 };
+
 queue<AUDIO_BLOCK> audio_blocks;
 
-void WFdisp::sig_data( double *sig, int sr)
+void WFdisp::sig_data( double *sig, int len )
 {
+	if (audio_blocks.size() > 8) {
+		return;
+	}
+	if (len > WF_BLOCKSIZE * 2) {
+		return;
+	}
 	AUDIO_BLOCK audio_block;
 
-	memcpy((void *) &audio_block.sig[0], sig, WFBLOCKSIZE * sizeof(sig[0]));
-	audio_block.sr = sr;
+	buf = insamples;
+	srclen = len;
+	int error;
 
-	guard_lock data_lock(&data_mutex);
-	audio_blocks.push(audio_block);
+	double src_ratio = 1.0 * WF_SAMPLERATE / active_modem->get_samplerate();
+
+	if (src_data.src_ratio != src_ratio) {
+		src_data.src_ratio = src_ratio;
+		src_set_ratio(src_state, src_data.src_ratio);
+		LOG_INFO("Waterfall sample rate ratio %f", src_ratio);
+	}
+	for (int n = 0; n < len; n++) insamples[n] = sig[n];
+
+	while (srclen > 0) {
+		src_data.data_in = insamples;
+		src_data.input_frames = srclen;
+		src_data.data_out = &outsamples[genptr];
+		src_data.output_frames = WF_BLOCKSIZE * 2 - genptr;
+		src_data.input_frames_used = 0;
+
+		if (unlikely(error = src_process(src_state, &src_data))) {
+			LOG_ERROR("src_process error %d: %s", error, src_strerror(error));
+			return;
+		}
+		size_t gend = src_data.output_frames_gen;
+		size_t used = src_data.input_frames_used;
+
+		genptr	+= gend;
+		buf		+= used;
+		srclen	-= used;
+
+		while (genptr >= WF_BLOCKSIZE) {
+			for (int n = 0; n < WF_BLOCKSIZE; n++) audio_block.sig[n] = outsamples[n];
+			{
+				guard_lock data_lock (&data_mutex);
+				audio_blocks.push(audio_block);
+			}
+			for (int n = 0; n < WF_BLOCKSIZE; n++) outsamples[n] = outsamples[n+WF_BLOCKSIZE];
+			genptr -= WF_BLOCKSIZE;
+		}
+	}
+	return;
 }
 
 // this method must be called from main thread
@@ -634,37 +705,26 @@ void WFdisp::handle_sig_data()
 	ENSURE_THREAD(FLMAIN_TID);
 
 	double gain = pow(10, progdefaults.wfRefLevel / -20.0);
-
+	AUDIO_BLOCK current;
 	while (1) {//!audio_blocks.empty()) {
 
-// this block guarded by data_mutex
+		if (audio_blocks.empty())
+			return;
+
+		for (int n = 0; n < WF_FFTLEN - WF_BLOCKSIZE; n++)
+			circbuff[n] = circbuff[n + WF_BLOCKSIZE];
 		{
+// this block guarded by data_mutex
 			guard_lock data_lock(&data_mutex);
-
-			if (audio_blocks.empty()) {
-				return;
-			}
-
-			memmove(
-				(void*)circbuff,
-				(void*)(circbuff + WFBLOCKSIZE),
-				(FFT_LEN - WFBLOCKSIZE)*sizeof(circbuff[0]) );
-
-			if (srate != audio_blocks.front().sr) {
-				srate = audio_blocks.front().sr;
-				memset( circbuff, 0, FFT_LEN * sizeof(circbuff[0]));
-				ptrCB = 0;
-			}
-			memcpy(
-				(void*)&circbuff[FFT_LEN - WFBLOCKSIZE - 1],
-				(void*)&audio_blocks.front().sig[0],
-				WFBLOCKSIZE * sizeof(circbuff[0]));
+			current = audio_blocks.front();
 			audio_blocks.pop();
 		}
+		for (int n = 0; n < WF_BLOCKSIZE; n++)
+			circbuff[n + WF_FFTLEN - WF_BLOCKSIZE - 1] = current.sig[n];
 
 		overload = false;
 		double overval = 0, peak = 0.0;
-		for (int i = FFT_LEN - WFBLOCKSIZE; i < FFT_LEN; i++) {
+		for (int i = WF_FFTLEN - WF_BLOCKSIZE; i < WF_FFTLEN; i++) {
 			overval = fabs(circbuff[i]);
 			if (overval > peak) peak = overval;
 			circbuff[i] *= gain;
@@ -672,7 +732,7 @@ void WFdisp::handle_sig_data()
 		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 
 		if (mode == SCOPE)
-			process_analog(circbuff, FFT_LEN);
+			process_analog(circbuff, WF_FFTLEN);
 		else
 			processFFT();
 
@@ -945,21 +1005,21 @@ case Step: for (int row = 0; row < image_height; row++) { \
 		p3 += disp_width; \
 	}; break
 
-	if (progdefaults.WFaveraging) {
+//	if (progdefaults.WFaveraging) {
 		switch(step) {
 			UPD_LOOP( 4, (*p2 + *(p2+1) + *(p2+2) + *(p2-1) + *(p2-1))/5 );
 			UPD_LOOP( 2, (*p2 + *(p2+1) + *(p2-1))/3 );
 			UPD_LOOP( 1, *p2 );
 			default:;
 		}
-	} else {
-		switch(step) {
-			UPD_LOOP( 4, MAX( MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2-2) ), *(p2-1) ) );
-			UPD_LOOP( 2, MAX( MAX( *p2, *(p2+1) ), *(p2-1) ) );
-			UPD_LOOP( 1, *p2 );
-			default:;
-		}
-	}
+//	} else {
+//		switch(step) {
+//			UPD_LOOP( 4, MAX( MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2-2) ), *(p2-1) ) );
+//			UPD_LOOP( 2, MAX( MAX( *p2, *(p2+1) ), *(p2-1) ) );
+//			UPD_LOOP( 1, *p2 );
+//			default:;
+//		}
+//	}
 #undef UPD_LOOP
 
 	if (active_modem && progdefaults.UseBWTracks) {

@@ -560,7 +560,7 @@ void viewpsk::rx_symbol(int ch, cmplx symbol)
 			channel[ch].dcd = 1;
 			channel[ch].quality = cmplx (1.0, 0.0);
 			channel[ch].metric = 100;
-			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
+			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WF_BLOCKSIZE;
 			channel[ch].acquire = 0;
 			break;
 
@@ -572,7 +572,7 @@ void viewpsk::rx_symbol(int ch, cmplx symbol)
 			channel[ch].dcd = 1;
 			channel[ch].quality = cmplx (1.0, 0.0);
 			channel[ch].metric = 100;
-			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
+			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WF_BLOCKSIZE;
 			channel[ch].acquire = 0;
 			break;
 
@@ -596,7 +596,7 @@ void viewpsk::rx_symbol(int ch, cmplx symbol)
 	}
 
 	if (channel[ch].dcd == true) {
-		channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
+		channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WF_BLOCKSIZE;
 		if (_qpsk) rx_qpsk(ch, channel[ch].bits);
 		else if (_pskr) rx_pskr(ch, softbit);
 		else rx_bit(ch, !channel[ch].bits);

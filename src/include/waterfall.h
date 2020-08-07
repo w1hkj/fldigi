@@ -35,14 +35,16 @@
 #include "digiscope.h"
 #include "flslider2.h"
 
+#include <samplerate.h>
+
 enum {
 	WF_FFT_RECTANGULAR, WF_FFT_BLACKMAN, WF_FFT_HAMMING,
 	WF_FFT_HANNING, WF_FFT_TRIANGULAR
 };
 
-#define FFT_LEN		8192
-#define SC_SMPLRATE	8000
-#define WFBLOCKSIZE 512
+#define WF_FFTLEN		8192
+#define WF_SAMPLERATE	8000
+#define WF_BLOCKSIZE 	512
 
 struct RGB {
 	uchar R;
@@ -61,6 +63,8 @@ struct RGBI {
 // following typedef.  change to float if you need to skimp on cpu cycles.
 
 typedef double wf_fft_type;
+//typedef float wf_fft_type;
+
 typedef std::complex<wf_fft_type> wf_cpx_type;
 
 extern	RGBI	mag2RGBI[256];
@@ -122,7 +126,7 @@ public:
 	WFspeed Speed() { return wfspeed;}
 	void Speed(WFspeed rate) { 
 		wfspeed = rate;
-		dispcnt = 1.0 * WFBLOCKSIZE / SC_SMPLRATE;
+		dispcnt = 1.0 * WF_BLOCKSIZE / WF_SAMPLERATE;
 	}
 
 	int Mag() { return mag;}
@@ -145,7 +149,7 @@ public:
 	void makeMarker();
 	void process_analog(wf_fft_type *sig, int len);
 	void processFFT();
-	void sig_data( double *sig, int sr);
+	void sig_data(double *sig, int len);
 	void handle_sig_data();
 	void rfcarrier(long long f) {
 		rfc = f;
@@ -196,27 +200,29 @@ private:
 	bool	centercarrier;
 	bool	cursormoved;
 	WFspeed	wfspeed;
-	int		srate;
+//	int		srate;
 	RGBI	*fft_img;
 	RGB		*markerimage;
 	RGB		RGBmarker;
 	RGB		RGBcursor;
-	RGBI		RGBInotch;
-    double  *fftwindow;
-	uchar	*scaleimage;
-	uchar	*fft_sig_img;
-	uchar	*sig_img;
-	uchar	*scline;
+	RGBI				RGBInotch;
+
+	wf_fft_type			*fftwindow;
+
+	uchar				*scaleimage;
+	uchar				*fft_sig_img;
+	uchar				*sig_img;
+	uchar				*scline;
 
 	wf_cpx_type *wfbuf;
 
-	short int	*fft_db;
-	int			ptrFFTbuff;
-	double		*circbuff;
-	int			ptrCB;
-	wf_fft_type	*pwr;
-	g_fft<wf_fft_type> *wfft;
-	int     prefilter;
+	short int			*fft_db;
+	int					ptrFFTbuff;
+	wf_fft_type			*circbuff;
+	int					ptrCB;
+	wf_fft_type			*pwr;
+	g_fft<wf_fft_type>	*wfft;
+	int					prefilter;
 
 
 	int checkMag();
@@ -232,6 +238,14 @@ private:
 	void drawspectrum();
 	void drawsignal();
 
+// resample
+	SRC_STATE* 	src_state;
+	SRC_DATA	src_data;
+	int			genptr;
+	float		insamples[WF_BLOCKSIZE * 2];
+	float		outsamples[WF_BLOCKSIZE * 16];
+	float		*buf;
+	int			srclen;
 
 protected:
 public:
@@ -264,8 +278,8 @@ public:
 	~waterfall(){};
 	void show_scope(bool on);
 	void opmode();
-	void sig_data(double *sig, int sr) {
-		wfdisp->sig_data(sig, sr);
+	void sig_data(double *sig, int len) {
+		wfdisp->sig_data(sig, len);
 	}
 	void handle_sig_data() {wfdisp->handle_sig_data();}
 	void Overload(bool ovr) {
