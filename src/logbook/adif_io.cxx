@@ -459,7 +459,22 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 								fprintf(adiFile, adifmt,
 									sName.c_str(),
 									sFld.length());
-								fprintf(adiFile, "%s", sFld.c_str());
+                                
+                                //Exchange commas by dots in frequency for ADIF-conformity
+                                if (strcmp(fields[j].name,"FREQ") == 0) {
+                                    char sfreq[20];
+                                    char* comma_position;
+                                    
+                                    strcpy (sfreq,sFld.c_str());
+                                    comma_position = strchr(sfreq,',');
+                                    if (comma_position != NULL) {
+                                        strncpy(comma_position,".",1);
+                                    }
+                                    
+                                    fprintf(adiFile, "%s", sfreq);
+                                } else {
+                                    fprintf(adiFile, "%s", sFld.c_str());
+                                }
 							}
 						}
 					}
