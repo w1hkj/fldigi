@@ -79,16 +79,10 @@ void rcvd(string s)
 
 double timeval_subtract (struct timeval &x, struct timeval &y)
 {
-	double result = 0;
-	if (y.tv_sec > x.tv_sec) {
-		result = y.tv_sec % 10000 - x.tv_sec % 10000;
-		result += (y.tv_usec - x.tv_usec) / 1e6;
-	} else {
-		result = x.tv_sec % 10000 - y.tv_sec % 10000;
-		result += (x.tv_usec - y.tv_usec) / 1e6;
-		result *= -1;
-	}
-  return result;
+	double t1, t2;
+	t1 = x.tv_sec + x.tv_usec * 1e-6;
+	t2 = y.tv_sec + y.tv_usec * 1e-6;
+	return t2 - t1;
 }
 
 void nano_display_io(string s, int style)
@@ -112,20 +106,21 @@ int nano_serial_write(char c)
 char nano_read_byte(int &msec)
 {
 	unsigned char c = 0;
+	int ret;
 	int numtries = 0;
 	timeval start = tmval();
-	timeval end = tmval();
+	timeval end = start;
 	while (timeval_subtract(start, end) < msec) {
-		if (nano_serial.ReadByte(c))
-			if (c > 0) break;
-		MilliSleep(1);
-		if (++numtries % 50 == 0) Fl::awake();
+		ret = nano_serial.ReadByte(c);
 		end = tmval();
+		if (ret && c > 0) break;
+		if (++numtries % 50 == 0) Fl::awake();
 	}
-	msec = round(timeval_subtract(start, end) * 1000);
-
-	static char szresp[20];
-	snprintf(szresp, sizeof(szresp), "[%d msec] %c", msec, c);
+	double dmsec = timeval_subtract(start, end) * 1000;
+	msec = round(dmsec);
+	static char szresp[50];
+	snprintf(szresp, sizeof(szresp), "'%c' [%0.2f]", c, dmsec);
+std::cout << szresp << std::endl;
 
 	REQ(rcvd, szresp);
 
@@ -199,17 +194,19 @@ void nano_send_cw_char(int c)
 	if (c == 0x0a) c = ' ';
 	if (c == ' ') {
 		len = 4;
-		msec = len * tc + 50;
+		msec = len * tc + 10;
 		nano_serial_write(c);
 		nano_read_byte(msec);
-		if (!calibrating) MilliSleep(len * tc - msec + twd);
+		if (!calibrating && progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth))
+			MilliSleep(twd);
 	} else {
 		len = nano_morse->tx_length(c);
 		if (len) {
-			msec = len * tc + 50;
+		msec = len * tc + 10;
 			nano_serial_write(c);
 			nano_read_byte(msec);
-			if (!calibrating) MilliSleep(len * tc - msec + tch);
+			if (!calibrating && progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth))
+				MilliSleep(tch);
 		}
 	}
 	return;
@@ -292,14 +289,13 @@ void nano_sendString (const string &s)
 
 
 static timeval ptt_start;
-static char WPMtiming[10] = "";
 static double  wpm_err = 0;
 
 void dispWPMtiming(void *)
 {
-	corr_var_wpm->value(wpm_err);// + 60);
+	corr_var_wpm->value(wpm_err + 60);
 	int nucorr = progdefaults.usec_correc;
-	nucorr += wpm_err * 1000.0 / (cntrWPMtest->value() * 50);
+	nucorr += wpm_err * 1e6 / (cntrWPMtest->value() * 50);
 	usec_correc->value(nucorr);
 }
 
@@ -308,19 +304,6 @@ static bool nanoIO_busy = false;
 
 void nano_PTT(int val)
 {
-	if (!val) {
-		if (calibrating) {
-			timeval ptt_end = tmval();
-			double tdiff = timeval_subtract(ptt_start, ptt_end);
-			wpm_err = (tdiff - 60) * 1000;
-			Fl::awake(dispWPMtiming);
-		}
-		ptt_start.tv_sec = 0;
-		ptt_start.tv_usec = 0;
-		restore_nano_state();
-		nanoIO_busy = false;
-	}
-
 	if (use_nanoIO) {
 		nano_serial_write(val ? '[' : ']');
 		int msec = 100;
@@ -328,9 +311,21 @@ void nano_PTT(int val)
 	}
 
 	if (val) {
-		WPMtiming[0] = 0;
 		ptt_start = tmval();
 		nanoIO_busy = true;
+	} else {
+		timeval ptt_end = tmval();
+		double tdiff = timeval_subtract(ptt_start, ptt_end);
+//std::cout << "PTT: [ " << tdiff << " ]" << std::endl;
+		if (calibrating) {
+			wpm_err = tdiff - 60;
+			Fl::awake(dispWPMtiming);
+			restore_nano_state();
+		} else {
+			ptt_start.tv_sec = 0;
+			ptt_start.tv_usec = 0;
+			nanoIO_busy = false;
+		}
 	}
 
 }
@@ -482,6 +477,7 @@ LOG_INFO("%f WPM", progdefaults.CWspeed);
 		int corr;
 		if (sscanf(s.substr(p1+9).c_str(), "%d", &corr)) {
 			progdefaults.usec_correc = corr;
+			usec_correc->value(corr);
 		}
 	}
 	return;
@@ -506,6 +502,8 @@ int open_port(string PORT)
 	nano_serial.Timeout(10);
 	nano_serial.Retries(5);
 	nano_serial.Stopbits(1);
+
+	use_nanoIO = false;
 
 	if (!nano_serial.OpenPort()) {
 		nano_display_io("\nCould not open serial port!", FTextBase::ALTR);
@@ -647,6 +645,9 @@ void set_nanoIO()
 		nano_sendString(cmd);
 		rsp = nano_read_string(165*cmd.length(), cmd);
 	}
+	progStatus.nanoFSK_online = true;
+	progStatus.nanoCW_online = false;
+	nanoIO_isCW = false;
 }
 
 void set_nanoCW()
@@ -666,6 +667,11 @@ void set_nanoCW()
 		set_nano_dash2dot(progdefaults.CWdash2dot);
 	}
 
+	setwpm = progdefaults.CWspeed;
+
+	progStatus.nanoCW_online = true;
+	progStatus.nanoFSK_online = false;
+	nanoIO_isCW = true;
 }
 
 void set_nanoWPM(int wpm)
