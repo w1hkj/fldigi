@@ -371,6 +371,7 @@ extern Fl_Button *btn_cal_variable;
 extern Fl_Value_Input *corr_var_wpm;
 extern Fl_Value_Input *usec_correc;
 extern Fl_Button *btn_correction;
+extern Fl_Check_Button *chk_nanoIO_CW_io;
 extern Fl_Check_Button *btn_CW_KEYLINE_catport;
 extern Fl_Check_Button *btn_CW_KEYLINE_shared_PTT;
 extern Fl_ListBox *listbox_CW_KEYLINE;
@@ -504,6 +505,7 @@ extern Fl_Button *btn_nanoio_clear_sent;
 extern Fl_Button *btn_nanoio_clear_both;
 extern Fl_Button *btn_nanoio_clear_rcvd;
 extern Fl_Light_Button *btn_nanoio_debug;
+extern Fl_Check_Button *chk_nanoIO_FSK_io;
 #include "Nav.h"
 extern Fl_ComboBox *select_USN_FSK_port;
 extern Fl_Light_Button *btn_Nav_connect;

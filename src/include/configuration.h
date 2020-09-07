@@ -1438,6 +1438,9 @@
         ELEM_(int, nanoIO_speed_pot, "nanoIO_speed_pot",                                \
               "Enable speed pot in nanoIO circuit / script",                            \
               1)                                                                        \
+        ELEM_(int, nanoCW_test_wpm, "nanoCW_test_wpm",                                  \
+              "test wpm setting",                                                       \
+              24)                                                                       \
         ELEM_(int, usec_correc, "usec_corr",                                            \
               "Correct CW unit timing by this amount in usec",                          \
               0)                                                                        \

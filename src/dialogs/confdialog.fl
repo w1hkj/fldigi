@@ -3987,7 +3987,7 @@ for information regarding extended Morse characters.} open
       }
     }
     Fl_Group {} {
-      label {Modem/CW/nanoIO}
+      label {Modem/CW/nanoIO} open
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/nanoIO"));}
       code1 {config_pages.push_back(p);}
@@ -4005,11 +4005,21 @@ for information regarding extended Morse characters.} open
       Fl_Light_Button btn_nanoCW_connect {
         label Connect
         callback {if (o->value()) {
-  btn_nanoIO_connect->value(0);
-  if (!open_nanoCW())
+  if (open_nanoCW()) {
+    btn_nanoIO_connect->value(1);
+    chk_nanoIO_CW_io->value(1);
+  } else {
     o->value(0);
+    btn_nanoIO_connect->value(0);
+    chk_nanoIO_CW_io->value(0);
+    chk_nanoIO_FSK_io->value(0);
+  }
 } else {
   close_nanoIO();
+  o->value(0);
+  btn_nanoIO_connect->value(0);
+  chk_nanoIO_FSK_io->value(0);
+  chk_nanoIO_CW_io->value(0);
 }}
         tooltip {Connect / Disconnect from nanoIO} xywh {711 21 80 22}
       }
@@ -4018,7 +4028,7 @@ for information regarding extended Morse characters.} open
         callback {progdefaults.CW_keyspeed = (int)o->value();
 set_nano_keyerWPM(progdefaults.CW_keyspeed);
 progdefaults.changed = true;}
-        tooltip {CW wpm using paddle keyer} xywh {270 48 110 22} align 4 minimum 5 maximum 100 step 1 value 20
+        tooltip {CW wpm using paddle keyer} xywh {260 48 110 22} align 4 minimum 5 maximum 100 step 1 value 20
         code0 {o->value(progdefaults.CW_keyspeed);}
         code1 {o->lstep(5);}
       }
@@ -4036,7 +4046,7 @@ cntCW_WPM->value(progdefaults.CWspeed);
 sldrCWxmtWPM->value(progdefaults.CWspeed);
 progdefaults.changed = true;
 sync_cw_parameters();}
-        tooltip {CW wpm keyboard strings} xywh {270 74 110 22} align 4 minimum 5 maximum 100 step 1 value 20
+        tooltip {CW wpm keyboard strings} xywh {260 74 110 22} align 4 minimum 5 maximum 100 step 1 value 20
         code0 {o->value(progdefaults.CWspeed);}
         code1 {o->lstep(5);}
       }
@@ -4045,7 +4055,7 @@ sync_cw_parameters();}
         callback {progdefaults.CWdash2dot=o->value();
 cntCWdash2dot->value(progdefaults.CWdash2dot);
 progdefaults.changed = true;}
-        tooltip {Dash to dot ratio} xywh {302 100 78 22} type Simple align 4 minimum 2.5 maximum 3.5 value 3
+        tooltip {Dash to dot ratio} xywh {292 100 78 22} type Simple align 4 minimum 2.5 maximum 3.5 value 3
         code0 {o->value(progdefaults.CWdash2dot);}
         code1 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Counter2
@@ -4091,14 +4101,14 @@ progdefaults.changed = true;} open
         tooltip {Query state of nanoIO} xywh {711 100 80 22}
       }
       Fl_Group {} {open
-        xywh {392 45 154 80} box FLAT_BOX deactivate
+        xywh {375 45 154 80} box FLAT_BOX
       } {
         Fl_Check_Button btn_nanoIO_pot {
           label {Use WPM pot'}
           callback {progdefaults.nanoIO_speed_pot=o->value();
 progdefaults.changed=true;
 nanoIO_use_pot();}
-          tooltip {WPM pot update to nanoIO required} xywh {519 48 21 22} down_box DOWN_BOX align 4 deactivate
+          tooltip {WPM pot update to nanoIO required} xywh {502 48 21 22} down_box DOWN_BOX align 4
           code0 {o->value(progdefaults.nanoIO_speed_pot);}
         }
         Fl_Counter cntr_nanoIO_min_wpm {
@@ -4107,7 +4117,7 @@ nanoIO_use_pot();}
   cntr_nanoIO_rng_wpm->value(100 - o->value());
 set_nanoIO_min_max();}
           tooltip {Minimum WPM setting
-default = 10} xywh {464 74 75 22} type Simple align 4 minimum 10 maximum 30 step 1 value 10 deactivate
+default = 10} xywh {447 74 75 22} type Simple align 4 minimum 10 maximum 30 step 1 value 10
         }
         Fl_Counter cntr_nanoIO_rng_wpm {
           label {Rng WPM}
@@ -4115,7 +4125,7 @@ default = 10} xywh {464 74 75 22} type Simple align 4 minimum 10 maximum 30 step
 o->value(100 - cntr_nanoIO_min_wpm->value());
 set_nanoIO_min_max();}
           tooltip {Range WPM setting
-default = 20} xywh {464 100 75 22} type Simple align 4 minimum 10 maximum 40 step 1 value 20 deactivate
+default = 20} xywh {447 100 75 22} type Simple align 4 minimum 10 maximum 40 step 1 value 20
         }
       }
       Fl_Check_Button btn_disable_CW_PTT {
@@ -4123,7 +4133,7 @@ default = 20} xywh {464 100 75 22} type Simple align 4 minimum 10 maximum 40 ste
         callback {progdefaults.disable_CW_PTT=o->value();
 progdefaults.changed=true;
 nanoIO_set_cw_ptt();}
-        tooltip {Disable PTT} xywh {713 47 70 24} down_box DOWN_BOX
+        tooltip {Disable PTT} xywh {531 99 70 24} down_box DOWN_BOX
         code0 {o->value(progdefaults.disable_CW_PTT);}
       }
       Fl_Group {} {
@@ -4132,7 +4142,10 @@ nanoIO_set_cw_ptt();}
       } {
         Fl_Counter cntrWPMtest {
           label WPM
+          callback {progdefaults.nanoCW_test_wpm = o->value();
+progdefaults.changed=true;}
           xywh {302 129 78 22} type Simple align 4 minimum 5 maximum 50 step 1 value 30
+          code0 {o->value(progdefaults.nanoCW_test_wpm);}
         }
         Fl_Button btn_cal_variable {
           label {Test =>}
@@ -4153,6 +4166,16 @@ nanoIO_set_cw_ptt();}
           callback {nanoIO_correction();}
           tooltip {send compensation to nanoIO} xywh {711 129 80 22}
         }
+      }
+      Fl_Check_Button chk_nanoIO_CW_io {
+        label {CW i/o}
+        callback {if (o->value() == 0) {
+  o->value(1);
+  return;
+}
+set_nanoCW();
+chk_nanoIO_FSK_io->value(0);}
+        tooltip {Enable CW operation} xywh {711 47 70 24} down_box DOWN_BOX
       }
     }
     Fl_Group {} {
@@ -5535,7 +5558,7 @@ progdefaults.changed = true;} open
       }
     }
     Fl_Group {} {
-      label {Modem/TTY/nanoIO}
+      label {Modem/TTY/nanoIO} open selected
       xywh {200 0 600 350} box FLAT_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/nanoIO"));}
       code1 {config_pages.push_back(p);}
@@ -5553,11 +5576,21 @@ progdefaults.changed = true;} open
       Fl_Light_Button btn_nanoIO_connect {
         label Connect
         callback {if (o->value()) {
-  btn_nanoCW_connect->value(0);
-  if (!open_nanoIO())
+  if (open_nanoIO()) {
+    btn_nanoCW_connect->value(1);
+    chk_nanoIO_FSK_io->value(1);
+  } else {
     o->value(0);
+    btn_nanoCW_connect->value(0);
+    chk_nanoIO_CW_io->value(0);
+    chk_nanoIO_FSK_io->value(0);
+  }
 } else {
   close_nanoIO();
+  o->value(0);
+  btn_nanoCW_connect->value(0);
+  chk_nanoIO_FSK_io->value(0);
+  chk_nanoIO_CW_io->value(0);
 }}
         tooltip {Connect / Disconnect from nanoIO} xywh {715 23 80 25}
       }
@@ -5582,7 +5615,7 @@ progdefaults.changed = true;} open
       Fl_Button btn_nanofsk_save {
         label Save
         callback {nano_CW_save();}
-        tooltip {Write state of nanoIO to Arduino EEPROM} xywh {715 57 80 25}
+        tooltip {Write state of nanoIO to Arduino EEPROM} xywh {715 90 80 25}
       }
       Fl_Button btn_nanofsk_query {
         label Status
@@ -5595,7 +5628,7 @@ progdefaults.changed = true;} open
 nano_mark_polarity(progdefaults.nanoIO_polarity);
 progdefaults.changed = true;}
         tooltip {Set - mark logical HIGH
-Read from nanoIO} xywh {409 90 53 24} down_box DOWN_BOX
+Read from nanoIO} xywh {323 90 53 24} down_box DOWN_BOX
         code0 {o->value(progdefaults.nanoIO_polarity);}
       }
       Fl_Group sel_nanoIO_baud {
@@ -5603,7 +5636,7 @@ Read from nanoIO} xywh {409 90 53 24} down_box DOWN_BOX
         callback {progdefaults.nanoIO_baud = o->index();
 nano_set_baud(progdefaults.nanoIO_baud);
 progdefaults.changed = true;} open
-        tooltip {nanoIO - TTY baud} xywh {533 90 84 25} box DOWN_BOX color 7 align 8 when 1
+        tooltip {nanoIO - TTY baud} xywh {447 90 84 25} box DOWN_BOX color 7 align 8 when 1
         code0 {o->add("45.45|50.0|75.0|100.0");}
         code1 {o->index(progdefaults.nanoIO_baud);}
         code2 {o->labelsize(FL_NORMAL_SIZE);}
@@ -5645,7 +5678,17 @@ brws_nanoio_sent->clear();}
   grp_nanoio_debug->hide();
   txt_nano_io->show();
 }}
-        xywh {715 90 80 25}
+        xywh {630 90 80 25}
+      }
+      Fl_Check_Button chk_nanoIO_FSK_io {
+        label {TTY i/o}
+        callback {if (o->value() == 0) {
+  o->value(1);
+  return;
+}
+set_nanoIO();
+chk_nanoIO_CW_io->value(0);}
+        tooltip {Enable TTY operation} xywh {715 57 70 24} down_box DOWN_BOX
       }
     }
     Fl_Group {} {
@@ -10320,7 +10363,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Waterfall/FFT Processing} selected
+      label {Waterfall/FFT Processing}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/FFT Processing"));}
       code1 {config_pages.push_back(p);}

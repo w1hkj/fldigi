@@ -3136,11 +3136,21 @@ Fl_Light_Button *btn_nanoCW_connect=(Fl_Light_Button *)0;
 
 static void cb_btn_nanoCW_connect(Fl_Light_Button* o, void*) {
   if (o->value()) {
-  btn_nanoIO_connect->value(0);
-  if (!open_nanoCW())
+  if (open_nanoCW()) {
+    btn_nanoIO_connect->value(1);
+    chk_nanoIO_CW_io->value(1);
+  } else {
     o->value(0);
+    btn_nanoIO_connect->value(0);
+    chk_nanoIO_CW_io->value(0);
+    chk_nanoIO_FSK_io->value(0);
+  }
 } else {
   close_nanoIO();
+  o->value(0);
+  btn_nanoIO_connect->value(0);
+  chk_nanoIO_FSK_io->value(0);
+  chk_nanoIO_CW_io->value(0);
 };
 }
 
@@ -3242,6 +3252,11 @@ nanoIO_set_cw_ptt();
 
 Fl_Counter *cntrWPMtest=(Fl_Counter *)0;
 
+static void cb_cntrWPMtest(Fl_Counter* o, void*) {
+  progdefaults.nanoCW_test_wpm = o->value();
+progdefaults.changed=true;
+}
+
 Fl_Button *btn_cal_variable=(Fl_Button *)0;
 
 static void cb_btn_cal_variable(Fl_Button*, void*) {
@@ -3256,6 +3271,17 @@ Fl_Button *btn_correction=(Fl_Button *)0;
 
 static void cb_btn_correction(Fl_Button*, void*) {
   nanoIO_correction();
+}
+
+Fl_Check_Button *chk_nanoIO_CW_io=(Fl_Check_Button *)0;
+
+static void cb_chk_nanoIO_CW_io(Fl_Check_Button* o, void*) {
+  if (o->value() == 0) {
+  o->value(1);
+  return;
+}
+set_nanoCW();
+chk_nanoIO_FSK_io->value(0);
 }
 
 Fl_Check_Button *btn_CW_KEYLINE_catport=(Fl_Check_Button *)0;
@@ -4298,11 +4324,21 @@ Fl_Light_Button *btn_nanoIO_connect=(Fl_Light_Button *)0;
 
 static void cb_btn_nanoIO_connect(Fl_Light_Button* o, void*) {
   if (o->value()) {
-  btn_nanoCW_connect->value(0);
-  if (!open_nanoIO())
+  if (open_nanoIO()) {
+    btn_nanoCW_connect->value(1);
+    chk_nanoIO_FSK_io->value(1);
+  } else {
     o->value(0);
+    btn_nanoCW_connect->value(0);
+    chk_nanoIO_CW_io->value(0);
+    chk_nanoIO_FSK_io->value(0);
+  }
 } else {
   close_nanoIO();
+  o->value(0);
+  btn_nanoCW_connect->value(0);
+  chk_nanoIO_FSK_io->value(0);
+  chk_nanoIO_CW_io->value(0);
 };
 }
 
@@ -4379,6 +4415,17 @@ static void cb_btn_nanoio_debug(Fl_Light_Button* o, void*) {
   grp_nanoio_debug->hide();
   txt_nano_io->show();
 };
+}
+
+Fl_Check_Button *chk_nanoIO_FSK_io=(Fl_Check_Button *)0;
+
+static void cb_chk_nanoIO_FSK_io(Fl_Check_Button* o, void*) {
+  if (o->value() == 0) {
+  o->value(1);
+  return;
+}
+set_nanoIO();
+chk_nanoIO_CW_io->value(0);
 }
 
 Fl_ComboBox *select_USN_FSK_port=(Fl_ComboBox *)0;
@@ -11215,7 +11262,7 @@ ded Morse characters."));
         btn_nanoCW_connect->tooltip(_("Connect / Disconnect from nanoIO"));
         btn_nanoCW_connect->callback((Fl_Callback*)cb_btn_nanoCW_connect);
       } // Fl_Light_Button* btn_nanoCW_connect
-      { Fl_Counter* o = cntr_nanoCW_paddle_WPM = new Fl_Counter(270, 48, 110, 22, _("Paddle"));
+      { Fl_Counter* o = cntr_nanoCW_paddle_WPM = new Fl_Counter(260, 48, 110, 22, _("Paddle"));
         cntr_nanoCW_paddle_WPM->tooltip(_("CW wpm using paddle keyer"));
         cntr_nanoCW_paddle_WPM->minimum(5);
         cntr_nanoCW_paddle_WPM->maximum(100);
@@ -11239,7 +11286,7 @@ ded Morse characters."));
         o->setFont(progdefaults.RxFontnbr);
         o->setFontSize(12);
       } // FTextView* txt_nano_CW_io
-      { Fl_Counter* o = cntr_nanoCW_WPM = new Fl_Counter(270, 74, 110, 22, _("Comp\'"));
+      { Fl_Counter* o = cntr_nanoCW_WPM = new Fl_Counter(260, 74, 110, 22, _("Comp\'"));
         cntr_nanoCW_WPM->tooltip(_("CW wpm keyboard strings"));
         cntr_nanoCW_WPM->minimum(5);
         cntr_nanoCW_WPM->maximum(100);
@@ -11250,7 +11297,7 @@ ded Morse characters."));
         o->value(progdefaults.CWspeed);
         o->lstep(5);
       } // Fl_Counter* cntr_nanoCW_WPM
-      { Fl_Counter2* o = cnt_nanoCWdash2dot = new Fl_Counter2(302, 100, 78, 22, _("Dash/Dot"));
+      { Fl_Counter2* o = cnt_nanoCWdash2dot = new Fl_Counter2(292, 100, 78, 22, _("Dash/Dot"));
         cnt_nanoCWdash2dot->tooltip(_("Dash to dot ratio"));
         cnt_nanoCWdash2dot->type(1);
         cnt_nanoCWdash2dot->box(FL_UP_BOX);
@@ -11322,18 +11369,16 @@ ded Morse characters."));
         btn_cwfsk_query->tooltip(_("Query state of nanoIO"));
         btn_cwfsk_query->callback((Fl_Callback*)cb_btn_cwfsk_query);
       } // Fl_Button* btn_cwfsk_query
-      { Fl_Group* o = new Fl_Group(392, 45, 154, 80);
+      { Fl_Group* o = new Fl_Group(375, 45, 154, 80);
         o->box(FL_FLAT_BOX);
-        o->deactivate();
-        { Fl_Check_Button* o = btn_nanoIO_pot = new Fl_Check_Button(519, 48, 21, 22, _("Use WPM pot\'"));
+        { Fl_Check_Button* o = btn_nanoIO_pot = new Fl_Check_Button(502, 48, 21, 22, _("Use WPM pot\'"));
           btn_nanoIO_pot->tooltip(_("WPM pot update to nanoIO required"));
           btn_nanoIO_pot->down_box(FL_DOWN_BOX);
           btn_nanoIO_pot->callback((Fl_Callback*)cb_btn_nanoIO_pot);
           btn_nanoIO_pot->align(Fl_Align(FL_ALIGN_LEFT));
-          btn_nanoIO_pot->deactivate();
           o->value(progdefaults.nanoIO_speed_pot);
         } // Fl_Check_Button* btn_nanoIO_pot
-        { cntr_nanoIO_min_wpm = new Fl_Counter(464, 74, 75, 22, _("Min WPM"));
+        { cntr_nanoIO_min_wpm = new Fl_Counter(447, 74, 75, 22, _("Min WPM"));
           cntr_nanoIO_min_wpm->tooltip(_("Minimum WPM setting\ndefault = 10"));
           cntr_nanoIO_min_wpm->type(1);
           cntr_nanoIO_min_wpm->minimum(10);
@@ -11342,9 +11387,8 @@ ded Morse characters."));
           cntr_nanoIO_min_wpm->value(10);
           cntr_nanoIO_min_wpm->callback((Fl_Callback*)cb_cntr_nanoIO_min_wpm);
           cntr_nanoIO_min_wpm->align(Fl_Align(FL_ALIGN_LEFT));
-          cntr_nanoIO_min_wpm->deactivate();
         } // Fl_Counter* cntr_nanoIO_min_wpm
-        { cntr_nanoIO_rng_wpm = new Fl_Counter(464, 100, 75, 22, _("Rng WPM"));
+        { cntr_nanoIO_rng_wpm = new Fl_Counter(447, 100, 75, 22, _("Rng WPM"));
           cntr_nanoIO_rng_wpm->tooltip(_("Range WPM setting\ndefault = 20"));
           cntr_nanoIO_rng_wpm->type(1);
           cntr_nanoIO_rng_wpm->minimum(10);
@@ -11353,11 +11397,10 @@ ded Morse characters."));
           cntr_nanoIO_rng_wpm->value(20);
           cntr_nanoIO_rng_wpm->callback((Fl_Callback*)cb_cntr_nanoIO_rng_wpm);
           cntr_nanoIO_rng_wpm->align(Fl_Align(FL_ALIGN_LEFT));
-          cntr_nanoIO_rng_wpm->deactivate();
         } // Fl_Counter* cntr_nanoIO_rng_wpm
         o->end();
       } // Fl_Group* o
-      { Fl_Check_Button* o = btn_disable_CW_PTT = new Fl_Check_Button(713, 47, 70, 24, _("PTT off"));
+      { Fl_Check_Button* o = btn_disable_CW_PTT = new Fl_Check_Button(531, 99, 70, 24, _("PTT off"));
         btn_disable_CW_PTT->tooltip(_("Disable PTT"));
         btn_disable_CW_PTT->down_box(FL_DOWN_BOX);
         btn_disable_CW_PTT->callback((Fl_Callback*)cb_btn_disable_CW_PTT);
@@ -11366,13 +11409,15 @@ ded Morse characters."));
       { Fl_Group* o = new Fl_Group(204, 125, 590, 30, _("Comp\'"));
         o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
-        { cntrWPMtest = new Fl_Counter(302, 129, 78, 22, _("WPM"));
+        { Fl_Counter* o = cntrWPMtest = new Fl_Counter(302, 129, 78, 22, _("WPM"));
           cntrWPMtest->type(1);
           cntrWPMtest->minimum(5);
           cntrWPMtest->maximum(50);
           cntrWPMtest->step(1);
           cntrWPMtest->value(30);
+          cntrWPMtest->callback((Fl_Callback*)cb_cntrWPMtest);
           cntrWPMtest->align(Fl_Align(FL_ALIGN_LEFT));
+          o->value(progdefaults.nanoCW_test_wpm);
         } // Fl_Counter* cntrWPMtest
         { btn_cal_variable = new Fl_Button(384, 129, 70, 22, _("Test =>"));
           btn_cal_variable->tooltip(_("Send \"paris \" WPM times"));
@@ -11394,6 +11439,11 @@ ded Morse characters."));
         } // Fl_Button* btn_correction
         o->end();
       } // Fl_Group* o
+      { chk_nanoIO_CW_io = new Fl_Check_Button(711, 47, 70, 24, _("CW i/o"));
+        chk_nanoIO_CW_io->tooltip(_("Enable CW operation"));
+        chk_nanoIO_CW_io->down_box(FL_DOWN_BOX);
+        chk_nanoIO_CW_io->callback((Fl_Callback*)cb_chk_nanoIO_CW_io);
+      } // Fl_Check_Button* chk_nanoIO_CW_io
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/nanoIO"));
       config_pages.push_back(p);
       tab_tree->add(_("Modem/CW/nanoIO"));
@@ -12845,7 +12895,7 @@ ency"));
         o->setFont(progdefaults.RxFontnbr);
         o->setFontSize(12);
       } // FTextView* txt_nano_io
-      { btn_nanofsk_save = new Fl_Button(715, 57, 80, 25, _("Save"));
+      { btn_nanofsk_save = new Fl_Button(715, 90, 80, 25, _("Save"));
         btn_nanofsk_save->tooltip(_("Write state of nanoIO to Arduino EEPROM"));
         btn_nanofsk_save->callback((Fl_Callback*)cb_btn_nanofsk_save);
       } // Fl_Button* btn_nanofsk_save
@@ -12853,13 +12903,13 @@ ency"));
         btn_nanofsk_query->tooltip(_("Query state of nanoIO"));
         btn_nanofsk_query->callback((Fl_Callback*)cb_btn_nanofsk_query);
       } // Fl_Button* btn_nanofsk_query
-      { Fl_Check_Button* o = chk_nanoIO_polarity = new Fl_Check_Button(409, 90, 53, 24, _("MARK polarity"));
+      { Fl_Check_Button* o = chk_nanoIO_polarity = new Fl_Check_Button(323, 90, 53, 24, _("MARK polarity"));
         chk_nanoIO_polarity->tooltip(_("Set - mark logical HIGH\nRead from nanoIO"));
         chk_nanoIO_polarity->down_box(FL_DOWN_BOX);
         chk_nanoIO_polarity->callback((Fl_Callback*)cb_chk_nanoIO_polarity);
         o->value(progdefaults.nanoIO_polarity);
       } // Fl_Check_Button* chk_nanoIO_polarity
-      { Fl_ListBox* o = sel_nanoIO_baud = new Fl_ListBox(533, 90, 84, 25, _("TTY Baud"));
+      { Fl_ListBox* o = sel_nanoIO_baud = new Fl_ListBox(447, 90, 84, 25, _("TTY Baud"));
         sel_nanoIO_baud->tooltip(_("nanoIO - TTY baud"));
         sel_nanoIO_baud->box(FL_DOWN_BOX);
         sel_nanoIO_baud->color(FL_BACKGROUND2_COLOR);
@@ -12898,9 +12948,14 @@ ency"));
         grp_nanoio_debug->end();
         Fl_Group::current()->resizable(grp_nanoio_debug);
       } // Fl_Group* grp_nanoio_debug
-      { btn_nanoio_debug = new Fl_Light_Button(715, 90, 80, 25, _("Debug"));
+      { btn_nanoio_debug = new Fl_Light_Button(630, 90, 80, 25, _("Debug"));
         btn_nanoio_debug->callback((Fl_Callback*)cb_btn_nanoio_debug);
       } // Fl_Light_Button* btn_nanoio_debug
+      { chk_nanoIO_FSK_io = new Fl_Check_Button(715, 57, 70, 24, _("TTY i/o"));
+        chk_nanoIO_FSK_io->tooltip(_("Enable TTY operation"));
+        chk_nanoIO_FSK_io->down_box(FL_DOWN_BOX);
+        chk_nanoIO_FSK_io->callback((Fl_Callback*)cb_chk_nanoIO_FSK_io);
+      } // Fl_Check_Button* chk_nanoIO_FSK_io
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/nanoIO"));
       config_pages.push_back(p);
       tab_tree->add(_("Modem/TTY/nanoIO"));
