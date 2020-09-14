@@ -98,39 +98,48 @@ void hamlib_get_defaults()
 	rigmodel = hamlib_get_rig_model(cboHamlibRig->index());
 	testrig.init(rigmodel);
 
+	testrig.getConf("timeout", szParam);
+	sscanf(szParam, "%d", &i);
+	cntHamlibTimeout->value(i);	
+	LOG_VERBOSE("Hamlib default Timeout: %d", i);
+
+	testrig.getConf("retry", szParam);
+	sscanf(szParam, "%d", &i);
+	cntHamlibRetries->value(i);
+	LOG_VERBOSE("Hamlib default Retry: %d", i);
+
+	testrig.getConf("post_write_delay", szParam);
+	sscanf(szParam, "%d", &i);
+	cntHamlibWait->value(i);
+	LOG_VERBOSE("Hamlib default Post write delay: %d", i);
+
+	testrig.getConf("write_delay", szParam);
+	sscanf(szParam, "%d", &i);
+	cntHamlibWriteDelay->value(i);
+	LOG_VERBOSE("Hamlib default Write delay: %d", i);
+
 	if (testrig.getCaps()->port_type == RIG_PORT_SERIAL) {
 
 		testrig.getConf("serial_speed", szParam);
 		listbox_baudrate->value(szParam);
-
-		testrig.getConf("post_write_delay", szParam);
-		sscanf(szParam, "%d", &i);
-		cntHamlibWait->value(i);
-
-		testrig.getConf("write_delay", szParam);
-		sscanf(szParam, "%d", &i);
-		cntHamlibWriteDelay->value(i);
-
-		testrig.getConf("timeout", szParam);
-		sscanf(szParam, "%d", &i);
-		cntHamlibTimeout->value(i);	
-
-		testrig.getConf("retry", szParam);
-		sscanf(szParam, "%d", &i);
-		cntHamlibRetries->value(i);
+		LOG_VERBOSE("Hamlib default serial speed: %s", szParam);
 
 		testrig.getConf("rts_state", szParam);
 		chkHamlibRTSplus->value( strcmp(szParam, "ON") == 0 ? true : false);
+		LOG_VERBOSE("Hamlib default RTS state: %s", szParam);
 
 		testrig.getConf("dtr_state", szParam);
 		btnHamlibDTRplus->value( strcmp(szParam, "ON") == 0 ? true : false);
+		LOG_VERBOSE("Hamlib default DTR state: %s", szParam);
 
 		testrig.getConf("serial_handshake", szParam);
 		chkHamlibRTSCTSflow->value(strcmp(szParam, "Hardware") == 0 ? true : false);
 		chkHamlibXONXOFFflow->value(strcmp(szParam, "XONXOFF") == 0 ? true : false);
+		LOG_VERBOSE("Hamlib default serial handshake: %s", szParam);
 
 		testrig.getConf("stop_bits", szParam);
 		valHamRigStopbits->value(strcmp(szParam, "1") == 0 ? 1 : 2);
+		LOG_VERBOSE("Hamlib default stop bits: %s", szParam);
 	}
 
 	if (!testrig.canSetPTT()) {
@@ -140,6 +149,7 @@ void hamlib_get_defaults()
 		btnHamlibCMDptt->value(1);
 		btnHamlibCMDptt->activate();
 	}
+
 	inpHamlibConfig->value("");
 
 	testrig.close();
@@ -193,6 +203,7 @@ bool hamlib_init(bool bPtt)
 #else
 		xcvr->setConf("rig_pathname", progdefaults.HamRigDevice.c_str());
 #endif
+
 		snprintf(szParam, sizeof(szParam), "%d", progdefaults.HamlibWait);
 		xcvr->setConf("post_write_delay", szParam);
 
@@ -207,18 +218,17 @@ bool hamlib_init(bool bPtt)
 
 		if (xcvr->getCaps()->port_type == RIG_PORT_SERIAL) {
 			xcvr->setConf("serial_speed", progdefaults.strBaudRate());
-
 			if (progdefaults.HamlibDTRplus)
 				xcvr->setConf("dtr_state", "ON");
 			else
 				xcvr->setConf("dtr_state", "OFF");
-
-			if (progdefaults.HamlibRTSCTSflow)
+			if (progdefaults.HamlibRTSCTSflow) {
 				xcvr->setConf("serial_handshake", "Hardware");
-			else if (progdefaults.HamlibXONXOFFflow)
+			} else if (progdefaults.HamlibXONXOFFflow) {
 				xcvr->setConf("serial_handshake", "XONXOFF");
-			else
+			} else {
 				xcvr->setConf("serial_handshake", "None");
+			}
 
 			if (!progdefaults.HamlibRTSCTSflow) {
 				if (progdefaults.HamlibRTSplus)
@@ -226,7 +236,6 @@ bool hamlib_init(bool bPtt)
 				else
 					xcvr->setConf("rts_state", "OFF");
 			}
-
 			xcvr->setConf("stop_bits", progdefaults.HamRigStopbits == 1 ? "1" : "2");
 		}
 
@@ -255,8 +264,8 @@ bool hamlib_init(bool bPtt)
 		if ( !xcvr->canGetFreq() ) need_freq = false; // getFreq will return setFreq value
 		else {
 			need_freq = true;
-			freq = xcvr->getFreq();
-			if ((long)freq <= 0) {
+			freq = xcvr->getFreq(RIG_VFO_A);
+			if ((long)freq < 0) { //<= 0) {
 				xcvr->close(true);
 				LOG_ERROR("%s","Hamlib xcvr not responding");
 				return false;

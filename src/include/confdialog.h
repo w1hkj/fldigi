@@ -777,6 +777,7 @@ extern Fl_Counter2 *val_hamlib_mode_delay;
 extern Fl_ListBox *listbox_sideband;
 extern Fl_Input2 *inpHamlibConfig;
 extern Fl_Button *btnInitHAMLIB;
+extern Fl_Button *btn_hamlib_get_defaults;
 extern Fl_Group *grpRigHardware;
 extern Fl_Check_Button *btnPTTrightchannel;
 extern Fl_Round_Button *btnTTYptt;

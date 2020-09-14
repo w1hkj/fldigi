@@ -1398,7 +1398,7 @@
               2)                                                                        \
         ELEM_(int, HamlibTimeout, "HAMLIBTIMEOUT",                                      \
               "Retry interval (milliseconds)",                                          \
-              10)                                                                       \
+              200)                                                                      \
         ELEM_(int, HamlibWait, "HAMLIBWAIT",                                            \
               "Wait interval before reading response (milliseconds)",                   \
               5)                                                                        \
