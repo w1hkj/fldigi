@@ -464,8 +464,8 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
                                 if (strcmp(fields[j].name,"FREQ") == 0) {
                                     char sfreq[20];
                                     char* comma_position;
-                                    
-                                    strcpy (sfreq,sFld.c_str());
+                                    memset(sfreq, 0, 20);
+                                    strncpy (sfreq, sFld.c_str(), sizeof(sfreq) - 1);
                                     comma_position = strchr(sfreq,',');
                                     if (comma_position != NULL) {
                                         strncpy(comma_position,".",1);

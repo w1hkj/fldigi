@@ -33,7 +33,7 @@
 
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
-#define NUMTRIES 5
+#define NUMTRIES 10
 
 using namespace std;
 
@@ -148,10 +148,13 @@ freq_t Rig::getFreq(vfo_t vfo)
 		return fnull;
 	}
 	freq_t freq = fnull;
-	int i;
-	for (i = 0; i < NUMTRIES; i++)
-		if (rig_get_freq(rig, vfo, &freq) == RIG_OK)
+	int ret;
+	for (int i = 0; i < NUMTRIES; i++) {
+		ret = rig_get_freq(rig, vfo, &freq);
+		if (ret == RIG_OK && freq != 0) {
 			break;
+		}
+	}
 	return freq;
 }
 

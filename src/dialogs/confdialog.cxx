@@ -6880,6 +6880,14 @@ o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
+Fl_Button *btn_hamlib_get_defaults=(Fl_Button *)0;
+
+static void cb_btn_hamlib_get_defaults(Fl_Button*, void*) {
+  #if USE_HAMLIB
+hamlib_get_defaults();
+#endif
+}
+
 Fl_Group *grpRigHardware=(Fl_Group *)0;
 
 Fl_Check_Button *btnPTTrightchannel=(Fl_Check_Button *)0;
@@ -16040,7 +16048,7 @@ i.e. localhost"));
       grpRigHamlib->box(FL_ENGRAVED_BOX);
       grpRigHamlib->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       grpRigHamlib->hide();
-      { chkUSEHAMLIB = new Fl_Check_Button(451, 31, 100, 20, _("Use Hamlib"));
+      { chkUSEHAMLIB = new Fl_Check_Button(451, 21, 100, 20, _("Use Hamlib"));
         chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
         chkUSEHAMLIB->down_box(FL_DOWN_BOX);
         chkUSEHAMLIB->callback((Fl_Callback*)cb_chkUSEHAMLIB);
@@ -16093,8 +16101,8 @@ i.e. localhost"));
           o->value(progdefaults.HamlibRetries);
           o->labelsize(FL_NORMAL_SIZE);
         } // Fl_Value_Input2* cntHamlibRetries
-        { Fl_Value_Input2* o = cntHamlibTimeout = new Fl_Value_Input2(381, 101, 70, 24, _("Retry Interval (msec)"));
-          cntHamlibTimeout->tooltip(_("Msec\'s between retries"));
+        { Fl_Value_Input2* o = cntHamlibTimeout = new Fl_Value_Input2(381, 101, 70, 24, _("Timeout (msec)"));
+          cntHamlibTimeout->tooltip(_("Hamlib read timeout"));
           cntHamlibTimeout->box(FL_DOWN_BOX);
           cntHamlibTimeout->color(FL_BACKGROUND2_COLOR);
           cntHamlibTimeout->selection_color(FL_SELECTION_COLOR);
@@ -16301,6 +16309,9 @@ i.e. localhost"));
         } // Fl_Button* btnInitHAMLIB
         grpHamlib->end();
       } // Fl_Group* grpHamlib
+      { btn_hamlib_get_defaults = new Fl_Button(696, 19, 80, 24, _("Defaults"));
+        btn_hamlib_get_defaults->callback((Fl_Callback*)cb_btn_hamlib_get_defaults);
+      } // Fl_Button* btn_hamlib_get_defaults
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/Hamlib"));
       config_pages.push_back(p);
       tab_tree->add(_("Rig Control/Hamlib"));
