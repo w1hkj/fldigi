@@ -10352,7 +10352,7 @@ void FHdisp_char_height()
 	trx_mode mode = active_modem->get_mode();
 	if ( (mode >= MODE_HELL_FIRST) &&
 		 (mode <= MODE_HELL_LAST) )
-		active_modem->restart();
+		active_modem->rx_init();
 
 // adjust upper/lower bounds of Rx/Tx panel
 	minhtext = 2 * progdefaults.HellRcvHeight + 4;//6;

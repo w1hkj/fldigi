@@ -72,12 +72,49 @@ void feld::rx_init()
 {
 	rxcounter = 0.0;
 	peakhold = 0.0;
-	for (int i = 0; i < 2 * RxColumnLen; i++ )
+	for (int i = 0; i < 2 * MAX_RX_COLUMN_LEN; i++ )
 		col_data[i] = 0;
 	col_pointer = 0;
 	peakhold = 0.0;
-	minhold = 1.0;
 	agc = 0.0;
+
+	RxColumnLen = progdefaults.HellRcvHeight;
+	switch (mode) {
+// Amplitude modulation modes
+		case MODE_FELDHELL:
+			rxpixrate = (RxColumnLen * feldcolumnrate);
+			downsampleinc = (double)(rxpixrate/samplerate);
+			break;
+		case MODE_SLOWHELL:
+			rxpixrate = (RxColumnLen * feldcolumnrate);
+			downsampleinc = (double)(rxpixrate/samplerate);
+			break;
+		case MODE_HELLX5:
+			rxpixrate = (RxColumnLen * feldcolumnrate);
+			downsampleinc = (double)(rxpixrate/samplerate);
+			break;
+		case MODE_HELLX9:
+			rxpixrate = (RxColumnLen * feldcolumnrate);
+			downsampleinc = (double)(rxpixrate/samplerate);
+			break;
+// Frequency modulation modes
+		case MODE_FSKH245:
+			rxpixrate = (RxColumnLen * feldcolumnrate);
+			downsampleinc = (double)(rxpixrate/samplerate);
+			break;
+		case MODE_FSKH105:
+			rxpixrate = (RxColumnLen * feldcolumnrate);
+			downsampleinc = (double)(rxpixrate/samplerate);
+			break;
+		case MODE_HELL80:
+			rxpixrate = (RxColumnLen * feldcolumnrate);
+			downsampleinc = (double)(rxpixrate/samplerate);
+			break;
+		default :
+			rxpixrate = (RxColumnLen * feldcolumnrate);
+			downsampleinc = (double)(rxpixrate/samplerate);
+			break;
+	}
 
 	return;
 }
@@ -99,6 +136,8 @@ void feld::init()
 	} else
 		set_freq(wf->Carrier());
 
+	rx_init();
+
 }
 
 static void set_HellBW(double val)
@@ -108,12 +147,9 @@ static void set_HellBW(double val)
 
 void feld::restart()
 {
-//	set_bandwidth(hell_bandwidth);
+	RxColumnLen = progdefaults.HellRcvHeight;
+	TxColumnLen = FELD_COLUMN_LEN;
 
-RxColumnLen = progdefaults.HellRcvHeight;
-TxColumnLen = FELD_COLUMN_LEN;
-
-	int fbw;
 	switch (mode) {
 // Amplitude modulation modes
 		case MODE_FELDHELL:
@@ -123,10 +159,8 @@ TxColumnLen = FELD_COLUMN_LEN;
 			downsampleinc = (double)(rxpixrate/samplerate);
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = txpixrate;
-			fbw = 1.2 * hell_bandwidth;
-			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
-			else fbw -= (fbw % 5);
-			progdefaults.HELL_BW_FH = filter_bandwidth = fbw;
+			filter_bandwidth = 5 * round(1.2 * hell_bandwidth / 5.0);
+			progdefaults.HELL_BW_FH = filter_bandwidth;
 			break;
 		case MODE_SLOWHELL:
 			feldcolumnrate = 2.1875;
@@ -135,10 +169,8 @@ TxColumnLen = FELD_COLUMN_LEN;
 			downsampleinc = (double)(rxpixrate/samplerate);
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = txpixrate;
-			fbw = 1.2 * hell_bandwidth;
-			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
-			else fbw -= (fbw % 5);
-			progdefaults.HELL_BW_SH = filter_bandwidth = fbw;
+			filter_bandwidth = 5 * round(1.2 * hell_bandwidth / 5.0);
+			progdefaults.HELL_BW_FH = filter_bandwidth;
 			break;
 		case MODE_HELLX5:
 			feldcolumnrate = 87.5;
@@ -147,10 +179,8 @@ TxColumnLen = FELD_COLUMN_LEN;
 			downsampleinc = (double)(rxpixrate/samplerate);
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = txpixrate;
-			fbw = 1.2 * hell_bandwidth;
-			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
-			else fbw -= (fbw % 5);
-			progdefaults.HELL_BW_X5 = filter_bandwidth = fbw;
+			filter_bandwidth = 5 * round(1.2 * hell_bandwidth / 5.0);
+			progdefaults.HELL_BW_X5 = filter_bandwidth;
 			break;
 		case MODE_HELLX9:
 			feldcolumnrate = 157.5;
@@ -159,10 +189,8 @@ TxColumnLen = FELD_COLUMN_LEN;
 			downsampleinc = (double)(rxpixrate/samplerate);
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = txpixrate;
-			fbw = 1.2 * hell_bandwidth;
-			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
-			else fbw -= (fbw % 5);
-			progdefaults.HELL_BW_X9 = filter_bandwidth = fbw;
+			filter_bandwidth = 5 * round(1.2 * hell_bandwidth / 5.0);
+			progdefaults.HELL_BW_X9 = filter_bandwidth;
 			break;
 // Frequency modulation modes
 		case MODE_FSKH245:
@@ -173,10 +201,8 @@ TxColumnLen = FELD_COLUMN_LEN;
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = 122.5;
 			phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
-			fbw = 3.0 * hell_bandwidth;
-			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
-			else fbw -= (fbw % 5);
-			progdefaults.HELL_BW_FSKH245 = filter_bandwidth = fbw;
+			filter_bandwidth = 5 * round(4.0 * hell_bandwidth / 5.0);
+			progdefaults.HELL_BW_FSKH245 = filter_bandwidth;
 			cap |= CAP_REV;
 			break;
 		case MODE_FSKH105:
@@ -187,10 +213,8 @@ TxColumnLen = FELD_COLUMN_LEN;
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = 55;
 			phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
-			fbw = 4.0 * hell_bandwidth;
-			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
-			else fbw -= (fbw % 5);
-			progdefaults.HELL_BW_FSKH105 = filter_bandwidth = fbw;
+			filter_bandwidth = 5 * round(4.0 * hell_bandwidth / 5.0);
+			progdefaults.HELL_BW_FSKH105 = filter_bandwidth;
 			cap |= CAP_REV;
 			break;
 		case MODE_HELL80:
@@ -201,10 +225,8 @@ TxColumnLen = FELD_COLUMN_LEN;
 			upsampleinc = (double)(txpixrate/samplerate);
 			hell_bandwidth = 300;
 			phi2freq = samplerate / M_PI / (hell_bandwidth / 2.0);
-			fbw = 2.5 * hell_bandwidth;
-			if (fbw % 5 > 2) fbw += (5 - (fbw % 5));
-			else fbw -= (fbw % 5);
-			progdefaults.HELL_BW_HELL80 = filter_bandwidth = fbw;
+			filter_bandwidth = 5 * round(4.0 * hell_bandwidth / 5.0);
+			progdefaults.HELL_BW_HELL80 = filter_bandwidth;
 			cap |= CAP_REV;
 			break;
 		default :
@@ -212,9 +234,15 @@ TxColumnLen = FELD_COLUMN_LEN;
 			break;
 	}
 	set_bandwidth(hell_bandwidth);
-	progdefaults.HELL_BW = filter_bandwidth;
+	lpfilt->create_filter(0, 1.0 * filter_bandwidth / samplerate);//0.5 * filter_bandwidth / samplerate);
+	average->setLength( 500 * samplerate / rxpixrate);
+
+	rx_init();
+
+	wf->redraw_marker();
 
 	REQ(set_HellBW, filter_bandwidth);
+
 /*
 std::cout <<
 "HellRcvHeight:      " << progdefaults.HellRcvHeight << "\n" <<
@@ -228,48 +256,39 @@ std::cout <<
 "hell_bandwidth:     " << hell_bandwidth << "\n" <<
 "filter bandwidth:   " << filter_bandwidth << "\n";
 */
-	col_data.alloc(2 * RxColumnLen);
 
 }
 
 feld::~feld()
 {
 	if (hilbert) delete hilbert;
-	if (lpfilt) delete lpfilt;
-	if (bbfilt) delete bbfilt;
-	if (minmaxfilt) delete minmaxfilt;
+	if (lpfilt)  delete lpfilt;
+	if (average) delete average;
 }
 
 feld::feld(trx_mode m)
 {
-	double lp;
 	mode = m;
 	samplerate = FeldSampleRate;
 
 	cap |= CAP_BW;
 
-	restart();
-
-//	progdefaults.HELL_BW = filter_bandwidth;
-//	set_bandwidth(hell_bandwidth);
-
-	hilbert = new C_FIR_filter();
-	hilbert->init_hilbert(37, 1);
-
-	wf->redraw_marker();
-
-	lp = 0.5 * filter_bandwidth / samplerate;
-	lpfilt = new fftfilt(0, lp, 1024);
-
+	lpfilt  = new fftfilt (0, 0.5, 1024);
+	average = new Cmovavg (200);
 	bbfilt = new Cmovavg(8);
-	average = new Cmovavg( static_cast<int>(500 / downsampleinc));
-
-	minmaxfilt = new Cmovavg(120);
+	hilbert = new C_FIR_filter();
+	hilbert->init_hilbert (37, 1);
 
 	rxphacc = 0.0;
 	txphacc = 0.0;
 
+	wf->redraw_marker();
+
 	REQ(&Raster::set_marquee, FHdisp, progdefaults.HellMarquee);
+
+	col_data.alloc(2 * MAX_RX_COLUMN_LEN);
+
+	restart();
 
 }
 
@@ -302,6 +321,7 @@ void feld::FSKH_rx(cmplx z)
 	f = arg(conj(prev) * z) * phi2freq;
 	prev = z;
 	f = bbfilt->run(f);
+
 	avg = average->run(abs(z));
 
 	rxcounter += downsampleinc;
@@ -327,8 +347,7 @@ void feld::FSKH_rx(cmplx z)
 	metric = CLAMP(1000*agc, 0.0, 100.0);
 	display_metric(metric);
 
-	vid = f + 0.5;
-	vid = CLAMP(vid, 0.0, 1.0);
+	vid = CLAMP(0.5*(f + 1), 0.0, 1.0);
 
 	if (reverse)
 		vid = 1.0 - vid;
@@ -341,14 +360,14 @@ void feld::FSKH_rx(cmplx z)
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
 			switch (progdefaults.HellRcvWidth) {
 				case 4:
-					REQ(put_rx_data, col_data, col_data.size());
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);
 				case 3:
-					REQ(put_rx_data, col_data, col_data.size());
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);
 				case 2:
-					REQ(put_rx_data, col_data, col_data.size());
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);
 				case 1:
 				default:
-					REQ(put_rx_data, col_data, col_data.size());
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);
 			}
 		}
 		col_pointer = 0;
@@ -409,14 +428,14 @@ void feld::rx(cmplx z)
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
 			switch (progdefaults.HellRcvWidth) {
 				case 4:
-					REQ(put_rx_data, col_data, col_data.size());
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);
 				case 3:
-					REQ(put_rx_data, col_data, 2 * RxColumnLen);//col_data.size());
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);
 				case 2:
-					REQ(put_rx_data, col_data, 2 * RxColumnLen);//col_data.size());
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);
 				case 1:
 				default:
-					REQ(put_rx_data, col_data, 2 * RxColumnLen);//col_data.size());
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);
 			}
 		}
 		col_pointer = 0;
@@ -433,7 +452,6 @@ int feld::rx_process(const double *buf, int len)
 	int i, n;
 
 	if (progdefaults.HELL_BW != filter_bandwidth) {
-		double lp;
 		filter_bandwidth = progdefaults.HELL_BW;
 		switch (mode) {
 			case MODE_FELDHELL:
@@ -458,8 +476,7 @@ int feld::rx_process(const double *buf, int len)
 				progdefaults.HELL_BW_HELL80 = filter_bandwidth;
 		}
 
-		lp = 0.5 * filter_bandwidth / samplerate;
-		lpfilt->create_filter(0, lp);
+		lpfilt->create_filter(0, 0.5 * filter_bandwidth / samplerate);
 		wf->redraw_marker();
 	}
 

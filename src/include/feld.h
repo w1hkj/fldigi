@@ -39,7 +39,8 @@
 
 #define MAXLEN 512
 
-#define FELD_COLUMN_LEN 14
+#define FELD_COLUMN_LEN     14
+#define MAX_RX_COLUMN_LEN   42
 
 class feld : public modem {
 enum FELD_STATE {PREAMBLE, POSTAMBLE, DATA};
@@ -53,7 +54,6 @@ protected:
 	double agc;
 	double peakval;
 	double peakhold;
-	double minhold;
 
 	double rxpixrate;
 	double txpixrate;
@@ -64,8 +64,8 @@ protected:
 	C_FIR_filter	*hilbert;
 	fftfilt			*lpfilt;
 	Cmovavg			*bbfilt;
-	Cmovavg			*minmaxfilt;
 	Cmovavg			*average;
+
 //tx
 	FELD_STATE	tx_state;
 	double txphacc;
