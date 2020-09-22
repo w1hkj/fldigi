@@ -1,4 +1,4 @@
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // status.cxx
 //
 // Copyright (C) 2007-2010
@@ -20,8 +20,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
-// ----------------------------------------------------------------------------
-
+// ---------------------------------------------------------------------
+//
+// Save all floating point values as integers
+//
+// int_fval = fval * NNN where NNN is a factor of 10
+//
+// restore using fval = int_fval / NNN
+//
+// A work around for a bug in class preferences.  Read/Write of floating
+// point values fails on read if locale is not EN_...
+//
+//---------------------------------------------------------------------- 
 #include <config.h>
 
 #include <iostream>
@@ -85,7 +95,7 @@ status progStatus = {
 	false,				// bool Rig_Contest_UI;
 	false,				// bool DOCKEDSCOPE;
 	false,				// bool tbar_is_docked;
-	50,					// int RxTextHeight;
+//	50,					// int RxTextHeight;
 	WMIN/2,				// int tiled_group_x;
 	false,				// bool show_channels;
 	50,					// int rigX;
@@ -100,15 +110,20 @@ status progStatus = {
 	0,					// int offset;
 	NORMAL,				// WFdisp::WFspeed
 	-20,				// reflevel
-	-70,				// ampspan
+	-2000,				// int_reflevel
+	70,					// ampspan
+	7000,				// int_ampspan
 	30,					// uint	VIEWERnchars
 	50,					// uint	VIEWERxpos
 	50,					// uint	VIEWERypos
 	200,				// uint VIEWERwidth
 	400,				// uint VIEDWERheight
 	3.0,				// double VIEWER_psksquelch
+	300,				// int int_VIEWER_psksquelch
 	-6.0,				// double VIEWER_rttysquelch
+	-600,				// int int_VIEWER_rttysquelch
 	3.0,				// double VIEWER_cwsquelch
+	300,				// int int_VIEWER_cwsquelch
 	false,				// bool VIEWERvisible
 	50,					// unsigned int	fsqMONITORxpos;
 	50,					// unsigned int	fsqMONITORypos;
@@ -121,9 +136,14 @@ status progStatus = {
 	0.5,				// double	tile_y_ratio;
 	0.5,				// double	fsq_ratio;
 	0.5,				// double	ifkp_ratio;
+	500,				// int		int_tile_y_ratio;
+	500,				// int		int_fsq_ratio;
+	500,				// int		int_ifkp_ratio;
 	false,				// bool LOGenabled
 	5.0,				// double sldrSquelchValue
+	500,				// int		int_sldrSquelchValue
 	5.0,				// double sldrPwrSquelchValue
+	500,				// int		int_sldrPwrSquelchValue
 	true,				// bool afconoff
 	true,				// bool sqlonoff
 	50,					// int	scopeX;
@@ -232,6 +252,7 @@ status progStatus = {
     progdefaults.kiss_io_modem_change_inhibit,
 	true,
 	0.0,
+	0,
 	progdefaults.psk8DCDShortFlag,
 
 	"CQ",				// string browser_search;
@@ -298,11 +319,13 @@ status progStatus = {
 
 //----------------------------------------------------------------------
 // FMT saved controls
-	1500.0,			// double	FTM_ref_freq;
-	1500.0,			// double	FTM_unk_fre;
-	1,				// int		FTM_trk_speed;
-	1,				// int		FTM_trk_scale;
-	2,				// int		FTM_rec_interval
+	1500.0,			// double	FMT_ref_freq;
+	1500000,		// int		int_FMT_ref_freq;
+	1500.0,			// double	FMT_unk_fre;
+	1500000,		// int		int_FMT_unk_fre;
+	1,				// int		FMT_trk_speed;
+	1,				// int		FMT_trk_scale;
+	2,				// int		FMT_rec_interval
 //----------------------------------------------------------------------
 	046,			//	debug_mask
 
@@ -363,7 +386,7 @@ void status::saveLastState()
 	dxdialog_h = dxcluster_viewer->h();
 
 	if (!bWF_only) {
-		RxTextHeight = (ReceiveText->h() * 100) / text_panel->h();//VTgroup->h();
+//		RxTextHeight = (ReceiveText->h() * 100) / text_panel->h();//VTgroup->h();
 		quick_entry = ReceiveText->get_quick_entry();
 		rx_scroll_hints = ReceiveText->get_scroll_hints();
 		rx_word_wrap = ReceiveText->get_word_wrap();
@@ -377,6 +400,9 @@ void status::saveLastState()
 			tile_x = mvgroup->w();
 		fsq_ratio = 1.0 * fsq_rx_text->h() / fsq_group->h();
 		ifkp_ratio = 1.0 * ifkp_rx_text->h() / ifkp_group->h();
+		int_tile_y_ratio = round(tile_y_ratio * 1000);
+		int_fsq_ratio    = round(fsq_ratio * 1000);
+		int_ifkp_ratio   = round (ifkp_ratio * 1000);
 	}
 
 	VIEWERvisible = dlgViewer->visible();
@@ -458,6 +484,7 @@ void status::saveLastState()
     tx_buffer_timeout              = progdefaults.tx_buffer_timeout;
     kiss_io_modem_change_inhibit = progdefaults.kiss_io_modem_change_inhibit;
 	squelch_value = 0;
+	int_squelch_value = 0;
 
 	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
 
@@ -466,8 +493,9 @@ void status::saveLastState()
 
 	spref.set("mode_name", mode_info[lastmode].sname);
 	spref.set("squelch_enabled", sqlonoff);
-	spref.set("squelch_level", sldrSquelchValue);
-	spref.set("pwr_squelch_level", sldrPwrSquelchValue);
+
+	spref.set("int_squelch_level", (int)round(sldrSquelchValue * 100));
+	spref.set("int_pwr_squelch_level", (int)round(sldrPwrSquelchValue * 100));
 	spref.set("afc_enabled", afconoff);
 
 	spref.set("psk8DCDShortFlag", psk8DCDShortFlag);
@@ -478,8 +506,10 @@ void status::saveLastState()
 	spref.set("wf_mag", mag);
 	spref.set("wf_offset", offset);
 	spref.set("wf_speed", speed);
-	spref.set("wf_reflevel", reflevel);
-	spref.set("wf_ampspan", ampspan);
+
+	spref.set("int_wf_reflevel", (int)round(reflevel * 100));
+	spref.set("int_wf_ampspan", (int)round(ampspan * 100));
+
 	spref.set("noCATfreq", noCATfreq);
 	spref.set("noCATmode", noCATmode.c_str());
 	spref.set("noCATwidth", noCATwidth.c_str());
@@ -490,7 +520,7 @@ void status::saveLastState()
 
 if (!bWF_only) {
 	spref.set("main_h", mainH);
-	spref.set("rx_text_height", RxTextHeight);
+//	spref.set("rx_text_height", RxTextHeight);
 	spref.set("tiled_group_x", tiled_group_x);
 	spref.set("show_channels", show_channels);
 }
@@ -512,9 +542,11 @@ if (!bWF_only) {
 	spref.set("viewer_y", static_cast<int>(VIEWERypos));
 	spref.set("viewer_w", static_cast<int>(VIEWERwidth));
 	spref.set("viewer_h", static_cast<int>(VIEWERheight));
-	spref.set("viewer_psksq", VIEWER_psksquelch);
-	spref.set("viewer_rttysq", VIEWER_rttysquelch);
-	spref.set("viewer_cwsq", VIEWER_cwsquelch);
+
+	spref.set("int_viewer_psksq", (int)round(VIEWER_psksquelch * 100));
+	spref.set("int_viewer_rttysq", (int)round(VIEWER_rttysquelch * 100));
+	spref.set("int_viewer_cwsq", (int)round(VIEWER_cwsquelch * 100));
+
 	spref.set("viewer_nchars", static_cast<int>(VIEWERnchars));
 
 	spref.set("fsq_monitor_x", static_cast<int>(fsqMONITORxpos));
@@ -526,9 +558,10 @@ if (!bWF_only) {
 	spref.set("tile_y", tile_y);
 	spref.set("tile_w", tile_w);
 	spref.set("tile_h", tile_h);
-	spref.set("tile_y_ratio", tile_y_ratio);
-	spref.set("fsq_ratio", fsq_ratio);
-	spref.set("ifkp_ratio", ifkp_ratio);
+
+	spref.set("int_tile_y_ratio", int_tile_y_ratio);
+	spref.set("int_fsq_ratio", int_fsq_ratio);
+	spref.set("int_ifkp_ratio", int_ifkp_ratio);
 
 	spref.set("scope_visible", scopeVisible);
 	spref.set("scope_x", scopeX);
@@ -693,8 +726,9 @@ if (!bWF_only) {
 
 //----------------------------------------------------------------------
 // FMT saved controls
-	spref.set("FMT_ref_freq", FMT_ref_freq);
-	spref.set("FMT_unk_freq", FMT_unk_freq);
+	spref.set("int_FMT_ref_freq", (int)round(FMT_ref_freq * 1000));
+	spref.set("int_FMT_unk_freq", (int)round(FMT_unk_freq * 1000));
+
 	spref.set("FMT_rec_interval", FMT_rec_interval);
 	spref.set("FMT_trk_scale", FMT_trk_scale);
 	spref.set("FMT_minutes", FMT_minutes);
@@ -737,11 +771,14 @@ void status::loadLastState()
 	}
 
 	spref.get("squelch_enabled", i, sqlonoff); sqlonoff = i;
-	spref.get("squelch_level", i, sldrSquelchValue); sldrSquelchValue = i;
-	spref.get("pwr_squelch_level", i, sldrPwrSquelchValue); sldrPwrSquelchValue = i;
+	spref.get("int_squelch_level", i, int_sldrSquelchValue); int_sldrSquelchValue = i;
+	sldrSquelchValue = int_sldrSquelchValue / 100.0;
+	spref.get("int_pwr_squelch_level", i, int_sldrPwrSquelchValue); int_sldrPwrSquelchValue = i;
+	sldrPwrSquelchValue = int_sldrPwrSquelchValue / 100.0;
+
 	spref.get("afc_enabled", i, afconoff); afconoff = i;
 
-	spref.get("rx_text_height", RxTextHeight, RxTextHeight);
+//	spref.get("rx_text_height", RxTextHeight, RxTextHeight);
 	spref.get("tiled_group_x", tiled_group_x, tiled_group_x);
 	spref.get("show_channels", i, show_channels); show_channels = i;
 
@@ -751,9 +788,12 @@ void status::loadLastState()
 	spref.get("wf_mag", mag, mag);
 	spref.get("wf_offset", offset, offset);
 	spref.get("wf_speed", speed, speed);
-	spref.get("wf_reflevel", reflevel, reflevel);
+
+	spref.get("int_wf_reflevel", int_reflevel, int_reflevel);
+	reflevel = int_reflevel / 100.0;
 	progdefaults.wfRefLevel = reflevel;
-	spref.get("wf_ampspan", ampspan, ampspan);
+	spref.get("int_wf_ampspan", int_ampspan, int_ampspan);
+	ampspan = int_ampspan / 100.0;
 	progdefaults.wfAmpSpan = ampspan;
 
 	spref.get("noCATfreq", noCATfreq, noCATfreq);
@@ -799,9 +839,14 @@ void status::loadLastState()
 	spref.get("viewer_y", i, VIEWERypos); VIEWERypos = i;
 	spref.get("viewer_w", i, VIEWERwidth); VIEWERwidth = i;
 	spref.get("viewer_h", i, VIEWERheight); VIEWERheight = i;
-	spref.get("viewer_psksq", VIEWER_psksquelch, VIEWER_psksquelch);
-	spref.get("viewer_rttysq", VIEWER_rttysquelch, VIEWER_rttysquelch);
-	spref.get("viewer_cwsq", VIEWER_cwsquelch, VIEWER_cwsquelch);
+
+	spref.get("int_viewer_psksq", int_VIEWER_psksquelch, int_VIEWER_psksquelch);
+	VIEWER_psksquelch = int_VIEWER_psksquelch / 100.0;
+	spref.get("int_viewer_rttysq", int_VIEWER_rttysquelch, int_VIEWER_rttysquelch);
+	VIEWER_rttysquelch = int_VIEWER_rttysquelch / 100.0;
+	spref.get("int_viewer_cwsq", int_VIEWER_cwsquelch, int_VIEWER_cwsquelch);
+	VIEWER_cwsquelch = int_VIEWER_cwsquelch / 100.0;
+
 	spref.get("viewer_nchars", i, VIEWERnchars); VIEWERnchars = i;
 
 	spref.get("fsq_monitor_x", i, fsqMONITORxpos); fsqMONITORxpos = i;
@@ -813,9 +858,14 @@ void status::loadLastState()
 	spref.get("tile_y", tile_y, tile_y);
 	spref.get("tile_w", tile_w, tile_w);
 	spref.get("tile_h", tile_h, tile_h);
-	spref.get("tile_y_ratio", tile_y_ratio, tile_y_ratio);
-	spref.get("fsq_ratio", fsq_ratio, fsq_ratio);
-	spref.get("ifkp_ratio", ifkp_ratio, ifkp_ratio);
+
+	spref.get("int_tile_y_ratio", int_tile_y_ratio, int_tile_y_ratio);
+	spref.get("int_fsq_ratio",    int_fsq_ratio, int_fsq_ratio);
+	spref.get("int_ifkp_ratio",   int_ifkp_ratio, int_ifkp_ratio);
+
+	tile_y_ratio = int_tile_y_ratio / 1000.0;
+	fsq_ratio    = int_fsq_ratio / 1000.0;
+	ifkp_ratio   = int_ifkp_ratio / 1000.0;
 
 	spref.get("scope_visible", i, scopeVisible); scopeVisible = i;
 	spref.get("scope_x", scopeX, scopeX);
@@ -1017,8 +1067,11 @@ void status::loadLastState()
 
 //----------------------------------------------------------------------
 // FMT saved controls
-		spref.get("FMT_ref_freq", FMT_ref_freq, FMT_ref_freq);
-		spref.get("FMT_unk_freq", FMT_unk_freq, FMT_unk_freq);
+		spref.get("int_FMT_ref_freq", int_FMT_ref_freq, int_FMT_ref_freq);
+		FMT_ref_freq = int_FMT_ref_freq / 1000.0;
+		spref.get("int_FMT_unk_freq", int_FMT_unk_freq, int_FMT_unk_freq);
+		FMT_unk_freq = int_FMT_unk_freq / 1000.0;
+
 		spref.get("FMT_rec_interval", FMT_rec_interval, FMT_rec_interval);
 		spref.get("FMT_trk_scale", FMT_trk_scale, FMT_trk_scale);
 		spref.get("FMT_minutes", FMT_minutes, FMT_minutes);
