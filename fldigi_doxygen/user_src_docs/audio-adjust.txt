@@ -24,22 +24,44 @@ Signal decoding and signal display are two separate software processing paths:
 </center>
 
 The objective in adjusting the Rx audio is to use the full dynamic range of the
-a/d without incurring overdrive.  fldigi provides a number of display controls to
-assist in setting up the Rx audio.  There are two controls that adjust the
-visual appearance of the waterfall.  These controls are below and to the 
+a/d without either incurring over or under drive.  fldigi provides a number of display controls to
+assist in setting up the Rx audio.  fldigi does not attempt to control the system
+input mixer controls.  Those must be adjusted by the operator.  Mixer control access is
+different for each of the supported operating systems.  The input signal level effects the decoder
+performance and the visual presentation of the signal.
+
+fldigi displays the raw input signal in a VU style meter.  This meter is accessed from one of two signal level
+configuration panels:
+<center>
+<table>
+<tr>
+<td>\image html configure_signal_level_menu1.png ""
+    \image latex configure_signal_level_menu1.png "" width = 1.5in
+</td>
+<td>\image html configure_signal_level_menu2.png ""
+    \image latex configure_signal_level_menu2.png "" width = 1.5in
+</td>
+<td>
+\image html configure_signal_level.png ""
+\image latex configure_signal_level.png "" width = 3.0in
+</td>
+</tr>
+</table>
+</center>
+There are two controls that adjust the visual appearance of the waterfall.  These controls are below and to the 
 left of the waterfall, "Upper signal level (dB)", and "Signal range (dB)".
 The "Upper signal level" control is a gain control.  0 dB == x1,-6 dB = x2.
 These values are dB relative to input signal level.  This control will effect 
-the Waterfall, FFT, and SIGnal views.  The
-"Signal range" control will only effect the Waterfall and FFT views.
+the Waterfall (WF), Fourier Transform (FFT), and Signal (SIG) views.  The
+"Signal range" control will only effect the WF and FFT views.
 
 <center>
 \image html win10-fldigi-wf-adjust.png "Waterfall level/range controls"
 \image latex win10-fldigi-wf-adjust.png "Waterfall level/range controls" width=1.5in
 </center>
 
-Change the waterfall display to the "Scope" view.  Do this by pressing the 
-"WF" button twice if it is currently displaying the waterfall.  You can also 
+Set the level to -20 and the range to 70.  Change the waterfall display to the "Scope" view.  
+Do this by pressing the "WF" button twice if it is currently displaying the waterfall.  You can also 
 right click once on that button.  That button acts as a rotary and is left/right 
 click sensitive.  The display should show what looks like an oscilloscope view 
 of the received audio.  This is the entire audio signal and not just
@@ -52,26 +74,27 @@ the signal that is currently decoded.
 
 If your sound card a/d (also referred to as codec) is functioning correctly there
 should be no signal offset and the signal will be centered vertically about the x-axis.  Set your
-transceiver to a portion of the band with digital signals, 14.070 MHz is a good spot.  Now adjust
-the transceiver audio output and the operating system mixer controls so that the peak signals do
-not exceed the upper/lower gray lines on the display.  The diamond indicator to the left of the
+transceiver to a portion of the band with no signals; 14.065 MHz might suffice.  Adjust the audio path gain;
+transceiver audio, external audio codec gain, and operating system gain for a noise level that is about -50 dB
+on the VU meter.  Then set the transceiver to an active portion of the digital band; 14.070 MHz for PSK or
+14.074 MHz for JT type digital signals.  Make sure that the input gain controls are not set too hot.  The peak signals do
+should not exceed the upper/lower gray lines on the display.  The diamond indicator to the left of the
 fldigi AFC button will be colored as follows:
 <ul>
-<li>BLACK - no signal present, or < 50 mv peak of audio</li>
-<li>GREEN - signals are in the correct range, 50 mv to 900 mv peak audio</li>
-<li>YELLOW - signals exceed 900 mv, but are less than 980 mv peak</li>
-<li>RED - signals exceed 980 mv or 98% of maximum a/d capability</li>
+<li>BLACK - no signal present</li>
+<li>GREEN - signals are in the correct range</li>
+<li>YELLOW - signals level high, but still OK</li>
+<li>RED - signals too high, danger of decode errors</li>
 </ul>
-
-Set the left hand control to 0 dB and adjust the Rx audio (at the transceiver or OS mixer)
-for about 1/2 scale on the SIG display for an S9 signal.  WWV or an AM station
-carrier is a good signal to use for this adjustment.
+The transition levels can be adjusted on the "Signal Level" configuration panel.  The default settings
+will be good for most users.  The colors can be set to suit the users' color vision.
 
 You can then proceed to adjust the waterfall/fft appearance when you have the 
-audio Rx level adjusted correctly.
+audio Rx level adjusted correctly.  Remember that changing the WF/FFT/SIG level and range controls DOES NOT
+effect the decoder signal path.
 
 The three signal views should be similar to this with the level/range controls set 
-to 0 and 60 respectively.  The waterfall palette used is "default.pal", and the 
+to -20 and 70 respectively.  The waterfall palette used is "default.pal", and the 
 received signal is about 20 dB above the noise floor.
 <center>
   \image html win10-fldigi-wf.png "Waterfall"
