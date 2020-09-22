@@ -39,7 +39,7 @@ struct status {
 	bool	DOCKEDSCOPE;
 	bool	tbar_is_docked;
 
-	int		RxTextHeight;
+//	int		RxTextHeight;
 	int		tiled_group_x;
 	bool	show_channels;
 
@@ -55,16 +55,21 @@ struct status {
 	int		offset;
 	int		speed;
 	double	reflevel;
+	int		int_reflevel;
 	double	ampspan;
+	int		int_ampspan;
 	unsigned int	VIEWERnchars;
 	unsigned int	VIEWERxpos;
 	unsigned int	VIEWERypos;
 	unsigned int	VIEWERwidth;
 	unsigned int	VIEWERheight;
-	double	VIEWER_psksquelch;
-	double	VIEWER_rttysquelch;
-	double	VIEWER_cwsquelch;
-	bool	VIEWERvisible;
+	double			VIEWER_psksquelch;
+	int				int_VIEWER_psksquelch;
+	double			VIEWER_rttysquelch;
+	int				int_VIEWER_rttysquelch;
+	double			VIEWER_cwsquelch;
+	int				int_VIEWER_cwsquelch;
+	bool			VIEWERvisible;
 	unsigned int	fsqMONITORxpos;
 	unsigned int	fsqMONITORypos;
 	unsigned int	fsqMONITORwidth;
@@ -76,9 +81,14 @@ struct status {
 	double	tile_y_ratio;
 	double	fsq_ratio;
 	double	ifkp_ratio;
+	int		int_tile_y_ratio;
+	int		int_fsq_ratio;
+	int		int_ifkp_ratio;
 	bool	LOGenabled;
 	double  sldrSquelchValue;
+	int		int_sldrSquelchValue;
 	double  sldrPwrSquelchValue;
+	int		int_sldrPwrSquelchValue;
 	bool	afconoff;
 	bool	sqlonoff;
 	int		scopeX;
@@ -160,37 +170,38 @@ struct status {
 	bool	UOStx;
 // end Contestia, Olivia, RTTY state values
 
-	std::string xmlrpc_address;
-	std::string xmlrpc_port;
-	std::string arq_address;
-	std::string arq_port;
-	std::string kiss_address;
-	std::string kiss_io_port;
-	std::string kiss_out_port;
-	int kiss_dual_port_enabled;
-	int data_io_enabled;
-	bool ax25_decode_enabled;
-	bool enableBusyChannel;
-	int busyChannelSeconds;
-	int kpsql_attenuation;
-	bool csma_enabled;
-	bool kiss_tcp_io;
-	bool kiss_tcp_listen;
-    bool kpsql_enabled;
-    int csma_persistance;
-    int csma_slot_time;
-    int csma_transmit_delay;
-    int psm_flush_buffer_timeout;
-    int psm_minimum_bandwidth;
-    int psm_minimum_bandwidth_margin;
-    bool psm_use_histogram;
-    int psm_histogram_offset_threshold;
-    int psm_hit_time_window;
-    int tx_buffer_timeout;
-    bool kiss_io_modem_change_inhibit;
-	bool ip_lock;
-	double squelch_value;
-    bool psk8DCDShortFlag;
+	std::string		xmlrpc_address;
+	std::string		xmlrpc_port;
+	std::string		arq_address;
+	std::string		arq_port;
+	std::string		kiss_address;
+	std::string		kiss_io_port;
+	std::string		kiss_out_port;
+	int				kiss_dual_port_enabled;
+	int				data_io_enabled;
+	bool			ax25_decode_enabled;
+	bool			enableBusyChannel;
+	int				busyChannelSeconds;
+	int				kpsql_attenuation;
+	bool			csma_enabled;
+	bool			kiss_tcp_io;
+	bool			kiss_tcp_listen;
+    bool			kpsql_enabled;
+    int				csma_persistance;
+    int				csma_slot_time;
+    int				csma_transmit_delay;
+    int				psm_flush_buffer_timeout;
+    int				psm_minimum_bandwidth;
+    int				psm_minimum_bandwidth_margin;
+    bool			psm_use_histogram;
+    int				psm_histogram_offset_threshold;
+    int				psm_hit_time_window;
+    int				tx_buffer_timeout;
+    bool			kiss_io_modem_change_inhibit;
+	bool			ip_lock;
+	double			squelch_value;
+	int				int_squelch_value;
+    bool			psk8DCDShortFlag;
 
 	std::string	browser_search;
 
@@ -256,7 +267,9 @@ struct status {
 //----------------------------------------------------------------------
 // FMT saved controls
 	double	FMT_ref_freq;
+	int		int_FMT_ref_freq;
 	double	FMT_unk_freq;
+	int		int_FMT_unk_freq;
 	int		FMT_rec_interval;
 	int		FMT_trk_scale;
 	int		FMT_minutes;
