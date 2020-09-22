@@ -8668,16 +8668,19 @@ void put_Status1(const char *msg, double timeout, status_timeout action)
 
 }
 
-void put_WARNstatus(double val)
+void put_WARNstatus(double v)
 {
-	if (val < 0.05)
+	sig_vumeter->value(v);
+	sig_vumeter2->value(v);
+
+	double val = 20 * log10(v == 0 ? 1e-9 : v);
+	if (val < progdefaults.normal_signal_level)
 		WARNstatus->color(progdefaults.LowSignal);
-	if (val >= 0.05)
+	else if (val < progdefaults.high_signal_level )
 		WARNstatus->color(progdefaults.NormSignal);
-	if (val >= 0.9)
+	else if (val < progdefaults.over_signal_level)
 		WARNstatus->color(progdefaults.HighSignal);
-	if (val >= 0.98)
-		WARNstatus->color(progdefaults.OverSignal);
+	else WARNstatus->color(progdefaults.OverSignal);
 	WARNstatus->redraw();
 }
 

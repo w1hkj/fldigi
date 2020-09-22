@@ -175,7 +175,7 @@ if (fl_color_chooser("Font color", r, g, b))
     c = fl_rgb_color(r, g, b);} {}
 }
 
-Function {cbRxFontBrowser(Fl_Widget*, void*)} {private return_type void
+Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
   code {Fl_Font font = font_browser->fontNumber();
     int size = font_browser->fontSize();
@@ -443,7 +443,7 @@ for (size_t i = 0; i < sizeof(qrzbxml)/sizeof(*qrzbxml); i++)
 	qrzbxml[i]->value(b == qrzbxml[i]);} {}
 }
 
-Function {set_qrzweb_buttons(Fl_Button* b)} {return_type void
+Function {set_qrzweb_buttons(Fl_Button* b)} {open return_type void
 } {
   code {Fl_Button* qrzbweb[] = { btnQRZWEBnotavailable, btnQRZonline,
                               btnHAMCALLonline,
@@ -1730,29 +1730,46 @@ progdefaults.changed = true;}
       code2 {tab_tree->add(_("Colors-Fonts/Signal Level"));}
       code3 {tab_tree->close(_("Colors-Fonts"));}
     } {
+      Fl_Box {} {
+        label {Signal Level Indicator}
+        xywh {340 39 316 21}
+      }
+      Fl_Box lowcolor {
+        xywh {365 96 21 21} box DIAMOND_DOWN_BOX color 0
+        code0 {o->color(progdefaults.LowSignal);}
+      }
       Fl_Button btnLowSignal {
         label Low
         callback {progdefaults.LowSignal = fl_show_colormap(progdefaults.LowSignal);
 lowcolor->color(progdefaults.LowSignal);
 lowcolor->redraw();
 progdefaults.changed = true;}
-        xywh {415 111 70 21}
+        xywh {402 96 70 21}
       }
-      Fl_Box lowcolor {
-        xywh {394 111 21 21} box DIAMOND_DOWN_BOX color 0
-        code0 {o->color(progdefaults.LowSignal);}
+      Fl_Box normalcolor {
+        xywh {365 142 21 21} box DIAMOND_DOWN_BOX color 2
+        code0 {o->color(progdefaults.NormSignal);}
       }
-      Fl_Button btnHighSignal {
-        label High
-        callback {progdefaults.HighSignal = fl_show_colormap(progdefaults.HighSignal);
-highcolor->color(progdefaults.HighSignal);
-highcolor->redraw();
-progdefaults.changed = true;}
-        xywh {415 149 70 21}
-      }
-      Fl_Box highcolor {
-        xywh {394 149 21 21} box DIAMOND_DOWN_BOX color 3
-        code0 {o->color(progdefaults.HighSignal);}
+      Fl_Counter cnt_normal_signal_level {
+        label {Transition
+Level (dB)}
+        callback {progdefaults.normal_signal_level = o->value();
+
+if (progdefaults.normal_signal_level > progdefaults.high_signal_level)
+  progdefaults.high_signal_level = progdefaults.normal_signal_level + 0.1;
+
+if (progdefaults.high_signal_level > progdefaults.over_signal_level)
+  progdefaults.over_signal_level = progdefaults.high_signal_level + 0.1;
+
+if (progdefaults.over_signal_level > 0)
+  progdefaults.over_signal_level = 0;
+
+cnt_normal_signal_level->value(progdefaults.normal_signal_level);
+cnt_high_signal_level->value(progdefaults.high_signal_level);
+cnt_over_signal_level->value(progdefaults.over_signal_level);}
+        xywh {480 119 114 21} align 1 minimum -90 maximum 0
+        code0 {o->value(progdefaults.normal_signal_level);}
+        code1 {o->lstep(1.0);}
       }
       Fl_Button btnNormalSignal {
         label Normal
@@ -1760,11 +1777,61 @@ progdefaults.changed = true;}
 normalcolor->color(progdefaults.NormSignal);
 normalcolor->redraw();
 progdefaults.changed = true;}
-        xywh {538 111 70 21}
+        xywh {402 142 70 21}
       }
-      Fl_Box normalcolor {
-        xywh {517 110 21 21} box DIAMOND_DOWN_BOX color 2
-        code0 {o->color(progdefaults.NormSignal);}
+      Fl_Box highcolor {
+        xywh {365 189 21 21} box DIAMOND_DOWN_BOX color 3
+        code0 {o->color(progdefaults.HighSignal);}
+      }
+      Fl_Counter cnt_high_signal_level {
+        callback {progdefaults.high_signal_level = o->value();
+
+if (progdefaults.normal_signal_level > progdefaults.high_signal_level)
+  progdefaults.high_signal_level = progdefaults.normal_signal_level + 0.1;
+
+if (progdefaults.high_signal_level > progdefaults.over_signal_level)
+  progdefaults.over_signal_level = progdefaults.high_signal_level + 0.1;
+
+if (progdefaults.over_signal_level > 0)
+  progdefaults.over_signal_level = 0;
+  
+cnt_normal_signal_level->value(progdefaults.normal_signal_level);
+cnt_high_signal_level->value(progdefaults.high_signal_level);
+cnt_over_signal_level->value(progdefaults.over_signal_level);}
+        xywh {480 165 114 21} minimum -90 maximum 0
+        code0 {o->value(progdefaults.high_signal_level);}
+        code1 {o->lstep(1.0);}
+      }
+      Fl_Button btnHighSignal {
+        label High
+        callback {progdefaults.HighSignal = fl_show_colormap(progdefaults.HighSignal);
+highcolor->color(progdefaults.HighSignal);
+highcolor->redraw();
+progdefaults.changed = true;}
+        xywh {402 189 70 21}
+      }
+      Fl_Box overcolor {
+        xywh {365 236 21 21} box DIAMOND_DOWN_BOX color 1
+        code0 {o->color(progdefaults.OverSignal);}
+      }
+      Fl_Counter cnt_over_signal_level {
+        callback {progdefaults.over_signal_level = o->value();
+
+if (progdefaults.normal_signal_level > progdefaults.high_signal_level)
+  progdefaults.high_signal_level = progdefaults.normal_signal_level + 0.1;
+
+if (progdefaults.high_signal_level > progdefaults.over_signal_level)
+  progdefaults.over_signal_level = progdefaults.high_signal_level + 0.1;
+
+if (progdefaults.over_signal_level > 0)
+  progdefaults.over_signal_level = 0;
+  
+cnt_normal_signal_level->value(progdefaults.normal_signal_level);
+cnt_high_signal_level->value(progdefaults.high_signal_level);
+cnt_over_signal_level->value(progdefaults.over_signal_level);}
+        xywh {480 212 114 21} minimum -90 maximum 0
+        code0 {o->value(progdefaults.over_signal_level);}
+        code1 {o->lstep(1.0);}
       }
       Fl_Button btnOverSignal {
         label Over
@@ -1772,15 +1839,31 @@ progdefaults.changed = true;}
 overcolor->color(progdefaults.OverSignal);
 overcolor->redraw();
 progdefaults.changed = true;}
-        xywh {538 149 70 21}
+        xywh {402 236 70 21}
       }
-      Fl_Box overcolor {
-        xywh {517 149 21 21} box DIAMOND_DOWN_BOX color 1
-        code0 {o->color(progdefaults.OverSignal);}
+      Fl_Progress {} {
+        label label
+        xywh {295 289 416 25} hide
+      }
+      Fl_Progress sig_vumeter {
+        label label
+        xywh {322 280 360 24}
+        code0 {\#include "vumeter.h"}
+        class vumeter
       }
       Fl_Box {} {
-        label {Signal Level Colors}
-        xywh {340 79 316 21}
+        label {Input signal level}
+        xywh {375 307 237 17}
+      }
+      Fl_Button btn_default_signal_levels {
+        label Default
+        callback {cnt_normal_signal_level->value(
+  progdefaults.normal_signal_level = -60.0);
+cnt_high_signal_level->value(
+  progdefaults.high_signal_level = -6.0);
+cnt_over_signal_level->value(
+  progdefaults.over_signal_level = -3.0);}
+        xywh {618 166 70 20}
       }
     }
     Fl_Group {} {
@@ -8587,7 +8670,7 @@ progdefaults.changed=true;}
       }
     }
     Fl_Group grpRigHamlib {
-      label {Rig Control/Hamlib} open selected
+      label {Rig Control/Hamlib}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/Hamlib"));}
       code1 {config_pages.push_back(p);}
@@ -9662,6 +9745,179 @@ cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);
 progdefaults.changed = true;}
           xywh {433 227 18 24} labelsize 10 align 16
         }
+      }
+    }
+    Fl_Group {} {
+      label {Signal Level} selected
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Signal Level"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Soundcard/Signal Level"));}
+    } {
+      Fl_Box {} {
+        label {Signal Levels}
+        xywh {340 39 316 21}
+      }
+      Fl_Box lowcolor2 {
+        xywh {365 96 21 21} box DIAMOND_DOWN_BOX color 0
+        code0 {o->color(progdefaults.LowSignal);}
+      }
+      Fl_Button btnLowSignal2 {
+        label Low
+        callback {progdefaults.LowSignal = fl_show_colormap(progdefaults.LowSignal);
+lowcolor->color(progdefaults.LowSignal);
+lowcolor->redraw();
+lowcolor2->color(progdefaults.LowSignal);
+lowcolor2->redraw();
+progdefaults.changed = true;}
+        xywh {402 96 70 21}
+      }
+      Fl_Box normalcolor2 {
+        xywh {365 142 21 21} box DIAMOND_DOWN_BOX color 2
+        code0 {o->color(progdefaults.NormSignal);}
+      }
+      Fl_Counter cnt_normal_signal_level2 {
+        label {Transition
+Level (dB)}
+        callback {progdefaults.normal_signal_level = o->value();
+
+if (progdefaults.normal_signal_level > progdefaults.high_signal_level)
+  progdefaults.high_signal_level = progdefaults.normal_signal_level + 0.1;
+
+if (progdefaults.high_signal_level > progdefaults.over_signal_level)
+  progdefaults.over_signal_level = progdefaults.high_signal_level + 0.1;
+
+if (progdefaults.over_signal_level > 0)
+  progdefaults.over_signal_level = 0;
+
+cnt_normal_signal_level->value(progdefaults.normal_signal_level);
+cnt_high_signal_level->value(progdefaults.high_signal_level);
+cnt_over_signal_level->value(progdefaults.over_signal_level);
+
+cnt_normal_signal_level2->value(progdefaults.normal_signal_level);
+cnt_high_signal_level2->value(progdefaults.high_signal_level);
+cnt_over_signal_level2->value(progdefaults.over_signal_level);}
+        xywh {480 119 114 21} align 1 minimum -90 maximum 0
+        code0 {o->value(progdefaults.normal_signal_level);}
+        code1 {o->lstep(1.0);}
+      }
+      Fl_Button btnNormalSignal2 {
+        label Normal
+        callback {progdefaults.NormSignal = fl_show_colormap(progdefaults.NormSignal);
+normalcolor->color(progdefaults.NormSignal);
+normalcolor->redraw();
+
+normalcolor2->color(progdefaults.NormSignal);
+normalcolor2->redraw();
+
+progdefaults.changed = true;}
+        xywh {402 142 70 21}
+      }
+      Fl_Box highcolor2 {
+        xywh {365 189 21 21} box DIAMOND_DOWN_BOX color 3
+        code0 {o->color(progdefaults.HighSignal);}
+      }
+      Fl_Counter cnt_high_signal_level2 {
+        callback {progdefaults.high_signal_level = o->value();
+
+if (progdefaults.normal_signal_level > progdefaults.high_signal_level)
+  progdefaults.high_signal_level = progdefaults.normal_signal_level + 0.1;
+
+if (progdefaults.high_signal_level > progdefaults.over_signal_level)
+  progdefaults.over_signal_level = progdefaults.high_signal_level + 0.1;
+
+if (progdefaults.over_signal_level > 0)
+  progdefaults.over_signal_level = 0;
+  
+cnt_normal_signal_level->value(progdefaults.normal_signal_level);
+cnt_high_signal_level->value(progdefaults.high_signal_level);
+cnt_over_signal_level->value(progdefaults.over_signal_level);
+
+cnt_normal_signal_level2->value(progdefaults.normal_signal_level);
+cnt_high_signal_level2->value(progdefaults.high_signal_level);
+cnt_over_signal_level2->value(progdefaults.over_signal_level);}
+        xywh {480 165 114 21} minimum -90 maximum 0
+        code0 {o->value(progdefaults.high_signal_level);}
+        code1 {o->lstep(1.0);}
+      }
+      Fl_Button btnHighSignal2 {
+        label High
+        callback {progdefaults.HighSignal = fl_show_colormap(progdefaults.HighSignal);
+highcolor->color(progdefaults.HighSignal);
+highcolor->redraw();
+
+highcolor2->color(progdefaults.HighSignal);
+highcolor2->redraw();
+
+progdefaults.changed = true;}
+        xywh {402 189 70 21}
+      }
+      Fl_Box overcolor2 {
+        xywh {365 236 21 21} box DIAMOND_DOWN_BOX color 1
+        code0 {o->color(progdefaults.OverSignal);}
+      }
+      Fl_Counter cnt_over_signal_level2 {
+        callback {progdefaults.over_signal_level = o->value();
+
+if (progdefaults.normal_signal_level > progdefaults.high_signal_level)
+  progdefaults.high_signal_level = progdefaults.normal_signal_level + 0.1;
+
+if (progdefaults.high_signal_level > progdefaults.over_signal_level)
+  progdefaults.over_signal_level = progdefaults.high_signal_level + 0.1;
+
+if (progdefaults.over_signal_level > 0)
+  progdefaults.over_signal_level = 0;
+  
+cnt_normal_signal_level->value(progdefaults.normal_signal_level);
+cnt_high_signal_level->value(progdefaults.high_signal_level);
+cnt_over_signal_level->value(progdefaults.over_signal_level);
+
+cnt_normal_signal_level2->value(progdefaults.normal_signal_level);
+cnt_high_signal_level2->value(progdefaults.high_signal_level);
+cnt_over_signal_level2->value(progdefaults.over_signal_level);}
+        xywh {480 212 114 21} minimum -90 maximum 0
+        code0 {o->value(progdefaults.over_signal_level);}
+        code1 {o->lstep(1.0);}
+      }
+      Fl_Button btnOverSignal2 {
+        label Over
+        callback {progdefaults.OverSignal = fl_show_colormap(progdefaults.OverSignal);
+overcolor->color(progdefaults.OverSignal);
+overcolor->redraw();
+
+overcolor2->color(progdefaults.OverSignal);
+overcolor2->redraw();
+
+progdefaults.changed = true;}
+        xywh {402 236 70 21}
+      }
+      Fl_Progress {} {
+        label label
+        xywh {295 289 416 25} hide
+      }
+      Fl_Progress sig_vumeter2 {
+        label label
+        xywh {322 280 360 24}
+        code0 {\#include "vumeter.h"}
+        class vumeter
+      }
+      Fl_Box {} {
+        label {Input signal level}
+        xywh {383 307 237 17}
+      }
+      Fl_Button btn_default_signal_levels2 {
+        label Default
+        callback {cnt_normal_signal_level->value(
+  progdefaults.normal_signal_level = -60.0);
+cnt_high_signal_level->value(
+  progdefaults.high_signal_level = -6.0);
+cnt_over_signal_level->value(
+  progdefaults.over_signal_level = -3.0);
+  
+cnt_normal_signal_level2->value(progdefaults.normal_signal_level);
+cnt_high_signal_level2->value(progdefaults.high_signal_level);
+cnt_over_signal_level2->value(progdefaults.over_signal_level);}
+        xywh {618 166 70 20}
       }
     }
     Fl_Group {} {

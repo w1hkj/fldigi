@@ -19,6 +19,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
+#include <iostream>
 #include <config.h>
 #include <cmath>
 
@@ -96,6 +97,7 @@ Smeter::Smeter(int X, int Y, int W, int H, const char* l)
 
 	meter_width -= fl_width("|");
 	sx = (tw - meter_width) / 2;
+
 }
 
 void Smeter::resize(int X, int Y, int W, int H) {

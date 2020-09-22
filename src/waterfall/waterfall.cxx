@@ -171,7 +171,7 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	mode = WATERFALL;
 	centercarrier = false;
 	overload = false;
-	peakaudio = 0.0;
+//	peakaudio = 0.0;
 	rfc = 0L;
 	usb = true;
 	wfspeed = NORMAL;
@@ -762,14 +762,14 @@ void WFdisp::handle_sig_data()
 			if (overval > peak) peak = overval;
 			circbuff[i] *= gain;
 		}
-		peakaudio = 0.1 * peak + 0.9 * peakaudio;
+//		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 
 		if (mode == SCOPE)
 			process_analog(circbuff, WF_FFTLEN);
 		else
 			processFFT();
 
-		put_WARNstatus(peakaudio);
+		put_WARNstatus(peak); //(peakaudio);
 
 		static char szFrequency[14];
 		if (active_modem && rfc != 0) {
@@ -1961,8 +1961,8 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfRefLevel->callback(reflevel_cb, 0);
 	wfRefLevel->step(1.0);
 	wfRefLevel->precision(0);
-	wfRefLevel->range(-40.0, 0.0);
-	wfRefLevel->value(-20.0);
+	wfRefLevel->range(-80.0, 0.0);//(-40.0, 0.0);
+	wfRefLevel->value(0.0);//(-20.0);
 	wfRefLevel->tooltip(_("Upper signal level (dB)"));
 	wfRefLevel->type(FL_SIMPLE_COUNTER);
 

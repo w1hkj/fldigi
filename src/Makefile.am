@@ -689,6 +689,7 @@ fldigi_SOURCES += \
 	widgets/psk_browser.cxx \
 	widgets/pwrmeter.cxx \
 	widgets/smeter.cxx \
+	widgets/vumeter.cxx \
 	wwv/analysis.cxx \
 	wwv/wwv.cxx
 
@@ -880,6 +881,7 @@ EXTRA_fldigi_SOURCES += \
 	include/rx_extract.h \
 	include/serial.h \
 	include/smeter.h \
+	include/vumeter.h \
 	include/socket.h \
 	include/soundconf.h \
 	include/sound.h \

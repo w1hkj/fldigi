@@ -111,14 +111,22 @@ extern Fl_Button *btnTextDefaults;
 extern Fl_Check_Button *btn_show_all_codes;
 extern Fl_Button *btnTabColor;
 extern Fl_Button *btnTabDefaultColor;
-extern Fl_Button *btnLowSignal;
 extern Fl_Box *lowcolor;
-extern Fl_Button *btnHighSignal;
-extern Fl_Box *highcolor;
-extern Fl_Button *btnNormalSignal;
+extern Fl_Button *btnLowSignal;
 extern Fl_Box *normalcolor;
-extern Fl_Button *btnOverSignal;
+#include <FL/Fl_Counter.H>
+extern Fl_Counter *cnt_normal_signal_level;
+extern Fl_Button *btnNormalSignal;
+extern Fl_Box *highcolor;
+extern Fl_Counter *cnt_high_signal_level;
+extern Fl_Button *btnHighSignal;
 extern Fl_Box *overcolor;
+extern Fl_Counter *cnt_over_signal_level;
+extern Fl_Button *btnOverSignal;
+#include <FL/Fl_Progress.H>
+#include "vumeter.h"
+extern vumeter *sig_vumeter;
+extern Fl_Button *btn_default_signal_levels;
 #include "contest.h"
 extern Fl_ListBox *listbox_contest;
 extern Fl_ListBox *listbox_QP_contests;
@@ -157,7 +165,6 @@ extern Fl_Check_Button *chkRSidWideSearch;
 extern Fl_Check_Button *chkRSidMark;
 extern Fl_Check_Button *chkRSidAutoDisable;
 extern Fl_ListBox *listbox_rsid_errors;
-#include <FL/Fl_Counter.H>
 extern Fl_Counter *val_RSIDsquelch;
 extern Fl_Check_Button *chkRSidShowAlert;
 extern Fl_Check_Button *chkRetainFreqLock;
@@ -269,7 +276,6 @@ extern Fl_Value_Slider2 *sldrCWbandwidth;
 extern Fl_Check_Button *btnCWmfilt;
 #include <FL/Fl_Value_Output.H>
 extern Fl_Value_Output *valCWrcvWPM;
-#include <FL/Fl_Progress.H>
 extern Fl_Progress *prgsCWrcvWPM;
 extern Fl_Counter2 *cntLower;
 extern Fl_Counter2 *cntUpper;
@@ -854,6 +860,19 @@ extern Fl_Spinner2 *cntTxOffset;
 extern Fl_Button *bnt_dec_rit;
 extern Fl_Counter *cntRIT;
 extern Fl_Button *btn_incr_rit;
+extern Fl_Box *lowcolor2;
+extern Fl_Button *btnLowSignal2;
+extern Fl_Box *normalcolor2;
+extern Fl_Counter *cnt_normal_signal_level2;
+extern Fl_Button *btnNormalSignal2;
+extern Fl_Box *highcolor2;
+extern Fl_Counter *cnt_high_signal_level2;
+extern Fl_Button *btnHighSignal2;
+extern Fl_Box *overcolor2;
+extern Fl_Counter *cnt_over_signal_level2;
+extern Fl_Button *btnOverSignal2;
+extern vumeter *sig_vumeter2;
+extern Fl_Button *btn_default_signal_levels2;
 extern Fl_ListBox *listbox_wav_samplerate;
 extern Fl_Check_Button *btn_record_both;
 extern Fl_Spinner2 *cntChannels;

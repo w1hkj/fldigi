@@ -137,6 +137,16 @@
              true)                                                                      \
         ELEM_(bool, changed, "", "",  false)                                            \
                                                                                         \
+        ELEM_(double, normal_signal_level, "normal_signal_level",                       \
+              "Input signal level transition (dB); -90 to 0",                           \
+              -60.0)                                                                    \
+        ELEM_(double, high_signal_level, "high_signal_level",                           \
+              "Input signal level transition (dB); -90 to 0",                           \
+              -6.0)                                                                     \
+        ELEM_(double, over_signal_level, "over_signal_level",                           \
+              "Input signal level transition (dB); -90 to 0",                           \
+              -3.0)                                                                     \
+                                                                                        \
         ELEM_(double, wfRefLevel, "WFREFLEVEL",                                         \
               "Waterfall reference level (dB)",                                         \
               0.0)                                                                      \
