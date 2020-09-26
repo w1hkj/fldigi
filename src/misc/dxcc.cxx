@@ -351,8 +351,9 @@ const dxcc* dxcc_lookup(const char* callsign)
 	sstr[0] = '=';
 	dxcc_map_t::const_iterator entry = cmap->find(sstr);
 	if (entry != cmap->end()) {
+		entry->second->print();
 		return entry->second;
-}
+	}
 	// erase the '=' and do a longest prefix search
 	sstr.erase(0, 1);
 	size_t len = sstr.length();
@@ -368,6 +369,7 @@ const dxcc* dxcc_lookup(const char* callsign)
 	do {
 		sstr.resize(len--);
 		if ((entry = cmap->find(sstr)) != cmap->end()) {
+		entry->second->print();
 			return entry->second;
 		}
 	} while (len);
