@@ -846,11 +846,15 @@ int FTextRX::handle_qso_data(int start, int end)
 			}
 
 			const dxcc *e = dxcc_lookup(p);
-			std::ostringstream zone;
-			zone << e->cq_zone;
 			if (e) {
-				set_cbo_Country(e->country);
+				std::ostringstream zone;
+				zone << e->cq_zone;
 				set_zone(zone.str());
+
+				std::string cntry = e->country;
+				if (cntry.find("United States") != std::string::npos)
+					cntry = "USA";
+				set_cbo_Country(cntry);
 			}
 			DupCheck();
 
@@ -2413,7 +2417,6 @@ void FTextTX::handle_context_menu(void)
 
 	bool modify_text_ok = insert_position() >= txpos;
 	bool selected = tbuf->selected();
-std::cout << "FTextTX::tbuf " << (selected ? "selected" : "not selected") << std::endl;
  	icons::set_active(&menu[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
 	icons::set_active(&menu[TX_MENU_CLEAR], tbuf->length());
 	icons::set_active(&menu[TX_MENU_CUT], selected && modify_text_ok);
