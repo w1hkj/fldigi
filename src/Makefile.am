@@ -557,6 +557,7 @@ fldigi_SOURCES += \
 	irrxml/irrTypes.h \
 	irrxml/irrXML.cpp \
 	irrxml/irrXML.h \
+	kml/kmlserver.cxx \
 	libtiniconv/tiniconv.c \
 	libtiniconv/tiniconv_desc.c \
 	logbook/adif_io.cxx \
@@ -597,7 +598,6 @@ fldigi_SOURCES += \
 	misc/estrings.cxx \
 	misc/icons.cxx \
 	misc/kiss_io.cxx \
-	misc/kmlserver.cxx \
 	misc/locator.cxx \
 	misc/log.cxx \
 	misc/macroedit.cxx \
