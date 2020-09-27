@@ -1215,6 +1215,9 @@ int main(int argc, char ** argv)
 	}
 	kml_init(true);
 
+	if (progdefaults.kml_purge_on_startup)
+		KmlServer::GetInstance()->Reset();
+
 // OS X will prevent the main window from being resized if we change its
 // size *after* it has been shown. With some X11 window managers, OTOH,
 // the main window will not be restored at its exact saved position if
@@ -2208,9 +2211,8 @@ void kml_init(bool load_files)
 			progdefaults.kml_refresh_interval,
 			progdefaults.kml_balloon_style);
 
-	if(load_files) {
+	if (load_files)
 		KmlServer::GetInstance()->ReloadKmlFiles();
-	}
 
 	/// TODO: Should do this only when the locator has changed.
 	try {
