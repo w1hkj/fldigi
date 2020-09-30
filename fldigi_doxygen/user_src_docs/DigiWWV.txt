@@ -1,5 +1,5 @@
 /**
-\page  digiscope_display_wwv_mode Digiscope Display - WWV mode
+\page  digiscope_display_wwv_mode  WWV codec PPM measurement
 
 \tableofcontents
 
@@ -32,7 +32,7 @@ see a very slight slope from left to right as the signal goes from top to
 bottom of the display.<br>
 
 Open the configure dialog box to the "SndCrd" tab.  You are going
-to be adjusting the "Rx corr Rate" while you observe the effect of this
+to be adjusting the "Rx PPM" while you observe the effect of this
 control on the slope of the time tick line.<br>
 
 Tune in WWV or WWVH on 2.5, 5.0, 10.0 or 15.0 MHz in the AM mode. This
@@ -46,10 +46,10 @@ ensuing tick marks at the center line red graticule. Then right click anywhere
 in the digiscope display.  That changes the zoom level to show more signal
 detail and the slope of the time tick line will be more discernable. The zoom level 
 increases by a factor of 5.  Right clicking again restores the original zoom level.
-I recommend making the adjustments to the Rx corr Rate control in the x5 zoom level.<br>
+I recommend making the adjustments to the Rx PPM control in the x5 zoom level.<br>
 
 If the slope of the time tick line is positive you will need to apply a
-negative value to the Rx corr Rate.  If it is negative then a
+negative value to the Rx PPM.  If it is negative then a
 positive correction is needed.<br>
 
 Start with a correction of 0 ppm and observe the slope.  Try a
@@ -248,7 +248,7 @@ You can left click on the tick line anytime you want to recenter the
 signal.  That will aid in making your visual observation.
 <br>
 
-When you are finished, the Rx corr Rate entry is the correct one for
+When you are finished, the Rx PPM entry is the correct one for
 your sound card.  Save the configuration for future fldigi use.
 <br>
 

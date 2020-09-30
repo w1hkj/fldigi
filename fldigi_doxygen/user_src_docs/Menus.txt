@@ -374,7 +374,7 @@ Additional information:
 <br>
 
 <HR>
-\subsubsection s_op_mode_other SSB, WWV, and Freq Anal
+\subsubsection s_op_mode_other SSB, WWV, Freq Anal, FMT
 
 \image html  menu-wwv.png "Analysis / WWV"
 \image latex menu-wwv.png "Analysis / WWV" width=0.6in
@@ -384,6 +384,7 @@ Additional information:
 	signal frequency analysis and logging</li>
 	<li>WWV - special receive only modem used for calibrating sound card</li>
 	<li>Freq Anal - used for carrier detection and frequency measurement</li>
+	<li>FMT - Frequency Measurement Tests modem</li>
 </ul>
 <br>
 

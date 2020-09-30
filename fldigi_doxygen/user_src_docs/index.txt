@@ -23,22 +23,10 @@
 <center>
 \image latex FLDigiWindow.png "" width=4.0in
 \image html FLDigiWindowHtml.png ""
+<br>
+<br>
+\ref index_of_contents_page
 </center>
-\section fldigi_op_ins Main Menu
-<ul>
-<li>\ref configuration_page </li>
-<li>\ref modems_page </li>
-<li>\ref operating_page </li>
-<li>\ref logging_page </li>
-<li>\ref contesting_page </li>
-<li>\ref dxcluster_interface_page </li>
-<li>\ref macro_page </li>
-<li>\ref configure_script_page </li>
-<li>\ref developers_page </li>
-<li>\ref license_page </li>
-<li>\ref recognitions_page </li>
-</ul>
-\ref main_page "Return to Top of Page"
 
 */
 

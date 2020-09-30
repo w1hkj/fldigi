@@ -185,8 +185,9 @@ Macro       | Description
 Macro                    | Description
 :----------------------: | :----------------------------
 \<IDLE:NN.nn\>           | transmit idle signal for NN.nn sec
-\<TIMER:NN\>             | repeat this macro every NN sec
 \<TUNE:NN\>              | transmit single tone tune signal for NN sec
+\<AFTER:NN>>             | repeat this macro after waiting NN sec
+\<TIMER:NN\>             | repeat this macro every NN sec
 \<WAIT:NN\>              | insert delay of NN seconds before transmitting
 \<REPEAT\>               | repeat macro continuously
 \<SKED:hhmm[:YYYYDDMM]\> | schedule execution to begin at time and optionally <br> date specified

@@ -8,6 +8,7 @@
 	<li> \subpage digiscope_display_wwv_mode </li>
 	<li> \subpage dxcc_list_page </li>
 	<li> \subpage frequency_analyzer_page </li>
+	<li> \subpage fmt_page </li>
 	<li> \subpage keyboard_operation_page </li>
 	<li> \subpage kml_page </li>
 	<li> \subpage logbook_page </li>

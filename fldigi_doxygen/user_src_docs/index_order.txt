@@ -1,10 +1,9 @@
+New-Install.txt \
 fldigi_configuration.txt \
-fldigi_developer.txt \
 fldigi_logging.txt \
 fldigi_macros.txt \
 fldigi_modems.txt \
 fldigi_operating.txt \
-New-Install.txt \
 thumb_drive.txt \
 colorsandfonts.txt \
 audio-adjust.txt \
@@ -62,6 +61,7 @@ RTTYFSK.txt \
 Thor.txt \
 throb.txt \
 FrequencyAnalysis.txt \
+FMT.txt \
 WWV-xmt.txt \
 WEFAX.txt \
 DigiscopeDisplay.txt \
@@ -100,5 +100,7 @@ buildinfo.txt \
 xmlrpc-control.txt \
 parseUALR.txt \
 ualr-telnet.txt \
+fldigi_developer.txt \
 License.txt \
-Recognitions.txt
+Recognitions.txt \
+table_of_contents.txt \

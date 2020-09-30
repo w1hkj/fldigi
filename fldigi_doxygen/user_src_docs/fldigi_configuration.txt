@@ -57,7 +57,7 @@ program:
 	<li> \subpage id_configuration_page </li>
 	<li> \subpage psk_mail_configuation_page </li>
 	<li> \subpage touch_page </li>
-	<li> \subpage ui_configuration_broswer_page </li>
+	<li> \subpage ui_configuration_browser_page </li>
 	<li> \subpage ui_configuration_general_page </li>
 	<li> \subpage ui_configuration_logging_page </li>
 	<li> \subpage ui_configuration_macros_page </li>
@@ -82,10 +82,12 @@ but the defaults should be satisfactory for most users.
 <ul>
 	<li> \subpage contestia_configuration_page </li>
 	<li> \subpage cw_configuration_page </li>
-	<li> \subpage nanoIO_page </li>
-	<li> \subpage navigator_page </li>
-	<li> \subpage cw_winkeyer_page </li>
-	<li> \subpage cw_dtr_rts_keying </li>
+	<ul>
+		<li> \subpage nanoIO_page </li>
+		<li> \subpage navigator_page </li>
+		<li> \subpage cw_winkeyer_page </li>
+		<li> \subpage cw_dtr_rts_keying </li>
+	</ul>
 	<li> \subpage domino_ex_configuration_page </li>
 	<li> \subpage feld_hell_configuration_page </li>
 	<li> \subpage fsq_configuration_page </li>
@@ -97,6 +99,13 @@ but the defaults should be satisfactory for most users.
 	<li> \subpage psk_configuration_page </li>
 	<li> \subpage rtty_fsk_configuration_page </li>
 	<li> \subpage thor_configuration_page </li>
+	<li> Frequency Analysis & Measurement </li>
+	<ul>
+		<li> \subpage frequency_analyzer_page </li>
+		<li> \subpage fmt_page </li>
+		<li> \subpage digiscope_display_wwv_mode </li>
+		<li> \subpage wwv_tx_mode </li>
+	</ul>
 </ul>
 <br>
 

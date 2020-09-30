@@ -14,7 +14,7 @@
 # input used in their production; they are not affected by this license.
 
 PROJECT_NAME         = "Fldigi Users Manual"
-PROJECT_NUMBER       = 4.1.13
+PROJECT_NUMBER       = 4.1.15
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = NO
@@ -76,6 +76,7 @@ INPUT                = \
 	ConfigUI-general.txt \
 	ConfigUI-logging.txt \
 	contesting.txt \
+	ConfigUI-contest.txt \
 	ConfigUI-macros.txt \
 	configUITouch.txt \
 	ConfigUI-WF-controls.txt \
@@ -112,6 +113,7 @@ INPUT                = \
 	ThorMicro.txt \
 	throb.txt \
 	FrequencyAnalysis.txt \
+	FMT.txt \
 	WWV-xmt.txt \
 	WEFAX.txt \
 	DigiscopeDisplay.txt \
@@ -152,7 +154,8 @@ INPUT                = \
 	ualr-telnet.txt \
 	map.txt License.txt \
 	Recognitions.txt \
-	kiss_host_prgs.txt 
+	kiss_host_prgs.txt \
+	table_of_contents.txt
 INCLUDE_PATH         = .
 EXAMPLE_PATH         = .
 OUTPUT_DIRECTORY     = ../user_docs

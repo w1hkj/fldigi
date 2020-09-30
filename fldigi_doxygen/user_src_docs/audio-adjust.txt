@@ -51,7 +51,7 @@ the signal that is currently decoded.
 </center>
 
 If your sound card a/d (also referred to as codec) is functioning correctly there
-should be no signal offset and the signal will be centered vertically about the y-axis.  Set your
+should be no signal offset and the signal will be centered vertically about the x-axis.  Set your
 transceiver to a portion of the band with digital signals, 14.070 MHz is a good spot.  Now adjust
 the transceiver audio output and the operating system mixer controls so that the peak signals do
 not exceed the upper/lower gray lines on the display.  The diamond indicator to the left of the
@@ -138,30 +138,26 @@ an analog RF compressor does, overdrive and then subsequent filtering.
 But you absolutely cannot tolerate that with the digital modes. Here is the
 way to set up your transceiver for a clean signal. I recommend starting out
 with a dummy load, but an "off hour" for a band might work just as well if
-you do not have a dummy load.
+you do not have a dummy load.  If available, set the transceiver power level
+control for maximum power output.  On my Icom 7100 and Yaesu FT991A that is
+100 watts.
 <br>
 
 <ul>
-	<li>For Windows users</li>
-	<ul>
-		<li>Set your sound card output level to the minimum on the Windows
-			mixer</li>
-	</ul>
-	<li>For Linux users</li>
-	<ul>
-		<li>Set your PCM level to about 80%</li>
-		<li>Set your Transmit Level control for minimum output level.</li>
-	</ul>
-	<li>Set the fldigi transmit attenuator to -3 dB (control to the left of the AFC button)</li>
-	<li>Set the waterfall cursor to 1000 Hz</li>
-	<li>Enable the "Tune" mode in fldigi ... you do have CAT or PTT set up ...right?</li>
-	<li>Make sure your transceiver's speech compression control is OFF</li>
-	<li>Slowly bring up the Mixer audio out until your rig's ALC just starts
-		to function (a light blinking or a meter showing this condition).</li>
-	<li>Reduce the Mixer audio output until the ALC is disabled.</li>
-	<li>You are now transmitting at maximum output power without distortion.</li>
-	<li>You can use the fldigi transmit attenuator to make small adjustments
-	in the output power to compensate for variations in the SSB transmit filter.</li>
+<li>Make sure your transceiver's speech compression control is OFF</li>
+<li>Set the operating system audio output mixer control to about 10% of 
+full scale output.
+<li>Set the fldigi transmit attenuator to -3 dB (control to the left of the AFC button)</li>
+<li>Set the waterfall cursor to 1000 Hz</li>
+<li>Enable the "Tune" mode in fldigi ... you do have CAT or PTT set up ...right?</li>
+<li>Slowly bring up the Mixer audio output level until your rig's ALC just starts 
+to function (a light blinking or a meter showing this condition).<br>
+That will probably be at about 30 watts output if the transceiver is rated at 100 watts.
+</li>
+<li>Reduce the Mixer audio output until the ALC is disabled.</li>
+<li>You are now transmitting at maximum output power without distortion.</li>
+<li>You can use the fldigi transmit attenuator to make small adjustments 
+in the output power to compensate for variations in the SSB transmit filter.</li>
 </ul>
 
 You can use any level below this and be assured that your output signal

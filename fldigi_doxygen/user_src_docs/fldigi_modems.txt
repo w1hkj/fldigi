@@ -20,7 +20,13 @@
 	<li> \subpage thor_micro_page </li>
 	<li> \subpage throb_page </li>
 	<li> \subpage wefax_page </li>
-	<li> \subpage wwv_tx_mode </li>
+	<li> Frequency Analysis & Measurement </li>
+	<ul>
+		<li> \subpage frequency_analyzer_page </li>
+		<li> \subpage fmt_page </li>
+		<li> \subpage digiscope_display_wwv_mode </li>
+		<li> \subpage wwv_tx_mode </li>
+	</ul>
 	<li> \subpage mode_table_page </li>
 </ul>
 

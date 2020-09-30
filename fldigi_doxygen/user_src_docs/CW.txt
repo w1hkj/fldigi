@@ -3,7 +3,7 @@
 
 \tableofcontents
 
-\section cw_keying CW Keying
+\section cw_audio_keying CW Audio
 
 Fldigi generates CW in one of several ways:
 <ul>
