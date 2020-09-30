@@ -1,5 +1,5 @@
 /**
-\page configuration_page Configuration
+\page configuration_page Initial Configuration
 
 \tableofcontents
 

@@ -1,6 +1,3 @@
-#
-#
-#
 # Copyright (C) 2013 Robert Stiles, KK5VD.
 #           (c) 2020 David Freese, W1HKJ
 #
@@ -17,7 +14,7 @@ PROJECT_NAME         = "Fldigi Users Manual"
 PROJECT_NUMBER       = 4.1.15
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
-CASE_SENSE_NAMES     = NO
+CASE_SENSE_NAMES     = YES
 DISABLE_INDEX        = NO
 DOXYFILE_ENCODING    = UTF-8
 INPUT_ENCODING       = UTF-8
@@ -38,124 +35,126 @@ HTML_COLORSTYLE_SAT  = 0
 HTML_FOOTER          =
 HTML_HEADER          =
 IMAGE_PATH           = ../images ../images/w4tv
+
 INPUT                = \
-	index.txt \
-	fldigi_configuration.txt \
-	fldigi_logging.txt \
-	fldigi_macros.txt \
-	fldigi_modems.txt \
-	fldigi_operating.txt \
-	fldigi_developer.txt \
-	New-Install.txt \
-	thumb_drive.txt \
-	colorsandfonts.txt \
-	audio-adjust.txt \
-	audio_alerts.txt \
-	rx_monitor.txt \
-	configAutostart.txt \
-	configcallsigndb.txt \
-	configContestia.txt \
-	configCW.txt \
-	config-cw-dtr-keying.txt \
-	configDomEX.txt \
-	configFH.txt \
-	configFSQ.txt \
-	configIFKP.txt \
-	ConfigID.txt \
-	configIO.txt \
-	configPSM.txt \
-	ConfigMisc.txt \
-	configMT63.txt \
-	configOlivia.txt \
-	ConfigOperator.txt \
-	configPSK.txt \
-	configRIG.txt \
-	configRTTY.txt \
-	configThor.txt \
-	ConfigUI-browser.txt \
-	ConfigUI-general.txt \
-	ConfigUI-logging.txt \
-	contesting.txt \
-	ConfigUI-contest.txt \
-	ConfigUI-macros.txt \
-	configUITouch.txt \
-	ConfigUI-WF-controls.txt \
-	ConfigWaterfall.txt \
-	configure_scripting.txt \
-	kiss_io_command.txt \
-	SoundCardSetup.txt \
-	cabrilloreporter.txt \
-	Logbook.txt \
-	dxcluster.txt \
-	fdserver.txt \
-	maclogger.txt \
-	n3fjp_logs.txt \
-	LogExports.txt \
-	Contest-How-To.txt \
-	lotw_interface.txt \
-	working_logs.txt \
-	Macros.txt \
-	InlineMacroTags.txt \
-	atMacroTags.txt \
-	advanced_qsy.txt \
-	execmacro.txt CW.txt \
-	DominoEX.txt \
-	DomExMicro.txt \
-	hell.txt \
-	Contestia.txt \
-	MFSK.txt MT63.txt \
-	FSQ.txt IFKP.txt \
-	Navtex.txt \
-	psk.txt \
-	Olivia.txt \
-	RTTYFSK.txt \
-	Thor.txt \
-	ThorMicro.txt \
-	throb.txt \
-	FrequencyAnalysis.txt \
-	FMT.txt \
-	WWV-xmt.txt \
-	WEFAX.txt \
-	DigiscopeDisplay.txt \
-	DigiWWV.txt \
-	spectrum_viewer.txt \
-	MousingKeyboardShortcuts.txt \
-	Multiples.txt \
-	Notifier.txt \
-	OperatingControls.txt \
-	RST-RSQ.txt \
-	Spotter.txt \
-	Synop.txt \
-	TransceiverControl.txt \
-	UTF8.txt \
-	pskmail_config.txt \
-	PskViewer.txt DXCC_list.txt \
-	KeyboardAndKeys.txt \
-	xchar.txt psm.txt \
-	KML.txt \
-	support_data.txt \
-	Installing.txt \
-	WindowsOS.txt \
-	Wizard.txt \
-	Menus.txt \
-	ModeTable.txt \
-	CWkeying.txt \
-	CWwinkeyer.txt \
-	nanoIO.txt \
-	nanoIO_diagram.txt \
-	navigator.txt \
-	PseudoFSK.txt \
-	w5zit-interface.txt \
-	rigxml.txt \
-	commandline.txt \
-	buildinfo.txt \
-	xmlrpc-control.txt \
-	parseUALR.txt \
-	ualr-telnet.txt \
-	map.txt License.txt \
-	Recognitions.txt \
-	kiss_host_prgs.txt \
-	table_of_contents.txt
+index.txt \
+New-Install.txt \
+Wizard.txt \
+Installing.txt \
+WindowsOS.txt \
+thumb_drive.txt \
+fldigi_configuration.txt \
+fldigi_logging.txt \
+fldigi_macros.txt \
+fldigi_modems.txt \
+fldigi_operating.txt \
+fldigi_developer.txt \
+colorsandfonts.txt \
+audio-adjust.txt \
+audio_alerts.txt \
+rx_monitor.txt \
+configAutostart.txt \
+configcallsigndb.txt \
+configContestia.txt \
+configCW.txt \
+config-cw-dtr-keying.txt \
+configDomEX.txt \
+configFH.txt \
+configFSQ.txt \
+configIFKP.txt \
+ConfigID.txt \
+configIO.txt \
+configPSM.txt \
+ConfigMisc.txt \
+configMT63.txt \
+configOlivia.txt \
+ConfigOperator.txt \
+configPSK.txt \
+configRIG.txt \
+configRTTY.txt \
+configThor.txt \
+ConfigUI-browser.txt \
+ConfigUI-general.txt \
+ConfigUI-logging.txt \
+contesting.txt \
+ConfigUI-contest.txt \
+ConfigUI-macros.txt \
+configUITouch.txt \
+ConfigUI-WF-controls.txt \
+ConfigWaterfall.txt \
+configure_scripting.txt \
+kiss_io_command.txt \
+SoundCardSetup.txt \
+cabrilloreporter.txt \
+Logbook.txt \
+dxcluster.txt \
+fdserver.txt \
+maclogger.txt \
+n3fjp_logs.txt \
+LogExports.txt \
+Contest-How-To.txt \
+lotw_interface.txt \
+working_logs.txt \
+Macros.txt \
+InlineMacroTags.txt \
+atMacroTags.txt \
+advanced_qsy.txt \
+execmacro.txt CW.txt \
+DominoEX.txt \
+DomExMicro.txt \
+hell.txt \
+Contestia.txt \
+MFSK.txt MT63.txt \
+FSQ.txt IFKP.txt \
+Navtex.txt \
+psk.txt \
+Olivia.txt \
+RTTYFSK.txt \
+Thor.txt \
+ThorMicro.txt \
+throb.txt \
+FrequencyAnalysis.txt \
+FMT.txt \
+WWV-xmt.txt \
+WEFAX.txt \
+DigiscopeDisplay.txt \
+DigiWWV.txt \
+spectrum_viewer.txt \
+MousingKeyboardShortcuts.txt \
+Multiples.txt \
+Notifier.txt \
+OperatingControls.txt \
+RST-RSQ.txt \
+Spotter.txt \
+Synop.txt \
+TransceiverControl.txt \
+UTF8.txt \
+pskmail_config.txt \
+PskViewer.txt DXCC_list.txt \
+KeyboardAndKeys.txt \
+xchar.txt psm.txt \
+KML.txt \
+support_data.txt \
+Menus.txt \
+ModeTable.txt \
+CWkeying.txt \
+CWwinkeyer.txt \
+nanoIO.txt \
+nanoIO_diagram.txt \
+navigator.txt \
+PseudoFSK.txt \
+w5zit-interface.txt \
+rigxml.txt \
+commandline.txt \
+buildinfo.txt \
+xmlrpc-control.txt \
+parseUALR.txt \
+ualr-telnet.txt \
+map.txt License.txt \
+Recognitions.txt \
+kiss_host_prgs.txt \
+table_of_contents.txt
+
 INCLUDE_PATH         = .
 EXAMPLE_PATH         = .
 OUTPUT_DIRECTORY     = ../user_docs

@@ -1,5 +1,6 @@
 /******************************************************************************
- * Copyright (C) 2013 Robert Stiles, KK5VD.
+ * Copyright (C) 2013-2020 David Freese, W1HKJ
+ *                         Robert Stiles, KK5VD
  *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation under the terms of the GNU General Public License is hereby
@@ -23,10 +24,11 @@
 <center>
 \image latex FLDigiWindow.png "" width=4.0in
 \image html FLDigiWindowHtml.png ""
-<br>
-<br>
-\ref index_of_contents_page
 </center>
+<ul>
+<li>\ref new_installation_page</li>
+<li>\ref index_of_contents_page</li>
+</ul>
 
 */
 

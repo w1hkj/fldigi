@@ -1,5 +1,5 @@
 /**
-\page rx_monitor_page Rx Audio Monotor
+\page rx_monitor_page Rx Audio Monitor
 
 \tableofcontents
 
