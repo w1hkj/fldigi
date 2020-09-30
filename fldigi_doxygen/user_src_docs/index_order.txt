@@ -1,10 +1,14 @@
+index.txt \
 New-Install.txt \
+Wizard.txt \
+Installing.txt \
+WindowsOS.txt \
+thumb_drive.txt \
 fldigi_configuration.txt \
 fldigi_logging.txt \
 fldigi_macros.txt \
 fldigi_modems.txt \
 fldigi_operating.txt \
-thumb_drive.txt \
 colorsandfonts.txt \
 audio-adjust.txt \
 configcallsigndb.txt \
@@ -82,9 +86,6 @@ DXCC_list.txt \
 KeyboardAndKeys.txt \
 xchar.txt \
 KML.txt \
-Installing.txt \
-WindowsOS.txt \
-Wizard.txt \
 Menus.txt \
 ModeTable.txt \
 CWkeying.txt \
@@ -103,4 +104,4 @@ ualr-telnet.txt \
 fldigi_developer.txt \
 License.txt \
 Recognitions.txt \
-table_of_contents.txt \
+table_of_contents.txt

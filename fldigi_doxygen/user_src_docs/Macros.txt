@@ -191,6 +191,7 @@ Macro                    | Description
 \<WAIT:NN\>              | insert delay of NN seconds before transmitting
 \<REPEAT\>               | repeat macro continuously
 \<SKED:hhmm[:YYYYDDMM]\> | schedule execution to begin at time and optionally <br> date specified
+\<LOCAL\>                | all scheduled times are local<br>usage:\<LOCAL\>\<SKED:...\><br>in current macro
 <br>
 
 Macro                 | Description
