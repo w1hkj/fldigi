@@ -1,5 +1,5 @@
 /**
-\page ui_configuration_broswer_page  User Interface Configuration - Browser
+\page ui_configuration_browser_page  User Interface Configuration - Browser
 
 \tableofcontents
 
@@ -84,7 +84,7 @@ channel</li>
 12) You can set the background colors for the odd/even lines and the line selection color<br>
 
 <br>
-\ref ui_configuration_broswer_page "Return to Top of Page"
+\ref ui_configuration_browser_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"
 

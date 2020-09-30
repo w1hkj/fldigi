@@ -12,7 +12,7 @@
 \image latex config-ui-qso-logging.png "QSO Logging" width=5.0in
 <br>
 
-\section captureing_log_data Capturing Log data
+\section capturing_log_data Capturing Log data
 
 Fldigi has a built in logbook. You can request to be prompted whenever
 there is an unsaved entry in the qso log area. You can also elect to

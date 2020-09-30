@@ -1,5 +1,5 @@
 /**
-\page  signal_broswer_page Signal Browser
+\page  signal_browser_page Signal Browser
 
 \tableofcontents
 
@@ -71,10 +71,10 @@ channels.  Channel signal detection and processing should restart immediately.<b
 The slider control is a squelch for the channel detectors.  Move it to the left until
 the decoders are displaying noise, then to the right to squelch the noise.
 <br>
-\ref ui_configuration_broswer_page "Configuring the browser"
+\ref ui_configuration_browser_page "Configuring the browser"
 
 <br>
-\ref signal_broswer_page "Return to Top of Page"
+\ref signal_browser_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"
 

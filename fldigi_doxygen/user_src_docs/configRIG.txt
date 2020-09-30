@@ -213,10 +213,10 @@ type of hardware control.
 \image html config-rig-gpio.png "GPIO Pin Setup"
 \image latex config-rig-gpio.png "GPIO Pin Setup" width=4.5in
 
-The Pi2 and Pi3 miniature computers offer a large array of possibilities for
+The Pi series of miniature computers offer a large array of possibilities for
 controlling devices.  It has a array of General Purpose Input Output, gpio, 
 lines of a 40 pin in-line header.  17 of these gpio lines can be used for
-things like push-to-talk.  There are several add on boards for the Pi3,
+things like push-to-talk.  There are several add on boards for the Pi3 and Pi4,
 such as the NW Digital Radio UDRC-II, that has a full interface for digital
 operations, including PTT and audio codecs.
 
