@@ -9183,9 +9183,6 @@ void qsy(long long rfc, int fmid)
 		if (adj)
 			rfc += (wf->USB() ? adj : -adj);
 	}
-	if (rfc == wf->rfcarrier()) {
-		return;
-	}
 
 	if (connected_to_flrig)
 		REQ(xmlrpc_rig_set_qsy, rfc);
