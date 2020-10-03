@@ -258,17 +258,23 @@ void set_flrig_freq(unsigned long int fr)
 	XmlRpcValue val, result;
 	try {
 		val = double(fr);
-		if (!flrig_client->execute("rig.set_vfo", val, result, timeout)) {
-			LOG_ERROR("%s", "rig.set_vfo failed");
-			wait_freq = false;
-			wait_freq_timeout = 0;
-		} else {
-			wait_freq = true;
-			wait_freq_timeout = 5;
-			xcvr_freq = fr;
-			Fl::awake(xmlrpc_rig_show_freq, reinterpret_cast<void*>(fr));
-			LOG_VERBOSE("set freq: %d", (int)fr);
+		int res = flrig_client->execute("rig.set_vfo", val, result, timeout);
+		for (int i = 1; i < 6; i++){
+			LOG_INFO("set_freq try %d, result: %d", i, res);
+			if (res) {
+				wait_freq = true;
+				wait_freq_timeout = 5;
+				xcvr_freq = fr;
+				Fl::awake(xmlrpc_rig_show_freq, reinterpret_cast<void*>(fr));
+				LOG_VERBOSE("set freq: %d", (int)fr);
+				return;
+			}
+			MilliSleep(10);
+			res = flrig_client->execute("rig.set_vfo", val, result, timeout);
 		}
+		LOG_ERROR("%s", "rig.set_vfo failed");
+		wait_freq = false;
+		wait_freq_timeout = 0;
 	} catch (...) {}
 }
 

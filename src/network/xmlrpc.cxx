@@ -1102,7 +1102,7 @@ public:
 	{
 		XMLRPC_LOCK;
 		double rfc = wf->rfcarrier();
-LOG_VERBOSE("main.set_freq: %f", rfc);
+		LOG_VERBOSE("main.set_freq: %f", rfc);
 		qsy((long long int)params.getDouble(0, 0.0));
 		*retval = xmlrpc_c::value_double(rfc);
 	}
@@ -2156,7 +2156,7 @@ public:
 				 1.0 * chsamples / active_modem->tx_sample_rate);
 		xmlbuf.assign(buf);
 
-LOG_VERBOSE("main.get_tx_timing:\n%s", xmlbuf.c_str());
+		LOG_VERBOSE("main.get_tx_timing:\n%s", xmlbuf.c_str());
 		*retval = xmlrpc_c::value_string(xmlbuf);
 	}
 };
@@ -2178,7 +2178,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("main.set_name: %s", string(params.getString(0)).c_str());
+		LOG_VERBOSE("main.set_name: %s", string(params.getString(0)).c_str());
 		REQ(set_rig_name, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2194,7 +2194,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("rig.get_name: %s", windowTitle.c_str());
+		LOG_VERBOSE("rig.get_name: %s", windowTitle.c_str());
 		*retval = xmlrpc_c::value_string(windowTitle);
 	}
 };
@@ -2207,19 +2207,13 @@ public:
 		_signature = "d:d";
 		_help = "Sets the RF carrier frequency. Returns the old value.";
 	}
-	static void set_frequency(long long rfc)
-	{
-		wf->rfcarrier(rfc);
-		show_frequency(rfc);
-		wf->setQSY(1);
-	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
 		double rfc = wf->rfcarrier();
 		unsigned long int f = (long int)(params.getDouble(0,0.0));
 		LOG_VERBOSE("rig.set_frequency: %lu", f);
-		REQ(set_frequency, (long long int)params.getDouble(0, 0.0));
+		qsy(f);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
