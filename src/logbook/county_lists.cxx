@@ -34,6 +34,69 @@ Alaska,AK,AK1st (SE),SE\n\
 ,AK,AK2nd (NW),NW\n\
 ,AK,AK3rd (SC),SC\n\
 ,AK,AK4th (C),C\n\
+Alberta,AB,MD of Acadia No. 34,ACAD\n\
+,AB,Athabasca County,ATHA\n\
+,AB,County of Barrhead No. 11,BARR\n\
+,AB,Beaver County,BEAV\n\
+,AB,Big Lakes County,BIGL\n\
+,AB,MD of Bighorn No. 8,BIGH\n\
+,AB,Birch Hills County,BIRC\n\
+,AB,MD of Bonnyville No. 87,BONN\n\
+,AB,Brazeau County,BRAZ\n\
+,AB,Camrose County,CAMR\n\
+,AB,Cardston County,CARD\n\
+,AB,Clear Hills County,CLHI\n\
+,AB,Clearwater County,CLWA\n\
+,AB,Cypress County,CYPR\n\
+,AB,MD of Fairview No. 136,FAIR\n\
+,AB,Flagstaff County,FLAG\n\
+,AB,Foothills County,FOOT\n\
+,AB,County of Forty Mile No. 8,FORT\n\
+,AB,County of Grande Prairie No. 1,GRAN\n\
+,AB,MD of Greenview No. 16,GREE\n\
+,AB,Kneehill County,KNEE\n\
+,AB,Lac Ste. Anne County,LACS\n\
+,AB,Lacombe County,LACO\n\
+,AB,Lamont County,LAMO\n\
+,AB,Leduc County,LEDU\n\
+,AB,MD of Lesser Slave River No. 124,LESS\n\
+,AB,Lethbridge County,LETH\n\
+,AB,County of Minburn No. 27,MINB\n\
+,AB,Mountain View County,MOUN\n\
+,AB,County of Newell,NEWE\n\
+,AB,County of Northern Lights,NOLI\n\
+,AB,Northern Sunrise County,NOSU\n\
+,AB,MD of Opportunity No. 17,OPPO\n\
+,AB,County of Paintearth No. 18,PAIN\n\
+,AB,Parkland County,PARK\n\
+,AB,MD of Peace No. 135,PEAC\n\
+,AB,MD of Pincher Creek No. 9,PINC\n\
+,AB,Ponoka County,PONO\n\
+,AB,MD of Provost No. 52,PROV\n\
+,AB,MD of Ranchland No. 66,RANC\n\
+,AB,Red Deer County,RDDR\n\
+,AB,Rocky View County,ROCK\n\
+,AB,Saddle Hills County,SADD\n\
+,AB,Smoky Lake County,SMLA\n\
+,AB,MD of Smoky River No. 130,SMRI\n\
+,AB,MD of Spirit River No. 133,SPRI\n\
+,AB,County of St. Paul No. 19,STPA\n\
+,AB,Starland County,STAR\n\
+,AB,County of Stettler No. 6,STET\n\
+,AB,Sturgeon County,STUR\n\
+,AB,MD of Taber,TABR\n\
+,AB,Thorhild County,THOR\n\
+,AB,County of Two Hills No. 21,TWHI\n\
+,AB,County of Vermilion River,VERM\n\
+,AB,Vulcan County,VULC\n\
+,AB,MD of Wainwright No. 61,WAIN\n\
+,AB,County of Warner No. 5,WARN\n\
+,AB,Westlock County,WEST\n\
+,AB,County of Wetaskiwin No. 10,WETA\n\
+,AB,Wheatland County,WHEA\n\
+,AB,MD of Willow Creek No. 26,WILL\n\
+,AB,Woodlands County,WOOD\n\
+,AB,Yellowhead County,YELL\n\
 Alabama,AL,Autauga,AUTA\n\
 ,AL,Baldwin,BALD\n\
 ,AL,Barbour,BARB\n\
@@ -2504,6 +2567,7 @@ Rhode Island,RI,Bristol,BRI\n\
 ,RI,Newport,NEW\n\
 ,RI,Providence,PRO\n\
 ,RI,Washington,WAR\n\
+Saskatchewan,SA,,\n\
 South Carolina,SC,Abbeville,ABBE\n\
 ,SC,Aiken,AIKE\n\
 ,SC,Allendale,ALLE\n\
