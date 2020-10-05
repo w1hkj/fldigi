@@ -2610,7 +2610,92 @@
              5)                                                                         \
         ELEM_(bool, wf_spectrum_dbvals, "wf_spectrum_dbvals",                           \
              "use waterfall db range and offset values for spectrum scope",             \
-             true)
+             true)                                                                      \
+        ELEM_(int, FMT_sr, "FMT_sr",                                                    \
+             "FMT sample rate\n"                                                        \
+             "0:8000, 1:11025, 2:12000, 3:16000, 4:22050, 5:32000, 6:44100, 7:48000",   \
+             1)                                                                         \
+        ELEM_(int, FMT_dft_rate, "FMT_dft_rate",                                        \
+             "FMT DFT conversions per second",                                          \
+             3)                                                                         \
+        ELEM_(bool, FMT_reverse, "FMT_reverse",                                         \
+             "Reverse time axis",                                                       \
+             false)                                                                     \
+        ELEM_(bool, FMT_thick_lines, "FMT_thick_lines",                                 \
+             "Plot axis/lines with 2 pixel width",                                      \
+             false)                                                                     \
+        ELEM_(bool, FMT_plot_over_axis, "FMT_plot_over_axis",                           \
+             "Plot points lie on top of axis graticule",                                \
+             false)                                                                     \
+        ELEM_(double, FMT_freq_corr, "FMT_freq_corr",                                   \
+             "FMT freq track correction in Hertz",                                      \
+             0.0)                                                                       \
+        ELEM_(double, FMT_filter, "FMT_filter",                                         \
+             "FMT FIR lpf 3db cutoff in Hertz",                                         \
+             4.0)                                                                       \
+        ELEM_(double, FMT_bpf_width, "FMT_bpf_width",                                   \
+             "FMT FIR bpf 3db cutoff in Hertz",                                         \
+             20.0)                                                                      \
+        ELEM_(bool, FMT_unk_bpf_on, "FMT_unk_bpf_on",                                   \
+             "Enable unknown bandpass filter",                                          \
+             false)                                                                     \
+        ELEM_(bool, FMT_ref_bpf_on, "FMT_ref_bpf_on",                                   \
+             "Enable reference bandpass filter",                                        \
+             false)                                                                     \
+        ELEM_(double, FMT_movavg_len, "FMT_movavg_len",                                 \
+             "FMT moving average filter length in seconds",                             \
+             4.0)                                                                       \
+        ELEM_(double, FMT_prefilter, "FMT_prefilter",                                   \
+             "Experimental first-order prefilter",                                      \
+             0.95)                                                                      \
+        ELEM_(bool, FMT_prefilter_on, "FMT_prefilter_on",                               \
+             "Enable FMT prefilter",                                                    \
+             false)                                                                     \
+        ELEM_(double, FMT_cull_level, "FMT_cull_level",                                 \
+             "Experimental data culling",                                               \
+             10.0)                                                                      \
+        ELEM_(bool, FMT_cull_on, "FMT_cull_on",                                         \
+             "Enable data culling",                                                     \
+             false)                                                                     \
+        ELEM_(double, FMT_HL_level, "FMT_HL_level",                                     \
+             "Experimental DFT hardlimit level",                                        \
+             1.0)                                                                       \
+        ELEM_(bool, FMT_HL_on, "FMT_HL_on",                                             \
+             "Enable DFT hardlimiter",                                                  \
+             false)                                                                     \
+        ELEM_(bool, FMT_dft_cull_on, "FMT_dft_cull_on",                                 \
+             "Enable DFT culling",                                                      \
+             false)                                                                     \
+        ELEM_(Fl_Color, FMT_background, "FMT_background",                               \
+              "Color for FMT plot background",                                          \
+              FL_BACKGROUND2_COLOR)                                                     \
+        ELEM_(Fl_Color, FMT_unk_color, "FMT_unk_color",                                 \
+              "Color for FMT unknown data plot",                                        \
+              FL_DARK_BLUE)                                                             \
+        ELEM_(Fl_Color, FMT_ref_color, "FMT_ref_color",                                 \
+              "Color for FMT reference data plot",                                      \
+              FL_GREEN)                                                                 \
+        ELEM_(Fl_Color, FMT_legend_color, "FMT_legend_color",                           \
+              "Color for FMT legends",                                                  \
+              FL_BLACK)                                                                 \
+        ELEM_(Fl_Color, FMT_axis_color, "FMT_axis_color",                               \
+              "Color for FMT plot axis",                                                \
+              FL_BLACK)                                                                 \
+        ELEM_(bool, FMT_use_tabs, "fmt_use_tabs",                                       \
+             "Use TAB delimiters in exported csv file",                                 \
+             false)                                                                     \
+        ELEM_(bool, fmt_center_on_unknown, "fmt_center_on_unknown",                     \
+             "Waterfall centered on unknown",                                           \
+             false)                                                                     \
+        ELEM_(bool, fmt_center_on_reference, "fmt_center_on_reference",                 \
+             "Waterfall centered on reference",                                         \
+             false)                                                                     \
+        ELEM_(bool, fmt_center_on_median, "fmt_center_on_median",                       \
+             "Waterfall centered on median",                                            \
+             true)                                                                      \
+        ELEM_(bool, fmt_sync_wav_file, "fmt_sync_wav_file",                             \
+             "Sound wav file record sync'd to csv file",                                \
+             false)
 
 // declare the struct
 #define ELEM_DECLARE_CONFIGURATION(type_, var_, tag_, ...) type_ var_;

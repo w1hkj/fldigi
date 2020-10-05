@@ -3466,6 +3466,252 @@ static void cb_val_hellagc(Fl_Value_Slider* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_ListBox *listbox_fmt_sr=(Fl_ListBox *)0;
+
+static void cb_listbox_fmt_sr(Fl_ListBox* o, void*) {
+  progdefaults.FMT_sr=o->index();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cnt_fmt_rx_ppm=(Fl_Counter *)0;
+
+static void cb_cnt_fmt_rx_ppm(Fl_Counter* o, void*) {
+  progdefaults.RX_corr = (int)o->value();
+cntRxRateCorr->value(progdefaults.RX_corr);
+progdefaults.changed = true;
+}
+
+Fl_Button *btnFMT_plot_background=(Fl_Button *)0;
+
+static void cb_btnFMT_plot_background(Fl_Button*, void*) {
+  static uchar r, g, b;
+  Fl::get_color(progdefaults.FMT_background, r, g, b);
+  if (!fl_color_chooser("FMT Background", r, g, b))
+    return;
+  progdefaults.FMT_background = fl_rgb_color(r,g,b);
+
+  fmt_plot->bk_color(progdefaults.FMT_background);
+  fmt_plot->redraw();
+  progdefaults.changed = true;
+}
+
+Fl_Button *btnFMT_unk_color=(Fl_Button *)0;
+
+static void cb_btnFMT_unk_color(Fl_Button*, void*) {
+  static uchar r, g, b;
+  Fl::get_color(progdefaults.FMT_unk_color, r, g, b);
+  if (!fl_color_chooser("FMT Background", r, g, b))
+    return;
+  progdefaults.FMT_unk_color = fl_rgb_color(r,g,b);
+
+  fmt_plot->line_color_1(progdefaults.FMT_unk_color);
+  fmt_plot->redraw();
+  unk_color->color(progdefaults.FMT_unk_color);
+  unk_color->redraw();
+  
+  progdefaults.changed = true;
+}
+
+Fl_Button *btnFMT_plot_ref_color=(Fl_Button *)0;
+
+static void cb_btnFMT_plot_ref_color(Fl_Button*, void*) {
+  static uchar r, g, b;
+  Fl::get_color(progdefaults.FMT_ref_color, r, g, b);
+  if (!fl_color_chooser("FMT Background", r, g, b))
+    return;
+  progdefaults.FMT_ref_color = fl_rgb_color(r,g,b);
+
+  fmt_plot->line_color_2(progdefaults.FMT_ref_color);
+  fmt_plot->redraw();
+  ref_color->color(progdefaults.FMT_ref_color);
+  ref_color->redraw();
+  
+  progdefaults.changed = true;
+}
+
+Fl_Button *btnFMT_plot_axis=(Fl_Button *)0;
+
+static void cb_btnFMT_plot_axis(Fl_Button*, void*) {
+  static uchar r, g, b;
+  Fl::get_color(progdefaults.FMT_axis_color, r, g, b);
+  if (!fl_color_chooser("FMT Axis Color", r, g, b))
+    return;
+  progdefaults.FMT_axis_color = fl_rgb_color(r,g,b);
+
+  fmt_plot->axis_color(progdefaults.FMT_axis_color);
+  fmt_plot->redraw();
+
+  progdefaults.changed = true;
+}
+
+Fl_Button *btnFMT_legend_color=(Fl_Button *)0;
+
+static void cb_btnFMT_legend_color(Fl_Button*, void*) {
+  static uchar r, g, b;
+  Fl::get_color(progdefaults.FMT_legend_color, r, g, b);
+  if (!fl_color_chooser("FMT Legend Color", r, g, b))
+    return;
+  progdefaults.FMT_legend_color = fl_rgb_color(r,g,b);
+
+  fmt_plot->legend_color(progdefaults.FMT_legend_color);
+  fmt_plot->redraw();
+
+  progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_fmt_plot_over_axis=(Fl_Check_Button *)0;
+
+static void cb_btn_fmt_plot_over_axis(Fl_Check_Button* o, void*) {
+  progdefaults.FMT_plot_over_axis = o->value();
+fmt_plot->plot_over_axis(progdefaults.FMT_plot_over_axis);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_fmt_thick_lines=(Fl_Check_Button *)0;
+
+static void cb_btn_fmt_thick_lines(Fl_Check_Button* o, void*) {
+  progdefaults.FMT_thick_lines = o->value();
+fmt_plot->thick_lines(progdefaults.FMT_thick_lines);
+progdefaults.changed = true;
+}
+
+Fl_Counter *cnt_fmt_freq_corr=(Fl_Counter *)0;
+
+static void cb_cnt_fmt_freq_corr(Fl_Counter* o, void*) {
+  progdefaults.FMT_freq_corr=o->value();
+progdefaults.RIT=progdefaults.FMT_freq_corr;
+cntRIT->value(progdefaults.RIT);
+progdefaults.changed = true;
+}
+
+Fl_Button *bnt_FMT_dec_corr=(Fl_Button *)0;
+
+static void cb_bnt_FMT_dec_corr(Fl_Button*, void*) {
+  progdefaults.FMT_freq_corr -= 0.1;
+cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);
+progdefaults.RIT=progdefaults.FMT_freq_corr;
+cntRIT->value(progdefaults.RIT);
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_FMT_incr_corr=(Fl_Button *)0;
+
+static void cb_btn_FMT_incr_corr(Fl_Button*, void*) {
+  progdefaults.FMT_freq_corr += 0.1;
+cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);
+progdefaults.RIT=progdefaults.FMT_freq_corr;
+cntRIT->value(progdefaults.RIT);
+progdefaults.changed = true;
+}
+
+Fl_Counter *cnt_FMT_movavg_len=(Fl_Counter *)0;
+
+static void cb_cnt_FMT_movavg_len(Fl_Counter* o, void*) {
+  progdefaults.FMT_movavg_len = o->value();
+progdefaults.changed = true;
+}
+
+Fl_ListBox *listbox_fmt_dft_rate=(Fl_ListBox *)0;
+
+static void cb_listbox_fmt_dft_rate(Fl_ListBox* o, void*) {
+  progdefaults.FMT_dft_rate=o->index();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cnt_FMT_bpf=(Fl_Counter *)0;
+
+static void cb_cnt_FMT_bpf(Fl_Counter* o, void*) {
+  progdefaults.FMT_bpf_width = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_fmt_unk_bpf_on=(Fl_Check_Button *)0;
+
+static void cb_btn_fmt_unk_bpf_on(Fl_Check_Button* o, void*) {
+  progdefaults.FMT_unk_bpf_on = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_fmt_ref_bpf_on=(Fl_Check_Button *)0;
+
+static void cb_btn_fmt_ref_bpf_on(Fl_Check_Button* o, void*) {
+  progdefaults.FMT_ref_bpf_on = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_fmt_autorecord=(Fl_Check_Button *)0;
+
+Fl_Counter *cnt_fmt_auto_record_time=(Fl_Counter *)0;
+
+Fl_Check_Button *btn_fmt_record_wav=(Fl_Check_Button *)0;
+
+static void cb_btn_fmt_record_wav(Fl_Check_Button* o, void*) {
+  cb_fmt_record_wav(o->value());
+if (o->value() == 1)
+  btn_fmt_sync_wav->deactivate();
+else
+  btn_fmt_sync_wav->activate();
+}
+
+Fl_Check_Button *btn_fmt_sync_wav=(Fl_Check_Button *)0;
+
+static void cb_btn_fmt_sync_wav(Fl_Check_Button* o, void*) {
+  progdefaults.fmt_sync_wav_file = o->value();
+if (o->value() == 1)
+  btn_fmt_record_wav->deactivate();
+else
+  btn_fmt_record_wav->activate();
+progdefaults.changed = true;
+}
+
+Fl_Output *txt_fmt_wav_filename=(Fl_Output *)0;
+
+Fl_Check_Button *btn_fmt_center_on_unknown=(Fl_Check_Button *)0;
+
+static void cb_btn_fmt_center_on_unknown(Fl_Check_Button* o, void*) {
+  progdefaults.fmt_center_on_unknown = o->value();
+if (o->value()) {
+  progdefaults.fmt_center_on_median = 0;
+  progdefaults.fmt_center_on_reference = 0;
+  btn_fmt_center_on_median->value(0);
+  btn_fmt_center_on_reference->value(0);
+}
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_fmt_center_on_reference=(Fl_Check_Button *)0;
+
+static void cb_btn_fmt_center_on_reference(Fl_Check_Button* o, void*) {
+  progdefaults.fmt_center_on_reference = o->value();
+if (o->value()) {
+  progdefaults.fmt_center_on_unknown = 0;
+  progdefaults.fmt_center_on_median = 0;
+  btn_fmt_center_on_median->value(0);
+  btn_fmt_center_on_unknown->value(0);
+}
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_fmt_center_on_median=(Fl_Check_Button *)0;
+
+static void cb_btn_fmt_center_on_median(Fl_Check_Button* o, void*) {
+  progdefaults.fmt_center_on_median = o->value();
+if (o->value()) {
+  progdefaults.fmt_center_on_unknown = 0;
+  progdefaults.fmt_center_on_reference = 0;
+  btn_fmt_center_on_unknown->value(0);
+  btn_fmt_center_on_reference->value(0);
+}
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_fmt_use_tabs=(Fl_Check_Button *)0;
+
+static void cb_btn_fmt_use_tabs(Fl_Check_Button* o, void*) {
+  progdefaults.FMT_use_tabs = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Value_Slider *valhits=(Fl_Value_Slider *)0;
 
 static void cb_valhits(Fl_Value_Slider* o, void*) {
@@ -7294,6 +7540,7 @@ Fl_Spinner2 *cntRxRateCorr=(Fl_Spinner2 *)0;
 
 static void cb_cntRxRateCorr(Fl_Spinner2* o, void*) {
   progdefaults.RX_corr = (int)o->value();
+cnt_fmt_rx_ppm->value(progdefaults.RX_corr);
 progdefaults.changed = true;
 }
 
@@ -7311,10 +7558,32 @@ static void cb_cntTxOffset(Fl_Spinner2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Button *bnt_dec_rit=(Fl_Button *)0;
+
+static void cb_bnt_dec_rit(Fl_Button* o, void*) {
+  progdefaults.RIT -= 0.1;
+cntRIT->value(progdefaults.RIT);
+progdefaults.FMT_freq_corr=o->value();
+cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);
+progdefaults.changed = true;
+}
+
 Fl_Counter *cntRIT=(Fl_Counter *)0;
 
 static void cb_cntRIT(Fl_Counter* o, void*) {
   progdefaults.RIT=o->value();
+progdefaults.FMT_freq_corr=o->value();
+cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);
+}
+
+Fl_Button *btn_incr_rit=(Fl_Button *)0;
+
+static void cb_btn_incr_rit(Fl_Button* o, void*) {
+  progdefaults.RIT += 0.1;
+cntRIT->value(progdefaults.RIT);
+progdefaults.FMT_freq_corr=o->value();
+cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);
+progdefaults.changed = true;
 }
 
 Fl_ListBox *listbox_wav_samplerate=(Fl_ListBox *)0;
@@ -11784,6 +12053,236 @@ s bits, etc are needed."));
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Feld Hell"));
       config_pages.push_back(p);
       tab_tree->add(_("Modem/Feld Hell"));
+      o->end();
+    } // Fl_Group* o
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/FMT"));
+      o->box(FL_ENGRAVED_BOX);
+      o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+      o->hide();
+      { Fl_Group* o = new Fl_Group(203, 24, 412, 75, _("Audio Stream Procesing"));
+        o->box(FL_ENGRAVED_FRAME);
+        o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        { Fl_ListBox* o = listbox_fmt_sr = new Fl_ListBox(276, 66, 100, 22, _("Sample rate"));
+          listbox_fmt_sr->tooltip(_("FMT sample rate"));
+          listbox_fmt_sr->box(FL_DOWN_BOX);
+          listbox_fmt_sr->color(FL_BACKGROUND2_COLOR);
+          listbox_fmt_sr->selection_color(FL_BACKGROUND_COLOR);
+          listbox_fmt_sr->labeltype(FL_NORMAL_LABEL);
+          listbox_fmt_sr->labelfont(0);
+          listbox_fmt_sr->labelsize(14);
+          listbox_fmt_sr->labelcolor(FL_FOREGROUND_COLOR);
+          listbox_fmt_sr->callback((Fl_Callback*)cb_listbox_fmt_sr);
+          listbox_fmt_sr->align(Fl_Align(FL_ALIGN_TOP));
+          listbox_fmt_sr->when(FL_WHEN_RELEASE);
+          o->add("8000|11025|12000|16000|22050|24000|44100|48000");
+          o->index(progdefaults.FMT_sr);
+          listbox_fmt_sr->end();
+        } // Fl_ListBox* listbox_fmt_sr
+        { Fl_Counter* o = cnt_fmt_rx_ppm = new Fl_Counter(419, 66, 120, 22, _("Rx Codec PPM"));
+          cnt_fmt_rx_ppm->tooltip(_("Audio Codec ppm correction"));
+          cnt_fmt_rx_ppm->minimum(-500);
+          cnt_fmt_rx_ppm->maximum(500);
+          cnt_fmt_rx_ppm->step(1);
+          cnt_fmt_rx_ppm->callback((Fl_Callback*)cb_cnt_fmt_rx_ppm);
+          cnt_fmt_rx_ppm->align(Fl_Align(FL_ALIGN_TOP));
+          o->value(progdefaults.RX_corr);
+          o->lstep(10);
+        } // Fl_Counter* cnt_fmt_rx_ppm
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(203, 99, 412, 90, _("Tracking"));
+        o->box(FL_ENGRAVED_FRAME);
+        o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        { btnFMT_plot_background = new Fl_Button(213, 122, 70, 22, _("Bgnd"));
+          btnFMT_plot_background->tooltip(_("Change plot background color"));
+          btnFMT_plot_background->callback((Fl_Callback*)cb_btnFMT_plot_background);
+        } // Fl_Button* btnFMT_plot_background
+        { btnFMT_unk_color = new Fl_Button(213, 153, 70, 22, _("Unkn"));
+          btnFMT_unk_color->tooltip(_("Change plot unknown track color"));
+          btnFMT_unk_color->callback((Fl_Callback*)cb_btnFMT_unk_color);
+        } // Fl_Button* btnFMT_unk_color
+        { btnFMT_plot_ref_color = new Fl_Button(292, 153, 70, 22, _("Ref"));
+          btnFMT_plot_ref_color->tooltip(_("Change plot reference track color"));
+          btnFMT_plot_ref_color->callback((Fl_Callback*)cb_btnFMT_plot_ref_color);
+        } // Fl_Button* btnFMT_plot_ref_color
+        { btnFMT_plot_axis = new Fl_Button(292, 122, 70, 22, _("Axis"));
+          btnFMT_plot_axis->tooltip(_("Change Axis\' color"));
+          btnFMT_plot_axis->callback((Fl_Callback*)cb_btnFMT_plot_axis);
+        } // Fl_Button* btnFMT_plot_axis
+        { btnFMT_legend_color = new Fl_Button(367, 122, 70, 22, _("Lgnd"));
+          btnFMT_legend_color->tooltip(_("Change legend color"));
+          btnFMT_legend_color->callback((Fl_Callback*)cb_btnFMT_legend_color);
+        } // Fl_Button* btnFMT_legend_color
+        { Fl_Check_Button* o = btn_fmt_plot_over_axis = new Fl_Check_Button(385, 155, 31, 18, _("Line/Axis"));
+          btn_fmt_plot_over_axis->tooltip(_("Enable to always plot data over axis"));
+          btn_fmt_plot_over_axis->down_box(FL_DOWN_BOX);
+          btn_fmt_plot_over_axis->callback((Fl_Callback*)cb_btn_fmt_plot_over_axis);
+          o->value(progdefaults.FMT_plot_over_axis);
+        } // Fl_Check_Button* btn_fmt_plot_over_axis
+        { Fl_Check_Button* o = btn_fmt_thick_lines = new Fl_Check_Button(481, 155, 31, 18, _("Thick lines"));
+          btn_fmt_thick_lines->tooltip(_("Enable to plot track lines 3 pixels wide"));
+          btn_fmt_thick_lines->down_box(FL_DOWN_BOX);
+          btn_fmt_thick_lines->callback((Fl_Callback*)cb_btn_fmt_thick_lines);
+          o->value(progdefaults.FMT_thick_lines);
+        } // Fl_Check_Button* btn_fmt_thick_lines
+        { Fl_Counter* o = cnt_fmt_freq_corr = new Fl_Counter(465, 119, 123, 24, _("Freq Correction"));
+          cnt_fmt_freq_corr->tooltip(_("Offset plot lines on vertical scale"));
+          cnt_fmt_freq_corr->minimum(-5);
+          cnt_fmt_freq_corr->maximum(5);
+          cnt_fmt_freq_corr->step(0.001);
+          cnt_fmt_freq_corr->callback((Fl_Callback*)cb_cnt_fmt_freq_corr);
+          cnt_fmt_freq_corr->align(Fl_Align(FL_ALIGN_TOP));
+          o->value(progdefaults.FMT_freq_corr);
+          o->lstep(0.01);
+        } // Fl_Counter* cnt_fmt_freq_corr
+        { bnt_FMT_dec_corr = new Fl_Button(446, 119, 19, 24, _("@|<"));
+          bnt_FMT_dec_corr->labelsize(10);
+          bnt_FMT_dec_corr->callback((Fl_Callback*)cb_bnt_FMT_dec_corr);
+        } // Fl_Button* bnt_FMT_dec_corr
+        { btn_FMT_incr_corr = new Fl_Button(588, 119, 18, 24, _("@>|"));
+          btn_FMT_incr_corr->labelsize(10);
+          btn_FMT_incr_corr->callback((Fl_Callback*)cb_btn_FMT_incr_corr);
+        } // Fl_Button* btn_FMT_incr_corr
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(203, 190, 207, 86, _("DFT Estimator"));
+        o->box(FL_ENGRAVED_FRAME);
+        o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        { Fl_Counter* o = cnt_FMT_movavg_len = new Fl_Counter(214, 232, 110, 24, _("Data Filter"));
+          cnt_FMT_movavg_len->tooltip(_("Moving average - average over NN seconds^0 - no averaging"));
+          cnt_FMT_movavg_len->minimum(0);
+          cnt_FMT_movavg_len->maximum(10);
+          cnt_FMT_movavg_len->value(1);
+          cnt_FMT_movavg_len->callback((Fl_Callback*)cb_cnt_FMT_movavg_len);
+          cnt_FMT_movavg_len->align(Fl_Align(FL_ALIGN_TOP));
+          o->value(progdefaults.FMT_movavg_len);
+          o->lstep(1.0);
+        } // Fl_Counter* cnt_FMT_movavg_len
+        { Fl_ListBox* o = listbox_fmt_dft_rate = new Fl_ListBox(334, 232, 60, 24, _("DFT rate"));
+          listbox_fmt_dft_rate->tooltip(_("# DFT computations / second"));
+          listbox_fmt_dft_rate->box(FL_DOWN_BOX);
+          listbox_fmt_dft_rate->color(FL_BACKGROUND2_COLOR);
+          listbox_fmt_dft_rate->selection_color(FL_BACKGROUND_COLOR);
+          listbox_fmt_dft_rate->labeltype(FL_NORMAL_LABEL);
+          listbox_fmt_dft_rate->labelfont(0);
+          listbox_fmt_dft_rate->labelsize(14);
+          listbox_fmt_dft_rate->labelcolor(FL_FOREGROUND_COLOR);
+          listbox_fmt_dft_rate->callback((Fl_Callback*)cb_listbox_fmt_dft_rate);
+          listbox_fmt_dft_rate->align(Fl_Align(FL_ALIGN_TOP));
+          listbox_fmt_dft_rate->when(FL_WHEN_RELEASE);
+          o->add("1|2|3|4|5|6|7|8");
+          o->index(progdefaults.FMT_dft_rate);
+          listbox_fmt_dft_rate->end();
+        } // Fl_ListBox* listbox_fmt_dft_rate
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(411, 190, 205, 86, _("FIR Filter"));
+        o->box(FL_ENGRAVED_BOX);
+        o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        { Fl_Counter* o = cnt_FMT_bpf = new Fl_Counter(457, 218, 100, 24, _("Width"));
+          cnt_FMT_bpf->tooltip(_("Band pass filter / unknown / reference"));
+          cnt_FMT_bpf->minimum(5);
+          cnt_FMT_bpf->maximum(200);
+          cnt_FMT_bpf->step(5);
+          cnt_FMT_bpf->value(100);
+          cnt_FMT_bpf->callback((Fl_Callback*)cb_cnt_FMT_bpf);
+          cnt_FMT_bpf->align(Fl_Align(FL_ALIGN_TOP));
+          o->value(progdefaults.FMT_bpf_width);
+          o->lstep(50.0);
+        } // Fl_Counter* cnt_FMT_bpf
+        { Fl_Check_Button* o = btn_fmt_unk_bpf_on = new Fl_Check_Button(429, 246, 70, 18, _("bpf Unk\'"));
+          btn_fmt_unk_bpf_on->tooltip(_("ON  - band pass filter unknown signal"));
+          btn_fmt_unk_bpf_on->down_box(FL_DOWN_BOX);
+          btn_fmt_unk_bpf_on->callback((Fl_Callback*)cb_btn_fmt_unk_bpf_on);
+          o->value(progdefaults.FMT_unk_bpf_on);
+        } // Fl_Check_Button* btn_fmt_unk_bpf_on
+        { Fl_Check_Button* o = btn_fmt_ref_bpf_on = new Fl_Check_Button(526, 246, 70, 18, _("bpf Ref\'"));
+          btn_fmt_ref_bpf_on->tooltip(_("ON  - band pass filter reference signal"));
+          btn_fmt_ref_bpf_on->down_box(FL_DOWN_BOX);
+          btn_fmt_ref_bpf_on->callback((Fl_Callback*)cb_btn_fmt_ref_bpf_on);
+          o->value(progdefaults.FMT_ref_bpf_on);
+        } // Fl_Check_Button* btn_fmt_ref_bpf_on
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(617, 190, 178, 86, _("CSV Data Recording"));
+        o->box(FL_ENGRAVED_BOX);
+        o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        { btn_fmt_autorecord = new Fl_Check_Button(658, 246, 107, 18, _("Auto record"));
+          btn_fmt_autorecord->tooltip(_("Automatically start csv data file recording with wav playback"));
+          btn_fmt_autorecord->down_box(FL_DOWN_BOX);
+        } // Fl_Check_Button* btn_fmt_autorecord
+        { cnt_fmt_auto_record_time = new Fl_Counter(672, 218, 66, 24);
+          cnt_fmt_auto_record_time->tooltip(_("Record data for NN minutes after auto start"));
+          cnt_fmt_auto_record_time->type(1);
+          cnt_fmt_auto_record_time->minimum(2);
+          cnt_fmt_auto_record_time->maximum(60);
+          cnt_fmt_auto_record_time->step(2);
+          cnt_fmt_auto_record_time->value(2);
+          cnt_fmt_auto_record_time->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+        } // Fl_Counter* cnt_fmt_auto_record_time
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(203, 277, 592, 66, _("Wav file recording"));
+        o->box(FL_ENGRAVED_FRAME);
+        o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        { Fl_Check_Button* o = btn_fmt_record_wav = new Fl_Check_Button(464, 288, 118, 18, _("Record Audio"));
+          btn_fmt_record_wav->tooltip(_("Wav file recording - START IMMEDIATELY"));
+          btn_fmt_record_wav->down_box(FL_DOWN_BOX);
+          btn_fmt_record_wav->callback((Fl_Callback*)cb_btn_fmt_record_wav);
+          if (progdefaults.fmt_sync_wav_file) o->deactivate();
+        } // Fl_Check_Button* btn_fmt_record_wav
+        { Fl_Check_Button* o = btn_fmt_sync_wav = new Fl_Check_Button(599, 288, 118, 18, _("Sync to data record"));
+          btn_fmt_sync_wav->tooltip(_("Wav file recording - SYNCHRONIZE with data recording"));
+          btn_fmt_sync_wav->down_box(FL_DOWN_BOX);
+          btn_fmt_sync_wav->callback((Fl_Callback*)cb_btn_fmt_sync_wav);
+          o->value(progdefaults.fmt_sync_wav_file);
+        } // Fl_Check_Button* btn_fmt_sync_wav
+        { txt_fmt_wav_filename = new Fl_Output(213, 314, 570, 24, _("File pathname:"));
+          txt_fmt_wav_filename->tooltip(_("Computer generated file name"));
+          txt_fmt_wav_filename->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+        } // Fl_Output* txt_fmt_wav_filename
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(616, 24, 180, 131, _("Waterfall"));
+        o->box(FL_ENGRAVED_FRAME);
+        o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        { Fl_Box* o = new Fl_Box(626, 44, 168, 35, _("Shft-click: select unknown\nCtrl-click: select reference"));
+          o->labelsize(12);
+          o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+        } // Fl_Box* o
+        { Fl_Check_Button* o = btn_fmt_center_on_unknown = new Fl_Check_Button(626, 85, 70, 18, _("Center on Unknown"));
+          btn_fmt_center_on_unknown->tooltip(_("Waterfall Centered on unknown signal"));
+          btn_fmt_center_on_unknown->down_box(FL_DOWN_BOX);
+          btn_fmt_center_on_unknown->callback((Fl_Callback*)cb_btn_fmt_center_on_unknown);
+          o->value(progdefaults.fmt_center_on_unknown);
+        } // Fl_Check_Button* btn_fmt_center_on_unknown
+        { Fl_Check_Button* o = btn_fmt_center_on_reference = new Fl_Check_Button(626, 109, 70, 18, _("Center on Reference"));
+          btn_fmt_center_on_reference->tooltip(_("Waterfall centered on reference signal"));
+          btn_fmt_center_on_reference->down_box(FL_DOWN_BOX);
+          btn_fmt_center_on_reference->callback((Fl_Callback*)cb_btn_fmt_center_on_reference);
+          o->value(progdefaults.fmt_center_on_reference);
+        } // Fl_Check_Button* btn_fmt_center_on_reference
+        { Fl_Check_Button* o = btn_fmt_center_on_median = new Fl_Check_Button(627, 133, 70, 17, _("Center on median"));
+          btn_fmt_center_on_median->tooltip(_("Waterfall centered 1/2 way between unknown & reference"));
+          btn_fmt_center_on_median->down_box(FL_DOWN_BOX);
+          btn_fmt_center_on_median->callback((Fl_Callback*)cb_btn_fmt_center_on_median);
+          o->value(progdefaults.fmt_center_on_median);
+        } // Fl_Check_Button* btn_fmt_center_on_median
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(616, 156, 180, 32);
+        o->box(FL_ENGRAVED_FRAME);
+        { Fl_Check_Button* o = btn_fmt_use_tabs = new Fl_Check_Button(627, 165, 70, 18, _("Use TAB delimiters"));
+          btn_fmt_use_tabs->tooltip(_("Use tab delimiters between columns on csv export file."));
+          btn_fmt_use_tabs->down_box(FL_DOWN_BOX);
+          btn_fmt_use_tabs->callback((Fl_Callback*)cb_btn_fmt_use_tabs);
+          o->value(progdefaults.FMT_use_tabs);
+        } // Fl_Check_Button* btn_fmt_use_tabs
+        o->end();
+      } // Fl_Group* o
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/FMT"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/FMT"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/FSQ"));
@@ -16374,19 +16873,28 @@ ll with your audio device."));
         } // Fl_Spinner2* cntTxOffset
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(260, 200, 490, 62, _("Frequency Analysis Rx Correction"));
+      { Fl_Group* o = new Fl_Group(260, 200, 490, 76, _("Frequency Analysis / FMT Rx Correction"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { Fl_Counter* o = cntRIT = new Fl_Counter(284, 226, 130, 20, _("RIT"));
+        { bnt_dec_rit = new Fl_Button(285, 227, 18, 24, _("@|<"));
+          bnt_dec_rit->labelsize(10);
+          bnt_dec_rit->callback((Fl_Callback*)cb_bnt_dec_rit);
+          bnt_dec_rit->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
+        } // Fl_Button* bnt_dec_rit
+        { Fl_Counter* o = cntRIT = new Fl_Counter(303, 227, 130, 24, _("Frequency Correction"));
           cntRIT->tooltip(_("Used ONLY for frequency analysis mode"));
           cntRIT->minimum(-5);
           cntRIT->maximum(5);
-          cntRIT->step(0.01);
+          cntRIT->step(0.001);
           cntRIT->callback((Fl_Callback*)cb_cntRIT);
-          cntRIT->align(Fl_Align(FL_ALIGN_RIGHT));
           o->value(progdefaults.RIT);
-          o->lstep(0.1);
+          o->lstep(0.01);
         } // Fl_Counter* cntRIT
+        { btn_incr_rit = new Fl_Button(433, 227, 18, 24, _("@>|"));
+          btn_incr_rit->labelsize(10);
+          btn_incr_rit->callback((Fl_Callback*)cb_btn_incr_rit);
+          btn_incr_rit->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
+        } // Fl_Button* btn_incr_rit
         o->end();
       } // Fl_Group* o
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Settings"));

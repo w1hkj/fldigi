@@ -149,7 +149,7 @@ void debug::stop(void)
 		window->hide();
 		delete window;
 		window = 0;
-std::cout << "debug window deleted" << std::endl;
+//std::cout << "debug window deleted" << std::endl;
 	}
 //	if (inst) {
 //		delete inst;

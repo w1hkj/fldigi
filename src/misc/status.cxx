@@ -295,6 +295,15 @@ status progStatus = {
 	false,			// 	bool	nanoFSK_online;
 
 	false,			// 	bool	useCW_KEYLINE;
+
+//----------------------------------------------------------------------
+// FMT saved controls
+	1500.0,			// double	FTM_ref_freq;
+	1500.0,			// double	FTM_unk_fre;
+	1,				// int		FTM_trk_speed;
+	1,				// int		FTM_trk_scale;
+	2,				// int		FTM_rec_interval
+//----------------------------------------------------------------------
 	046,			//	debug_mask
 
 //  046
@@ -682,6 +691,15 @@ if (!bWF_only) {
 
 	spref.set("useCW_KEYLINE", useCW_KEYLINE);
 
+//----------------------------------------------------------------------
+// FMT saved controls
+	spref.set("FMT_ref_freq", FMT_ref_freq);
+	spref.set("FMT_unk_freq", FMT_unk_freq);
+	spref.set("FMT_rec_interval", FMT_rec_interval);
+	spref.set("FMT_trk_scale", FMT_trk_scale);
+	spref.set("FMT_minutes", FMT_minutes);
+//----------------------------------------------------------------------
+
 	debug_mask = debug::mask;
 	spref.set("debug_mask", debug_mask);
 
@@ -996,6 +1014,15 @@ void status::loadLastState()
 		spref.get("nanoFSK_online", i, nanoFSK_online); nanoFSK_online = i;
 
 		spref.get("useCW_KEYLINE", i, useCW_KEYLINE); useCW_KEYLINE = i;
+
+//----------------------------------------------------------------------
+// FMT saved controls
+		spref.get("FMT_ref_freq", FMT_ref_freq, FMT_ref_freq);
+		spref.get("FMT_unk_freq", FMT_unk_freq, FMT_unk_freq);
+		spref.get("FMT_rec_interval", FMT_rec_interval, FMT_rec_interval);
+		spref.get("FMT_trk_scale", FMT_trk_scale, FMT_trk_scale);
+		spref.get("FMT_minutes", FMT_minutes, FMT_minutes);
+//----------------------------------------------------------------------
 
 		spref.get("debug_level", debug_level, debug_level);
 		spref.get("debug_mask", debug_mask, debug_mask);

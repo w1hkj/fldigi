@@ -30,6 +30,9 @@
 #include "globals.h"
 #include "morse.h"
 #include "ascii.h"
+#include "filters.h"
+
+#include "plot_xy.h"
 
 #define	OUTBUFSIZE	65536  // needed for 5 WPM Farsnworth CW buffers
 
@@ -145,7 +148,7 @@ public:
 	bool		get_reverse() const { return reverse;}
 	double		get_bandwidth() const { return bandwidth;}
 	void		set_bandwidth(double);
-	int		get_samplerate() const { return samplerate;}
+	int			get_samplerate() const { return samplerate;}
 	void		set_samplerate(int);
 	void		init_queues();
 
@@ -262,8 +265,17 @@ public:
 	int  xmt_samples;
 	int  ovhd_samples;
 
-// analysis mode
-	int  write_to_csv;
+// analysis / fmt modes
+	PLOT_XY *unk_pipe;
+	PLOT_XY *ref_pipe;
+	bool    write_to_csv;
+
+	virtual void reset_unknown() {}
+	virtual void reset_reference() {}
+
+	virtual void clear_ref_pipe() {}
+	virtual void clear_unk_pipe() {}
+
 	virtual void start_csv() {}
 	virtual void stop_csv() {}
 
@@ -468,6 +480,7 @@ extern modem *throbx4_modem;
 
 extern modem *wwv_modem;
 extern modem *anal_modem;
+extern modem *fmt_modem;
 extern modem *ssb_modem;
 
 extern modem *fsq_modem;

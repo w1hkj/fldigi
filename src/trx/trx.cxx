@@ -269,6 +269,15 @@ void trx_trx_receive_loop()
 	while (1) {
 		try {
 			numread = 0;
+			if (current_RXsamplerate != active_modem->get_samplerate() ) {
+				current_RXsamplerate = active_modem->get_samplerate();
+				if (RXscard) {
+					RXscard->Close(O_RDONLY);
+					RXscard->Open(O_RDONLY, current_RXsamplerate);
+					REQ(sound_update, progdefaults.btnAudioIOis);
+					RXsc_is_open = true;
+				}
+			}
 			if (RXscard) {
 				while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
 					numread += RXscard->Read(fbuf + numread, SCBLOCKSIZE - numread);

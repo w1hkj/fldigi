@@ -45,6 +45,7 @@ void create_fl_digi_main_primary() {
 	minhtext = 2 * progdefaults.HellRcvHeight + 4;//6;
 
 	int Htext = 3 * minhtext;
+	if (Htext < 120) Htext = 120;
 
 	main_hmin = Htext + fixed_height;
 
@@ -2838,12 +2839,17 @@ Logging_frame->resizable(NFtabs);
 			ifkp_group->resizable(ifkp_left);
 
 		ifkp_group->end();
+
+		fmt_group = fmt_panel(0, Y, W, Htext);
+		fmt_group->end();
+
 		center_group->end();
 
 		text_group->show();
 		wefax_group->hide();
 		fsq_group->hide();
 		ifkp_group->hide();
+		fmt_group->hide();
 
 }
 { // Bottom Macro group

@@ -77,7 +77,7 @@ protected:
 	bool	_y_graticule;
 
 public:
-	Digiscope(int, int, int, int);
+	Digiscope(int, int, int, int, const char *label = "");
 	~Digiscope();
 	int handle(int);
 	void resize(int x, int y, int w, int h);

@@ -103,6 +103,9 @@ extern Fl_Scroll       *wefax_pic_rx_scroll;
 #include "analysis.h"
 #include "ssb.h"
 
+#include "fmt.h"
+#include "fmt_dialog.h"
+
 #include "fileselect.h"
 
 #include "smeter.h"
@@ -309,6 +312,10 @@ Fl_Group		*ifkp_right = (Fl_Group *)0;
 Fl_Browser		*ifkp_heard = (Fl_Browser *)0;
 Progress		*ifkp_s2n_progress = (Progress *)0;
 picture			*ifkp_avatar = (picture *)0;
+
+//----------------------------------------------------------------------
+// FMT group
+Fl_Group		*fmt_group = (Fl_Group *)0;
 
 //------------------------------------------------------------------------------
 // thor avatar
@@ -1450,25 +1457,36 @@ void set_mode_controls(trx_mode id)
 			text_group->hide();
 			fsq_group->hide();
 			ifkp_group->hide();
+			fmt_group->hide();
 			wefax_group->show();
 			center_group->redraw();
 		} else if (id == MODE_FSQ) {
 			text_group->hide();
 			wefax_group->hide();
 			ifkp_group->hide();
+			fmt_group->hide();
 			fsq_group->show();
 			center_group->redraw();
 		} else if (id == MODE_IFKP) {
 			text_group->hide();
 			wefax_group->hide();
 			fsq_group->hide();
+			fmt_group->hide();
 			ifkp_group->show();
+			center_group->redraw();
+		} else if (id == MODE_FMT) {
+			text_group->hide();
+			wefax_group->hide();
+			fsq_group->hide();
+			ifkp_group->hide();
+			fmt_group->show();
 			center_group->redraw();
 		} else {
 			text_group->show();
 			wefax_group->hide();
 			fsq_group->hide();
 			ifkp_group->hide();
+			fmt_group->hide();
 			if (id >= MODE_HELL_FIRST && id <= MODE_HELL_LAST) {
 				ReceiveText->hide();
 				FHdisp->show();
@@ -1627,6 +1645,7 @@ void cb_wMain(Fl_Widget*, void*)
 {
 	if (!clean_exit(true)) return;
 	remove_windows();
+//std::cout << "cb_wMain: hiding main" << std::endl;
 	fl_digi_main->hide();
 }
 
@@ -1636,6 +1655,7 @@ void cb_E(Fl_Menu_*, void*) {
 		return;
 	remove_windows();
 // this will make Fl::run return
+//std::cout << "cb_E: hiding main" << std::endl;
 	fl_digi_main->hide();
 }
 
@@ -1981,6 +2001,11 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_ANALYSIS:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 				  *mode_info[mode].modem = new anal, freq);
+		break;
+
+	case MODE_FMT:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+				  *mode_info[mode].modem = new fmt, freq);
 		break;
 
 	case MODE_SSB:
@@ -4112,19 +4137,22 @@ void status_cb(Fl_Widget *b, void *arg)
 {
 	if (Fl::event_button() == FL_RIGHT_MOUSE) {
 		trx_mode md = active_modem->get_mode();
-		if (md >= MODE_IFKP) open_config(TAB_IFKP);
-		else if (md >= MODE_FSQ) open_config(TAB_FSQ);
-		else if (md >= MODE_THOR_FIRST) open_config(TAB_THOR);
-		else if (md >= MODE_RTTY) open_config(TAB_RTTY);
-		else if (md >= MODE_OLIVIA_FIRST) open_config(TAB_OLIVIA);
-		else if (md >= MODE_PSK_FIRST) open_config(TAB_PSK);
-		else if (md >= MODE_MT63_FIRST) open_config(TAB_MT63);
-		else if (md >= MODE_NAVTEX) open_config(TAB_NAVTEX);
-		else if (md >= MODE_WEFAX_FIRST) open_config(TAB_WEFAX);
-		else if (md >= MODE_HELL_FIRST) open_config(TAB_FELDHELL);
-		else if (md >= MODE_DOMINOEX_FIRST) open_config(TAB_DOMINOEX);
-		else if (md >= MODE_CONTESTIA_FIRST) open_config(TAB_CONTESTIA);
+		if (md == MODE_FMT) open_config(TAB_FMT);
 		else if (md == MODE_CW) open_config(TAB_CW);
+		else if (md == MODE_IFKP) open_config(TAB_IFKP);
+		else if (md == MODE_FSQ) open_config(TAB_FSQ);
+		else if (md == MODE_RTTY) open_config(TAB_RTTY);
+		else if (md >= MODE_THOR_FIRST && md <= MODE_THOR_LAST) open_config(TAB_THOR);
+		else if (md >= MODE_OLIVIA_FIRST && md <= MODE_OLIVIA_LAST) open_config(TAB_OLIVIA);
+		else if (md >= MODE_PSK_FIRST && md <= MODE_PSK_LAST) open_config(TAB_PSK);
+		else if (md >= MODE_QPSK_FIRST && md <= MODE_QPSK_LAST) open_config(TAB_PSK);
+		else if (md >= MODE_8PSK_FIRST && md <= MODE_8PSK_LAST) open_config(TAB_PSK);
+		else if (md >= MODE_MT63_FIRST && md <= MODE_MT63_LAST) open_config(TAB_MT63);
+		else if (md >= MODE_NAVTEX_FIRST && md <= MODE_NAVTEX_LAST) open_config(TAB_NAVTEX);
+		else if (md >= MODE_WEFAX_FIRST && md <= MODE_WEFAX_LAST) open_config(TAB_WEFAX);
+		else if (md >= MODE_HELL_FIRST && md <= MODE_HELL_LAST) open_config(TAB_FELDHELL);
+		else if (md >= MODE_DOMINOEX_FIRST && md <= MODE_DOMINOEX_LAST) open_config(TAB_DOMINOEX);
+		else if (md >= MODE_CONTESTIA_FIRST && md <= MODE_CONTESTIA_LAST) open_config(TAB_CONTESTIA);
 	}
 	else {
 		if (!quick_change)
@@ -4510,6 +4538,9 @@ LOG_INFO("stop_flrig_thread");
 LOG_INFO("Stopping N3FJP thread");
 	n3fjp_close();
 
+LOG_VERBOSE("Deleting FMT thread");
+	FMT_thread_close();
+
 LOG_INFO("Closing WinKeyer interface");
 	WK_exit();
 
@@ -4719,6 +4750,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wf_group->position(x, y1);
@@ -4734,6 +4766,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 
 			y1 += HTh;
@@ -4767,6 +4800,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wf_group->position(x, y1);
@@ -4804,6 +4838,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wf_group->position(x, y1);
@@ -4830,6 +4865,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wf_group->position(x, y1);
@@ -4852,6 +4888,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wf_group->position(x, y1);
@@ -4865,6 +4902,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe_1(x, y1, w, mh);
@@ -4886,6 +4924,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			y1 += HTh;
 			resize_macroframe_2(x, y1, w, mh);
 			macroFrame2->show();
@@ -4906,6 +4945,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe_1(x, y1, w, mh);
@@ -4926,6 +4966,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			y1 += HTh;
 			resize_macroframe_2(x, y1, w, mh);
 			macroFrame2->show();
@@ -4945,6 +4986,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wf_group->position(x, y1);
@@ -4966,6 +5008,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wf_group->position(x, y1);
@@ -4991,6 +5034,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe_1(x, y1, w, mh);
@@ -5012,6 +5056,7 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
+			fmt_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe_2(x, y1, w, mh);
@@ -5639,6 +5684,7 @@ UI_return:
 	wefax_group->redraw();
 	fsq_group->redraw();
 	ifkp_group->redraw();
+	fmt_group->redraw();
 	macroFrame1->redraw();
 	macroFrame2->redraw();
 	viewer_redraw();
@@ -6002,7 +6048,8 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_FMT].name, 0, cb_init_mode, (void *)MODE_FMT, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_NULL].name, 0, cb_init_mode, (void *)MODE_NULL, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_SSB].name, 0, cb_init_mode, (void *)MODE_SSB, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -7506,7 +7553,8 @@ static Fl_Menu_Item alt_menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_FMT].name, 0, cb_init_mode, (void *)MODE_FMT, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_NULL].name, 0, cb_init_mode, (void *)MODE_NULL, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_SSB].name, 0, cb_init_mode, (void *)MODE_SSB, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -9285,8 +9333,9 @@ void set_default_btn_color()
 		btn_nanoCW_connect, btn_nanoIO_connect,
 		btn_enable_auditlog, btn_enable_fsq_heard_log,
 		btn_enable_ifkp_audit_log, btn_enable_ifkp_audit_log,
-		btn_Nav_connect, btn_Nav_config,
-		btnConnectTalker };
+		btn_Nav_connect, btn_Nav_config, btn_fmt_record,
+		btnConnectTalker,
+		btn_unk_enable, btn_ref_enable };
 
 	size_t nbtns = sizeof(buttons)/sizeof(*buttons);
 
@@ -9754,15 +9803,17 @@ void psm_set_defaults(void)
 //-----------------------------------------------------------------------------
 void set_CSV(int start)
 {
-	if (active_modem->get_mode() != MODE_ANALYSIS) return;
-	if (start == 1)
-		active_modem->start_csv();
-	else if (start == 0)
-		active_modem->stop_csv();
-	else if (active_modem->write_to_csv == true)
-		active_modem->stop_csv();
-	else
-		active_modem->start_csv();
+	if (active_modem->get_mode() == MODE_ANALYSIS) {
+		if (active_modem->get_mode() != MODE_ANALYSIS) return;
+		if (start == 1)
+			active_modem->start_csv();
+		else if (start == 0)
+			active_modem->stop_csv();
+		else if (active_modem->write_to_csv == true)
+			active_modem->stop_csv();
+		else
+			active_modem->start_csv();
+	}
 }
 
 //-----------------------------------------------------------------------------

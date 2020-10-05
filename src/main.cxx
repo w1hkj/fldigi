@@ -150,6 +150,7 @@ string LoTWDir = "";
 string KmlDir = "";
 string PskMailDir = "";
 string AnalysisDir = "";
+string FMTDir = "";
 
 string NBEMS_dir = "";
 string NBEMS_dir_default = "";
@@ -1054,6 +1055,7 @@ int main(int argc, char ** argv)
 	LOG_INFO("LoTWDir: %s", LoTWDir.c_str());
 	LOG_INFO("MacrosDir: %s", MacrosDir.c_str());
 	LOG_INFO("AnalysisDir: %s", AnalysisDir.c_str());
+	LOG_INFO("FMTDir: %s", FMTDir.c_str());
 	LOG_INFO("PalettesDir: %s", PalettesDir.c_str());
 	LOG_INFO("PicsDir: %s", PicsDir.c_str());
 	LOG_INFO("PskMailDir: %s", PskMailDir.c_str());
@@ -1243,9 +1245,7 @@ int main(int argc, char ** argv)
 
 	Fl::set_color(FL_SELECTION_COLOR, 0, 0, 128);
 
-	int ret = Fl::run();
-
-	return ret;
+	return  Fl::run();
 }
 
 void exit_process() {
@@ -2074,6 +2074,7 @@ static void checkdirectories(void)
 		{ HelpDir, "help", 0 },
 		{ MacrosDir, "macros", create_new_macros },
 		{ AnalysisDir, "analysis", 0 },
+		{ FMTDir, "fmt", 0 },
 		{ WrapDir, "wrap", 0 },
 		{ TalkDir, "talk", 0 },
 		{ TempDir, "temp", 0 },

@@ -29,6 +29,7 @@
 #define TAB_DOMINOEX		_("Modem/DominoEX")
 #define TAB_RTTY			_("Modem/TTY/Rx")
 #define TAB_IFKP			_("Modem/IFKP")
+#define TAB_FMT				_("Modem/FMT")
 #define TAB_FSQ				_("Modem/FSQ")
 #define TAB_THOR			_("Modem/Thor")
 #define TAB_PSK				_("Modem/Psk")

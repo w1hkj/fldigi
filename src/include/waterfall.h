@@ -146,6 +146,7 @@ public:
 	int  carrier();
 	inline void  makeNotch_(int notch_frequency);
 	inline void makeMarker_(int width, const RGB* color, int freq, const RGB* clrMin, RGB* clrM, const RGB* clrMax);
+	void make_fmt_marker ();
 	void makeMarker();
 	void process_analog(wf_fft_type *sig, int len);
 	void processFFT();
@@ -328,6 +329,8 @@ public:
 	void Offset(int v);
 	int Carrier();
 	void Carrier(int f);
+
+	void draw_fmt_marker() { wfdisp->make_fmt_marker(); }
 
 	void movetocenter() { wfdisp->movetocenter();}
 	void redraw_marker() { wfdisp->makeMarker(); }

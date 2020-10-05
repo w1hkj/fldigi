@@ -542,6 +542,8 @@ fldigi_SOURCES += \
 	filters/fftfilt.cxx \
 	filters/filters.cxx \
 	filters/viterbi.cxx \
+	fmt/fmt.cxx \
+	fmt/fmt_dialog.cxx \
 	fsq/fsq.cxx \
 	fsq/fsq_monitor.cxx \
 	globals/globals.cxx \
@@ -682,6 +684,7 @@ fldigi_SOURCES += \
 	widgets/FTextView.cxx \
 	widgets/Panel.cxx \
 	widgets/picture.cxx \
+	widgets/plot_xy.cxx \
 	widgets/progress.cxx \
 	widgets/psk_browser.cxx \
 	widgets/pwrmeter.cxx \
@@ -785,6 +788,8 @@ EXTRA_fldigi_SOURCES += \
 	include/flinput2.h \
 	include/flmisc.h \
 	include/flslider2.h \
+	include/fmt.h \
+	include/fmt_dialog.h \
 	include/font_browser.h \
 	include/fontdef.h \
 	include/FreqControl.h \
@@ -844,6 +849,7 @@ EXTRA_fldigi_SOURCES += \
 	include/outputencoder.h \
 	include/Panel.h \
 	include/picture.h \
+	include/plot_xy.h \
 	include/pixmaps.h \
 	include/pkg.h \
 	include/play.pa.h \
