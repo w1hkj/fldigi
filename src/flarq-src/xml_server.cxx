@@ -139,7 +139,7 @@ public:
 	flarq_send_text(XmlRpcServer* s) : XmlRpcServerMethod("flarq.send_text", s) {}
 
 	void execute(XmlRpcValue& params, XmlRpcValue &result) {
-		std::string txt_to_send = string(params[0]);
+		std::string txt_to_send = std::string(params[0]);
 		send_xml_text("FLMSG_XFR", txt_to_send);
 	}
 	std::string help() { return std::string("send_text"); }
@@ -147,7 +147,7 @@ public:
 } flarq_send_text(&flarq_server);
 
 struct MLIST {
-	string name; string signature; string help;
+	std::string name; std::string signature; std::string help;
 } mlist[] = {
 	{ "flarq.rcvd_text",     "s:n", "return MODE of current VFO" },
 	{ "flarq.get_state",    "s:n", "return PTT state" },
@@ -160,7 +160,7 @@ public:
 
 	void execute(XmlRpcValue& params, XmlRpcValue& result) {
 
-		vector<XmlRpcValue> methods;
+		std::vector<XmlRpcValue> methods;
 		for (size_t n = 0; n < sizeof(mlist) / sizeof(*mlist); ++n) {
 			XmlRpcValue::ValueStruct item;
 			item["name"]      = mlist[n].name;
