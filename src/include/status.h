@@ -253,6 +253,14 @@ struct status {
 
 	bool	useCW_KEYLINE;
 
+//----------------------------------------------------------------------
+// FMT saved controls
+	double	FMT_ref_freq;
+	double	FMT_unk_freq;
+	int		FMT_rec_interval;
+	int		FMT_trk_scale;
+	int		FMT_minutes;
+//----------------------------------------------------------------------
 	int		debug_mask;
 	int		debug_level;
 //----------------------------------------------------------------------

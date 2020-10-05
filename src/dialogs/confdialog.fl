@@ -469,7 +469,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {604 42 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
+    xywh {642 20 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
   } {
     Fl_Group {} {
       xywh {0 0 201 385} resizable
@@ -3987,7 +3987,7 @@ for information regarding extended Morse characters.} open
       }
     }
     Fl_Group {} {
-      label {Modem/CW/nanoIO} open
+      label {Modem/CW/nanoIO}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/nanoIO"));}
       code1 {config_pages.push_back(p);}
@@ -4429,6 +4429,311 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
           tooltip {1 - Slow, 2 - Medium, 3 - Fast} xywh {527 227 120 22} type {Horz Knob} color 54 align 8 minimum 1 maximum 3 step 1 value 2 textsize 14
           code0 {o->value(progdefaults.hellagc);}
+        }
+      }
+    }
+    Fl_Group {} {
+      label {Modem/FMT} open selected
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {\#include "fmt_dialog.h"}
+      code1 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/FMT"));}
+      code2 {config_pages.push_back(p);}
+      code3 {tab_tree->add(_("Modem/FMT"));}
+    } {
+      Fl_Group {} {
+        label {Audio Stream Procesing}
+        xywh {203 24 412 75} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Group listbox_fmt_sr {
+          label {Sample rate}
+          callback {progdefaults.FMT_sr=o->index();
+progdefaults.changed = true;} open
+          tooltip {FMT sample rate} xywh {276 66 100 22} box DOWN_BOX color 7
+          code1 {o->add("8000|11025|12000|16000|22050|24000|44100|48000");}
+          code2 {o->index(progdefaults.FMT_sr);}
+          class Fl_ListBox
+        } {}
+        Fl_Counter cnt_fmt_rx_ppm {
+          label {Rx Codec PPM}
+          callback {progdefaults.RX_corr = (int)o->value();
+cntRxRateCorr->value(progdefaults.RX_corr);
+progdefaults.changed = true;}
+          tooltip {Audio Codec ppm correction} xywh {419 66 120 22} align 1 minimum -500 maximum 500 step 1
+          code0 {o->value(progdefaults.RX_corr);}
+          code1 {o->lstep(10);}
+        }
+      }
+      Fl_Group {} {
+        label Tracking open
+        xywh {203 99 412 90} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Button btnFMT_plot_background {
+          label Bgnd
+          callback {static uchar r, g, b;
+  Fl::get_color(progdefaults.FMT_background, r, g, b);
+  if (!fl_color_chooser("FMT Background", r, g, b))
+    return;
+  progdefaults.FMT_background = fl_rgb_color(r,g,b);
+
+  fmt_plot->bk_color(progdefaults.FMT_background);
+  fmt_plot->redraw();
+  progdefaults.changed = true;}
+          tooltip {Change plot background color} xywh {213 122 70 22}
+        }
+        Fl_Button btnFMT_unk_color {
+          label Unkn
+          callback {static uchar r, g, b;
+  Fl::get_color(progdefaults.FMT_unk_color, r, g, b);
+  if (!fl_color_chooser("FMT Background", r, g, b))
+    return;
+  progdefaults.FMT_unk_color = fl_rgb_color(r,g,b);
+
+  fmt_plot->line_color_1(progdefaults.FMT_unk_color);
+  fmt_plot->redraw();
+  unk_color->color(progdefaults.FMT_unk_color);
+  unk_color->redraw();
+  
+  progdefaults.changed = true;}
+          tooltip {Change plot unknown track color} xywh {213 153 70 22}
+        }
+        Fl_Button btnFMT_plot_ref_color {
+          label Ref
+          callback {static uchar r, g, b;
+  Fl::get_color(progdefaults.FMT_ref_color, r, g, b);
+  if (!fl_color_chooser("FMT Background", r, g, b))
+    return;
+  progdefaults.FMT_ref_color = fl_rgb_color(r,g,b);
+
+  fmt_plot->line_color_2(progdefaults.FMT_ref_color);
+  fmt_plot->redraw();
+  ref_color->color(progdefaults.FMT_ref_color);
+  ref_color->redraw();
+  
+  progdefaults.changed = true;}
+          tooltip {Change plot reference track color} xywh {292 153 70 22}
+        }
+        Fl_Button btnFMT_plot_axis {
+          label Axis
+          callback {static uchar r, g, b;
+  Fl::get_color(progdefaults.FMT_axis_color, r, g, b);
+  if (!fl_color_chooser("FMT Axis Color", r, g, b))
+    return;
+  progdefaults.FMT_axis_color = fl_rgb_color(r,g,b);
+
+  fmt_plot->axis_color(progdefaults.FMT_axis_color);
+  fmt_plot->redraw();
+
+  progdefaults.changed = true;}
+          tooltip {Change Axis' color} xywh {292 122 70 22}
+        }
+        Fl_Button btnFMT_legend_color {
+          label Lgnd
+          callback {static uchar r, g, b;
+  Fl::get_color(progdefaults.FMT_legend_color, r, g, b);
+  if (!fl_color_chooser("FMT Legend Color", r, g, b))
+    return;
+  progdefaults.FMT_legend_color = fl_rgb_color(r,g,b);
+
+  fmt_plot->legend_color(progdefaults.FMT_legend_color);
+  fmt_plot->redraw();
+
+  progdefaults.changed = true;}
+          tooltip {Change legend color} xywh {367 122 70 22}
+        }
+        Fl_Check_Button btn_fmt_plot_over_axis {
+          label {Line/Axis}
+          callback {progdefaults.FMT_plot_over_axis = o->value();
+fmt_plot->plot_over_axis(progdefaults.FMT_plot_over_axis);
+progdefaults.changed = true;}
+          tooltip {Enable to always plot data over axis} xywh {385 155 31 18} down_box DOWN_BOX
+          code0 {o->value(progdefaults.FMT_plot_over_axis);}
+        }
+        Fl_Check_Button btn_fmt_thick_lines {
+          label {Thick lines}
+          callback {progdefaults.FMT_thick_lines = o->value();
+fmt_plot->thick_lines(progdefaults.FMT_thick_lines);
+progdefaults.changed = true;}
+          tooltip {Enable to plot track lines 3 pixels wide} xywh {481 155 31 18} down_box DOWN_BOX
+          code0 {o->value(progdefaults.FMT_thick_lines);}
+        }
+        Fl_Counter cnt_fmt_freq_corr {
+          label {Freq Correction}
+          callback {progdefaults.FMT_freq_corr=o->value();
+progdefaults.RIT=progdefaults.FMT_freq_corr;
+cntRIT->value(progdefaults.RIT);
+progdefaults.changed = true;}
+          tooltip {Offset plot lines on vertical scale} xywh {465 119 123 24} align 1 minimum -5 maximum 5 step 0.001
+          code0 {o->value(progdefaults.FMT_freq_corr);}
+          code1 {o->lstep(0.01);}
+        }
+        Fl_Button bnt_FMT_dec_corr {
+          label {@|<}
+          callback {progdefaults.FMT_freq_corr -= 0.1;
+cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);
+progdefaults.RIT=progdefaults.FMT_freq_corr;
+cntRIT->value(progdefaults.RIT);
+progdefaults.changed = true;}
+          xywh {446 119 19 24} labelsize 10
+        }
+        Fl_Button btn_FMT_incr_corr {
+          label {@>|}
+          callback {progdefaults.FMT_freq_corr += 0.1;
+cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);
+progdefaults.RIT=progdefaults.FMT_freq_corr;
+cntRIT->value(progdefaults.RIT);
+progdefaults.changed = true;}
+          xywh {588 119 18 24} labelsize 10
+        }
+      }
+      Fl_Group {} {
+        label {DFT Estimator} open
+        xywh {203 190 207 86} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Counter cnt_FMT_movavg_len {
+          label {Data Filter}
+          callback {progdefaults.FMT_movavg_len = o->value();
+progdefaults.changed = true;}
+          tooltip {Moving average - average over NN seconds^0 - no averaging} xywh {214 232 110 24} align 1 minimum 0 maximum 10 value 1
+          code0 {o->value(progdefaults.FMT_movavg_len);}
+          code1 {o->lstep(1.0);}
+        }
+        Fl_Group listbox_fmt_dft_rate {
+          label {DFT rate}
+          callback {progdefaults.FMT_dft_rate=o->index();
+progdefaults.changed = true;} open
+          tooltip {\# DFT computations / second} xywh {334 232 60 24} box DOWN_BOX color 7
+          code1 {o->add("1|2|3|4|5|6|7|8");}
+          code2 {o->index(progdefaults.FMT_dft_rate);}
+          class Fl_ListBox
+        } {}
+      }
+      Fl_Group {} {
+        label {FIR Filter} open
+        xywh {411 190 205 86} box ENGRAVED_BOX align 21
+      } {
+        Fl_Counter cnt_FMT_bpf {
+          label Width
+          callback {progdefaults.FMT_bpf_width = o->value();
+progdefaults.changed = true;}
+          tooltip {Band pass filter / unknown / reference} xywh {457 218 100 24} align 1 minimum 5 maximum 200 step 5 value 100
+          code0 {o->value(progdefaults.FMT_bpf_width);}
+          code1 {o->lstep(50.0);}
+        }
+        Fl_Check_Button btn_fmt_unk_bpf_on {
+          label {bpf Unk'}
+          callback {progdefaults.FMT_unk_bpf_on = o->value();
+progdefaults.changed = true;}
+          tooltip {ON  - band pass filter unknown signal} xywh {429 246 70 18} down_box DOWN_BOX
+          code0 {o->value(progdefaults.FMT_unk_bpf_on);}
+        }
+        Fl_Check_Button btn_fmt_ref_bpf_on {
+          label {bpf Ref'}
+          callback {progdefaults.FMT_ref_bpf_on = o->value();
+progdefaults.changed = true;}
+          tooltip {ON  - band pass filter reference signal} xywh {526 246 70 18} down_box DOWN_BOX
+          code0 {o->value(progdefaults.FMT_ref_bpf_on);}
+        }
+      }
+      Fl_Group {} {
+        label {CSV Data Recording} open
+        xywh {617 190 178 86} box ENGRAVED_BOX align 21
+      } {
+        Fl_Check_Button btn_fmt_autorecord {
+          label {Auto record}
+          tooltip {Automatically start csv data file recording with wav playback} xywh {658 246 107 18} down_box DOWN_BOX
+        }
+        Fl_Counter cnt_fmt_auto_record_time {
+          tooltip {Record data for NN minutes after auto start} xywh {672 218 66 24} type Simple align 17 minimum 2 maximum 60 step 2 value 2
+        }
+      }
+      Fl_Group {} {
+        label {Wav file recording}
+        xywh {203 277 592 66} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Check_Button btn_fmt_record_wav {
+          label {Record Audio}
+          callback {cb_fmt_record_wav(o->value());
+if (o->value() == 1)
+  btn_fmt_sync_wav->deactivate();
+else
+  btn_fmt_sync_wav->activate();}
+          tooltip {Wav file recording - START IMMEDIATELY} xywh {464 288 118 18} down_box DOWN_BOX
+          code0 {if (progdefaults.fmt_sync_wav_file) o->deactivate();}
+        }
+        Fl_Check_Button btn_fmt_sync_wav {
+          label {Sync to data record}
+          callback {progdefaults.fmt_sync_wav_file = o->value();
+if (o->value() == 1)
+  btn_fmt_record_wav->deactivate();
+else
+  btn_fmt_record_wav->activate();
+progdefaults.changed = true;}
+          tooltip {Wav file recording - SYNCHRONIZE with data recording} xywh {599 288 118 18} down_box DOWN_BOX
+          code0 {o->value(progdefaults.fmt_sync_wav_file);}
+        }
+        Fl_Output txt_fmt_wav_filename {
+          label {File pathname:}
+          tooltip {Computer generated file name} xywh {213 314 570 24} align 5
+        }
+      }
+      Fl_Group {} {
+        label Waterfall
+        xywh {616 24 180 131} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Box {} {
+          label {Shft-click: select unknown
+Ctrl-click: select reference}
+          xywh {626 44 168 35} labelsize 12 align 20
+        }
+        Fl_Check_Button btn_fmt_center_on_unknown {
+          label {Center on Unknown}
+          callback {progdefaults.fmt_center_on_unknown = o->value();
+if (o->value()) {
+  progdefaults.fmt_center_on_median = 0;
+  progdefaults.fmt_center_on_reference = 0;
+  btn_fmt_center_on_median->value(0);
+  btn_fmt_center_on_reference->value(0);
+}
+progdefaults.changed = true;}
+          tooltip {Waterfall Centered on unknown signal} xywh {626 85 70 18} down_box DOWN_BOX
+          code0 {o->value(progdefaults.fmt_center_on_unknown);}
+        }
+        Fl_Check_Button btn_fmt_center_on_reference {
+          label {Center on Reference}
+          callback {progdefaults.fmt_center_on_reference = o->value();
+if (o->value()) {
+  progdefaults.fmt_center_on_unknown = 0;
+  progdefaults.fmt_center_on_median = 0;
+  btn_fmt_center_on_median->value(0);
+  btn_fmt_center_on_unknown->value(0);
+}
+progdefaults.changed = true;}
+          tooltip {Waterfall centered on reference signal} xywh {626 109 70 18} down_box DOWN_BOX
+          code0 {o->value(progdefaults.fmt_center_on_reference);}
+        }
+        Fl_Check_Button btn_fmt_center_on_median {
+          label {Center on median}
+          callback {progdefaults.fmt_center_on_median = o->value();
+if (o->value()) {
+  progdefaults.fmt_center_on_unknown = 0;
+  progdefaults.fmt_center_on_reference = 0;
+  btn_fmt_center_on_unknown->value(0);
+  btn_fmt_center_on_reference->value(0);
+}
+progdefaults.changed = true;}
+          tooltip {Waterfall centered 1/2 way between unknown & reference} xywh {627 133 70 17} down_box DOWN_BOX
+          code0 {o->value(progdefaults.fmt_center_on_median);}
+        }
+      }
+      Fl_Group {} {
+        xywh {616 156 180 32} box ENGRAVED_FRAME
+      } {
+        Fl_Check_Button btn_fmt_use_tabs {
+          label {Use TAB delimiters}
+          callback {progdefaults.FMT_use_tabs = o->value();
+progdefaults.changed = true;}
+          tooltip {Use tab delimiters between columns on csv export file.} xywh {627 165 70 18} down_box DOWN_BOX
+          code0 {o->value(progdefaults.FMT_use_tabs);}
         }
       }
     }
@@ -5558,7 +5863,7 @@ progdefaults.changed = true;} open
       }
     }
     Fl_Group {} {
-      label {Modem/TTY/nanoIO} open selected
+      label {Modem/TTY/nanoIO} open
       xywh {200 0 600 350} box FLAT_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/nanoIO"));}
       code1 {config_pages.push_back(p);}
@@ -9287,6 +9592,7 @@ o->tooltip(src_get_description(progdefaults.sample_converter));} open
         Fl_Spinner cntRxRateCorr {
           label {RX ppm}
           callback {progdefaults.RX_corr = (int)o->value();
+cnt_fmt_rx_ppm->value(progdefaults.RX_corr);
 progdefaults.changed = true;}
           tooltip {RX sound card correction} xywh {284 165 85 20} align 8
           code0 {o->step(1);}
@@ -9319,15 +9625,35 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group {} {
-        label {Frequency Analysis Rx Correction} open
-        xywh {260 200 490 62} box ENGRAVED_FRAME align 21
+        label {Frequency Analysis / FMT Rx Correction} open
+        xywh {260 200 490 76} box ENGRAVED_FRAME align 21
       } {
+        Fl_Button bnt_dec_rit {
+          label {@|<}
+          callback {progdefaults.RIT -= 0.1;
+cntRIT->value(progdefaults.RIT);
+progdefaults.FMT_freq_corr=o->value();
+cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);
+progdefaults.changed = true;}
+          xywh {285 227 18 24} labelsize 10 align 16
+        }
         Fl_Counter cntRIT {
-          label RIT
-          callback {progdefaults.RIT=o->value();}
-          tooltip {Used ONLY for frequency analysis mode} xywh {284 226 130 20} align 8 minimum -5 maximum 5 step 0.01
+          label {Frequency Correction}
+          callback {progdefaults.RIT=o->value();
+progdefaults.FMT_freq_corr=o->value();
+cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);}
+          tooltip {Used ONLY for frequency analysis mode} xywh {303 227 130 24} minimum -5 maximum 5 step 0.001
           code0 {o->value(progdefaults.RIT);}
-          code1 {o->lstep(0.1);}
+          code1 {o->lstep(0.01);}
+        }
+        Fl_Button btn_incr_rit {
+          label {@>|}
+          callback {progdefaults.RIT += 0.1;
+cntRIT->value(progdefaults.RIT);
+progdefaults.FMT_freq_corr=o->value();
+cnt_fmt_freq_corr->value(progdefaults.FMT_freq_corr);
+progdefaults.changed = true;}
+          xywh {433 227 18 24} labelsize 10 align 16
         }
       }
     }

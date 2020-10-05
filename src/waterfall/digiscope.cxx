@@ -43,8 +43,8 @@
 #include "qrunner.h"
 
 
-Digiscope::Digiscope (int X, int Y, int W, int H) :
-	Fl_Widget (X, Y, W, H) {
+Digiscope::Digiscope (int X, int Y, int W, int H, const char *label) :
+	Fl_Widget (X, Y, W, H, label) {
 	_phase = _quality = _flo = _fhi = _amp = 0.0;
 	box(FL_DOWN_BOX);
 	vidbuf = new unsigned char[ 3 * (W-4) * (H-4)];

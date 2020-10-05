@@ -351,6 +351,8 @@ play_info.seekable);
 // read from file and resample until a "count" number of converted samples
 // is available, or until at the end of the input file
 // ---------------------------------------------------------------------
+extern int fmt_auto_record;
+
 sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 {
 	sf_count_t r = 0, rd_count = 0;
@@ -362,6 +364,9 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 		src_set_ratio(play_src_state, play_src_data->src_ratio);
 		LOG_VERBOSE("src ratio %f", play_src_data->src_ratio);
 		new_playback = true;
+	}
+	if (new_playback) {
+		fmt_auto_record = 1;
 	}
 
 #define RDBLKSIZE 1024

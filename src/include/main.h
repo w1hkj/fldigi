@@ -48,6 +48,7 @@ extern std::string		AvatarDir;
 extern std::string		HelpDir;
 extern std::string		MacrosDir;
 extern std::string		AnalysisDir;
+extern std::string		FMTDir;
 extern std::string		WrapDir;
 extern std::string		TalkDir;
 extern std::string		TempDir;

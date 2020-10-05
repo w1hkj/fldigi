@@ -75,6 +75,7 @@
 #include "xmlrpc.h"
 #include "psm/psm.h"
 #include "kiss_io.h"
+#include "fmt_dialog.h"
 
 #include "spectrum_viewer.h"
 
@@ -238,6 +239,7 @@ inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB
 {
 	if (!active_modem) return;
 	trx_mode marker_mode = active_modem->get_mode();
+
 	if (marker_mode == MODE_RTTY) {
 	// rtty has two bandwidth indicators on the waterfall
 	// upper and lower frequency
@@ -302,42 +304,74 @@ inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB
 	}
 }
 
+void WFdisp::make_fmt_marker ()
+{
+	RGB unk_trk_color, ref_trk_color;
+
+	memset(markerimage + scale_width, 0, RGBwidth * (WFMARKER - 2));
+
+	Fl::get_color(progdefaults.FMT_unk_color, unk_trk_color.R, unk_trk_color.G, unk_trk_color.B);
+
+	Fl::get_color(progdefaults.FMT_ref_color, ref_trk_color.R, ref_trk_color.G, ref_trk_color.B);
+
+	int fmt_bw = progdefaults.FMT_filter;
+
+	RGB *mrkr_U = markerimage + scale_width + int(round(cnt_unk_freq->value()));
+	RGB *mrkr_R = markerimage + scale_width + int(round(cnt_ref_freq->value()));
+
+	// draw marker
+
+	for (int y = 0; y < WFMARKER - 2; y++) {
+		for (int x = -fmt_bw; x <= fmt_bw; x++) {
+			*(mrkr_U + x + y * scale_width) = unk_trk_color;
+			*(mrkr_R + x + y * scale_width) = ref_trk_color;
+		}
+	}
+
+}
+
 void WFdisp::makeMarker()
 {
 	if (unlikely(!active_modem))
 		return;
 
-	RGB *clrMin, *clrMax, *clrM;
-	clrMin = markerimage + scale_width;
-	clrMax = clrMin + (WFMARKER - 2) * scale_width;
-	memset(clrMin, 0, RGBwidth * (WFMARKER - 2));
-	clrM = clrMin + (int)((double)carrierfreq + 0.5);
-
-	int marker_width = bandwidth;
 	int mode = active_modem->get_mode();
-	if (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST)
-		marker_width += mailserver ? progdefaults.ServerOffset :
-			progdefaults.SearchRange;
-	else if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)
-		marker_width = (int)progdefaults.HELL_BW;
-	else if (mode == MODE_RTTY)
-		marker_width = static_cast<int>((progdefaults.rtty_shift < rtty::numshifts ?
-				  rtty::SHIFT[progdefaults.rtty_shift] :
-				  progdefaults.rtty_custom_shift));
-	marker_width = (int)(marker_width / 2.0 + 1);
+	RGB *clrMin, *clrMax, *clrM;
+	int marker_width = bandwidth;
 
-	RGBmarker.R = progdefaults.bwTrackRGBI.R;
-	RGBmarker.G = progdefaults.bwTrackRGBI.G;
-	RGBmarker.B = progdefaults.bwTrackRGBI.B;
+	if (mode == MODE_FMT) {
+		make_fmt_marker ();
+		marker_width = progdefaults.FMT_filter;
+	} else {
+		clrMin = markerimage + scale_width;
+		clrMax = clrMin + (WFMARKER - 2) * scale_width;
+		memset(clrMin, 0, RGBwidth * (WFMARKER - 2));
+		clrM = clrMin + (int)((double)carrierfreq + 0.5);
 
-	makeMarker_(marker_width, &RGBmarker, carrierfreq, clrMin, clrM, clrMax);
+		if (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST)
+			marker_width += mailserver ? progdefaults.ServerOffset :
+				progdefaults.SearchRange;
+		else if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)
+			marker_width = (int)progdefaults.HELL_BW;
+		else if (mode == MODE_RTTY)
+			marker_width = static_cast<int>((progdefaults.rtty_shift < rtty::numshifts ?
+					rtty::SHIFT[progdefaults.rtty_shift] :
+					progdefaults.rtty_custom_shift));
+		marker_width = (int)(marker_width / 2.0 + 1);
 
-	if (unlikely(active_modem->freqlocked() || mode == MODE_FSQ)) {
-		int txfreq = static_cast<int>(active_modem->get_txfreq());
-		adjust_color_inv(RGBmarker.R, RGBmarker.G, RGBmarker.B, FL_BLACK, FL_RED);
-		makeMarker_( static_cast<int>(bandwidth / 2.0 + 1),
-					 &RGBmarker, txfreq,
-					 clrMin, clrMin + (int)((double)txfreq + 0.5), clrMax);
+		RGBmarker.R = progdefaults.bwTrackRGBI.R;
+		RGBmarker.G = progdefaults.bwTrackRGBI.G;
+		RGBmarker.B = progdefaults.bwTrackRGBI.B;
+
+		makeMarker_(marker_width, &RGBmarker, carrierfreq, clrMin, clrM, clrMax);
+
+		if (unlikely(active_modem->freqlocked() || mode == MODE_FSQ)) {
+			int txfreq = static_cast<int>(active_modem->get_txfreq());
+			adjust_color_inv(RGBmarker.R, RGBmarker.G, RGBmarker.B, FL_BLACK, FL_RED);
+			makeMarker_( static_cast<int>(bandwidth / 2.0 + 1),
+						&RGBmarker, txfreq,
+						clrMin, clrMin + (int)((double)txfreq + 0.5), clrMax);
+		}
 	}
 
 	if (!wantcursor) return;
@@ -639,7 +673,6 @@ extern state_t trx_state;
 static pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
 struct AUDIO_BLOCK {
 	wf_fft_type sig[WF_BLOCKSIZE];
-//	int sr;
 };
 
 queue<AUDIO_BLOCK> audio_blocks;
@@ -811,9 +844,19 @@ void WFdisp::slew(int dir) {
 }
 
 void WFdisp::movetocenter() {
-	if (mode == SCOPE)
+	if (mode == SCOPE) {
 		sigoffset = IMAGE_WIDTH / 2;
-	else
+	} else if (active_modem->get_mode() == MODE_FMT) {
+		if (progdefaults.fmt_center_on_unknown)
+			offset = cnt_unk_freq->value() - (disp_width * step / 2);
+		else if (progdefaults.fmt_center_on_reference)
+			offset = cnt_ref_freq->value() - (disp_width * step / 2);
+		else if (progdefaults.fmt_center_on_median)
+			offset = (cnt_unk_freq->value() + cnt_ref_freq->value())/2 - 
+					 (disp_width * step / 2);
+		else
+			offset = progdefaults.PSKsweetspot - (disp_width * step / 2);
+	} else
 		offset = carrierfreq - (disp_width * step / 2);
 	checkoffset();
 }
@@ -1023,46 +1066,100 @@ case Step: for (int row = 0; row < image_height; row++) { \
 #undef UPD_LOOP
 
 	if (active_modem && progdefaults.UseBWTracks) {
-		int bw_lo = bandwidth / 2;
-		int bw_hi = bandwidth / 2;
 		trx_mode mode = active_modem->get_mode();
-		if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
-			bw_hi = bw_hi * 31 / 32;
-		if (mode == MODE_FSQ || mode == MODE_IFKP) {
-			bw_hi = bw_lo = 69 * bandwidth / 100;
-		}
-		RGBI  *pos1 = fft_img + (carrierfreq - offset - bw_lo) / step;
-		RGBI  *pos2 = fft_img + (carrierfreq - offset + bw_hi) / step;
-		if (unlikely(pos2 == fft_img + disp_width))
-			pos2--;
-		if (likely(pos1 >= fft_img && pos2 < fft_img + disp_width)) {
-			RGBI rgbi1, rgbi2 ;
+		if (mode == MODE_FMT) {
+			int bw =progdefaults.FMT_filter;
+			int trk = int(round(cnt_unk_freq->value()));
+			RGBI  *pos1 = fft_img + (trk - offset - bw) / step;
+			RGBI  *pos2 = fft_img + (trk - offset + bw) / step;
+			RGBI unk_trk_color, ref_trk_color;
 
-			if (mode == MODE_RTTY && progdefaults.useMARKfreq) {
-				if (active_modem->get_reverse()) {
-					rgbi1 = progdefaults.rttymarkRGBI;
-					rgbi2 = progdefaults.bwTrackRGBI;
+			Fl::get_color(progdefaults.FMT_unk_color, unk_trk_color.R, unk_trk_color.G, unk_trk_color.B);
+			Fl::get_color(progdefaults.FMT_ref_color, ref_trk_color.R, ref_trk_color.G, ref_trk_color.B);
+
+			if (likely(pos1 >= fft_img && pos2 < fft_img + disp_width)) {
+				if (progdefaults.UseWideTracks) {
+					for (int y = 0; y < image_height; y ++) {
+						*(pos1 + 1) = *pos1 = unk_trk_color;
+						*(pos2 - 1) = *pos2 = unk_trk_color;
+						pos1 += disp_width;
+						pos2 += disp_width;
+					}
+				} else {
+					for (int y = 0; y < image_height; y ++) {
+						*pos1 = unk_trk_color;
+						*pos2 = unk_trk_color;
+						pos1 += disp_width;
+						pos2 += disp_width;
+					}
+				}
+			}
+
+			trk = int(round(cnt_ref_freq->value()));
+			pos1 = fft_img + (trk - offset - bw) / step;
+			pos2 = fft_img + (trk - offset + bw) / step;
+
+			if (likely(pos1 >= fft_img && pos2 < fft_img + disp_width)) {
+				if (progdefaults.UseWideTracks) {
+					for (int y = 0; y < image_height; y ++) {
+						*(pos1 + 1) = *pos1 = ref_trk_color;
+						*(pos2 - 1) = *pos2 = ref_trk_color;
+						pos1 += disp_width;
+						pos2 += disp_width;
+					}
+				} else {
+					for (int y = 0; y < image_height; y ++) {
+						*pos1 = ref_trk_color;
+						*pos2 = ref_trk_color;
+						pos1 += disp_width;
+						pos2 += disp_width;
+					}
+				}
+			}
+
+		} else {
+
+			int bw_lo = bandwidth / 2;
+			int bw_hi = bandwidth / 2;
+			trx_mode mode = active_modem->get_mode();
+			if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
+				bw_hi = bw_hi * 31 / 32;
+			if (mode == MODE_FSQ || mode == MODE_IFKP) {
+				bw_hi = bw_lo = 69 * bandwidth / 100;
+			}
+			RGBI  *pos1 = fft_img + (carrierfreq - offset - bw_lo) / step;
+			RGBI  *pos2 = fft_img + (carrierfreq - offset + bw_hi) / step;
+			if (unlikely(pos2 == fft_img + disp_width))
+				pos2--;
+			if (likely(pos1 >= fft_img && pos2 < fft_img + disp_width)) {
+				RGBI rgbi1, rgbi2 ;
+
+				if (mode == MODE_RTTY && progdefaults.useMARKfreq) {
+					if (active_modem->get_reverse()) {
+						rgbi1 = progdefaults.rttymarkRGBI;
+						rgbi2 = progdefaults.bwTrackRGBI;
+					} else {
+						rgbi1 = progdefaults.bwTrackRGBI;
+						rgbi2 = progdefaults.rttymarkRGBI;
+					}
 				} else {
 					rgbi1 = progdefaults.bwTrackRGBI;
-					rgbi2 = progdefaults.rttymarkRGBI;
+					rgbi2 = progdefaults.bwTrackRGBI;
 				}
-			} else {
-				rgbi1 = progdefaults.bwTrackRGBI;
-				rgbi2 = progdefaults.bwTrackRGBI;
-			}
-			if (progdefaults.UseWideTracks) {
-				for (int y = 0; y < image_height; y ++) {
-					*(pos1 + 1) = *pos1 = rgbi1;
-					*(pos2 - 1) = *pos2 = rgbi2;
-					pos1 += disp_width;
-					pos2 += disp_width;
-				}
-			} else {
-				for (int y = 0; y < image_height; y ++) {
-					*pos1 = rgbi1;
-					*pos2 = rgbi2;
-					pos1 += disp_width;
-					pos2 += disp_width;
+				if (progdefaults.UseWideTracks) {
+					for (int y = 0; y < image_height; y ++) {
+						*(pos1 + 1) = *pos1 = rgbi1;
+						*(pos2 - 1) = *pos2 = rgbi2;
+						pos1 += disp_width;
+						pos2 += disp_width;
+					}
+				} else {
+					for (int y = 0; y < image_height; y ++) {
+						*pos1 = rgbi1;
+						*pos2 = rgbi2;
+						pos1 += disp_width;
+						pos2 += disp_width;
+					}
 				}
 			}
 		}
@@ -1098,15 +1195,19 @@ void WFdisp::drawcolorWF() {
 	if (active_modem && wantcursor &&
 		(progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine) ) {
 		trx_mode mode = active_modem->get_mode();
+
 		int bw_lo = bandwidth / 2;
 		int bw_hi = bandwidth / 2;
 		if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
 			bw_hi = bw_hi * 31 / 32;
 		if (mode == MODE_FSQ || mode == MODE_IFKP) bw_hi = bw_hi * 32 / 33;
+		if (mode == MODE_FMT) {
+			bw_lo = bw_hi = progdefaults.FMT_filter;
+		}
 		RGBI  *pos0 = (fft_img + cursorpos);
 		RGBI  *pos1 = (fft_img + cursorpos - bw_lo/step);
 		RGBI  *pos2 = (fft_img + cursorpos + bw_hi/step);
-		if (pos1 >= fft_img && pos2 < fft_img + disp_width)
+		if (pos1 >= fft_img && pos2 < fft_img + disp_width) {
 			for (int y = 0; y < image_height; y ++) {
 				if (progdefaults.UseCursorLines) {
 					*pos1 = *pos2 = progdefaults.cursorLineRGBI;
@@ -1122,6 +1223,8 @@ void WFdisp::drawcolorWF() {
 				pos1 += disp_width;
 				pos2 += disp_width;
 			}
+		}
+
 	}
 
 	fl_color(FL_BLACK);
@@ -1181,20 +1284,55 @@ void WFdisp::drawspectrum() {
 	}
 
 	if (progdefaults.UseBWTracks) {
-		uchar  *pos1 = pixmap + (carrierfreq - offset - bandwidth/2) / step;
-		uchar  *pos2 = pixmap + (carrierfreq - offset + bandwidth/2) / step;
-		if (pos1 >= pixmap &&
-			pos2 < pixmap + disp_width)
-			for (int y = 0; y < image_height; y ++) {
-				*pos1 = *pos2 = 255;
-				if (progdefaults.UseWideTracks) {
-					*(pos1 + 1) = 255;
-					*(pos2 - 1) = 255;
+		if (active_modem == fmt_modem) {
+			uchar  *pos1;
+			uchar  *pos2;
+			int trk1 = int(round(cnt_unk_freq->value()));
+			int trk2 = int(round(cnt_ref_freq->value()));
+			int bw = int(round(progdefaults.FMT_filter));
+			pos1 = pixmap + (trk1 - offset - bw) / step;
+			pos2 = pixmap + (trk1 - offset + bw) / step;
+			if (pos1 >= pixmap &&
+				pos2 < pixmap + disp_width)
+				for (int y = 0; y < image_height; y ++) {
+					*pos1 = *pos2 = 255;
+					if (progdefaults.UseWideTracks) {
+						*(pos1 + 1) = *(pos2 - 1) = 255;
+					}
+					pos1 += IMAGE_WIDTH/step;
+					pos2 += IMAGE_WIDTH/step;
 				}
+			pos1 = pixmap + (trk2 - offset - bw) / step;
+			pos2 = pixmap + (trk2 - offset + bw) / step;
+			if (pos1 >= pixmap &&
+				pos2 < pixmap + disp_width) {
+				for (int y = 0; y < image_height; y ++) {
+					*pos1 = *pos2 = 255;
+					if (progdefaults.UseWideTracks) {
+						*(pos1 + 1) = *(pos2 - 1) = 255;
+					}
 				pos1 += IMAGE_WIDTH/step;
 				pos2 += IMAGE_WIDTH/step;
+				}
 			}
+		} else {
+			uchar  *pos1 = pixmap + (carrierfreq - offset - bandwidth/2) / step;
+			uchar  *pos2 = pixmap + (carrierfreq - offset + bandwidth/2) / step;
+			if (pos1 >= pixmap &&
+				pos2 < pixmap + disp_width) {
+				for (int y = 0; y < image_height; y ++) {
+					*pos1 = *pos2 = 255;
+					if (progdefaults.UseWideTracks) {
+						*(pos1 + 1) = 255;
+						*(pos2 - 1) = 255;
+					}
+					pos1 += IMAGE_WIDTH/step;
+					pos2 += IMAGE_WIDTH/step;
+				}
+			}
+		}
 	}
+
 	if (active_modem && wantcursor &&
 		(progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine)) {
 		trx_mode mode = active_modem->get_mode();
@@ -1362,6 +1500,16 @@ void do_qsy(bool dir)
 					m.carrier = progdefaults.xcvr_FSK_MARK + rtty::SHIFT[progdefaults.rtty_shift]/2;
 				} else
 					m.carrier = progdefaults.RTTYsweetspot;
+				break;
+			case MODE_FMT:
+				if (progdefaults.fmt_center_on_unknown)
+					m.carrier = cnt_unk_freq->value();
+				else if (progdefaults.fmt_center_on_reference)
+					m.carrier = cnt_ref_freq->value();
+				else if (progdefaults.fmt_center_on_median)
+					m.carrier = (cnt_unk_freq->value() + cnt_ref_freq->value())/2;
+				else
+					m.carrier = progdefaults.PSKsweetspot;
 				break;
 			default:
 				m.carrier = progdefaults.PSKsweetspot;
@@ -2087,9 +2235,20 @@ int WFdisp::handle(int event)
 
 	if (trx_state != STATE_RX)
 		return 1;
+
 	int xpos = Fl::event_x() - x();
 	int ypos = Fl::event_y() - y();
 	int eb;
+
+	if (active_modem == fmt_modem) {
+		int nuf = cursorFreq(xpos);
+		if ((Fl::event_state() & (FL_SHIFT)) == FL_SHIFT) {
+			set_unk_freq_value(nuf);
+		} else if ((Fl::event_state() & (FL_CTRL)) == FL_CTRL) {
+			set_ref_freq_value(nuf);
+		}
+		return 1;
+	}
 
 	switch (event) {
 	case FL_MOVE:

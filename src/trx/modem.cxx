@@ -53,7 +53,6 @@ modem *cw_modem = 0;
 modem *mfsk8_modem = 0;
 modem *mfsk16_modem = 0;
 modem *mfsk32_modem = 0;
-// experimental modes
 modem *mfsk4_modem = 0;
 modem *mfsk11_modem = 0;
 modem *mfsk22_modem = 0;
@@ -240,6 +239,7 @@ modem *throbx4_modem = 0;
 
 modem *wwv_modem = 0;
 modem *anal_modem = 0;
+modem *fmt_modem = 0;
 modem *ssb_modem = 0;
 
 double modem::frequency = 1000;
