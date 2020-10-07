@@ -107,6 +107,7 @@ void XmlRpcUtil::error(const char* fmt, ...)
   vsnprintf(buf,sizeof(buf)-1,fmt,va);
   buf[sizeof(buf)-1] = 0;
   XmlRpcErrorHandler::getErrorHandler()->error(buf);
+  va_end(va);
 }
 
 // Returns true if the tag is parsed. No attributes are parsed.
