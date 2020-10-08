@@ -86,6 +86,8 @@ extern std::string exec_string;
 extern std::string text2repeat;
 extern std::string macrochar;
 
+extern bool local_timed_exec;
+
 extern bool macro_idle_on;
 extern size_t repeatchar;
 extern bool do_tune_on;
@@ -99,5 +101,8 @@ bool queue_must_rx();
 void idleTimer(void *);
 
 extern void TxQueINSERTIMAGE(std::string s);
+
+extern void clear_buffered_text();
+extern char next_buffered_macro_char();
 
 #endif

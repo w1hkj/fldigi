@@ -193,6 +193,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<REPEAT>\trepeat macro continuously"));
 	w->add(_("<SKED:hhmm[ss][:YYYYMMDD]>\tschedule execution for"));
 	w->add(_("<UNTIL:hhmm[ss][:YYYYMMDD]>\tend execution at"));
+	w->add(_("<LOCAL>\tuse local date/time"));
 
 	w->add(LINE_SEP);
 	w->add(_("<TXATTEN:nn.n>\t set xmt attenuator"));
@@ -218,7 +219,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<POST:+/-nn.n>\tCW QSK post-timing"));
 	w->add(_("<PRE:nn.n>\tCW QSK pre-timing"));
 	w->add(_("<RISE:nn.n>\tCW rise time"));
-	w->add(_("<WPM:NN.nn:FF.nn>\tCW WPM:Farnsworth (7.5:15.0)"));
+	w->add(_("<WPM:NN.nn:FF.nn>\tChar WPM:Text WPM (15.0:5.0)"));
 
 	w->add(LINE_SEP);
 	w->add(_("<RIGCAT:[\"text\"][hex ...]:ret>\tsend CAT cmd"));
@@ -232,6 +233,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(LINE_SEP);
 	w->add(_("<MACROS:>\tchange macro defs file"));
 	w->add(_("<SAVE>\tsave current macro file"));
+	w->add(_("<BUFFERED>\trun macro from buffered teext"));
 
 	w->add(LINE_SEP);
 	w->add(_("<COMMENT:comment text>\tignore comment text"));

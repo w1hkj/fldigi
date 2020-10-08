@@ -65,6 +65,7 @@ static pthread_mutex_t TX_mutex     = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t time_mutex   = PTHREAD_MUTEX_INITIALIZER;
 
 static char ztbuf[20] = "20120602 123000";
+static char ltbuf[20] = "20120602 123000";
 
 static struct timeval tx_start_val;
 static struct timeval tx_last_val;
@@ -106,13 +107,11 @@ void stop_deadman()
 
 void start_macro_time()
 {
-//	std::cout << "RESET MACRO TIME" << std::endl;
 	macro_time = 0;
 }
 
 int stop_macro_time()
 {
-//	std::cout << "STOP MACRO TIME @ " << macro_time << std::endl;
 	return macro_time;
 }
 
@@ -159,6 +158,16 @@ const char* zdate(void)
 const char* ztime(void)
 {
 	return ztbuf + 9;
+}
+
+const char* ldate(void)
+{
+	return ltbuf;
+}
+
+const char *ltime(void)
+{
+	return ltbuf + 9;
 }
 
 const char* zshowtime(void) {
@@ -220,15 +229,21 @@ void update_tx_timer()
 //void ztimer(void *)
 static void ztimer()
 {
-	struct tm tm;
+	struct tm ztm, ltm;
 	time_t t_temp;
 
 	t_temp=(time_t)now_val.tv_sec;
-	gmtime_r(&t_temp, &tm);
-	if (!strftime(ztbuf, sizeof(ztbuf), "%Y%m%d %H%M%S", &tm))
+	gmtime_r(&t_temp, &ztm);
+	if (!strftime(ztbuf, sizeof(ztbuf), "%Y%m%d %H%M%S", &ztm))
 		memset(ztbuf, 0, sizeof(ztbuf));
 	else
 		ztbuf[8] = '\0';
+
+	localtime_r(&t_temp, &ltm);
+	if (!strftime(ltbuf, sizeof(ltbuf), "%Y%m%d %H%M%S", &ltm))
+		memset(ltbuf, 0, sizeof(ltbuf));
+	else
+		ltbuf[8] = '\0';
 
 	if (!inpTimeOff1) return;
 
