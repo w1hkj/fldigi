@@ -535,6 +535,9 @@ extern void xml_update_lotw();
 
 extern const char* zdate(void);
 extern const char* ztime(void);
+extern const char* ldate(void);
+extern const char* ltime(void);
+
 //extern void ztimer(void* first_call);
 extern const double zusec(void);
 extern const timeval tmval(void);

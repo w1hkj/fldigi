@@ -91,6 +91,44 @@ static queue<CMDS> Rx_cmds;
 
 bool txque_wait = false;
 
+static std::string buffered_macro;
+static bool buffered = false;
+static size_t buffered_pointer;
+
+static void add_text(std::string text)
+{
+	if (buffered) {
+		buffered_macro.append(text);
+		buffered_pointer = 0;
+	} else {
+		TransmitText->add_text(text);
+	}
+}
+
+void clear_buffered_text()
+{
+	buffered_macro.clear();
+}
+
+char next_buffered_macro_char()
+{
+	if (buffered_macro.empty())
+		return 0;
+	char c = buffered_macro[buffered_pointer++];
+	if (buffered_pointer >= buffered_macro.length()) {
+		buffered_macro.clear();
+		buffered_pointer = 0;
+	}
+	return c;
+}
+
+static void pBUFFERED(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace(i, endbracket - i + 1, "");
+	buffered = true;
+	buffered_macro.clear();
+}
+
 static void setwpm(double d)
 {
 	sldrCWxmtWPM->value(d);
@@ -156,6 +194,8 @@ static bool GET = false;
 static bool timed_exec = false;
 static bool run_until = false;
 static bool within_exec = false;
+
+bool local_timed_exec = false;
 
 void rx_que_continue(void *);
 
@@ -858,10 +898,13 @@ static void pWPM(std::string &s, size_t &i, size_t endbracket)
 			snumber.erase(0, pos+1);
 			if (snumber.length())
 				sscanf(snumber.c_str(), "%f", &number);
-			if (number < 15) number = 15;
-			if (number > 200) number = 200;
+			if (number < 5) number = 5;
+			if (number > progdefaults.CWspeed) number = progdefaults.CWspeed;
 			progdefaults.CWfarnsworth = number;
-			setfwpm(number);
+			if (number == progdefaults.CWspeed)
+				setwpm(number);
+			else
+				setfwpm(number);
 		}
 	}
 
@@ -942,12 +985,13 @@ static void doWPM(std::string s)
 			snumber.erase(0, pos+1);
 			if (snumber.length())
 				sscanf(snumber.c_str(), "%f", &number);
-			if (number > progdefaults.CWspeed) {
-				if (number < 15) number = 15;
-				if (number > 200) number = 200;
-				progdefaults.CWfarnsworth = number;
+			if (number < 5) number = 5;
+			if (number > progdefaults.CWspeed) number = progdefaults.CWspeed;
+			progdefaults.CWfarnsworth = number;
+			if (number == progdefaults.CWspeed)
+				REQ(setwpm, number);
+			else
 				REQ(setfwpm, number);
-			}
 		}
 	}
 
@@ -2614,7 +2658,7 @@ void TxQueINSERTIMAGE(std::string s)
 	else if (active_mode == MODE_FSQ)
 		fsq_tx_text->add_text(itext);
 	else
-		TransmitText->add_text(itext);
+		add_text(itext);
 }
 
 static void doAVATAR(std::string s)
@@ -2787,9 +2831,9 @@ static void pTxQueMODEM(std::string &s, size_t &i, size_t endbracket)
 	struct CMDS cmd = { Tx_cmdstr, doMODEM };
 	if (Tx_cmdstr.find("SSB") != string::npos || Tx_cmdstr.find("ANALYSIS") != string::npos) {
 		LOG_ERROR("Disallowed: %s", Tx_cmdstr.c_str());
-		size_t nextbracket = s.find('<', endbracket);
-		if (nextbracket != string::npos)
-			s.erase(i, nextbracket - i - 1);
+		size_t nowbracket = s.find('<', endbracket);
+		if (nowbracket != string::npos)
+			s.erase(i, nowbracket - i - 1);
 		else
 			s.clear();
 	} else {
@@ -4170,6 +4214,18 @@ static void pCONT(std::string &s, size_t &i, size_t endbracket)
 	expand = true;
 }
 
+//----------------------------------------------------------------------
+// macro scheduling
+//----------------------------------------------------------------------
+
+static long sk_xdt, sk_xtm;
+
+static void pLOCAL(std::string &s, size_t &i, size_t endbracket)
+{
+	local_timed_exec = true;
+	s.replace(i, endbracket - i + 1, "");
+}
+
 static void pSKED(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec || progStatus.skip_sked_macro) {
@@ -4179,25 +4235,29 @@ static void pSKED(std::string &s, size_t &i, size_t endbracket)
 	std::string data = s.substr(i+6, endbracket - i - 6);
 	size_t p = data.find(":");
 	if (p == std::string::npos) {
-		exec_date = zdate();
+		exec_date = (local_timed_exec ? ldate() : zdate());
 		exec_time = data;
-		if (exec_time.empty()) exec_time = ztime();
+		if (exec_time.empty()) exec_time = (local_timed_exec ? ltime() : ztime());
 	} else {
 		exec_time = data.substr(0, p);
 		exec_date = data.substr(p+1);
 	}
-	if (exec_time.length() == 4) exec_time.append("00");
+	if (exec_time.length() == 4)
+		exec_time.append("00");
+
+	sk_xdt = atol(exec_date.c_str());
+	sk_xtm = atol(exec_time.c_str());
+
 	timed_exec = true;
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static long sk_xdt, sk_xtm;
-
 void do_timed_execute(void *)
 {
 	long dt, tm;
-	dt = atol(zdate());
-	tm = atol(ztime());
+	dt = atol( local_timed_exec ? ldate() : zdate() );
+	tm = atol( local_timed_exec ? ltime() : ztime() );
+
 	if (dt >= sk_xdt && tm >= sk_xtm) {
 		Qwait_time = 0;
 		start_tx();
@@ -4215,14 +4275,16 @@ static void doSKED(std::string s)
 {
 	size_t p = s.find(":");
 	if (p == std::string::npos) {
-		exec_date = zdate();
+		exec_date = (local_timed_exec ? ldate() : zdate());
 		exec_time = s;
-		if (exec_time.empty()) exec_time = ztime();
+		if (exec_time.empty())
+			exec_time = (local_timed_exec ? ltime() : ztime());
 	} else {
 		exec_time = s.substr(0, p);
 		exec_date = s.substr(p+1);
 	}
-	if (exec_time.length() == 4) exec_time.append("00");
+	if (exec_time.length() == 4)
+		exec_time.append("00");
 
 	string txt;
 	txt.assign("Next scheduled transmission at ").
@@ -4267,7 +4329,7 @@ static void pUNTIL(std::string &s, size_t &i, size_t endbracket)
 	std::string data = s.substr(i+7, endbracket - i - 7);
 	size_t p = data.find(":");
 	if (p == std::string::npos) {
-		until_date = zdate();
+		until_date = (local_timed_exec ? ldate() : zdate());
 		until_time = data;
 	} else {
 		until_time = data.substr(0, p);
@@ -4520,12 +4582,14 @@ static const MTAGS mtags[] = {
 	{"<REPEAT>",	pREPEAT},
 	{"<SKED:",		pSKED},
 	{"<UNTIL:",		pUNTIL},
+	{"<LOCAL>",		pLOCAL},
 	{"<TXATTEN:",	pTXATTEN},
 	{"<POP>",		pPOP},
 	{"<PUSH",		pPUSH},
 	{"<DIGI>",		pDIGI},
 	{"<ALERT:",		pALERT},
 	{"<AUDIO:",		pAUDIO},
+	{"<BUFFERED>",	pBUFFERED},
 #ifdef __WIN32__
 	{"<TALK:",		pTALK},
 #endif
@@ -4772,6 +4836,7 @@ std::string MACROTEXT::expandMacro(std::string &s, bool recurse = false)
 {
 	size_t idx = 0;
 	expand = true;
+	buffered = false;
 	if (!recurse || rx_only) {
 		TransmitON = false;
 		ToggleTXRX = false;
@@ -4900,7 +4965,7 @@ void MACROTEXT::timed_execute()
 		else if (active_modem->get_mode() == MODE_FSQ)
 			fsq_tx_text->add_text( text2send );
 		else
-			TransmitText->add_text(text2send);
+			add_text(text2send);
 		exec_string.clear();
 		active_modem->set_stopflag(false);
 		start_tx();
@@ -4911,7 +4976,11 @@ void MACROTEXT::execute(int n)
 {
 	guard_lock exec(&exec_mutex);
 
-	if (run_until && zdate() >= until_date && ztime() >= until_time) {
+	std::string dd, dt;
+	dd = (local_timed_exec ? ldate() : zdate());
+	dt = (local_timed_exec ? ltime() : ldate());
+
+	if (run_until && dd >= until_date && dt >= until_time) {
 		stopMacroTimer();
 		queue_reset();
 		return;
@@ -4937,7 +5006,7 @@ void MACROTEXT::execute(int n)
 			else if (mode == MODE_FSQ)
 				fsq_tx_text->add_text( text2send );
 			else
-				TransmitText->add_text( text2send );
+				add_text( text2send );
 		} else {
 			size_t p = std::string::npos;
 			text2send = text[n];
@@ -4950,7 +5019,7 @@ void MACROTEXT::execute(int n)
 			else if (mode == MODE_FSQ)
 				fsq_tx_text->add_text( text2send );
 			else
-				TransmitText->add_text( text2send );
+				add_text( text2send );
 		}
 	}
 	bool keep_tx = !text2send.empty();

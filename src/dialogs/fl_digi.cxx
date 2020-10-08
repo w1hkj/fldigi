@@ -1645,7 +1645,6 @@ void cb_wMain(Fl_Widget*, void*)
 {
 	if (!clean_exit(true)) return;
 	remove_windows();
-//std::cout << "cb_wMain: hiding main" << std::endl;
 	fl_digi_main->hide();
 }
 
@@ -1655,7 +1654,6 @@ void cb_E(Fl_Menu_*, void*) {
 		return;
 	remove_windows();
 // this will make Fl::run return
-//std::cout << "cb_E: hiding main" << std::endl;
 	fl_digi_main->hide();
 }
 
@@ -4214,6 +4212,7 @@ void stopMacroTimer()
 
 	progStatus.timer = 0;
 	progStatus.repeatMacro = -1;
+	local_timed_exec = false;
 	Fl::remove_timeout(macro_timer);
 	Fl::remove_timeout(macro_timed_execute);
 
@@ -4246,8 +4245,8 @@ static long mt_xdt, mt_xtm;
 void macro_timed_execute(void *)
 {
 	long dt, tm;
-	dt = atol(zdate());
-	tm = atol(ztime());
+	dt = atol(local_timed_exec ? ldate() : zdate());
+	tm = atol(local_timed_exec ? ltime() : ztime());
 	if (dt >= mt_xdt && tm >= mt_xtm) {
 		macros.timed_execute();
 		btnMacroTimer->label(0);
@@ -4263,14 +4262,17 @@ void startTimedExecute(std::string &title)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 	string txt = "Macro '";
-	txt.append(title).append("' scheduled at ").
+	txt.append(title).
+		append("' scheduled on ").
+		append(exec_date.substr(0,4)).append("/").
+		append(exec_date.substr(4,2)).append("/").
+		append(exec_date.substr(6,2)).
+		append(" at ").
 		append(exec_time.substr(0,2)).append(":").
 		append(exec_time.substr(2,2)).append(":").
 		append(exec_time.substr(4,2)).
-		append(", on ").
-		append(exec_date.substr(0,4)).append("/").
-		append(exec_date.substr(4,2)).append("/").
-		append(exec_date.substr(6,2)).append("\n");
+		append(local_timed_exec ? " Local" : " Zulu").
+		append("\n");
 
 	btnMacroTimer->label("SKED");
 	btnMacroTimer->color(fl_rgb_color(240, 240, 0));
@@ -8855,8 +8857,9 @@ int get_tx_char(void)
 
 	if (active_modem->get_mode() == MODE_IFKP)
 		c = ifkp_tx_text->nextChar();
-	else
-		c = TransmitText->nextChar();
+	else 
+		if ((c = next_buffered_macro_char()) == 0) // preference given to buffered macro chars
+			c = TransmitText->nextChar();
 
 	if (c == GET_TX_CHAR_ETX) {
 		return c;
@@ -8867,7 +8870,8 @@ int get_tx_char(void)
 		if (active_modem->get_mode() == MODE_IFKP)
 			c = ifkp_tx_text->nextChar();
 		else
-			c = TransmitText->nextChar();
+			if ((c = next_buffered_macro_char()) == 0) // preference given to buffered macro chars
+				c = TransmitText->nextChar();
 	}
 
 	if (c == -1) {
@@ -8892,18 +8896,21 @@ int get_tx_char(void)
 				if (active_modem->get_mode() == MODE_IFKP)
 					c = ifkp_tx_text->nextChar();
 				else
-					c = TransmitText->nextChar();
+					if ((c = next_buffered_macro_char()) == 0) // preference given to buffered macro chars
+						c = TransmitText->nextChar();
 				if (c == '[') {
 					if (active_modem->get_mode() == MODE_IFKP)
 						c = ifkp_tx_text->nextChar();
 					else
-						c = TransmitText->nextChar();
+						if ((c = next_buffered_macro_char()) == 0) // preference given to buffered macro chars
+							c = TransmitText->nextChar();
 					while (c != ']' && c != -1) {
 						fname += c;
 						if (active_modem->get_mode() == MODE_IFKP)
 							c = ifkp_tx_text->nextChar();
 						else
-							c = TransmitText->nextChar();
+							if ((c = next_buffered_macro_char()) == 0) // preference given to buffered macro chars
+								c = TransmitText->nextChar();
 					}
 					if (c == -1) return (GET_TX_CHAR_NODATA);
 					if (active_modem->get_mode() == MODE_IFKP) {
@@ -8924,6 +8931,7 @@ int get_tx_char(void)
 			TransmitText->pause();
 			break;
 		case 'r':
+			local_timed_exec = false;
 			active_modem->set_CW_EOT();
 			if (active_modem->get_mode() == MODE_IFKP)
 				REQ(&FTextTX::clear, ifkp_tx_text);
@@ -8933,6 +8941,7 @@ int get_tx_char(void)
 			return(GET_TX_CHAR_ETX);
 			break;
 		case 'R':
+			local_timed_exec = false;
 			active_modem->set_CW_EOT();
 			if (active_modem->get_mode() == MODE_IFKP) {
 				if (ifkp_tx_text->eot()) {
