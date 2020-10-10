@@ -46,7 +46,7 @@
 
 // 1 ms per pixel
 #define	SAMPLES_PER_PIXEL	8
-#define MAX_SYMBOLS			32
+#define MAX_SYMBOLS			64
 #define PICHEADER			64
 
 // NASA coefficients for viterbi encode/decode algorithms
@@ -154,6 +154,7 @@ protected:
 	double basefreq;
 	int counter;
 	int depth;
+    bool _sccc;
 // receive
 	int				rxstate;
 	C_FIR_filter	*hbfilt;
@@ -165,7 +166,11 @@ protected:
 
 	viterbi		*dec1;
 	viterbi		*dec2;
+    viterbi		*dec1_outer;
+	viterbi		*dec2_outer;
+    
 	interleave	*rxinlv;
+	interleave	*rxinlv_outer;
 
 	rxpipe		*pipe;
 	unsigned int pipeptr;
@@ -187,6 +192,8 @@ protected:
 
 	double met1;
 	double met2;
+    double met1_outer;
+	double met2_outer;
 	mbuffer<double, 0, 2> scopedata;
 	double s2n;
 	double sig;
@@ -200,7 +207,10 @@ protected:
 	int AFC_COUNT;
 
 	unsigned char symbolpair[2];
+    unsigned char symbolpair_outer[2];
+    
 	int symcounter;
+    int symcounter_outer;
 	
 	int RXspp; // samples per pixel
 	int TXspp;
@@ -209,9 +219,14 @@ protected:
 
 // transmit
 	int txstate;
+    
 	encoder		*enc;
+    encoder		*enc_outer;
 	interleave	*txinlv;
+	interleave	*txinlv_outer;
+    
 	unsigned int bitshreg;
+	unsigned int bitshreg_outer;
 	int bitstate;
 	
 // Picutre data and methods
@@ -241,6 +256,7 @@ protected:
 
 // internal processes
 	void	decodesymbol(unsigned char symbol);
+	void	decodesymbol_outer(unsigned char symbol, int innermet);
 	void	softdecode(cmplx *bins);
 	cmplx	mixer(cmplx in, double f);
 	int		harddecode(cmplx *in);
@@ -252,6 +268,7 @@ protected:
 	void	transmit(double *, int);
 	void 	sendsymbol(int sym);
 	void	sendbit(int bit);
+	void	sendbit_outer(int bit);
 	void	sendchar(unsigned char c);
 	void	sendidle();
 	void	flush_xmt_filter(int);

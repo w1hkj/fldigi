@@ -157,10 +157,15 @@ mfsk::~mfsk()
 	if (bpfilt) delete bpfilt;
 	if (xmtfilt) delete xmtfilt;
 	if (rxinlv) delete rxinlv;
+	if (rxinlv_outer) delete rxinlv_outer;
 	if (txinlv) delete txinlv;
+    if (txinlv_outer) delete txinlv_outer;
 	if (dec2) delete dec2;
+	if (dec2_outer) delete dec2_outer;
 	if (dec1) delete dec1;
+	if (dec1_outer) delete dec1_outer;
 	if (enc) delete enc;
+	if (enc_outer) delete enc_outer;
 	if (pipe) delete [] pipe;
 	if (hbfilt) delete hbfilt;
 	if (binsfft) delete binsfft;
@@ -176,6 +181,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 
 	double bw, cf, flo, fhi;
 	mode = mfsk_mode;
+    _sccc=false;
 	depth = 10;
 
 // CAP_IMG is set in cap iff image transfer supported
@@ -208,15 +214,15 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		numtones = 8;
 		preamble = 107; // original mfsk modes
 		break;
-	case MODE_MFSK32:
+	case MODE_MFSK32: // KL4YFD TESTING TODO New Mode for VOA Radiogram !!! 
 		samplerate = 8000;
 		symlen =  256;
-		symbits =   4;
+		symbits =   6;
 		depth = 10;
 		basetone = 32;
-		numtones = 16;
+		numtones = 64;
 		preamble = 107; // original mfsk modes
-		cap |= CAP_IMG;
+		_sccc = true;
 		break;
 	case MODE_MFSK64:
 		samplerate = 8000;
@@ -307,14 +313,24 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	enc			= new encoder (NASA_K, POLY1, POLY2);
 	dec1		= new viterbi (NASA_K, POLY1, POLY2);
 	dec2		= new viterbi (NASA_K, POLY1, POLY2);
-
 	dec1->settraceback (tracepair.trace);
 	dec2->settraceback (tracepair.trace);
 	dec1->setchunksize (1);
 	dec2->setchunksize (1);
+	
+	enc_outer		= new encoder (NASA_K, POLY1, POLY2);
+	dec1_outer		= new viterbi (NASA_K, POLY1, POLY2);
+	dec2_outer		= new viterbi (NASA_K, POLY1, POLY2);
+	dec1_outer->settraceback (tracepair.trace);
+	dec2_outer->settraceback (tracepair.trace);
+	dec1_outer->setchunksize (1);
+	dec2_outer->setchunksize (1);
 
 	txinlv = new interleave (symbits, depth, INTERLEAVE_FWD);
 	rxinlv = new interleave (symbits, depth, INTERLEAVE_REV);
+	
+	txinlv_outer = new interleave (symbits, depth, INTERLEAVE_FWD);
+	rxinlv_outer = new interleave (symbits, depth, INTERLEAVE_REV);
 
 	bw = (numtones - 1) * tonespacing;
 	cf = basefreq + bw / 2.0;
@@ -342,7 +358,8 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	metric = 0;
 	prev1symbol = prev2symbol = 0;
 	symbolpair[0] = symbolpair[1] = 0;
-
+	symbolpair_outer[0] = symbolpair_outer[1] = 0;
+	
 // picTxWin and picRxWin are created once to support all instances of mfsk
 	if (!picTxWin) createTxViewer();
 	if (!picRxWin)
@@ -586,9 +603,114 @@ void mfsk::decodesymbol(unsigned char symbol)
 	if (progStatus.sqlonoff && metric < progStatus.sldrSquelchValue)
 		return;
 
-	recvbit(c);
+	if (_sccc)
+		decodesymbol_outer(c,metric);
+	else
+		recvbit(c);
 
 }
+
+
+
+void mfsk::decodesymbol_outer(unsigned char symbol, int innermet)
+{
+	int c, met;
+	
+	innermet *= 1.5; // Double values to prevent early FEC cutoff
+	innermet = CLAMP(innermet, 25.0, 100.0);
+	
+	
+	// Hard-decode
+	//symbol = (symbol &1) ? 255 : 0 ;
+	
+	
+	// Calculate outer FEC soft-bits from inner Viterbi metric
+	if (symbol &1)
+		symbol = 255 - (255 - 255 * innermet/100);  // soft-one
+		else
+			symbol = 0 + (255 - 255 * innermet/100); // soft-zero
+			
+			///printf("\ninnermet: %d \noutersymbol: %d", innermet, symbol);
+			
+			symbolpair_outer[0] = symbolpair_outer[1];
+		symbolpair_outer[1] = symbol;
+	
+	symcounter_outer = symcounter_outer ? 0 : 1;
+	
+	if (symcounter_outer) {
+		if ((c = dec1_outer->decode(symbolpair_outer, &met)) == -1)
+			return;
+		met1_outer = decayavg(met1_outer, met, 50);//32);
+		if (met1_outer < met2_outer)
+			return;
+		///metric = met1;
+	} else {
+		if ((c = dec2_outer->decode(symbolpair_outer, &met)) == -1)
+			return;
+		met2_outer = decayavg(met2_outer, met, 50);//32);
+		if (met2_outer < met1_outer)
+			return;
+		///metric = met2;
+	}
+	
+	if (progStatus.sqlonoff && metric < progStatus.sldrSquelchValue)
+		return;
+	
+	recvbit(c);
+	
+}
+
+
+/*
+void mfsk::decodesymbol_outer(unsigned char symbol, int innermet)
+{
+	int c, met;
+	
+	innermet *= 1.5; // Double values to prevent early FEC cutoff
+	innermet = CLAMP(innermet, 25.0, 100.0);
+	
+	
+	// Hard-decode
+	//symbol = (symbol &1) ? 255 : 0 ;
+	
+	
+	// Calculate outer FEC soft-bits from inner Viterbi metric
+	if (symbol &1)
+		symbol = 255 - (255 - 255 * innermet/100);  // soft-one
+		else
+			symbol = 0 + (255 - 255 * innermet/100); // soft-zero
+			
+			///printf("\ninnermet: %d \noutersymbol: %d", innermet, symbol);
+			
+			symbolpair_outer[0] = symbolpair_outer[1];
+		symbolpair_outer[1] = symbol;
+	
+	symcounter_outer = symcounter_outer ? 0 : 1;
+	
+	if (symcounter_outer) {
+		if ((c = dec1_outer->decode(symbolpair_outer, &met)) == -1)
+			return;
+		met1_outer = decayavg(met1_outer, met, 50);//32);
+		if (met1_outer < met2_outer)
+			return;
+		///metric = met1;
+	} else {
+		if ((c = dec2_outer->decode(symbolpair_outer, &met)) == -1)
+			return;
+		met2_outer = decayavg(met2_outer, met, 50);//32);
+		if (met2_outer < met1_outer)
+			return;
+		///metric = met2;
+	}
+	
+	if (progStatus.sqlonoff && metric < progStatus.sldrSquelchValue)
+		return;
+	
+	recvbit(c);
+	
+}
+*/
+
 
 void mfsk::softdecode(cmplx *bins)
 {
@@ -954,11 +1076,20 @@ void mfsk::sendbit(int bit)
 	}
 }
 
+void mfsk::sendbit_outer(int bit)
+{
+	int bits = enc_outer->encode(bit);
+	sendbit(bits &1);
+	sendbit( (bits >> 1) &1);
+	
+}
+
 void mfsk::sendchar(unsigned char c)
 {
 	const char *code = varienc(c);
 	while (*code)
-		sendbit(*code++ - '0');
+		//sendbit(*code++ - '0');
+		sendbit_outer(*code++ - '0');
 	put_echo_char(c);
 }
 
