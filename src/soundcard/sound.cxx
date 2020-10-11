@@ -605,9 +605,11 @@ int SoundBase::Audio(std::string fname)
 //----------------------------------------------------------------------
 void SoundBase::write_file(SNDFILE* file, float* bufleft, float* bufright, size_t count)
 {
+	bool must_delete = false;
 	if (bufright == NULL || !progdefaults.record_both_channels) {
 		bufright = new float[count];
 		memset(bufright, 0, count * sizeof(float));
+		must_delete = true;
 	}
 
 	int err;
@@ -638,9 +640,15 @@ void SoundBase::write_file(SNDFILE* file, float* bufleft, float* bufright, size_
 	writ_src_data_right->end_of_input = 0;
 
 	if ((err = src_process(writ_src_state_left, writ_src_data_left)) != 0) {
+		if (must_delete) {
+			delete [] bufright;
+		}
 		throw SndException(src_strerror(err));
 	}
 	if ((err = src_process(writ_src_state_right, writ_src_data_right)) != 0) {
+		if (must_delete) {
+			delete [] bufright;
+		}
 		throw SndException(src_strerror(err));
 	}
 
@@ -662,8 +670,11 @@ void SoundBase::write_file(SNDFILE* file, float* bufleft, float* bufright, size_
 		}
 	}
 
-	return;
+		if (must_delete) {
+			delete [] bufright;
+		}
 
+	return;
 }
 
 void SoundBase::write_file(SNDFILE* file, double* bufleft, double *bufright, size_t count)
