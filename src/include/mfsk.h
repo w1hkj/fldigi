@@ -46,14 +46,18 @@
 
 // 1 ms per pixel
 #define	SAMPLES_PER_PIXEL	8
-#define MAX_SYMBOLS			32
+#define MAX_SYMBOLS			64
 #define PICHEADER			64
 
 // NASA coefficients for viterbi encode/decode algorithms
 
-#define	NASA_K	7
+#define	NASA_K	7 // free-distance=10: correct a 4-bit error
 #define	POLY1	0x6d
 #define	POLY2	0x4f
+
+#define VOA_K		15 // free-distance=18: correct an 8-bit error
+#define VOA_POLY1	0x49dd //044735
+#define VOA_POLY2	0x662f //063057
 
 class	mfsk;
 
@@ -259,8 +263,10 @@ protected:
 	void	send_epilogue();
 	void	flushtx(int nbits);
 	void	clearbits();
+	void	clearbits01();
 	void	sendpic(unsigned char *data, int len);
 	bool	check_picture_header(char c);
+
 
 	void	s2nreport(void);
 

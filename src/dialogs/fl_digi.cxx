@@ -925,8 +925,8 @@ static const Fl_Menu_Item quick_change_mfsk[] = {
 	{ mode_info[MODE_MFSK32].name, 0, cb_init_mode, (void *)MODE_MFSK32 },
 	{ mode_info[MODE_MFSK64].name, 0, cb_init_mode, (void *)MODE_MFSK64 },
 	{ mode_info[MODE_MFSK128].name, 0, cb_init_mode, (void *)MODE_MFSK128 },
-	{ mode_info[MODE_MFSK64L].name, 0, cb_init_mode, (void *)MODE_MFSK64L },
-	{ mode_info[MODE_MFSK128L].name, 0, cb_init_mode, (void *)MODE_MFSK128L },
+	{ mode_info[MODE_MFSK32W].name, 0, cb_init_mode, (void *)MODE_MFSK32W },
+	{ mode_info[MODE_MFSK64W].name, 0, cb_init_mode, (void *)MODE_MFSK64W },
 	{ 0 }
 };
 
@@ -1771,8 +1771,8 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_MFSK16:
 	case MODE_MFSK32:
 	case MODE_MFSK128:
-	case MODE_MFSK64L:
-	case MODE_MFSK128L:
+	case MODE_MFSK32W:
+	case MODE_MFSK64W:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 				  *mode_info[mode].modem = new mfsk(mode), freq);
 		quick_change = quick_change_mfsk;
@@ -5845,8 +5845,8 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK64].name, 0,  cb_init_mode, (void *)MODE_MFSK64, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK128].name, 0,  cb_init_mode, (void *)MODE_MFSK128, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK64L].name, 0,  cb_init_mode, (void *)MODE_MFSK64L, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK128L].name, 0,  cb_init_mode, (void *)MODE_MFSK128L, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK32W].name, 0,  cb_init_mode, (void *)MODE_MFSK32W, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK64W].name, 0,  cb_init_mode, (void *)MODE_MFSK64W, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"MT63", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -7402,8 +7402,8 @@ static Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_MFSK31].name, 0,  cb_init_mode, (void *)MODE_MFSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK32].name, 0,  cb_init_mode, (void *)MODE_MFSK32, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MFSK64].name, 0,  cb_init_mode, (void *)MODE_MFSK64, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK64L].name, 0,  cb_init_mode, (void *)MODE_MFSK64L, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_MFSK128L].name, 0,  cb_init_mode, (void *)MODE_MFSK128L, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK32W].name, 0,  cb_init_mode, (void *)MODE_MFSK32W, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_MFSK64W].name, 0,  cb_init_mode, (void *)MODE_MFSK64W, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"MT63", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},

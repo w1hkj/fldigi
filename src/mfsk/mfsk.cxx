@@ -3,7 +3,9 @@
 //
 // Copyright (C) 2006-2009
 //		Dave Freese, W1HKJ
-//
+// Copyright (C) 2016-2020
+//		John Phelps, KL4YFD
+
 // This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //  gmfsk Copyright (C) 2001, 2002, 2003
@@ -239,23 +241,28 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		preamble = 214;
 		break;
 
-	case MODE_MFSK64L:
+	case MODE_MFSK32W: // MFSK32-WIDE Radiogram Mode
 		samplerate = 8000;
-		symlen =  128;
-		symbits =    4;
-		depth = 400;
-		preamble = 2500;
-		basetone = 16;
-		numtones = 16;
+		symlen =  256; // 31.25 BD
+		symbits =    6;
+		//depth = 100; // 3,200 msec (3.2sec)
+		//preamble = 180;
+		depth = 120; // 3,840 msec (3.8sec)
+		preamble = 185;
+		basetone = 32;
+		numtones = 64;
 		break;
-	case MODE_MFSK128L:
+		
+	case MODE_MFSK64W: // MFSK64-WIDE Radiogram Mode
 		samplerate = 8000;
-		symlen =  64;
-		symbits =   4;
-		depth = 800;
-		preamble = 5000;
-		basetone = 8;
-		numtones = 16;
+		symlen =  128; // 62.5 BD
+		symbits =   5;
+		//depth = 200; // 3,200 msec (3.2sec)
+		//preamble = 256;
+		depth = 240; // 3,840 msec (3.8sec)
+		preamble = 240;
+		basetone = 16;
+		numtones = 32;
 		break;
 
 	case MODE_MFSK11:
@@ -304,12 +311,22 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 
 	pipe		= new rxpipe[ 2 * symlen ];
 
-	enc			= new encoder (NASA_K, POLY1, POLY2);
-	dec1		= new viterbi (NASA_K, POLY1, POLY2);
-	dec2		= new viterbi (NASA_K, POLY1, POLY2);
-
-	dec1->settraceback (tracepair.trace);
-	dec2->settraceback (tracepair.trace);
+	
+	if (mode == MODE_MFSK32W || mode == MODE_MFSK64W) {
+		enc  = new encoder (VOA_K, VOA_POLY1, VOA_POLY2);
+		dec1 = new viterbi (VOA_K, VOA_POLY1, VOA_POLY2);
+		dec2 = new viterbi (VOA_K, VOA_POLY1, VOA_POLY2);
+		// takes 5-6 paths lengths for paths to converge, when starting from best-state (perfect signal).
+		// takes up to twice that when starting from worst-state (pure noise signal).
+		dec1->settraceback (VOA_K * 8); // Enable longer traceback for extra coding-gain
+		dec2->settraceback (VOA_K * 8); 
+	} else {
+		enc  = new encoder (NASA_K, POLY1, POLY2);
+		dec1 = new viterbi (NASA_K, POLY1, POLY2);
+		dec2 = new viterbi (NASA_K, POLY1, POLY2);
+		dec1->settraceback (tracepair.trace);
+		dec2->settraceback (tracepair.trace);
+	}
 	dec1->setchunksize (1);
 	dec2->setchunksize (1);
 
@@ -546,7 +563,7 @@ void mfsk::decodesymbol(unsigned char symbol)
 	symcounter = symcounter ? 0 : 1;
 
 // only modes with odd number of symbits need a vote
-	if (symbits == 5 || symbits == 3) { // could use symbits % 2 == 0
+	if (symbits % 2 != 0) {
 		if (symcounter) {
 			if ((c = dec1->decode(symbolpair, &met)) == -1)
 				return;
@@ -577,8 +594,15 @@ void mfsk::decodesymbol(unsigned char symbol)
 	}
 
 	// Re-scale the metric and update main window
-	metric -= 60.0;
 	metric *= 0.5;
+	if (metric < 10.0) metric = 0.0f;
+	else if (metric < 25.0) metric /= 1.2;
+	else if (metric < 35.0) metric /= 1.3;
+	else if (metric < 45.0) metric /= 1.4;
+	else if (metric < 55.0) metric /= 1.5;
+	else if (metric < 65.0) metric /= 1.4;
+	else if (metric < 75.0) metric /= 1.3;
+	else if (metric < 85.0) metric /= 1.2;
 
 	metric = CLAMP(metric, 0.0, 100.0);
 	display_metric(metric);
@@ -978,11 +1002,14 @@ void mfsk::flushtx(int nbits)
 	sendbit(1);
 
 // flush the convolutional encoder and interleaver
-//VK2ETA high speed modes	for (int i = 0; i < 107; i++)
-//W1HKJ	for (int i = 0; i < preamble; i++)
-	for (int i = 0; i < nbits; i++)
-		sendbit(0);
-
+	if (mode == MODE_MFSK32W || mode == MODE_MFSK64W) {
+		for (int i = 0; i < nbits; i++)
+			sendchar(0x00); // <NULL>
+	} else {
+		for (int i = 0; i < nbits; i++)
+			sendbit(0);
+	}
+	
 	bitstate = 0;
 }
 
@@ -1039,14 +1066,39 @@ void mfsk::send_epilogue()
 
 static bool close_after_transmit = false;
 
+// Clear and prep the TX encoder + FEC path with 0's
 void mfsk::clearbits()
 {
+	if (mode == MODE_MFSK32W || mode == MODE_MFSK64W) {
+		clearbits01();
+		return;
+	}
+	
 	int data = enc->encode(0);
 	for (int k = 0; k < preamble; k++) {
 		for (int i = 0; i < 2; i++) {
 			bitshreg = (bitshreg << 1) | ((data >> i) & 1);
 			bitstate++;
 
+			if (bitstate == symbits) {
+				txinlv->bits(&bitshreg);
+				bitstate = 0;
+				bitshreg = 0;
+			}
+		}
+	}
+}
+
+// Clear and prep the TX encoder + FEC path with alternating 0's and 1's
+void mfsk::clearbits01()
+{
+	for (int i = 0; i < symbits * depth + 256; i++) {
+		int data = enc->encode( (i&1) ); // Alternating 1's and 0's
+		
+		for (int i = 0; i < 2; i++) {
+			bitshreg = (bitshreg << 1) | ((data >> i) & 1);
+			bitstate++;
+				
 			if (bitstate == symbits) {
 				txinlv->bits(&bitshreg);
 				bitstate = 0;
@@ -1085,7 +1137,7 @@ int mfsk::tx_process()
 		case TX_STATE_PREAMBLE:
 			clearbits();
 			sig_start = true;
-			if (mode != MODE_MFSK64L && mode != MODE_MFSK128L )
+			if (mode != MODE_MFSK32W && mode != MODE_MFSK64W )
 				for (int i = 0; i < preamble / 3; i++)
 					sendbit(0);
 

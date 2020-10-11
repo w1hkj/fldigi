@@ -293,8 +293,8 @@ extern modem *mfsk22_modem;
 extern modem *mfsk31_modem;
 extern modem *mfsk64_modem;
 extern modem *mfsk128_modem;
-extern modem *mfsk64l_modem;
-extern modem *mfsk128l_modem;
+extern modem *mfsk32w_modem;
+extern modem *mfsk64w_modem;
 
 extern modem *wefax576_modem;
 extern modem *wefax288_modem;
