@@ -3110,6 +3110,33 @@ static void pLOCK(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static void doLOCK( std::string s){
+	std::string sVal = s.substr(7, s.length() - 8);
+	if (sVal.length() > 0) {
+		// sVal = on|off|t[oggle]   [ON, OFF or Toggle]
+		if (sVal.compare(0,2,"on") == 0)
+			wf->xmtlock->value(1);
+		else if (sVal.compare(0,3,"off") == 0)
+			wf->xmtlock->value(0);
+		else if (sVal.compare(0,1,"t") == 0)
+			wf->xmtlock->value(!wf->xmtlock->value());
+		wf->xmtlock->damage();
+		wf->xmtlock->do_callback();
+	}
+}
+
+static void pRxQueLOCK(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doLOCK };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
+}
+
+
 static void pTX_RSID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -4634,6 +4661,7 @@ static const MTAGS mtags[] = {
     {"<@RIGHI:",    pRxQueRIGHI},
     {"<@RIGLO:",    pRxQueRIGLO},
 	{"<@TXRSID:",	pRxQueTXRSID},
+	{"<@LOCK:",		pRxQueLOCK},
 	{"<@WAIT:",     pRxQueWAIT},
 	{"<@TUNE:",		pRxQueTUNE},
 	{"<@PUSH",		pRxQuePUSH},
