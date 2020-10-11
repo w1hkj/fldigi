@@ -3,7 +3,6 @@
 //
 // Copyright (C) 2020
 //		Dave Freese, W1HKJ
-//		JC Gibbons,  N8OBJ
 //
 // This file is part of fldigi.
 //

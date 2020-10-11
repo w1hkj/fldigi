@@ -3,7 +3,6 @@
 //
 // Copyright (C) 2020
 //		Dave Freese, W1HKJ
-//		JC Gibbons,  N8OBJ
 //
 // This file is part of fldigi.
 //
@@ -51,7 +50,7 @@
 
 #include "status.h"
 
-using namespace std;
+//using namespace std;
 
 // RnA discriminator
 
@@ -116,6 +115,8 @@ static double ufreq = 0, uamp = 0;
 static double rfreq = 0, ramp = 0;
 
 // formatting strings used by csv export method
+static std::string csv_string;
+static std::string buffered_csv_string;
 
 static char comma_format[] = "\
 \"%02d:%02d:%02d.%02d\",\
@@ -243,28 +244,31 @@ static void fmt_create_file()
 
 	out.open(fmt_filename.c_str());
 
-	if (unlikely(!out)) {
+	if (unlikely(!out.is_open())) {
 		LOG_ERROR("fl_fopen: %s", fmt_filename.c_str());
 		return;
 	}
-	std::string header;
-header.assign("\
+
+//   A  ,   B   ,    C   ,    D    ,     E     ,    F   ,     G      ,   H     ,I,     J     ,    K   ,     L      ,    M    ,N,      O         , P,  Q    ,    R
+// Clock,Elapsed,Xcvr VFO,Freq Corr,Ref WF Freq,Ref Corr,Ref Est Freq,Ref dBVpk, ,Unk WF Freq,Unk Corr,Unk Est Freq,Unk dBVpk, ,Unk Compensated ,
+//              ,        ,         ,           ,        ,            ,         , ,           ,        ,            ,         , ,                , ,Average:,=average(O:O)
+//              ,        ,         ,           ,        ,            ,         , ,           ,        ,            ,         , ,                , ,Std Dev:,=stdev(O:O)
+
+csv_string.assign("\
 \"Clock\",\"Elapsed\",\"Xcvr VFO\",\"Freq Corr\",\
 \"Ref WF Freq\",\"Ref Corr\",\"Ref Est Freq\",\"Ref dBVpk\",,\
 \"Unk WF Freq\",\"Unk Corr\",\"Unk Est Freq\",\"Unk dBVpk\",,\
 \"Unk Compensated\",");
-header.append(call).append(",").append(file_datetime_name).append("\n");
-header.append("\
+csv_string.append(call).append(",").append(file_datetime_name).append("\n");
+csv_string.append("\
 ,,,,,,,,,,,,,,,\"Average:\",\"=average(O:O)\"\n"),
-header.append("\
+csv_string.append("\
 ,,,,,,,,,,,,,,,\"Std Dev:\",\"=stdev(O:O)\"\n");
 
 	if (progdefaults.FMT_use_tabs) {
-		for (size_t n = 0; n < header.length(); n++)
-			if (header[n] == ',') header[n] = '\t';
+		for (size_t n = 0; n < csv_string.length(); n++)
+			if (csv_string[n] == ',') csv_string[n] = '\t';
 	}
-
-	out << header;
 
 	csvrow = 4;
 
@@ -342,7 +346,6 @@ void stop_auto_recording(void *)
 	write_recs = false;
 }
 
-static string sout;
 static char sz_temp[512];
 
 void fmt_write_file()
@@ -369,8 +372,6 @@ void fmt_write_file()
 	mins = fmt_tm.tm_min;
 	secs = fmt_tm.tm_sec;
 	ticks = 0;
-
-	sout.clear();
 
 	for (;;) {
 
@@ -429,8 +430,11 @@ void fmt_write_file()
 
 		if (!record_unk && !record_ref && !btn_fmt_autorecord->value()) {
 			if (out) {
+				buffered_csv_string.assign(csv_string);
+				out << buffered_csv_string;
 				out.flush();
 				out.close();
+				csv_string.clear();
 			}
 			Fl::awake (fmt_show_recording, (void *)0);
 			fmt_reset_record();
@@ -440,18 +444,18 @@ void fmt_write_file()
 			break;
 		}
 
-		if (write_recs && !out) {
+		if (write_recs && !out.is_open()) {
 			fmt_create_file();
 			record_ok = false;
 			reset_ticks = true;
-			sout.clear();
 			Fl::awake (fmt_show_recording, (void *)1);
 		} else if (!write_recs && out) {
 			Fl::awake (fmt_show_recording, (void *)0);
-			out << sout;
+			buffered_csv_string.assign(csv_string);
+			out << buffered_csv_string;
 			out.flush();
 			out.close();
-			sout.clear();
+			csv_string.clear();
 			put_Status1 ("");
 			put_status ("");
 			fmt_reset_record();
@@ -503,15 +507,12 @@ void fmt_write_file()
 					(record_unk ? unk_equation : "0"),
 					uamp,
 					csvrow, csvrow, csvrow);
-				sout.append(sz_temp);
+				csv_string.append(sz_temp);
 				csvrow++;
-				if (sout.length() > 100000) {
-//					fprintf(out, "%s", sout.c_str());
-//					fflush(out);
-					out << sout;
-					out.flush();
-					sout.clear();
-				}
+				buffered_csv_string.assign(csv_string);
+				out << buffered_csv_string;
+				out.flush();
+				csv_string.clear();
 			}
 		}
 		ticks++;
