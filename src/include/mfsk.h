@@ -46,7 +46,7 @@
 
 // 1 ms per pixel
 #define	SAMPLES_PER_PIXEL	8
-#define MAX_SYMBOLS			64
+#define MAX_SYMBOLS			256
 #define PICHEADER			64
 
 // NASA coefficients for viterbi encode/decode algorithms
@@ -54,6 +54,10 @@
 #define	NASA_K	7
 #define	POLY1	0x6d
 #define	POLY2	0x4f
+
+#define VOA_K		15 // free-distance=18: correct an 8-bit error
+#define VOA_POLY1	0x49dd //044735
+#define VOA_POLY2	0x662f //063057
 
 class	mfsk;
 

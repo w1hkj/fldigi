@@ -207,22 +207,22 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		break;
 	case MODE_MFSK31:
 		samplerate = 8000;
-		symlen =  256;
-		symbits =   3;
+		symlen =  128;
+		symbits =   4;
 		depth = 10;
-		basetone = 32;
-		numtones = 8;
+		basetone = 16;
+		numtones = 16;
 		preamble = 107; // original mfsk modes
 		break;
-	case MODE_MFSK32: // KL4YFD TESTING TODO New Mode for VOA Radiogram !!! 
+	case MODE_MFSK32: // KL4YFD TESTING TODO New Mode 
 		samplerate = 8000;
 		symlen =  256;
-		symbits =   6;
-		depth = 10;
+		symbits =   6;	// 6 bits/symbol
+		depth = 100;
 		basetone = 32;
-		numtones = 64;
-		preamble = 107; // original mfsk modes
-		_sccc = true;
+		numtones = 64;  // 64 tones
+		preamble = 107;
+		_sccc = true; // enable serially concatenated convolutional codes
 		break;
 	case MODE_MFSK64:
 		samplerate = 8000;
@@ -310,21 +310,39 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 
 	pipe		= new rxpipe[ 2 * symlen ];
 
-	enc			= new encoder (NASA_K, POLY1, POLY2);
-	dec1		= new viterbi (NASA_K, POLY1, POLY2);
-	dec2		= new viterbi (NASA_K, POLY1, POLY2);
-	dec1->settraceback (tracepair.trace);
-	dec2->settraceback (tracepair.trace);
-	dec1->setchunksize (1);
-	dec2->setchunksize (1);
-	
-	enc_outer		= new encoder (NASA_K, POLY1, POLY2);
-	dec1_outer		= new viterbi (NASA_K, POLY1, POLY2);
-	dec2_outer		= new viterbi (NASA_K, POLY1, POLY2);
-	dec1_outer->settraceback (tracepair.trace);
-	dec2_outer->settraceback (tracepair.trace);
-	dec1_outer->setchunksize (1);
-	dec2_outer->setchunksize (1);
+	if (_sccc) {
+		enc  = new encoder (VOA_K, VOA_POLY1, VOA_POLY2);
+		dec1 = new viterbi (VOA_K, VOA_POLY1, VOA_POLY2);
+		dec2 = new viterbi (VOA_K, VOA_POLY1, VOA_POLY2);
+		dec1->settraceback (VOA_K * 12);
+		dec2->settraceback (VOA_K * 12);
+		dec1->setchunksize (1);
+		dec2->setchunksize (1);
+		
+		enc_outer  = new encoder (VOA_K, VOA_POLY1, VOA_POLY2);
+		dec1_outer = new viterbi (VOA_K, VOA_POLY1, VOA_POLY2);
+		dec2_outer = new viterbi (VOA_K, VOA_POLY1, VOA_POLY2);
+		dec1_outer->settraceback (VOA_K * 12);
+		dec2_outer->settraceback (VOA_K * 12);
+		dec1_outer->setchunksize (1);
+		dec2_outer->setchunksize (1);
+	} else {
+		enc  = new encoder (NASA_K, POLY1, POLY2);
+		dec1 = new viterbi (NASA_K, POLY1, POLY2);
+		dec2 = new viterbi (NASA_K, POLY1, POLY2);
+		dec1->settraceback (tracepair.trace);
+		dec2->settraceback (tracepair.trace);
+		dec1->setchunksize (1);
+		dec2->setchunksize (1);
+		
+		enc_outer  = new encoder (NASA_K, POLY1, POLY2);
+		dec1_outer = new viterbi (NASA_K, POLY1, POLY2);
+		dec2_outer	= new viterbi (NASA_K, POLY1, POLY2);
+		dec1_outer->settraceback (tracepair.trace);
+		dec2_outer->settraceback (tracepair.trace);
+		dec1_outer->setchunksize (1);
+		dec2_outer->setchunksize (1);
+	}
 
 	txinlv = new interleave (symbits, depth, INTERLEAVE_FWD);
 	rxinlv = new interleave (symbits, depth, INTERLEAVE_REV);
@@ -563,7 +581,7 @@ void mfsk::decodesymbol(unsigned char symbol)
 	symcounter = symcounter ? 0 : 1;
 
 // only modes with odd number of symbits need a vote
-	if (symbits == 5 || symbits == 3) { // could use symbits % 2 == 0
+	if (symbits == 5 || symbits == 3 || symbits == 7) { // could use symbits % 2 == 0
 		if (symcounter) {
 			if ((c = dec1->decode(symbolpair, &met)) == -1)
 				return;
