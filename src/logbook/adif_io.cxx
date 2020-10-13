@@ -676,7 +676,7 @@ static void *ADIF_RW_loop(void *args)
 		pthread_mutex_unlock(&ADIF_RW_mutex);
 
 		if (ADIF_RW_EXIT)
-			return NULL;
+			return nullptr;
 		if (ADIF_WRITE && adifIO) {
 LOG_INFO("ADIF_WRITE: adifIO->do_writelog()");
 			adifIO->do_writelog();
@@ -687,7 +687,7 @@ LOG_INFO("ADIF_READ: adifIO->do_readfile(%s)", adif_file_name.c_str());
 			ADIF_READ = false;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 void ADIF_RW_close(void)

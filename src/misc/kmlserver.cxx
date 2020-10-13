@@ -839,7 +839,7 @@ class  KmlSrvImpl : public KmlServer {
 	struct PlacemarksCacheT : public std::map< std::string, PlacesMapT > {
 		const PlacesMapT * FindCategory( const std::string & category ) const {
 			const_iterator it = find( category );
-			if( it == end() ) return NULL ;
+			if( it == end() ) return nullptr ;
 			return &it->second;
 		}
 		PlacesMapT * FindCategory( const std::string & category ) {
@@ -1397,12 +1397,12 @@ class  KmlSrvImpl : public KmlServer {
 		r = pthread_setcancelstate( PTHREAD_CANCEL_ENABLE, NULL );
 		if( r != 0 ) {
 			LOG_ERROR("pthread_setcancelstate %s", strerror(errno) );
-			return NULL;
+			return nullptr;
 		}
 		r = pthread_setcanceltype( PTHREAD_CANCEL_DEFERRED, NULL );
 		if( r != 0 ) {
 			LOG_ERROR("pthread_setcanceltype %s", strerror(errno) );
-			return NULL;
+			return nullptr;
 		}
 		int refresh_delay = m_refresh_interval ;
 
@@ -1490,7 +1490,7 @@ class  KmlSrvImpl : public KmlServer {
 #endif
 			}
 		} // Endless loop.
-		return NULL ;
+		return nullptr ;
 	} // ThreadFunc
 
 	/// The C-style function called by pthread.

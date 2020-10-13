@@ -50,7 +50,7 @@ public:
 	/// The place where we store the data locally.
 	std::pair< std::string, bool > storage_filename(bool create_dir = false) const ;
 
-	virtual const char * Url() const { return NULL; }
+	virtual const char * Url() const { return nullptr; }
 
 	virtual const char * Description() const = 0 ;
 

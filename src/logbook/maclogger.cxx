@@ -366,7 +366,7 @@ void *maclogger_loop(void *args)
 	}
 	// exit the maclogger thread
 	SET_THREAD_CANCEL();
-	return NULL;
+	return nullptr;
 }
 
 //======================================================================

@@ -794,7 +794,7 @@ void* pskrep_sender::resolver(void* obj)
 		LOG_ERROR("Could not resolve %s: %s", s->host.c_str(), e.what());
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void pskrep_sender::create_socket(void)

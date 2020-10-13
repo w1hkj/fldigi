@@ -343,7 +343,7 @@ unsigned char byte;
 
 WK_serial_bypass_loop: ;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void WK_display_byte(int ch)

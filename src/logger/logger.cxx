@@ -604,7 +604,7 @@ static void *EQSL_loop(void *args)
 		pthread_mutex_unlock(&EQSLmutex);
 
 		if (EQSLEXIT)
-			return NULL;
+			return nullptr;
 
 		size_t p;
 		if (get_http(SEND_url, EQSL_xmlpage, 5.0) <= 0) {
@@ -617,7 +617,7 @@ static void *EQSL_loop(void *args)
 		}
 
 	}
-	return NULL;
+	return nullptr;
 }
 
 void EQSL_close(void)

@@ -2732,7 +2732,7 @@ void *n3fjp_loop(void *args)
 	}
 	// exit the n3fjp thread
 	SET_THREAD_CANCEL();
-	return NULL;
+	return nullptr;
 }
 
 //======================================================================

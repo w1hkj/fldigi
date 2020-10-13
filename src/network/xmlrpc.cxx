@@ -284,7 +284,7 @@ void* XML_RPC_Server::thread_func(void*)
 	restore_signals();
 
 	SET_THREAD_CANCEL();
-	return NULL;
+	return nullptr;
 }
 
 ostream& XML_RPC_Server::list_methods(ostream& out)

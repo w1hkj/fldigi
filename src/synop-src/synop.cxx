@@ -1312,7 +1312,7 @@ const TokenDerived * TokenProxy::get_ptr(bool previous_chains) const
 
 		if( ! previous_chains ) break ;
 	}
-	return NULL ;
+	return nullptr ;
 }
 
 const char * TokenProxy::RegexName(void) const { return RegexT::Name(m_regex_idx); };
@@ -1409,7 +1409,7 @@ static const char * wx_code_to_txt( const char * strwx )
 		case CHR2('S','I'): return _("Intermediate synoptic reports");
 		case CHR2('S','M'): return _("Synoptic observations");
 		case CHR2('S','N'): return _("Non-standard synoptic hour");
-		default      : return NULL;
+		default      : return nullptr;
 	}
 }
 

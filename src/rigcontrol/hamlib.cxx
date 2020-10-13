@@ -556,7 +556,7 @@ static void *hamlib_loop(void *args)
 
 	hamlib_closed = true;
 
-	return NULL;
+	return nullptr;
 }
 
 static int add_to_list(const struct rig_caps* rc, void*)

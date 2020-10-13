@@ -482,7 +482,7 @@ void Table::columnWidth(int column, int width) {
  */
 const char *Table::columnTitle(int column) {
   if ((column < 0) && (column >= nCols))
-    return NULL;
+    return nullptr;
     /* NOT REACHED */
 
   return header[column].title;
@@ -795,7 +795,7 @@ char *Table::valueAt(int row, int column) {
   else if ((row == -1) && (selected >= 0) && (column >= 0) && (column < nCols))
     return data[selected][column];
   else
-    return NULL;
+    return nullptr;
 }
 
 
@@ -863,7 +863,7 @@ const char **Table::getRow(int row) {
   if ((row >= 0) && (row < nRows))
     return (const char**)data[row];
   else
-    return NULL;
+    return nullptr;
 }
 
 

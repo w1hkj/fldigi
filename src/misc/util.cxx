@@ -119,7 +119,7 @@ char *strcasestr(const char *haystack, const char *needle)
 	next:
 		;
 	}
-	return NULL;
+	return nullptr;
 }
 #endif // !HAVE_STRCASESTR
 
@@ -588,5 +588,5 @@ const char * create_directory( const char * dir )
 {
 	if ( mkdir(dir, 0777) == -1 )
 		if( errno != EEXIST ) return strerror(errno);
-	return NULL ;
+	return nullptr ;
 }

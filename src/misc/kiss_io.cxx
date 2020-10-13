@@ -3316,7 +3316,7 @@ static void *kiss_loop(void *args)
 	kiss_loop_running = false;
 
 	// exit the kiss thread
-	return NULL;
+	return nullptr;
 }
 
 

@@ -267,7 +267,7 @@ void *TOD_loop(void *args)
 
 // exit the TOD thread
 	SET_THREAD_CANCEL();
-	return NULL;
+	return nullptr;
 }
 
 //======================================================================

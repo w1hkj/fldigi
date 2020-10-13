@@ -1070,7 +1070,7 @@ void *DXcluster_loop(void *args)
 	}
 	// exit the DXCC thread
 	SET_THREAD_CANCEL();
-	return NULL;
+	return nullptr;
 }
 
 //======================================================================

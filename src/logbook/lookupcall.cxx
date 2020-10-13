@@ -1159,7 +1159,7 @@ static void *LOOKUP_loop(void *args)
 			HAMQTHquery();
 			break;
 		case QRZXML_EXIT:
-			return NULL;
+			return nullptr;
 		default:
 			break;
 		}
@@ -1178,13 +1178,13 @@ static void *LOOKUP_loop(void *args)
 			CALLOOK_DETAILS_query();
 			break;
 		case QRZWEB_EXIT:
-			return NULL;
+			return nullptr;
 		default:
 			break;
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void CALLSIGNquery()

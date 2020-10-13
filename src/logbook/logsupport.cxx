@@ -900,7 +900,7 @@ exit_merge_thread:
 
 	Fl::awake(close_MERGE_thread);
 
-	return NULL;
+	return nullptr;
 
 abort:
 
@@ -918,7 +918,7 @@ abort:
 
 	Fl::awake(close_MERGE_thread);
 
-	return NULL;
+	return nullptr;
 }
 
 static notify_dialog *alert_window = 0;

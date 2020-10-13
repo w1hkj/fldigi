@@ -999,7 +999,7 @@ void * flrig_thread_loop(void *d)
 		for (int i = 0; i < poll_interval; i++) {
 			if (!run_flrig_thread) {
 //				LOG_VERBOSE("Exiting thread - 1");
-				return NULL;
+				return nullptr;
 			}
 			MilliSleep(10);
 		}
@@ -1031,7 +1031,7 @@ void * flrig_thread_loop(void *d)
 		}
 	}
 //	LOG_VERBOSE("Exiting thread - 2");
-	return NULL;
+	return nullptr;
 }
 
 void FLRIG_start_flrig_thread()

@@ -2357,7 +2357,7 @@ static void *rigCAT_loop(void *args)
 			guard_lock ser_guard( &rigCAT_mutex );
 			if (rigCAT_exit == true) {
 				LOG_INFO("%s", "Exited rigCAT loop");
-				return NULL;
+				return nullptr;
 			}
 		}
 
@@ -2406,6 +2406,6 @@ static void *rigCAT_loop(void *args)
 
 	}
 
-	return NULL;
+	return nullptr;
 }
 

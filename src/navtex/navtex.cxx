@@ -338,7 +338,7 @@ public:
 		const std::string & maidenhead,
 		const std::string & msg)
 	{
-		if( maidenhead.empty() ) return NULL;
+		if( maidenhead.empty() ) return nullptr;
 
 		if( m_catalog.empty() ) {
 			int nbRecs = LoadAndRegister();
@@ -350,7 +350,7 @@ public:
 				if(error_signaled == false) {
 					fl_alert("Cannot read Navtex file %s", storage_filename().first.c_str() );
 					error_signaled = true ;
-					return NULL;
+					return nullptr;
 				}
 			}
 			error_signaled = false ;
@@ -385,7 +385,7 @@ public:
 		}
 
 		/// No station found.
-		if( solDistKm.empty() ) return NULL;
+		if( solDistKm.empty() ) return nullptr;
 
 		/// Only one station, no ambiguity.
 		SolutionType::iterator begSolKm = solDistKm.begin();

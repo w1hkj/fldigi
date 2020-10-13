@@ -122,7 +122,7 @@ char *QRZImageFilename (char *call)
 		fclose (f);
 		return fname;
 	}
-	return NULL;
+	return nullptr;
 }
 
 int  checkPath( const char *filename )

@@ -398,7 +398,7 @@ const addr_info_t* Address::get(size_t n) const
 {
 #if HAVE_GETADDRINFO
 	if (!info)
-		return NULL;
+		return nullptr;
 
 	struct addrinfo* p = info;
 	for (size_t i = 0; i < n; i++)
@@ -409,7 +409,7 @@ const addr_info_t* Address::get(size_t n) const
 	return p;
 #else
 	if (!host_entry.h_addr_list)
-		return NULL;
+		return nullptr;
 
 	memset(&saddr, 0, sizeof(saddr));
 #ifdef __WIN32__

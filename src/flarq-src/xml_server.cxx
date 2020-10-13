@@ -185,7 +185,7 @@ void * xml_thread_loop(void *d)
 	for(;;) {
 		flarq_server.work(-1.0);
 	}
-	return NULL;
+	return nullptr;
 }
 
 void start_xml_server(int port)

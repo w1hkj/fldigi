@@ -688,7 +688,7 @@ void *FD_loop(void *args)
 
 	// exit the FD thread
 	SET_THREAD_CANCEL();
-	return NULL;
+	return nullptr;
 }
 
 //======================================================================

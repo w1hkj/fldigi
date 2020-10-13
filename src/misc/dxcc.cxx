@@ -341,7 +341,7 @@ const vector<dxcc*>* dxcc_entity_list(void)
 const dxcc* dxcc_lookup(const char* callsign)
 {
 	if (!cmap || !callsign || !*callsign)
-		return NULL;
+		return nullptr;
 
 	string sstr;
 	sstr.resize(strlen(callsign) + 1);
@@ -372,7 +372,7 @@ const dxcc* dxcc_lookup(const char* callsign)
 		}
 	} while (len);
 
-	return NULL;
+	return nullptr;
 }
 
 static void add_prefix(string& prefix, dxcc* entry)

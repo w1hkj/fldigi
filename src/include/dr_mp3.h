@@ -3725,7 +3725,7 @@ float* drmp3_open_and_read_f32(drmp3_read_proc onRead, drmp3_seek_proc onSeek, v
 {
     drmp3 mp3;
     if (!drmp3_init(&mp3, onRead, onSeek, pUserData, pConfig)) {
-        return NULL;
+        return nullptr;
     }
 
     return drmp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount);
@@ -3735,7 +3735,7 @@ drmp3_int16* drmp3_open_and_read_s16(drmp3_read_proc onRead, drmp3_seek_proc onS
 {
     drmp3 mp3;
     if (!drmp3_init(&mp3, onRead, onSeek, pUserData, pConfig)) {
-        return NULL;
+        return nullptr;
     }
 
     return drmp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount);
@@ -3746,7 +3746,7 @@ float* drmp3_open_memory_and_read_f32(const void* pData, size_t dataSize, drmp3_
 {
     drmp3 mp3;
     if (!drmp3_init_memory(&mp3, pData, dataSize, pConfig)) {
-        return NULL;
+        return nullptr;
     }
 
     return drmp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount);
@@ -3756,7 +3756,7 @@ drmp3_int16* drmp3_open_memory_and_read_s16(const void* pData, size_t dataSize, 
 {
     drmp3 mp3;
     if (!drmp3_init_memory(&mp3, pData, dataSize, pConfig)) {
-        return NULL;
+        return nullptr;
     }
 
     return drmp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount);
@@ -3768,7 +3768,7 @@ float* drmp3_open_file_and_read_f32(const char* filePath, drmp3_config* pConfig,
 {
     drmp3 mp3;
     if (!drmp3_init_file(&mp3, filePath, pConfig)) {
-        return NULL;
+        return nullptr;
     }
 
     return drmp3__full_read_and_close_f32(&mp3, pConfig, pTotalFrameCount);
@@ -3778,7 +3778,7 @@ drmp3_int16* drmp3_open_file_and_read_s16(const char* filePath, drmp3_config* pC
 {
     drmp3 mp3;
     if (!drmp3_init_file(&mp3, filePath, pConfig)) {
-        return NULL;
+        return nullptr;
     }
 
     return drmp3__full_read_and_close_s16(&mp3, pConfig, pTotalFrameCount);

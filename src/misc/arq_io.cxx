@@ -599,7 +599,7 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 
 	inst->server_socket->close();
 	server_stopped = true;
-	return NULL;
+	return nullptr;
 }
 
 void arq_reset()
@@ -830,7 +830,7 @@ static void *arq_loop(void *args)
 
 	}
 	// exit the arq thread
-	return NULL;
+	return nullptr;
 }
 
 bool arq_state(void)
