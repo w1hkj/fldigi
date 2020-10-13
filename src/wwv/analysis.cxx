@@ -88,7 +88,7 @@ void anal::createfilename()
 // Function to find or create the working directory [if not exist yet]
 // also creates the filename that should be open for today's date [w and w/o full path]
 // Create embedded date YYMMDD for file creation naming
-	time_t now = time(NULL);
+	time_t now = time(nullptr);
 	gmtime_r(&now, &File_Start_Date);
 
 // create the embedded filename date image as YYMMDD
@@ -222,7 +222,7 @@ void anal::writeFile()
 {
 	if (!write_to_csv) return;
 
-	time_t now = time(NULL);
+	time_t now = time(nullptr);
 	struct tm tm;
 
 // put check for date rollover here

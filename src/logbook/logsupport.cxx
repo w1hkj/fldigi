@@ -340,7 +340,7 @@ void cb_review_lotw()
 
 void cb_send_lotw()
 {
-	send_to_lotw(NULL);
+	send_to_lotw(nullptr);
 }
 
 static savetype export_to = ADIF;

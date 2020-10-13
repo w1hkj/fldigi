@@ -151,7 +151,7 @@ arq::arq()
 
  	tx2txdelay = 0;//TxDelay / ARQLOOPTIME;
 
-//	srand(time(NULL));
+//	srand(time(nullptr));
 }
 
 void arq::setBufferlength()

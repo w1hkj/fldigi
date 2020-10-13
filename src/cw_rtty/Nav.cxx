@@ -237,10 +237,10 @@ void blink_led()
 {
 	char led = Nav_config_string[4];
 	if (led == '1') {
-		led_dim(NULL);
+		led_dim(nullptr);
 		Fl::add_timeout(1.0, led_normal);
 	} else {
-		led_normal(NULL);
+		led_normal(nullptr);
 		Fl::add_timeout(1.0, led_dim);
 	}
 }

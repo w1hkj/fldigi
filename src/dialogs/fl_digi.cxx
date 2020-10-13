@@ -6450,7 +6450,7 @@ void cb_qso_inpAct(Fl_Widget*, void*)
 		str[j].assign(re.submatch(1)).append(" (").append(re.submatch(2)).
 			append(" ").append(atoi(re.submatch(2).c_str()) == 1 ? _("report") : _("reports")).append(")");
 		menu[j].label(str[j].c_str());
-		menu[++j].label(NULL);
+		menu[++j].label(nullptr);
 	}
 
 	if ((i = data.find(" grid ", i)) != string::npos)
@@ -9160,7 +9160,7 @@ void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode
 
 	char buf[64];
 
-	time_t t = time(NULL);
+	time_t t = time(nullptr);
 	struct tm tm;
 	gmtime_r(&t, &tm);
 	size_t r1;

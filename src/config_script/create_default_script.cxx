@@ -260,7 +260,7 @@ static int create_default_script(char *file_name)
 	std::string temp = "";
 
 	if(!file_name) {
-		LOG_INFO(_("Invalid File Name Pointer (NULL) in function %s:%d"), __FILE__, __LINE__);
+		LOG_INFO(_("Invalid File Name Pointer (nullptr) in function %s:%d"), __FILE__, __LINE__);
 		return -1;
 	}
 

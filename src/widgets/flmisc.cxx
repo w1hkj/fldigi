@@ -76,7 +76,7 @@ unsigned quick_choice(const char* title, unsigned sel, ...)
 		}
 		memset(p + n, 0, 2 * sizeof(Fl_Menu_Item));
 		p[n].label(item);
-		p[n+1].label(NULL);
+		p[n+1].label(nullptr);
 		menu = p;
 	}
 	va_end(ap);
@@ -281,7 +281,7 @@ void show_notifier(notify_dialog *me)
 #include "gettext.h"
 
 Mode_Browser::Mode_Browser(void)
-	: Fl_Double_Window(170, 460), changed_cb(NULL), changed_args(NULL)
+	: Fl_Double_Window(170, 460), changed_cb(nullptr), changed_args(nullptr)
 {
 	int bw = 80, bh = 20, pad = 2;
 

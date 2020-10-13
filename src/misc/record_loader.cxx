@@ -63,7 +63,7 @@ int RecordLoaderInterface::LoadAndRegister()
 
 	std::string filnam = storage_filename().first;
 
-	time_t cntTim = time(NULL);
+	time_t cntTim = time(nullptr);
 	LOG_INFO("Opening:%s", filnam.c_str());
 
 	std::ifstream ifs( filnam.c_str() );
@@ -99,7 +99,7 @@ int RecordLoaderInterface::LoadAndRegister()
 	ifs.close();
 	LOG_INFO( "Read:%s with %d records in %d seconds",
 		filnam.c_str(), static_cast<int>(nbRec),
-		static_cast<int>( time(NULL) - cntTim ) );
+		static_cast<int>( time(nullptr) - cntTim ) );
 	return nbRec ;
 }
 

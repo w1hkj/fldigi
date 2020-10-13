@@ -292,7 +292,7 @@ static void pskrep_make_id(string& id, size_t len)
 		f.close();
 	}
 	else {
-		unsigned seed = time(NULL);
+		unsigned seed = time(nullptr);
 		if (!progdefaults.myCall.empty())
 			seed ^= simple_hash_str((const unsigned char*)progdefaults.myCall.c_str());
 		srand(seed);
@@ -390,7 +390,7 @@ void pskrep::recv(trx_mode mode, int afreq, const char* str, const regmatch_t* c
 	LOG_DEBUG("Spotted \"%s\" in buffer \"%s\"", call.c_str(), str);
 
 	reinterpret_cast<pskrep*>(obj)->append(call.c_str(), "", freq,
-					       active_modem->get_mode(), time(NULL), PSKREP_AUTO);
+					       active_modem->get_mode(), time(nullptr), PSKREP_AUTO);
 }
 
 // This function is called by spot_log()
@@ -486,7 +486,7 @@ send_reports:
 // Delete sent reports that are older than DUP_INTERVAL seconds
 void pskrep::gc(void)
 {
-	time_t threshold = time(NULL) - DUP_INTERVAL;
+	time_t threshold = time(nullptr) - DUP_INTERVAL;
 	unsigned rm = 0;
 
 	for (queue_t::iterator i = queue.begin(); i != queue.end() ; ) {
@@ -689,7 +689,7 @@ const unsigned char pskrep_sender::rcpt_record_template[] = {
 
 void pskrep_sender::write_preamble(void)
 {
-	time_t now = time(NULL);
+	time_t now = time(nullptr);
 	unsigned char* p = dgram;
 
 	// header
@@ -829,7 +829,7 @@ bool pskrep_sender::send(void)
 
 	// finish writing the datagram
 	*reinterpret_cast<uint16_t*>(dgram + 2) = htons(dgram_size);
-	*reinterpret_cast<uint32_t*>(dgram + 4) = htonl(time(NULL));
+	*reinterpret_cast<uint32_t*>(dgram + 4) = htonl(time(nullptr));
 
 	bool ret;
 	{

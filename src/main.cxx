@@ -1032,7 +1032,7 @@ int main(int argc, char ** argv)
 
 	try {
 		debug::start(string(DebugDir).append("status_log.txt").c_str());
-		time_t t = time(NULL);
+		time_t t = time(nullptr);
 		LOG(debug::QUIET_LEVEL, debug::LOG_OTHER, _("%s log started on %s"), PACKAGE_STRING, ctime(&t));
 		LOG_THREAD_ID();
 	}

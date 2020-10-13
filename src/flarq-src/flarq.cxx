@@ -501,7 +501,7 @@ void saveComposedText(std::string filename)
 	textfile.open(filename.c_str());
 	textfile << "//FLARQ COMPOSER" << endl;
 	char szmaildt[100];
-	time_t maildt = time(NULL);
+	time_t maildt = time(nullptr);
 	struct tm *gmt = gmtime(&maildt);
 	strftime(szmaildt, sizeof(szmaildt), "%x %X", gmt);
 	textfile << "Date: " << szmaildt << endl;

@@ -407,7 +407,7 @@ void n3fjp_print(string s)
 
 	FILE *n3fjplog = fl_fopen(pathname.c_str(), "a");
 
-	time_t t = time(NULL);
+	time_t t = time(nullptr);
 	struct tm stm;
 	(void)localtime_r(&t, &stm);
 	char sztime[12];

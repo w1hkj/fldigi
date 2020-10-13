@@ -1768,7 +1768,7 @@ void pkt::rx(bool bit)
 			if (checkFCS((cbuf - 2)) == true) {
 			if (progdefaults.PKT_RXTimestamp) {
 				unsigned char ts[16], *tc = &ts[0];
-				time_t t = time(NULL);
+				time_t t = time(nullptr);
 				struct tm stm;
 
 				(void)gmtime_r(&t, &stm);

@@ -350,7 +350,7 @@ void create_fl_digi_main_primary() {
 			qso_opPICK->callback(showOpBrowserView, 0);
 			qso_opPICK->tooltip(_("Open List"));
 
-		RigControlFrame->resizable(NULL);
+		RigControlFrame->resizable(nullptr);
 		RigControlFrame->end();
 }
 		Fl_Group *rightframes = new Fl_Group(
@@ -1095,7 +1095,7 @@ void create_fl_digi_main_primary() {
 					gWAE->hide();
 }
 
-					Logging_frame_1->resizable(NULL);
+					Logging_frame_1->resizable(nullptr);
 				Logging_frame_1->end();
 }
 {  // NFtabs groups // Logging frame 2

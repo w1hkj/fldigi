@@ -82,7 +82,7 @@ static void disp_range( std::string::const_iterator b, std::string::const_iterat
 /// Builds a time with Synop messages which just have event's day/hour/min.
 static time_t DayHourMin2Tm( int day, int hour, int min ) {
 	// TODO: Check that time() is UTC too.
-	time_t tmpTime = time(NULL);
+	time_t tmpTime = time(nullptr);
 	tm aTm = *gmtime(&tmpTime);
 
 	// Maybe observation from previous month.
@@ -860,7 +860,7 @@ class RefCntPtr {
 	/// This must derive from the class WithRefCnt.
 	Obj * m_ptr ;
 public:
-	RefCntPtr() : m_ptr(NULL) {}
+	RefCntPtr() : m_ptr(nullptr) {}
 	/// The reference counter is incremented.
 	RefCntPtr( Obj * ptr ) : m_ptr(ptr) {
 		if( ptr ) ++ptr->m_ref_cnt ;

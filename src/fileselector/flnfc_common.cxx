@@ -22,7 +22,7 @@
 //    Value can be NULL
 //
 static char *strnew(const char *val) {
-    if ( val == NULL ) return(NULL);
+    if ( val == NULL ) return(nullptr);
     char *s = new char[strlen(val)+1];
     strcpy(s, val);
     return(s);
@@ -33,7 +33,7 @@ static char *strnew(const char *val) {
 //
 static char *strfree(char *val) {
     if ( val ) delete [] val;
-    return(NULL);
+    return(nullptr);
 }
 
 #ifndef __WOE32__

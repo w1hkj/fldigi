@@ -140,7 +140,7 @@ static void get_log_details(long long& freq, trx_mode& mode, time_t& rtime)
 	freq += wf->rfcarrier();
 
 	if (rtime == -1L)
-		rtime = time(NULL);
+		rtime = time(nullptr);
 }
 
 void spot_log(const char* callsign, const char* locator, long long freq, trx_mode mode, time_t rtime)

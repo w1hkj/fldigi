@@ -89,7 +89,7 @@ void cQsoRec::checkDateTimes() {
 
 // Sets the current time, with the right format.
 void cQsoRec::setDateTime(bool dtOn) {
-	time_t tmp_time = time(NULL);
+	time_t tmp_time = time(nullptr);
 	struct tm tmp_tm ;
 	if (localtime_r(&tmp_time, &tmp_tm)) {
 

@@ -611,7 +611,7 @@ int picture::save_png(const char* filename, bool monochrome, const char *extra_c
 
 	// write text comments
 	struct tm tm;
-	time_t t = time(NULL);
+	time_t t = time(nullptr);
 	gmtime_r(&t, &tm);
 	char z[20 + 1];
 	strftime(z, sizeof(z), "%Y-%m-%dT%H:%M:%SZ", &tm);

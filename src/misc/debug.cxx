@@ -239,7 +239,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 		return;
 
 // always annotate with date/time & line number
-	time_t t = time(NULL);
+	time_t t = time(nullptr);
 	struct tm stm;
 	(void)localtime_r(&t, &stm);
 	snprintf(fmt, sizeof(fmt), "%c: [%02d:%02d:%02d] %s : %d : %s\n    %s\n",

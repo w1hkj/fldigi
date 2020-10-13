@@ -656,7 +656,7 @@ private:
 		fax_signal(const fax_implementation * ptr_fax)
 		: _ptr_fax(ptr_fax)
 		, _cnt(0)
-		, _text(NULL) {}
+		, _text(nullptr) {}
 
 		fax_state signal_state(void) const { return _state ; }
 		const char * signal_text(void) const { return _text; };
@@ -1532,7 +1532,7 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal)
 /// This generates a file name with the reception time and the frequency.
 std::string fax_implementation::generate_filename(const char *extra_msg) const
 {
-	time_t tmp_time = time(NULL);
+	time_t tmp_time = time(nullptr);
 	struct tm tmp_tm ;
 	localtime_r(&tmp_time, &tmp_tm);
 

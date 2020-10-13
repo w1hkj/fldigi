@@ -836,7 +836,7 @@ static void notify_notify(const notify_t& n)
 		else { // treat alert text as strftime format string
 			size_t len = alert.length() + 256;
 			char* buf = new char[len];
-			time_t t = time(NULL);
+			time_t t = time(nullptr);
 			struct tm ts;
 			if (localtime_r(&t, &ts) && strftime(buf, len, alert.c_str(), &ts))
 				notify_show_alert(n, buf);

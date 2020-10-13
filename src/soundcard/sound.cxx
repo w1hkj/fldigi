@@ -244,7 +244,7 @@ int SoundBase::startCapture(std::string fname, int format)
 //		SNDFILE_CHANNELS,
 		format, 0, 0 };
 	if ((ofCapture = sf_open(fname.c_str(), SFM_WRITE, &info)) == NULL) {
-		LOG_ERROR("Could not write %s:%s", fname.c_str(), sf_strerror(NULL) );
+		LOG_ERROR("Could not write %s:%s", fname.c_str(), sf_strerror(nullptr) );
 		return 0;
 	}
 	if (sf_command(ofCapture, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
@@ -313,7 +313,7 @@ int SoundBase::startPlayback(std::string fname, int format)
 	play_info.seekable = 0;
 
 	if ((ifPlayback = sf_open(fname.c_str(), SFM_READ, &play_info)) == NULL) {
-		LOG_ERROR("Could not open %s:%s", fname.c_str(), sf_strerror(NULL) );
+		LOG_ERROR("Could not open %s:%s", fname.c_str(), sf_strerror(nullptr) );
 		return 1;
 	}
 

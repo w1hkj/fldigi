@@ -102,7 +102,7 @@ static time_t KmlFromTimestamp( const char * ts ) {
 	if( 0 == strcmp( ts, KmlSrvUnique ) ) return KmlServer::UniqueEvent ;
 
 	/// So all fields are initialised with correct default values.
-	time_t timNow = time(NULL);
+	time_t timNow = time(nullptr);
 	tm objTm = *gmtime( &timNow );
 
 	int r = sscanf( ts, "%4d-%02d-%02dT%02d:%02dZ",
@@ -356,7 +356,7 @@ class  KmlSrvImpl : public KmlServer {
 
 			/// Default time is now. evtTim might have another special value.
 			if(evtTim == 0) {
-				evtTim = time(NULL);
+				evtTim = time(nullptr);
 			}
 			insert( value_type( evtTim, custDat ) );
 		}
@@ -706,7 +706,7 @@ class  KmlSrvImpl : public KmlServer {
 
 			/// Called only once per hour, instead of at every call. Saves CPU.
 			static time_t prev_call_tm = 0 ;
-			time_t now = time(NULL);
+			time_t now = time(nullptr);
 
 			static const int seconds_per_hour = 60 * 60 ;
 
@@ -1415,7 +1415,7 @@ class  KmlSrvImpl : public KmlServer {
 				guard_lock myGuard( &m_mutex_write );
 
 				// It does not need to be very accurate.
-				tmp_tim.tv_sec = time(NULL) + refresh_delay;
+				tmp_tim.tv_sec = time(nullptr) + refresh_delay;
 				tmp_tim.tv_nsec = 0 ;
 
 				//LOG_INFO("About to wait %d seconds", refresh );
@@ -1484,7 +1484,7 @@ class  KmlSrvImpl : public KmlServer {
 				refresh_delay = m_refresh_interval ;
 #ifdef FLDIGI_KML_CONDITION_VARIABLE
 			} else {
-				refresh_delay = tmp_tim.tv_sec - time(NULL);
+				refresh_delay = tmp_tim.tv_sec - time(nullptr);
 				if( refresh_delay <= 0 ) refresh_delay = 1 ;
 				//LOG_INFO("Interrupted when waiting. Restart with wait=%d", refresh );
 #endif
@@ -1741,7 +1741,7 @@ std::string KmlServer::Tm2Time( time_t tim ) {
 
 /// Returns current time.
 std::string KmlServer::Tm2Time( ) {
-	return Tm2Time( time(NULL) );
+	return Tm2Time( time(nullptr) );
 }
 
 /// One singleton for everyone.
