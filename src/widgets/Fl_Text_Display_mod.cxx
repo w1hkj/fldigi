@@ -87,7 +87,7 @@ static int scroll_x = 0;
  */
 Fl_Text_Display_mod::Fl_Text_Display_mod(int X, int Y, int W, int H, const char* l)
 : Fl_Group(X, Y, W, H, l) {
-  int i;
+  //int i;
 
   TOP_MARGIN = DEFAULT_TOP_MARGIN;
   BOTTOM_MARGIN = DEFAULT_BOTTOM_MARGIN;
@@ -148,8 +148,9 @@ Fl_Text_Display_mod::Fl_Text_Display_mod(int X, int Y, int W, int H, const char*
   mNVisibleLines = 1;
   mLineStarts = new int[mNVisibleLines];
   mLineStarts[0] = 0;
-  for (i=1; i<mNVisibleLines; i++)
-    mLineStarts[i] = -1;
+// for loop will never "fire" due to nVisibleLines, i = 1
+//  for (i=1; i<mNVisibleLines; i++)
+//    mLineStarts[i] = -1;
   mSuppressResync = 0;
   mNLinesDeleted = 0;
   mModifyingTabDistance = 0;

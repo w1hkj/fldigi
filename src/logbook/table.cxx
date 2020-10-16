@@ -1097,28 +1097,30 @@ int Table::handle(int event) {
       }
       break;
 
-    // Push on cell.
-          default:
+      // Push on cell.
+      default:
       bool changed = selected != row;
       selected = row;
 
       // Create new selection
       int len = 0;
       char **tableRow = data[selected];
-      char *buffer;
+      char *buffer = nullptr;
 
       for (int col = 0; col < nCols; col++)
         len += strlen(tableRow[col]) + 1;
 
       // Create a tab separated list from data.
       buffer = (char*)malloc(len);
-      strcpy(buffer, tableRow[0]);
-      for (int col = 1; col < nCols; col++) {
-        strcat(buffer, "\t");
-        strcat(buffer, tableRow[col]);
+      if (buffer != nullptr) {
+          strcpy(buffer, tableRow[0]);
+          for (int col = 1; col < nCols; col++) {
+            strcat(buffer, "\t");
+            strcat(buffer, tableRow[col]);
+          }
+          Fl::selection(*this, buffer, len);
+          free(buffer);
       }
-      Fl::selection(*this, buffer, len);
-      free(buffer);
 
       // Update view.
       damage(DAMAGE_ROWS);
