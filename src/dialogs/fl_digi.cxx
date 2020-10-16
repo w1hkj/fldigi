@@ -2009,7 +2009,7 @@ void init_modem(trx_mode mode, int freq)
 		break;
 
 	default:
-		LOG_ERROR("Unknown mode: %" PRIdPTR, mode);
+		LOG_ERROR("Unknown mode: %d", (int)mode);
 		mode = MODE_PSK31;
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 				  *mode_info[mode].modem = new psk(mode), freq);
