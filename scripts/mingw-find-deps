@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# Halt on errors
+set -e
+
+installroot=$PWD/dist;
+
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 win32_binary [--debug]"
+    exit 1;
+fi
+
+if [ ! -f "$1" ]; then
+    echo "Cannot find file $1"
+    echo ""
+    echo "Usage: $0 win32_binary [--debug]"
+    exit 1;
+fi
+
+
+# Note: This script is written to be used with the Fedora mingw environment
+if [ "$(file $1  | grep -o x86-64)" == "x86-64" ]; then
+    echo "Scanning dependencies for $1 (64bit binary)"
+    MINGWROOT=/usr/x86_64-w64-mingw32/sys-root/mingw
+else
+    echo "Scanning dependencies for $1 (32bit binary)"
+    MINGWROOT=/usr/i686-w64-mingw32/sys-root/mingw
+fi
+
+if [ "$2" == "--debug" ]; then
+    withdebug=1
+fi
+
+isqt5=false
+
+# Collect dependencies
+function isnativedll {
+    # If the import library exists but not the dynamic library, the dll ist most likely a native one
+    local lower=${1,,}
+    [ ! -e $MINGWROOT/bin/$1 ] && [ -f $MINGWROOT/lib/lib${lower/%.*/.a} ] && return 0;
+    return 1;
+}
+
+function cpDep {
+# Copy the specified binary dependency
+    destdir="$installroot/${2:-$(dirname $1)}"
+    name="$(basename $1)"
+    test -e "$destdir/$name" && return 0
+    if [ ! -e "$MINGWROOT/$1" ]; then
+        echo "Error: missing $MINGWROOT/$1"
+        return 0
+    fi
+    mkdir -p "$destdir" || return 1
+    echo "Copying $1"
+    cp -a "$MINGWROOT/$1" "$destdir/$name" || return 1
+    if [ $withdebug ]; then test -e "$MINGWROOT/$1.debug" && cp "$MINGWROOT/$1.debug" "$destdir/$name.debug" && echo "Copying $1.debug" || echo "Warning: missing $name.debug"; fi
+    autoCpDeps $destdir/$name || return 1
+    return 0
+}
+
+function autoCpDeps {
+# Collects and links the dependencies of the specified binary
+    for dep in $(mingw-objdump -p "$1" | grep "DLL Name" | awk '{print $3}'); do
+        # Hacks / Workarounds
+        if [ "$dep" == "LIBPQ.dll" ]; then
+            dep="libpq.dll"
+        elif [ "$dep" == "QtUiToolsd4.dll" ]; then
+            continue;
+        elif [ "$dep" == "Qt5Core.dll" ]; then
+            isqt5=true
+        fi
+
+        if [ ! -f "$dep" ] && ! isnativedll "$dep"; then
+            cpDep bin/$dep || return 1
+        fi
+    done
+    return 0
+}
+
+mkdir -p dist/bin
+autoCpDeps $1
+if [ $withdebug ]; then
+    cpDep bin/gdb.exe
+fi
+if [[ $isqt5 == true ]]; then
+    mkdir -p dist/bin/platforms
+    cp -a $MINGWROOT/lib/qt5/plugins/platforms/qwindows.dll dist/bin/platforms/
+    autoCpDeps $MINGWROOT/lib/qt5/plugins/platforms/qwindows.dll
+fi
