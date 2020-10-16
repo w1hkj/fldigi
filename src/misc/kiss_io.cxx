@@ -786,7 +786,7 @@ static void reply_csma_mode(char *arg)
 static void set_busy_channel_inhibit(char *arg)
 {
 	std::string argstr = "";
-	time_t temp = 0;
+	int temp = 0;
 
 	if(arg) {
 		argstr.assign(arg);
@@ -796,7 +796,7 @@ static void set_busy_channel_inhibit(char *arg)
 					temp_disable_tx_inhibit = time(0) + temp_disable_tx_duration;
 				}
 			} else if(isdigit(argstr[0])) {
-				sscanf(arg, "%lu", &temp);
+				sscanf(arg, "%d", &temp);
 				if(temp == 0)
 					temp_disable_tx_duration = DISABLE_TX_INHIBIT_DURATION;
 				else
