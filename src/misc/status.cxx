@@ -347,6 +347,8 @@ status progStatus = {
 //   |______________Other
 	3,				// debug_level : INFO(3)
 //----------------------------------------------------------------------
+    1,				// int vumeter_shown
+//----------------------------------------------------------------------
 	false				// bool bLastStateRead;
 };
 
@@ -739,6 +741,8 @@ if (!bWF_only) {
 
 	debug_level = debug::level;
 	spref.set("debug_level", debug_level);
+//----------------------------------------------------------------------
+	spref.set("vumeter_shown", vumeter_shown);
 }
 
 void status::loadLastState()
@@ -1076,9 +1080,12 @@ void status::loadLastState()
 		spref.get("FMT_trk_scale", FMT_trk_scale, FMT_trk_scale);
 		spref.get("FMT_minutes", FMT_minutes, FMT_minutes);
 //----------------------------------------------------------------------
-
 		spref.get("debug_level", debug_level, debug_level);
 		spref.get("debug_mask", debug_mask, debug_mask);
+//----------------------------------------------------------------------
+		spref.get("vumeter_shown", vumeter_shown, vumeter_shown);
+//----------------------------------------------------------------------
+
 		set_debug_mask(debug_mask);
 }
 

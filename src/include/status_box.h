@@ -1,7 +1,7 @@
 //
-// vumeter.h
+// status_box.h
 //
-//  vumeter bar widget routines.
+//  status_box bar widget routines.
 // ----------------------------------------------------------------------------
 // Copyright (C) 2014
 //              David Freese, W1HKJ
@@ -23,8 +23,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _VUMETER_H
-#define _VUMETER_H
+#ifndef _status_box_H
+#define _status_box_H
 
 //
 // Include necessary headers.
@@ -35,54 +35,17 @@
 #include <FL/Fl_Group.H>
 
 //
-// vumeter class...
+// status_box class...
 //
 
-class vumeter : public Fl_Widget {
+class status_box : public Fl_Box {
 private:
-	double	value_,
-			minimum_,
-			maximum_,
-			peakv_,
-			peak_[10],
-			vals_[10];
-	int		avg_;
-	int		aging_;
-
-	Fl_Color bgnd_;
-	Fl_Color fgnd_;
-	Fl_Color scale_color;
-	Fl_Color peak_color;
-
-	static const char *meter_face;
-
 	void (*cbFunc)(Fl_Widget *, void *);
-
 protected:
-
-	virtual void draw();
-
 public:
-
-	vumeter(int x, int y, int w, int h, const char *label = "");
-
-	void	maximum(double v) { maximum_ = v; redraw(); }
-	double	maximum() const { return (maximum_); }
-
-	void	minimum(double v) { minimum_ = v; redraw(); }
-	double	minimum() const { return (minimum_); }
-
-	void	value(double v);
-	double	value();
-	void	aging (int n);
-	void	avg (int n);
-	void	clear();
-
-	void	set_background(Fl_Color c1) { bgnd_ = c1; redraw(); }
-	void	set_metercolor(Fl_Color c2) { fgnd_ = c2; redraw(); }
-	void	set_scalecolor(Fl_Color c3) { scale_color = c3; redraw(); }
-	void	set_peakcolor(Fl_Color c4) { peak_color = c4; redraw(); }
-
+	status_box(int x, int y, int w, int h, const char *label = "") 
+		: Fl_Box(x,y,w,h,label)
+		{ };
 	int		handle(int e) {
 		if (Fl::event_inside( this )) {
 			if (e == FL_RELEASE) {
@@ -92,13 +55,11 @@ public:
 		}
 		return 0;
 	}
-
 	void callback (void (*cbf)(Fl_Widget *, void *) ){ cbFunc = cbf;}
 	void do_callback() { 
 		if (cbFunc) cbFunc(this, (void*)0);
 	}
-
 };
 
-#endif // !vumeter
+#endif // !status_box
 

@@ -338,13 +338,13 @@ int					oix;
 pskBrowser			*mainViewer = (pskBrowser *)0;
 Fl_Input2			*txtInpSeek = (Fl_Input2 *)0;
 
-static Fl_Box		*StatusBar = (Fl_Box *)0;
+status_box			*StatusBar = (status_box *)0;
 Fl_Box				*Status2 = (Fl_Box *)0;
 Fl_Box				*Status1 = (Fl_Box *)0;
 Fl_Counter2			*cntTxLevel = (Fl_Counter2 *)0;
 Fl_Counter2			*cntCW_WPM=(Fl_Counter2 *)0;
-static Fl_Button	*btnCW_Default=(Fl_Button *)0;
-static Fl_Box		*WARNstatus = (Fl_Box *)0;
+Fl_Button			*btnCW_Default=(Fl_Button *)0;
+Fl_Box				*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[NUMMACKEYS * NUMKEYROWS];
 Fl_Button			*btnAltMacros1 = (Fl_Button *)0;
@@ -353,6 +353,9 @@ Fl_Light_Button		*btnAFC = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnSQL = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnPSQL = (Fl_Light_Button *)0;
 Fl_Box				*corner_box = (Fl_Box *)0;
+
+vumeter				*VuMeter = (vumeter *)0;
+Fl_Box				*VuBox   = (Fl_Box *)0;
 
 Fl_Group			*RigControlFrame = (Fl_Group *)0;
 Fl_Group			*RigViewerFrame = (Fl_Group *)0;
@@ -368,7 +371,7 @@ Fl_Button			*qso_btnBW2 = (Fl_Button *)0;
 Fl_ListBox			*qso_opBW2 = (Fl_ListBox *)0;
 Fl_Button			*qso_opPICK = (Fl_Button *)0;
 
-static Fl_Button	*qsoClear;
+Fl_Button			*qsoClear;
 Fl_Button			*qsoSave;
 
 Fl_Input2			*inpFreq = (Fl_Input2 *)0;
@@ -419,12 +422,12 @@ Fl_Button			*btnQRZ;
 
 // Top Frame 1 group controls
 Fl_Group			*Logging_frame = (Fl_Group *)0;
-static Fl_Group		*Logging_frame_1 = (Fl_Group *)0;
-//static Fl_Tabs		*Logging_frame_2 = (Fl_Tabs *)0;
-static Fl_Tabs *NFtabs = (Fl_Tabs *)0;
-static Fl_Group		*gGEN_QSO_1 = (Fl_Group *)0;
-static Fl_Group		*NotesFrame = (Fl_Group *)0;
-static Fl_Group		*Ccframe = (Fl_Group *)0;
+Fl_Group			*Logging_frame_1 = (Fl_Group *)0;
+
+Fl_Tabs				*NFtabs = (Fl_Tabs *)0;
+Fl_Group			*gGEN_QSO_1 = (Fl_Group *)0;
+Fl_Group			*NotesFrame = (Fl_Group *)0;
+Fl_Group			*Ccframe = (Fl_Group *)0;
 Fl_Group			*TopFrame1 = (Fl_Group *)0;
 Fl_Input2			*inpFreq1 = (Fl_Input2 *)0;
 Fl_Input2			*inpTimeOff1 = (Fl_Input2 *)0;
@@ -578,145 +581,145 @@ Fl_Input2			*inpName2 = (Fl_Input2 *)0;
 Fl_Input2			*inpRstIn2 = (Fl_Input2 *)0;
 Fl_Input2			*inpRstOut2 = (Fl_Input2 *)0;
 Fl_Button			*qso_opPICK2;
-static Fl_Button	*qsoClear2;
-static Fl_Button	*qsoSave2;
+Fl_Button			*qsoClear2;
+Fl_Button			*qsoSave2;
 Fl_Button			*btnQRZ2;
 
 // Top Frame 3 group controls - contest
-static Fl_Group		*TopFrame3 = (Fl_Group *)0;
-static Fl_Group		*TopFrame3a = (Fl_Group *)0;
+Fl_Group			*TopFrame3 = (Fl_Group *)0;
+Fl_Group			*TopFrame3a = (Fl_Group *)0;
 
-static Fl_Group	*log_generic_frame = (Fl_Group *)0;
-static Fl_Group	*log_fd_frame = (Fl_Group *)0;
-static Fl_Group	*log_kd_frame = (Fl_Group *)0;
-static Fl_Group	*log_1010_frame = (Fl_Group *)0;
-static Fl_Group	*log_arr_frame = (Fl_Group *)0;
-static Fl_Group	*log_vhf_frame = (Fl_Group *)0;
-static Fl_Group	*log_cqww_frame = (Fl_Group *)0;
-static Fl_Group	*log_cqww_rtty_frame = (Fl_Group *)0;
-static Fl_Group	*log_cqss_frame = (Fl_Group *)0;
-static Fl_Group	*log_cqwpx_frame = (Fl_Group *)0;
-static Fl_Group	*log_ascr_frame = (Fl_Group *)0;
-static Fl_Group	*log_naqp_frame = (Fl_Group *)0;
-static Fl_Group	*log_rtty_frame = (Fl_Group *)0;
-static Fl_Group	*log_iari_frame = (Fl_Group *)0;
-static Fl_Group	*log_nas_frame = (Fl_Group *)0;
-static Fl_Group	*log_aidx_frame = (Fl_Group *)0;
-static Fl_Group	*log_jota_frame = (Fl_Group *)0;
-static Fl_Group	*log_aicw_frame = (Fl_Group *)0;
-static Fl_Group	*log_sqso_frame = (Fl_Group *)0;
-static Fl_Group	*log_wae_frame = (Fl_Group *)0;
+Fl_Group		*log_generic_frame = (Fl_Group *)0;
+Fl_Group		*log_fd_frame = (Fl_Group *)0;
+Fl_Group		*log_kd_frame = (Fl_Group *)0;
+Fl_Group		*log_1010_frame = (Fl_Group *)0;
+Fl_Group		*log_arr_frame = (Fl_Group *)0;
+Fl_Group		*log_vhf_frame = (Fl_Group *)0;
+Fl_Group		*log_cqww_frame = (Fl_Group *)0;
+Fl_Group		*log_cqww_rtty_frame = (Fl_Group *)0;
+Fl_Group		*log_cqss_frame = (Fl_Group *)0;
+Fl_Group		*log_cqwpx_frame = (Fl_Group *)0;
+Fl_Group		*log_ascr_frame = (Fl_Group *)0;
+Fl_Group		*log_naqp_frame = (Fl_Group *)0;
+Fl_Group		*log_rtty_frame = (Fl_Group *)0;
+Fl_Group		*log_iari_frame = (Fl_Group *)0;
+Fl_Group		*log_nas_frame = (Fl_Group *)0;
+Fl_Group		*log_aidx_frame = (Fl_Group *)0;
+Fl_Group		*log_jota_frame = (Fl_Group *)0;
+Fl_Group		*log_aicw_frame = (Fl_Group *)0;
+Fl_Group		*log_sqso_frame = (Fl_Group *)0;
+Fl_Group		*log_wae_frame = (Fl_Group *)0;
 
-cFreqControl 		*qsoFreqDisp3 = (cFreqControl *)0;
-static Fl_Button	*qso_opPICK3;
-static Fl_Button	*qsoClear3;
-static	Fl_Button	*qsoSave3;
+cFreqControl 	*qsoFreqDisp3 = (cFreqControl *)0;
+Fl_Button		*qso_opPICK3;
+Fl_Button		*qsoClear3;
+Fl_Button		*qsoSave3;
 
-static Fl_Group		*TopFrame3b = (Fl_Group *)0;
-Fl_Input2			*inpCall3 = (Fl_Input2 *)0;
+Fl_Group		*TopFrame3b = (Fl_Group *)0;
+Fl_Input2		*inpCall3 = (Fl_Input2 *)0;
 
 // Generic contest fields
-Fl_Input2			*inpTimeOff3 = (Fl_Input2 *)0;
-Fl_Input2			*inpTimeOn3 = (Fl_Input2 *)0;
-Fl_Button			*btnTimeOn3;
-Fl_Input2			*outSerNo2 = (Fl_Input2 *)0;
-Fl_Input2			*inpSerNo2 = (Fl_Input2 *)0;
-Fl_Input2			*inpXchgIn2 = (Fl_Input2 *)0;
+Fl_Input2		*inpTimeOff3 = (Fl_Input2 *)0;
+Fl_Input2		*inpTimeOn3 = (Fl_Input2 *)0;
+Fl_Button		*btnTimeOn3;
+Fl_Input2		*outSerNo2 = (Fl_Input2 *)0;
+Fl_Input2		*inpSerNo2 = (Fl_Input2 *)0;
+Fl_Input2		*inpXchgIn2 = (Fl_Input2 *)0;
 // Field Day fields
-Fl_Input2			*inpTimeOff4 = (Fl_Input2 *)0;
-Fl_Input2			*inpTimeOn4 = (Fl_Input2 *)0;
-Fl_Button			*btnTimeOn4;
-Fl_Input2			*inp_FD_class2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_FD_section2 = (Fl_Input2 *)0;
+Fl_Input2		*inpTimeOff4 = (Fl_Input2 *)0;
+Fl_Input2		*inpTimeOn4 = (Fl_Input2 *)0;
+Fl_Button		*btnTimeOn4;
+Fl_Input2		*inp_FD_class2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_FD_section2 = (Fl_Input2 *)0;
 // Kids Day fields
-Fl_Input2			*inp_KD_name2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_KD_age2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_KD_state2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_KD_VEprov2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_KD_XchgIn2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_KD_name2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_KD_age2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_KD_state2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_KD_VEprov2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_KD_XchgIn2 = (Fl_Input2 *)0;
 // CQWW RTTY fields
-Fl_Input2			*inp_CQ_RSTin2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_CQ_RSTout2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_CQzone2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_CQstate2 = (Fl_Input2 *)0;
-Fl_ComboBox			*cboCountryCQ2 = (Fl_ComboBox *)0;
+Fl_Input2		*inp_CQ_RSTin2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_CQ_RSTout2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_CQzone2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_CQstate2 = (Fl_Input2 *)0;
+Fl_ComboBox		*cboCountryCQ2 = (Fl_ComboBox *)0;
 // CQWW DX fields
-Fl_Input2			*inp_CQDX_RSTin2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_CQDX_RSTout2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_CQDXzone2 = (Fl_Input2 *)0;
-Fl_ComboBox			*cboCountryCQDX2 = (Fl_ComboBox *)0;
+Fl_Input2		*inp_CQDX_RSTin2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_CQDX_RSTout2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_CQDXzone2 = (Fl_Input2 *)0;
+Fl_ComboBox		*cboCountryCQDX2 = (Fl_ComboBox *)0;
 // CW Sweepstakes contest sub frame
-Fl_Input2			*outSerNo4 = (Fl_Input2 *)0;
-Fl_Input2			*inp_SS_SerialNoR2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_SS_Precedence2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_SS_Check2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_SS_Section2 = (Fl_Input2 *)0;
+Fl_Input2		*outSerNo4 = (Fl_Input2 *)0;
+Fl_Input2		*inp_SS_SerialNoR2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_SS_Precedence2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_SS_Check2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_SS_Section2 = (Fl_Input2 *)0;
 // 1010 contest
-Fl_Input2			*inp_1010_name2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_1010_nr2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_1010_XchgIn2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_1010_name2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_1010_nr2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_1010_XchgIn2 = (Fl_Input2 *)0;
 // VHF contest
-Fl_Input2			*inp_vhf_RSTin2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_vhf_RSTout2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_vhf_Loc2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_vhf_RSTin2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_vhf_RSTout2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_vhf_Loc2 = (Fl_Input2 *)0;
 // ARRL School Roundup - LOG_ASCR
-Fl_Input2			*inp_ASCR_name2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_ASCR_class2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_ASCR_XchgIn2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_ASCR_RSTin2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_ASCR_RSTout2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_ASCR_name2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_ASCR_class2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_ASCR_XchgIn2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_ASCR_RSTin2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_ASCR_RSTout2 = (Fl_Input2 *)0;
 // LOG_NAQP
-Fl_Input2			*inpTimeOff5 = (Fl_Input2 *)0;
-Fl_Input2			*inpTimeOn5 = (Fl_Input2 *)0;
-Fl_Button			*btnTimeOn5;
-Fl_Input2			*inpNAQPname2;
-Fl_Input2			*inpSPCnum_NAQP2 = (Fl_Input2 *)0;
+Fl_Input2		*inpTimeOff5 = (Fl_Input2 *)0;
+Fl_Input2		*inpTimeOn5 = (Fl_Input2 *)0;
+Fl_Button		*btnTimeOn5;
+Fl_Input2		*inpNAQPname2;
+Fl_Input2		*inpSPCnum_NAQP2 = (Fl_Input2 *)0;
 // LOG_ARRL_RTTY - ARRL RTTY Roundup
-Fl_Input2			*inpRTU_stpr2 = (Fl_Input2 *)0;
-Fl_Input2			*inpRTU_RSTin2 = (Fl_Input2 *)0;
-Fl_Input2			*inpRTU_RSTout2 = (Fl_Input2 *)0;
-Fl_Input2			*inpRTU_serno2 = (Fl_Input2 *)0;
+Fl_Input2		*inpRTU_stpr2 = (Fl_Input2 *)0;
+Fl_Input2		*inpRTU_RSTin2 = (Fl_Input2 *)0;
+Fl_Input2		*inpRTU_RSTout2 = (Fl_Input2 *)0;
+Fl_Input2		*inpRTU_serno2 = (Fl_Input2 *)0;
 // LOG_NAS - NA Sprint
-Fl_Input2			*outSerNo6 = (Fl_Input2 *)0;
-Fl_Input2			*inp_ser_NAS2 = (Fl_Input2 *)0;
-Fl_Input2			*inpSPCnum_NAS2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_name_NAS2 = (Fl_Input2 *)0;
+Fl_Input2		*outSerNo6 = (Fl_Input2 *)0;
+Fl_Input2		*inp_ser_NAS2 = (Fl_Input2 *)0;
+Fl_Input2		*inpSPCnum_NAS2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_name_NAS2 = (Fl_Input2 *)0;
 // LOG_AIDX - African All Mode
-Fl_Input2			*inpRstIn3 = (Fl_Input2 *)0;
-Fl_Input2			*inpRstOut3 = (Fl_Input2 *)0;
-Fl_Input2			*outSerNo8 = (Fl_Input2 *)0;
-Fl_Input2			*inpSerNo4 = (Fl_Input2 *)0;
+Fl_Input2		*inpRstIn3 = (Fl_Input2 *)0;
+Fl_Input2		*inpRstOut3 = (Fl_Input2 *)0;
+Fl_Input2		*outSerNo8 = (Fl_Input2 *)0;
+Fl_Input2		*inpSerNo4 = (Fl_Input2 *)0;
 // LOG_JOTA - Jamboree On The Air
-Fl_Input2			*inpRstIn4 = (Fl_Input2 *)0;
-Fl_Input2			*inpRstOut4 = (Fl_Input2 *)0;
-Fl_Input2			*inp_JOTA_scout2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_JOTA_troop2 = (Fl_Input2 *)0;
-Fl_Input2			*inp_JOTA_spc2 = (Fl_Input2 *)0;
+Fl_Input2		*inpRstIn4 = (Fl_Input2 *)0;
+Fl_Input2		*inpRstOut4 = (Fl_Input2 *)0;
+Fl_Input2		*inp_JOTA_scout2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_JOTA_troop2 = (Fl_Input2 *)0;
+Fl_Input2		*inp_JOTA_spc2 = (Fl_Input2 *)0;
 // LOG_AICW - ARRL International DX (cw)
-Fl_Input2			*inpRstIn_AICW2 = (Fl_Input2 *)0;
-Fl_Input2			*inpRstOut_AICW2 = (Fl_Input2 *)0;
-Fl_Input2			*inpSPCnum_AICW2 = (Fl_Input2 *)0;
+Fl_Input2		*inpRstIn_AICW2 = (Fl_Input2 *)0;
+Fl_Input2		*inpRstOut_AICW2 = (Fl_Input2 *)0;
+Fl_Input2		*inpSPCnum_AICW2 = (Fl_Input2 *)0;
 
 // Used when no logging frame visible
-Fl_Input2			*inpCall4 = (Fl_Input2 *)0;
+Fl_Input2		*inpCall4 = (Fl_Input2 *)0;
 
-Fl_Browser			*qso_opBrowser = (Fl_Browser *)0;
-static Fl_Button	*qso_btnAddFreq = (Fl_Button *)0;
-static Fl_Button	*qso_btnSelFreq = (Fl_Button *)0;
-static Fl_Button	*qso_btnDelFreq = (Fl_Button *)0;
-static Fl_Button	*qso_btnClearList = (Fl_Button *)0;
-static Fl_Button	*qso_btnAct = 0;
-static Fl_Input2	*qso_inpAct = (Fl_Input2 *)0;
-static Fl_Group		*opUsageFrame = (Fl_Group *)0;
-static Fl_Output	*opOutUsage = (Fl_Output *)0;
-static Fl_Input2	*opUsage = (Fl_Input2 *)0;
-static Fl_Button	*opUsageEnter = (Fl_Button *)0;
+Fl_Browser		*qso_opBrowser = (Fl_Browser *)0;
+Fl_Button		*qso_btnAddFreq = (Fl_Button *)0;
+Fl_Button		*qso_btnSelFreq = (Fl_Button *)0;
+Fl_Button		*qso_btnDelFreq = (Fl_Button *)0;
+Fl_Button		*qso_btnClearList = (Fl_Button *)0;
+Fl_Button		*qso_btnAct = 0;
+Fl_Input2		*qso_inpAct = (Fl_Input2 *)0;
+Fl_Group		*opUsageFrame = (Fl_Group *)0;
+Fl_Output		*opOutUsage = (Fl_Output *)0;
+Fl_Input2		*opUsage = (Fl_Input2 *)0;
+Fl_Button		*opUsageEnter = (Fl_Button *)0;
 
-static Fl_Group 	*wf_group = (Fl_Group *)0;
-static Fl_Group		*status_group = (Fl_Group *)0;
+Fl_Group	 	*wf_group = (Fl_Group *)0;
+Fl_Group		*status_group = (Fl_Group *)0;
 
 Fl_Value_Slider2	*mvsquelch = (Fl_Value_Slider2 *)0;
-static Fl_Button	*btnClearMViewer = 0;
+Fl_Button		*btnClearMViewer = 0;
 
 static const int pad = 1;
 static const int Hentry		= 24;
@@ -766,12 +769,6 @@ int override_data_io_enabled        = DISABLED_IO;
 int IMAGE_WIDTH;
 int Hwfall;
 int Wwfall;
-
-// The following are deprecated and should be removed after thorough testing
-//int HNOM = DEFAULT_HNOM;
-// WNOM must be large enough to contain ALL of the horizontal widgets
-// when the main dialog is initially created.
-//int WNOM = 	WMIN;//progStatus.mainW ? progStatus.mainW : WMIN;
 
 int					altMacros = 0;
 
@@ -5083,9 +5080,12 @@ void UI_select()
 		int X = rightof(Status2);
 		int W = fl_digi_main->w() - X - bwTxLevel - Wwarn - bwAfcOnOff -
 			bwSqlOnOff - psm_width;
-		StatusBar->resize( X, Y, W, StatusBar->h());
 
-		cntTxLevel->position(rightof(StatusBar), Y);
+		StatusBar->resize( X, Y, W, StatusBar->h());
+		VuMeter->resize( X, Y, W, VuMeter->h());
+
+		cntTxLevel->position(rightof(VuMeter), Y);
+
 		WARNstatus->position(rightof(cntTxLevel), Y);
 		btnAFC->position(rightof(WARNstatus), Y);
 		btnSQL->position(rightof(btnAFC), Y);
@@ -5647,20 +5647,25 @@ UI_return:
 
 	{
 		int Y = status_group->y();
-		int W = fl_digi_main->w();
 		int psm_width = progdefaults.show_psm_btn ? bwSqlOnOff : 0;
 
-		StatusBar->resize( rightof(Status2), Y,
-			W - rightof(Status2) -
+		int vuw = 
+			fl_digi_main->w() - Status2->x() - Status2->w() - 2 -
 			bwTxLevel -  // tx level control
 			Wwarn -      // Warn indicator
 			bwAfcOnOff - // afc button
 			bwSqlOnOff - // sql button
 			psm_width -  // psm button, bwSqlOnOff / 0
-			corner_box->w(),
-			StatusBar->h());
+			corner_box->w();
 
-		cntTxLevel->position(rightof(StatusBar), Y);
+		StatusBar->resize( 
+			Status2->x() + Status2->w() + 2, Y, vuw, StatusBar->h());
+
+		VuMeter->resize(
+			Status2->x() + Status2->w() + 2, Y, vuw, VuMeter->h());
+
+		cntTxLevel->position(rightof(VuMeter), Y);
+
 		WARNstatus->position(rightof(cntTxLevel), Y);
 		btnAFC->position(rightof(WARNstatus), Y);
 		btnSQL->position(rightof(btnAFC), Y);
@@ -7890,6 +7895,7 @@ void create_fl_digi_main_WF_only() {
 	int fsize = fl_size();
 	int freqheight = Hentry + 2 * pad;
 	int Y = 0;
+	int W = progStatus.mainW;
 
 	fl_font(fnt, freqheight);
 	fl_font(fnt, fsize);
@@ -7897,14 +7903,14 @@ void create_fl_digi_main_WF_only() {
 
 	IMAGE_WIDTH = 4000;
 	Hwfall = progdefaults.wfheight;
-	Wwfall = progStatus.mainW - 2 * DEFAULT_SW - 2 * pad;
+	Wwfall = W - 2 * DEFAULT_SW - 2 * pad;
 	WF_only_height = Hmenu + Hwfall + Hstatus + 4 * pad;
 
-	fl_digi_main = new Fl_Double_Window(progStatus.mainW, WF_only_height);
+	fl_digi_main = new Fl_Double_Window(W, WF_only_height);
 
-		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
+		mnuFrame = new Fl_Group(0, 0, W, Hmenu);
 
-			mnu = new Fl_Menu_Bar(0, 0, progStatus.mainW - 275 - pad, Hmenu);
+			mnu = new Fl_Menu_Bar(0, 0, W - 275 - pad, Hmenu);
 // do some more work on the menu
 			for (size_t i = 0; i < sizeof(alt_menu_)/sizeof(alt_menu_[0]); i++) {
 // FL_NORMAL_SIZE may have changed; update the menu items
@@ -7917,27 +7923,27 @@ void create_fl_digi_main_WF_only() {
 			}
 			mnu->menu(alt_menu_);
 
-			tx_timer = new Fl_Box(progStatus.mainW - 275 - pad, 0, 75 - pad, Hmenu, "");
+			tx_timer = new Fl_Box(W - 275 - pad, 0, 75 - pad, Hmenu, "");
 			tx_timer->box(FL_UP_BOX);
 			tx_timer->color(FL_BACKGROUND_COLOR);
 			tx_timer->labelcolor(FL_BACKGROUND_COLOR);
 
-			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 200 - pad, 0, 50, Hmenu, "Spot");
+			btnAutoSpot = new Fl_Light_Button(W - 200 - pad, 0, 50, Hmenu, "Spot");
 			btnAutoSpot->selection_color(progdefaults.SpotColor);
 			btnAutoSpot->callback(cbAutoSpot, 0);
 			btnAutoSpot->deactivate();
 
-			btnRSID = new Fl_Light_Button(progStatus.mainW - 150 - pad, 0, 50, Hmenu, "RxID");
+			btnRSID = new Fl_Light_Button(W - 150 - pad, 0, 50, Hmenu, "RxID");
 			btnRSID->tooltip("Receive RSID");
 			btnRSID->value(progdefaults.rsid);
 			btnRSID->callback(cbRSID, 0);
 
-			btnTxRSID = new Fl_Light_Button(progStatus.mainW - 100 - pad, 0, 50, Hmenu, "TxID");
+			btnTxRSID = new Fl_Light_Button(W - 100 - pad, 0, 50, Hmenu, "TxID");
 			btnTxRSID->selection_color(progdefaults.TxIDColor);
 			btnTxRSID->tooltip("Transmit RSID");
 			btnTxRSID->callback(cbTxRSID, 0);
 
-			btnTune = new Fl_Light_Button(progStatus.mainW - 50 - pad, 0, 50, Hmenu, "TUNE");
+			btnTune = new Fl_Light_Button(W - 50 - pad, 0, 50, Hmenu, "TUNE");
 			btnTune->selection_color(progdefaults.TuneColor);
 			btnTune->callback(cbTune, 0);
 
@@ -7946,7 +7952,7 @@ void create_fl_digi_main_WF_only() {
 
 		Y = Hmenu + pad;
 
-		wf_group = new Fl_Group(0, Y, progStatus.mainW, Hwfall);
+		wf_group = new Fl_Group(0, Y, W, Hwfall);
 
 			wf = new waterfall(0, Y, Wwfall, Hwfall);
 			wf->end();
@@ -7975,7 +7981,7 @@ void create_fl_digi_main_WF_only() {
 
 		Y += (Hwfall + pad);
 
-		status_group = new Fl_Group(0, Y, progStatus.mainW, Hstatus);
+		status_group = new Fl_Group(0, Y, W, Hstatus);
 
 			MODEstatus = new Fl_Button(
 				0, Y,
@@ -8020,17 +8026,27 @@ void create_fl_digi_main_WF_only() {
 			Status2->color(FL_BACKGROUND2_COLOR);
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
-			StatusBar = new Fl_Box(
+			StatusBar = new status_box(
 				rightof(Status2), Y,
-				progStatus.mainW - rightof(Status2)
-				- 2 * bwSqlOnOff
-				- bwAfcOnOff
-				- Wwarn
-				- bwTxLevel,
+				W - rightof(Status2)
+				- bwAfcOnOff - bwSqlOnOff
+				- Wwarn - bwTxLevel
+				- bwSqlOnOff
+				- cbwidth,
 				Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+			StatusBar->callback((Fl_Callback *)StatusBar_cb);
+			StatusBar->when(FL_WHEN_RELEASE_ALWAYS);
+			StatusBar->tooltip(_("Left click to toggle VuMeter"));
+			StatusBar->show();
+
+			VuMeter = new vumeter(StatusBar->x(), StatusBar->y(), StatusBar->w(), StatusBar->h(), "" );
+			VuMeter->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
+			VuMeter->when(FL_WHEN_RELEASE_ALWAYS);
+			VuMeter->tooltip(_("Left click to toggle Status Bar"));
+			VuMeter->callback((Fl_Callback *)VuMeter_cb);
 
 			cntTxLevel = new Fl_Counter2(
 				rightof(StatusBar), Y,
@@ -8081,7 +8097,8 @@ void create_fl_digi_main_WF_only() {
 			btnPSQL->value(progdefaults.kpsql_enabled);
 			btnPSQL->tooltip(_("Power Signal Monitor"));
 
-			Fl_Group::current()->resizable(StatusBar);
+			Fl_Group::current()->resizable(VuMeter);
+
 		status_group->end();
 
 	Fl::add_handler(wo_default_handler);
@@ -8672,6 +8689,7 @@ void put_WARNstatus(double v)
 {
 	sig_vumeter->value(v);
 	sig_vumeter2->value(v);
+	VuMeter->value(v);
 
 	double val = 20 * log10(v == 0 ? 1e-9 : v);
 	if (val < progdefaults.normal_signal_level)
@@ -10363,3 +10381,19 @@ void FHdisp_char_height()
 //	UI_select();
 
 }
+
+void VuMeter_cb(vumeter *vu, void *d)
+{
+	VuMeter->hide();
+	StatusBar->show();
+	progStatus.vumeter_shown = 0;
+}
+
+void StatusBar_cb(Fl_Box *bx, void *d)
+{
+	StatusBar->hide();
+	VuMeter->show();
+	progStatus.vumeter_shown = 1;
+}
+
+

@@ -278,6 +278,9 @@ struct status {
 	int		debug_level;
 //----------------------------------------------------------------------
 
+	int		vumeter_shown;
+//----------------------------------------------------------------------
+
 	bool	bLastStateRead;
 
 	void initLastState();

@@ -28,14 +28,17 @@
 
 #include "vumeter.h"
 
+#define min(a,b) ((a) <= (b) ? (a) : (b) )
+#define max(a,b) ((a) >= (b) ? (a) : (b) )
+
 //
 // vumeter is a vumeter bar widget based off Fl_Widget that shows a
 // standard vumeter bar in horizontal format
 
-const char * vumeter::meter_face = "|..-90..-80..-70..-60..-50..-40..-30..-20..-10....|";
+const char * vumeter::meter_face = "|.-120.-110.-100..-90..-80..-70..-60..-50..-40..-30..-20..-10...|";
 void vumeter::draw()
 {
-	int	bx, by, bw, bh;	// Box areas...
+	int	bx, by, bw;//, bh;	// Box areas...
 	int	tx, tw, th;		// Temporary X + width
 	int meter_width, meter_height;
 
@@ -43,60 +46,66 @@ void vumeter::draw()
 	bx = Fl::box_dx(box());
 	by = Fl::box_dy(box());
 	bw = Fl::box_dw(box());
-	bh = Fl::box_dh(box());
-
+//	bh = Fl::box_dh(box());
+// Defne the inner box
 	tx = x() + bx;
 	tw = w() - bw;
-	th = h() - bh;
-
+	th = h() - 2 * by - 2;//bh;
+// Determine optimal meter face height
 	int fsize = 1;
 	fl_font(FL_COURIER, fsize);
-	meter_width = fl_width(meter_face) - fl_width("|");
 	meter_height = fl_height();
-	while ((meter_width < tw) && (meter_height < th)) {
+	while (meter_height < th) {
+		fsize++;
 		fsize++;
 		fl_font(FL_COURIER, fsize);
-		meter_width = fl_width(meter_face) - fl_width("|");
 		meter_height = fl_height();
 	}
-
 	fsize--;
 	fl_font(FL_COURIER, fsize);
-	meter_width = fl_width(meter_face) - fl_width("|");
 	meter_height = fl_height();
-	label(meter_face);
-	labelfont(FL_COURIER);
-	labelsize(fsize);
-	labelcolor(scale_color);
+// Find visible scale
+	const char *meter = meter_face;
+	minimum_ = -130;
+	maximum_ = 0;
+
+	meter_width = fl_width(meter);
+	while (meter_width > tw && *meter != 0) {
+		meter++;
+		meter_width = fl_width(meter);
+		minimum_ += 2;
+	}
 
 	int mwidth = round(meter_width * (value_ - minimum_) / (maximum_ - minimum_));
 	int PeakPos = round (meter_width * (peakv_ - minimum_) / (maximum_ - minimum_));
 
-// Draw the box and label...
+	mwidth = max ( min ( mwidth, meter_width), 0 );
+	PeakPos = max ( min ( PeakPos, meter_width), 0 );
 
-fl_push_clip(x(), y(), w(), h());
+// Draw the box and label...
+	fl_push_clip(x(), y(), w(), h());
 	draw_box(box(), x(), y(), w(), h(), bgnd_);
 	draw_box(FL_FLAT_BOX, tx, y() + by, tw, th, bgnd_);
 	if (mwidth > 0) {
 		draw_box(FL_FLAT_BOX,
-			tx + (w() - meter_width) / 2, y() + by + (th - meter_height) / 2,
+			tx + (w() - meter_width) / 2, y() + by + (th - meter_height) / 2 + 1,
 			mwidth, 
 			meter_height,
 			fgnd_);
 		draw_box(FL_FLAT_BOX,
-			tx + (w() - meter_width) / 2 + PeakPos, y() + by + (th - meter_height) / 2,
+			tx + (w() - meter_width) / 2 + PeakPos, y() + by + (th - meter_height) / 2 + 1,
 			2, 
 			meter_height,
 			peak_color);
 	}
-	label(meter_face);
+	label(meter);
 	labelfont(FL_COURIER);
 	labelsize(fsize);
 	labelcolor(scale_color);
 	draw_label();
-fl_pop_clip();
-
+	fl_pop_clip();
 }
+
 vumeter::vumeter(int X, int Y, int W, int H, const char *label)
 : Fl_Widget(X, Y, W, H, "")
 {
@@ -113,12 +122,13 @@ vumeter::vumeter(int X, int Y, int W, int H, const char *label)
 	avg_ = 10;
 	aging_ = 10;
 	clear();
+	cbFunc = 0;
 }
 
 void vumeter::value(double v) {
 	double vdb = 20 * log10(v == 0 ? 1e-9 : v);
-	if (vdb < minimum_) vdb = minimum_;
-	if (vdb > maximum_) vdb = maximum_;
+//	if (vdb < minimum_) vdb = minimum_;
+//	if (vdb > maximum_) vdb = maximum_;
 
 	peakv_ = -100;
 	for (int i = 1; i < aging_; i++) {
