@@ -10,14 +10,12 @@
 
 #include <string>
 
-using namespace std;
-
 typedef unsigned char byte;
 
 class base64 {
 #define LINELEN 72
 private:
-	string output;
+	std::string output;
 	size_t iolen;
 	size_t iocp;
 	bool ateof;
@@ -29,6 +27,6 @@ private:
 public:
 	base64(bool t = false) {crlf = t; init(); };
 	~base64(){};
-	string encode(string in);
-	string decode(string in);
+	std::string encode(std::string in);
+	std::string decode(std::string in);
 };
