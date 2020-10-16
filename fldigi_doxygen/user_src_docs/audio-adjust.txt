@@ -1,5 +1,5 @@
 /**
-\page audio_adjust_page RX/TX Audio Adjustment
+\page audio_adjust_page RX/TX Audio Levels
 
 \tableofcontents
 

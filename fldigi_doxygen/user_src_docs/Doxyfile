@@ -44,10 +44,6 @@ Installing.txt \
 WindowsOS.txt \
 thumb_drive.txt \
 fldigi_configuration.txt \
-fldigi_logging.txt \
-fldigi_macros.txt \
-fldigi_modems.txt \
-fldigi_operating.txt \
 fldigi_developer.txt \
 colorsandfonts.txt \
 audio-adjust.txt \
@@ -160,7 +156,6 @@ EXAMPLE_PATH         = .
 OUTPUT_DIRECTORY     = ../user_docs
 OUTPUT_LANGUAGE      = English
 PDF_HYPERLINKS       = YES
-PERL_PATH            = /usr/bin/perl
 QUIET                = YES
 RECURSIVE            = NO
 SEARCHENGINE         = NO

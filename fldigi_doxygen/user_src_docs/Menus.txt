@@ -44,13 +44,6 @@
 	file </li>
 </ul>
 
-Additional information:
-<br>
-\ref macro_page
-<br>
-\ref ui_configuration_macros_page
-<br>
-
 <HR>
 \subsubsection s_text_capture Text Capture
 

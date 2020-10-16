@@ -24,11 +24,8 @@
 <center>
 \image latex FLDigiWindow.png "" width=4.0in
 \image html FLDigiWindowHtml.png ""
+<ul><li>\ref index_of_contents_page</li></ul>
 </center>
-<ul>
-<li>\ref new_installation_page</li>
-<li>\ref index_of_contents_page</li>
-</ul>
 
 */
 
