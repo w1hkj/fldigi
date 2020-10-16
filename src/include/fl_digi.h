@@ -47,6 +47,10 @@
 #include "pwrmeter.h"
 #include "picture.h"
 #include "qso_db.h"
+#include "vumeter.h"
+#include "status_box.h"
+
+#include <FL/Fl_Progress.H>
 
 extern fre_t seek_re;
 
@@ -86,6 +90,14 @@ extern int				oix;
 
 extern Fl_Box			*Status2;
 extern Fl_Box			*Status1;
+extern status_box				*StatusBar;
+
+extern vumeter  		*VuMeter;
+extern Fl_Box   		*VuBox;
+
+extern void VuMeter_cb(vumeter *vu, void *d);
+extern void StatusBar_cb(Fl_Box *bx, void *d);
+
 extern Fl_Counter2		*cntCW_WPM;
 extern Fl_Counter2		*cntTxLevel;
 extern Fl_Button		*MODEstatus;

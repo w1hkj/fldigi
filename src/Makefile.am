@@ -892,6 +892,7 @@ EXTRA_fldigi_SOURCES += \
 	include/ssb.h \
 	include/stacktrace.h \
 	include/status.h \
+	include/status_box.h \
 	include/strutil.h \
 	include/synop.h \
 	include/tabdefs.h \

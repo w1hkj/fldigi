@@ -47,7 +47,14 @@ configuration panels:
 </td>
 </tr>
 </table>
+
+\image html configure_signal_level_main.png ""
+\image latex configure_signal_level_main.png "" width = 2.5in
 </center>
+
+and on the Main Dialog, location shared with center status bar control.  Left click on the status bar / vumeter to
+toggle between the two.
+
 There are two controls that adjust the visual appearance of the waterfall.  These controls are below and to the 
 left of the waterfall, "Upper signal level (dB)", and "Signal range (dB)".
 The "Upper signal level" control is a gain control.  0 dB == x1,-6 dB = x2.

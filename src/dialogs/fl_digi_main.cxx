@@ -2977,21 +2977,41 @@ Logging_frame->resizable(NFtabs);
 	#define cbwidth 0
 #endif
 
-			StatusBar = new Fl_Box(
+			StatusBar = new status_box(
 				rightof(Status2), Y,
 				W - rightof(Status2)
 				- bwAfcOnOff - bwSqlOnOff
 				- Wwarn - bwTxLevel
 				- bwSqlOnOff
 				- cbwidth,
-				Hstatus, "STATUS BAR");
-
+				Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+			StatusBar->callback((Fl_Callback *)StatusBar_cb);
+			StatusBar->when(FL_WHEN_RELEASE_ALWAYS);
+			StatusBar->tooltip(_("Left click to toggle VuMeter"));
+
+			VuMeter = new vumeter(StatusBar->x(), StatusBar->y(), StatusBar->w() - 2, StatusBar->h(), "");
+			VuMeter->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
+			VuMeter->when(FL_WHEN_RELEASE);
+			VuMeter->callback((Fl_Callback *)VuMeter_cb);
+			VuMeter->when(FL_WHEN_RELEASE_ALWAYS);
+			VuMeter->tooltip(_("Left click to toggle Status Bar"));
+
+			if (progStatus.vumeter_shown) {
+				VuMeter->show();
+				StatusBar->hide();
+			} else {
+				VuMeter->hide();
+				StatusBar->show();
+			}
+
+			Fl_Box vuspacer(rightof(VuMeter),Y,2,Hstatus,"");
+			vuspacer.box(FL_FLAT_BOX);
 
 			cntTxLevel = new Fl_Counter2(
-				rightof(StatusBar), Y,
+				rightof(&vuspacer), Y,
 				bwTxLevel, Hstatus, "");
 			cntTxLevel->minimum(-30);
 			cntTxLevel->maximum(0);
@@ -3046,7 +3066,7 @@ Logging_frame->resizable(NFtabs);
 			corner_box->box(FL_FLAT_BOX);
 
 		status_group->end();
-		status_group->resizable(StatusBar);
+		status_group->resizable(VuMeter);
 
 		Y += status_group->h();
 }
