@@ -32,7 +32,7 @@
 #include <string>
 
 #include <iostream>
-using namespace std;
+//using namespace std;
 
 #include "qrzlib.h"
 #include "configuration.h"
@@ -153,7 +153,7 @@ int  checkPath( const char *filename )
 				strcpy (QRZdir, pathname);
 			return 1;
 		}
-		string err = fname;
+		std::string err = fname;
 		err.append(" not found, performing search");
 		LOG_WARN("%s", err.c_str());
 		notfound = true;
@@ -178,7 +178,7 @@ int  checkPath( const char *filename )
 			else
 				strcpy (QRZdir, QRZpath);
 			if (notfound) {
-				string err = "Using ";
+				std::string err = "Using ";
 				err.append(fname);
 				LOG_WARN("%s", err.c_str());
 			}
@@ -748,12 +748,12 @@ int QRZ::FindRecord( char *field )
 	return( ReadRec() );
 }
 
-static char empty[] = { '\0' };
 
 
 int QRZ::ReadRec()
 {
 	char *comma;
+	static char empty[] = { '\0' };
 
 	if( found == 1 ) {
 		Qcall = recbuffer;

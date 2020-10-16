@@ -49,8 +49,6 @@
 
 extern int idtimer;
 
-using namespace std;
-
 #define DEBUG
 
 #define arq_Version "arq 0.1"
@@ -132,7 +130,7 @@ public:
 	~Ccrc16() {};
 	void reset() { crcval = 0xFFFF;}
 	unsigned int val() {return crcval;}
-	string sval() {
+	std::string sval() {
 		snprintf(ss, sizeof(ss), "%04X", crcval);
 		return ss;
 	}
@@ -149,31 +147,31 @@ public:
 		update(c);
 		return crcval;
 	}
-	unsigned int crc16(string s) {
+	unsigned int crc16(std::string s) {
 		reset();
 		for (size_t i = 0; i < s.length(); i++)
 			update(s[i]);
 		return crcval;
 	}
-	string scrc16(string s) {
+	std::string scrc16(std::string s) {
 		crc16(s);
 		return sval();
 	}
 };
 
-// text block; block # and string of text
+// text block; block # and std::string of text
 class cTxtBlk {
 private:
 	int number;
-	string txt;
+	std::string txt;
 public:
 	cTxtBlk() {number = -1; txt = "";}
-	cTxtBlk(int n, string text) { number = n; txt = text; }
+	cTxtBlk(int n, std::string text) { number = n; txt = text; }
 	~cTxtBlk() {}
 	void nbr(int n) { number = n;}
 	int nbr() { return number; }
-	string text() { return txt; }
-	void text(string t) { txt = t;}
+	std::string text() { return txt; }
+	void text(std::string t) { txt = t;}
 	bool operator <(const cTxtBlk &b)const { return number < b.number; }
 	bool operator ==(const cTxtBlk b)const { return number == b.number; }
 };
@@ -184,15 +182,15 @@ class arq {
 private:
 	bool	arqstop;
 
-	string	MyCall;
-	string	UrCall;
+	std::string	MyCall;
+	std::string	UrCall;
 
-	string	Header;
-	string	Frame;
-	string	Payload;
-	string	rcvPayload;
+	std::string	Header;
+	std::string	Frame;
+	std::string	Payload;
+	std::string	rcvPayload;
 
-	string	logfile;
+	std::string	logfile;
 
 	char	MyStreamID;
 	char	UrStreamID;
@@ -204,10 +202,10 @@ private:
 	int		blknbr;
 
 // queues //
-	string	TxTextQueue;			// Text out to mail engine
-	string	TxPlainTextQueue;		// plain text transmit queu
-	string	RxTextQueue;			// Text in from mail engine
-	string	RxFrameQueue;
+	std::string	TxTextQueue;			// Text out to mail engine
+	std::string	TxPlainTextQueue;		// plain text transmit queu
+	std::string	RxTextQueue;			// Text in from mail engine
+	std::string	RxFrameQueue;
 	char	lastRxChar;
 	bool	TXflag;
 
@@ -256,19 +254,19 @@ private:
 	int		blkcount;
 	int		Blocks2Send;				// number of blocks at beginning of Tx
 
-	vector<int>	MyMissing;				// missing Rx blocks
-	string MissingRxBlocks;
-	vector<cTxtBlk> RxPending;			// RxPending Rx blocks (not consecutive)
+	std::vector<int>	MyMissing;		// missing Rx blocks
+	std::string MissingRxBlocks;
+	std::vector<cTxtBlk> RxPending;		// RxPending Rx blocks (not consecutive)
 
-	list<cTxtBlk> TxBlocks;				// fifo of transmit buffers
-	list<cTxtBlk> TxMissing;			// fifo of sent; RxPending Status report
-	list<cTxtBlk> TxPending;			// fifo of transmitted buffers pending print
+	std::list<cTxtBlk> TxBlocks;		// fifo of transmit buffers
+	std::list<cTxtBlk> TxMissing;		// fifo of sent; RxPending Status report
+	std::list<cTxtBlk> TxPending;		// fifo of transmitted buffers pending print
 
 // Ur status
 	int		UrGoodHeader;				// Other station's Good Header
 	int		UrLastHeader;				// Other station's Header last sent
 	int		UrEndHeader;				// Other station's last received Header
-	vector<int>	UrMissing;				// Other station's missing Headers
+	std::vector<int>	UrMissing;		// Other station's missing Headers
 
 	int		LinkState;					// status of ARQ link
 	int		Sending;
@@ -286,7 +284,7 @@ private:
 	void	setBufferlength();
 
 	void	checkblocks();
-	string	upcase(string s);
+	std::string	upcase(std::string s);
 	void	newblocknumber();
 	void	newHeader();
 	void	IdHeader();
@@ -304,16 +302,16 @@ private:
 	void	disconnectFrame();
 	void	abortFrame();
 	void	ackAbortFrame();
-	void	beaconFrame(string txt);
+	void	beaconFrame(std::string txt);
 	void	textFrame(cTxtBlk block);
-	void    talkFrame(string txt);
+	void    talkFrame(std::string txt);
 
-	void	addToTxQue(string s);
+	void	addToTxQue(std::string s);
 
 	void	sendblocks();
 	void	transmitdata();
 
-	string	frame() {return Frame;}
+	std::string	frame() {return Frame;}
 
 	bool	isUrcall();
 	void	parseIDENT();
@@ -330,22 +328,22 @@ private:
 	void	parseDATA();
 	void	parseTALK();
 
-	int		parseFrame(string txt);
+	int		parseFrame(std::string txt);
 
 // external functions called by arq class
-	void	(*sendfnc)(const string& s);
+	void	(*sendfnc)(const std::string& s);
 	bool	(*getc1)(char &);
 	void	(*rcvfnc)();
-	void	(*printRX)(string s);
-	void	(*printTX)(string s);
-	void	(*printRX_DEBUG)(string s);
-	void	(*printTX_DEBUG)(string s);
-	void	(*printTALK)(string s);
+	void	(*printRX)(std::string s);
+	void	(*printTX)(std::string s);
+	void	(*printRX_DEBUG)(std::string s);
+	void	(*printTX_DEBUG)(std::string s);
+	void	(*printTALK)(std::string s);
 	void	(*abortfnc)();
 	void	(*disconnectfnc)();
-	void	(*rxUrCall)(string s);
-	void	(*qualityfnc)(string s);
-	void	(*printSTATUS)(string s, double disptime);
+	void	(*rxUrCall)(std::string s);
+	void	(*qualityfnc)(std::string s);
+	void	(*printSTATUS)(std::string s, double disptime);
 
 public:
 	arq();
@@ -356,26 +354,26 @@ public:
 
 	void	restart_arq();
 
-	string	checksum(string &s);
+	std::string	checksum(std::string &s);
 
-	void	myCall(string s) { MyCall = upcase(s);}
-	string	myCall() { return MyCall;}
+	void	myCall(std::string s) { MyCall = upcase(s);}
+	std::string	myCall() { return MyCall;}
 
-	void	urCall(string s) { UrCall = s;}
-	string	urCall() { return UrCall;}
+	void	urCall(std::string s) { UrCall = s;}
+	std::string	urCall() { return UrCall;}
 
 	void	newsession();
 
-	void	setSendFunc( void (*f)(const string& s)) { sendfnc = f;}
+	void	setSendFunc( void (*f)(const std::string& s)) { sendfnc = f;}
 	void	setGetCFunc( bool (*f)(char &)) { getc1 = f;}
 	void	setRcvFunc( void (*f)()) { rcvfnc = f;}
 
-	void	setPrintRX( void (*f)(string s)) { printRX = f;}
-	void	setPrintTX( void (*f)(string s)) { printTX = f;}
-	void	setPrintTALK (void (*f)(string s)) {printTALK = f;}
-	void	setPrintRX_DEBUG (void (*f)(string s)){printRX_DEBUG = f;}
-	void	setPrintTX_DEBUG (void (*f)(string s)) {printTX_DEBUG = f;}
-	void	setPrintSTATUS (void (*f)(string s, double disptime)) { printSTATUS = f;}
+	void	setPrintRX( void (*f)(std::string s)) { printRX = f;}
+	void	setPrintTX( void (*f)(std::string s)) { printTX = f;}
+	void	setPrintTALK (void (*f)(std::string s)) {printTALK = f;}
+	void	setPrintRX_DEBUG (void (*f)(std::string s)){printRX_DEBUG = f;}
+	void	setPrintTX_DEBUG (void (*f)(std::string s)) {printTX_DEBUG = f;}
+	void	setPrintSTATUS (void (*f)(std::string s, double disptime)) { printSTATUS = f;}
 
 	void	setMaxHeaders( int mh ) { maxheaders = mh; }
 	void	setExponent( int exp ) { exponent = exp; setBufferlength(); }
@@ -397,22 +395,22 @@ public:
 		else _idtimer = (10 * 60 - 10) * 1000 / ARQLOOPTIME;
 	}
 
-	void	setrxUrCall( void (*f)(string s)) { rxUrCall = f;}
-	void	setQualityValue( void (*f)(string s)) { qualityfnc = f;}
+	void	setrxUrCall( void (*f)(std::string s)) { rxUrCall = f;}
+	void	setQualityValue( void (*f)(std::string s)) { qualityfnc = f;}
 	void	setAbortedTransfer( void (*f)()) { abortfnc = f;};
 	void	setDisconnected( void (*f)()) { disconnectfnc = f;};
 
 	void	rcvChar( char c );
 
-	void	connect(string callsign);//, int blocksize = 6, int retries = 4);
+	void	connect(std::string callsign);//, int blocksize = 6, int retries = 4);
 
-	void	sendblocks( string txt );
+	void	sendblocks( std::string txt );
 
-	void	sendBeacon (string txt);
-	void	sendPlainText( string txt );
+	void	sendBeacon (std::string txt);
+	void	sendPlainText( std::string txt );
 
-	string	getText() { return RxTextQueue;}
-	void	sendText(string txt);
+	std::string	getText() { return RxTextQueue;}
+	void	sendText(std::string txt);
 
 	bool	connected() { return (LinkState == ARQ_CONNECTED); }
 	void	disconnect();

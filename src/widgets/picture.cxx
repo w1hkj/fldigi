@@ -539,7 +539,7 @@ static FILE* open_file(const char* name, const char* suffix)
 			fclose(fp);
 			const int n = 5; // rename existing image files to keep up to 5 old versions
 			ostringstream oldfn, newfn;
-			ostringstream::streampos p;
+			std::streampos p;
 
 			oldfn << name << '.';
 			newfn << name << '.';
