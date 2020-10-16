@@ -1291,7 +1291,9 @@ int fsq::rx_process(const double *buf, int len)
 				memmove(rx_stream,							// to
 						&rx_stream[SHIFT_SIZE],				// from
 						BLOCK_SIZE*sizeof(*rx_stream));	// # bytes
-				memset(fft_data, 0, sizeof(fft_data));
+                // fft_data gets overwritten each time with a fixed number of
+                // elements. Do we need to zero it out?
+				//memset(fft_data, 0, sizeof(fft_data));
 				for (int i = 0; i < BLOCK_SIZE; i++) {
 					double d = rx_stream[i] * a_blackman[i];
 					fft_data[i] = cmplx(d, d);
