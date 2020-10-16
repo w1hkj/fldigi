@@ -5,10 +5,6 @@ Installing.txt \
 WindowsOS.txt \
 thumb_drive.txt \
 fldigi_configuration.txt \
-fldigi_logging.txt \
-fldigi_macros.txt \
-fldigi_modems.txt \
-fldigi_operating.txt \
 colorsandfonts.txt \
 audio-adjust.txt \
 configcallsigndb.txt \
