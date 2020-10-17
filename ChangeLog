@@ -1,8 +1,69 @@
 
 
-=Version 4.1.14=
+=Version 4.1.15=
 
-2020-07-11  David Freese  <w1hkj@bellsouth.net>
+2020-10-17  David Freese  <w1hkj@bellsouth.net>
+
+	fb6be0c2d: Doxygen cleanup
+
+2020-10-16  Richard Shaw  <hobbes1069@gmail.com>
+
+	e76e55705: NULL / nullptr
+	4c7fcee25: c++17 fixes
+	396712d92: FSQ
+	136b67198: trx_mode
+	5e882d6c9: rigCAT
+	08630d6cc: MinGW
+	b4de51995: Fix warning about boundary issue.
+
+2020-10-16  David Freese  <w1hkj@bellsouth.net>
+
+	554e21b36: VUmeter
+	d670ccce4: documentation update
+	ab69c22f4: <@LOCK macro
+	c30b39305: Sound Card Record
+	8ef2bd201: fmt csv
+	bc14a38b2: W1AW-macros
+	98de9a656: xmlrpc memory leak
+	67dd7b42f: County Lists
+	685e4384c: fmt modem
+	2a1cef26f: xmlrpc rig timeout
+	75754d4fd: doc update
+	f1600c636: fmt-docs
+	06c2cebae: kml
+	b4575f656: DXCC lookup
+	df9a5978b: status locale
+	a8d02cda7: Level indicator
+	8915b0450: FeldHell
+	209741778: hamlib NET
+	cd7ec00ac: NanoIO
+
+2020-08-27  Andreas Scholz  <entwickelheini@users.sourceforge.net>
+
+	48cd15424: ADIF Conformity
+
+2020-08-24  David Freese  <w1hkj@bellsouth.net>
+
+	f0230a8b2: feld-hell font
+	e5b67ec7d: wf
+	2e90a584b: exit cleanup
+
+2020-07-28  Kosta Arvanitis  <karvanitis@hotmail.com>
+
+	4887da833: XmlRpc Exit
+	cba23e535: Macros
+
+2020-07-25  Rik van Riel  <riel@surriel.com>
+
+	f8a29a146: Navtex
+
+2020-07-20  David Freese  <w1hkj@bellsouth.net>
+
+	3c9d07f00: debug source
+	42557ed7a: cluster dupcheck
+
+
+=Version 4.1.14=
 
 	018618b6c: fonts
 	35a0af45b: Navtex
