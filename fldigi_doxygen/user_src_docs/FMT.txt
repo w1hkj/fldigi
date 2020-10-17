@@ -70,7 +70,7 @@ change from white to dark red when data recording has begun.
 \image html fmt-recording-controls.png ""
 \image latex fmt-recording-controls.png "" width=1.5in
 </center>
-The recording files are saved in the folder ~/.fldigi/fmt; C:\\User\\<login>\\fldigi.files\\fmt\\
+The recording files are saved in the folder ~/.fldigi/fmt; C:\\User\\\<login\>\\fldigi.files\\fmt\\
 <center>
 \image html fmt-files.png ""
 \image latex fmt-files.png "" width=3.5in

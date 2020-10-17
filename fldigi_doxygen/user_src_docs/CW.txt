@@ -96,7 +96,7 @@ Set the F-WPM slider to tthe character rate and enable the Use
 Farnsworth timing check box.  When the TX WPM is set to a speed
 below the Farnsworth value then the character rate will be at the
 Farnsworth setting and the word rate will be at the TX WPM rate.
-You can also set the TX WPM and F-WPM from within a \ref macro_page.
+You can also set the TX WPM and F-WPM from within a \ref macros_sub_page.
 <br>
 
 \section cw_config CW configuration
