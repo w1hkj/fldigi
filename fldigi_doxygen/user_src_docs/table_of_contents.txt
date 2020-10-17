@@ -69,13 +69,13 @@
 	</ul>
 </ul>
 
-<li>\ref command_line_switches_page</li>
+\ref command_line_switches_page
 <ul><li>\ref sTerminal</li>
 	<li>\ref sWindows</li>
 	<li>\ref sMint</li>
 </ul>
 
-<li>\ref contesting_page</li>
+\ref contesting_page
 <ul><li>\ref stand-alone-contesting</li>
 	<li>\ref n3fjp_logger</li>
 	<li>\ref contest_fields</li>
@@ -102,7 +102,7 @@
 
 \ref developers_page
 
-<li>\ref digiscope_display_page</li>
+\ref digiscope_display_page
 <ul><li>\ref cw_scope</li>
 	<li>\ref domino_ex_scope</li>
 	<li>\ref mfsk_scope</li>
@@ -151,7 +151,7 @@
 		<li>\ref querying_database</li>
 		<li>\ref google_earth_map</li>
 		<li>\ref custom_dates_times</li>
-	</ul><li>\ref inline_macro_page</li>
+		<li>\ref inline_macro_page</li>
 		<li>\ref advanced_qsy_page</li>
 	</ul>
 </ul>

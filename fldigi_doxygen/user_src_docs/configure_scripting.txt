@@ -1404,7 +1404,7 @@ speed allowing for CW identifing.
 <br>
 \section ss_load_macro Load Macro Command
 
-See \ref macro_page
+See \ref macros_sub_page
 
 The Macro command is a structured command only, dot notation is not supported.
 
