@@ -468,7 +468,7 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
                                     strncpy (sfreq, sFld.c_str(), sizeof(sfreq) - 1);
                                     comma_position = strchr(sfreq,',');
                                     if (comma_position != NULL) {
-                                        strncpy(comma_position,".",1);
+                                        *comma_position = '.';
                                     }
                                     
                                     fprintf(adiFile, "%s", sfreq);
