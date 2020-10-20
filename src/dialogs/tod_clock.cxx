@@ -227,6 +227,21 @@ void update_tx_timer()
 }
 
 //void ztimer(void *)
+static void show_ztimer()
+{
+	if (!inpTimeOff1) return;
+
+	update_tx_timer();
+
+	inpTimeOff1->value(zshowtime());
+	inpTimeOff2->value(zshowtime());
+	inpTimeOff3->value(zshowtime());
+	inpTimeOff1->redraw();
+	inpTimeOff2->redraw();
+	inpTimeOff3->redraw();
+
+}
+
 static void ztimer()
 {
 	struct tm ztm, ltm;
@@ -245,17 +260,7 @@ static void ztimer()
 	else
 		ltbuf[8] = '\0';
 
-	if (!inpTimeOff1) return;
-
-	update_tx_timer();
-
-	inpTimeOff1->value(zshowtime());
-	inpTimeOff2->value(zshowtime());
-	inpTimeOff3->value(zshowtime());
-	inpTimeOff1->redraw();
-	inpTimeOff2->redraw();
-	inpTimeOff3->redraw();
-
+	REQ(show_ztimer);
 }
 
 //======================================================================
@@ -273,7 +278,7 @@ void *TOD_loop(void *args)
 		if (++cnt == 4) {
 			guard_lock tmlock(&time_mutex);
 			gettimeofday(&now_val, NULL);
-			REQ(ztimer);
+			ztimer();
 			cnt = 0;
 		}
 		REQ(nanoIO_read_pot);
