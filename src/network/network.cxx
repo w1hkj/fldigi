@@ -44,7 +44,8 @@
 
 #include "network.h"
 #include "socket.h"
-//#include "https.h"
+
+#include "fl_digi.h"
 
 using namespace std;
 
@@ -180,7 +181,7 @@ recv_exit:
 int Url::https_get(std::string &response)
 {
 	int ret = 1, len;
-	_err = MBEDTLS_EXIT_FAILURE;
+	_err = MBEDTLS_EXIT_SUCCESS;
 	std::ostringstream REQUEST;
 
 	mbedtls_entropy_context entropy;
@@ -241,6 +242,7 @@ int Url::https_get(std::string &response)
 	if (debug_file) {
 		debug_file << " ok (" << ret << " skipped)\n";
 	}
+
 	/*
 	 * 1. Start the connection
 	 */
@@ -249,6 +251,7 @@ int Url::https_get(std::string &response)
 				   << _host << ":" << _port << "...";
 		debug_file.flush();
 	}
+
 	if( ( ret = mbedtls_net_connect(
 					&server_fd,
 					_host.c_str(),
@@ -266,6 +269,7 @@ int Url::https_get(std::string &response)
 	/*
 	 * 2. Setup stuff
 	 */
+
 	if (debug_file) {
 		debug_file << "  . Setting up the SSL/TLS structure...";
 		debug_file.flush();
@@ -283,6 +287,10 @@ int Url::https_get(std::string &response)
 	if (debug_file) {
 		debug_file << " ok\n";
 	}
+	/*
+	 * 3. More stuff
+	 */
+
 	/* OPTIONAL is not optimal for security,
 	 * but makes interop easier in this simplified example */
 	mbedtls_ssl_conf_authmode( &conf, MBEDTLS_SSL_VERIFY_OPTIONAL );
@@ -346,8 +354,9 @@ int Url::https_get(std::string &response)
 		debug_file << " ok\n";
 	}
 	/*
-	 * 3. Write the GET request
+	 * 6. Write the GET request
 	 */
+
 	if (debug_file) {
 		debug_file << "  > Write to server:";
 		debug_file.flush();
@@ -355,12 +364,11 @@ int Url::https_get(std::string &response)
 
 	REQUEST << "GET " << _request << " HTTP/1.1\r\n";
 	REQUEST << 
-"User-Agent: fldigi-4.1.02.10\r\n\
-Host: tgftp.nws.noaa.gov:443\r\n\
-Content-Type: application/json; charset=utf-8\r\n\
-Connection: Keep-Alive\r\n\r\n";
+"User-Agent: fldigi-" <<  FLDIGI_VERSION << "\r\n" <<
+"Host: " << _host << ":" << _port << "\r\n" <<
+"Content-Type: application/json; charset=utf-8\r\n" <<
+"Connection: Keep-Alive\r\n\r\n";
 	len = REQUEST.str().length();
-
 	while( ( ret = mbedtls_ssl_write(
 						&ssl,
 						(const unsigned char *)REQUEST.str().c_str(),
@@ -385,35 +393,38 @@ Connection: Keep-Alive\r\n\r\n";
 		debug_file << "\n  < Read from server:";
 		debug_file.flush();
 	}
+
 	do {
 		len = sizeof( buf ) - 1;
 		memset( buf, 0, sizeof( buf ) );
 		ret = mbedtls_ssl_read( &ssl, (unsigned char *)buf, len );
 
-		if( ret == MBEDTLS_ERR_SSL_WANT_READ || ret == MBEDTLS_ERR_SSL_WANT_WRITE )
+		if( ret == MBEDTLS_ERR_SSL_WANT_READ || ret == MBEDTLS_ERR_SSL_WANT_WRITE ) {
 			continue;
+		}
 
-		if( ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY )
+		if( ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY ) {
 			break;
+		}
 
 		if( ret < 0 ) {
-	if (debug_file) {
-		debug_file << "failed\n  ! mbedtls_ssl_read returned " << ret << std::endl;
-	}
+			if (debug_file) {
+				debug_file << "failed\n  ! mbedtls_ssl_read returned " << ret << std::endl;
+			}
 			break;
 		}
 
 		if( ret == 0 ) {
-	if (debug_file) {
-		debug_file << "\n\nEOF\n\n";
-	}
+			if (debug_file) {
+				debug_file << "\n\nEOF\n\n";
+			}
 			break;
 		}
 
 		len = ret;
-	if (debug_file) {
-		debug_file << len << " bytes read\n\n" << (char *) buf << std::endl;
-	}
+		if (debug_file) {
+			debug_file << len << " bytes read\n\n" << (char *) buf << std::endl;
+		}
 		_data.append(buf);
 		break;
 	} while( 1 );

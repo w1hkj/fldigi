@@ -2718,8 +2718,7 @@ void cb_mnuCheckUpdate(Fl_Widget *, void *)
 
 	put_status(_("Checking for updates..."));
 
-//	int ret = get_http_gui(url, reply, 20.0);
-	int ret = get_http(url, reply, 5.0);
+	int ret = get_http(url, reply, 20.0);
 	if (!ret) {
 		put_status(_("Update site not available"), 10);
 		return;
@@ -6470,56 +6469,116 @@ void cb_qso_btnClearList(Fl_Widget *, void *)
 		clearList();
 }
 
-void cb_qso_inpAct(Fl_Widget*, void*)
+//======================================================================
+// PSK reporter interface
+// use separate thread to accomodate very slow responses from
+// remote server
+//======================================================================
+#define PSKREP_MENU_MAX 8
+
+static pthread_t PSKREP_thread;
+static string pskrep_data, pskrep_url, popup_title;
+static string pskrep_str[PSKREP_MENU_MAX];
+static string::size_type pskrep_i;
+static Fl_Menu_Item pskrep_menu[PSKREP_MENU_MAX + 1];
+static bool pskrep_working = false;
+
+void do_pskreporter_popup()
 {
-	string data, url;
-	data.reserve(128);
-	url = "http://pskreporter.info/cgi-bin/psk-freq.pl";
+	int j;
+	int sel = 0;
+	int t = Fl_Tooltip::enabled();
+	const Fl_Menu_Item* p = (Fl_Menu_Item *)0;
 
-	url.append("?mode=").append(mode_info[active_modem->get_mode()].adif_name);
+	put_status(""); 
 
+	Fl_Tooltip::disable();
+	p = pskrep_menu->popup(
+		qso_inpAct->x() + qso_inpAct->w(), qso_inpAct->y() + qso_inpAct->h(),
+		popup_title.c_str(), pskrep_menu + sel);
+
+	j = p ? p - pskrep_menu + 1 : 0;
+	if (j)
+		qsy(strtoll(pskrep_str[j - 1].erase(pskrep_str[j - 1].find(' ')).c_str(), NULL, 10));
+
+	Fl_Tooltip::enable(t);
+}
+
+void *do_pskreporter_lookup(void *)  // thread action
+{
+	pskrep_working = true;
+	pskrep_data.clear();
+	pskrep_url.assign("https://pskreporter.info/cgi-bin/psk-freq.pl");
+	pskrep_url.append("?mode=").append(mode_info[active_modem->get_mode()].adif_name);
 	if (qso_inpAct->size())
-		url.append("&?grid=").append(qso_inpAct->value());
+		pskrep_url.append("&?grid=").append(qso_inpAct->value());
 	else if (progdefaults.myLocator.length() > 2)
-		url.append("&?grid=").append(progdefaults.myLocator, 0, 2);
+		pskrep_url.append("&?grid=").append(progdefaults.myLocator, 0, 2);
 
-	string::size_type i;
-	if (!get_http(url, data, 10.0) ||
-//	if (!get_http_gui(url, data, 10.0) ||
-		(i = data.find("\r\n\r\n")) == string::npos) {
-		LOG_ERROR("Error while fetching \"%s\": %s", url.c_str(), data.c_str());
-		return;
+	if (get_http(pskrep_url, pskrep_data, 20.0) != MBEDTLS_EXIT_SUCCESS) {
+		LOG_ERROR("Error while fetching \"%s\": %s", pskrep_url.c_str(), pskrep_data.c_str());
+		pskrep_working = false;
+		return NULL;
 	}
 
-	i += strlen("\r\n\r\n");
+	if (pskrep_data.find("IP has made too many requests") != std::string::npos) {
+		popup_title.assign(progdefaults.myName).append("\nSlow down the requests\nLAST data");
+		REQ(do_pskreporter_popup);
+		pskrep_working = false;
+		return NULL;
+	}
+
+	pskrep_i = pskrep_data.rfind("\r\n\r\n");
+	if (pskrep_i == string::npos) {
+		LOG_ERROR("Pskreporter return invalid: %s", pskrep_data.c_str());
+		pskrep_working = false;
+		return NULL;
+	}
+	pskrep_i += 4;
+	pskrep_i = pskrep_data.find("\r\n", pskrep_i);
+	pskrep_i += 2;
 	re_t re("([[:digit:]]{6,}) [[:digit:]]+ ([[:digit:]]+)[[:space:]]+", REG_EXTENDED);
 
-	const size_t menu_max = 8;
-	Fl_Menu_Item menu[menu_max + 1];
-	string str[menu_max];
 	size_t j = 0;
-	memset(menu, 0, sizeof(menu));
-
-	while (re.match(data.c_str() + i) && j < menu_max) {
-		i += re.submatch(0).length();
-		str[j].assign(re.submatch(1)).append(" (").append(re.submatch(2)).
+	memset(pskrep_menu, 0, sizeof(pskrep_menu));
+	string title;
+	while (re.match(pskrep_data.substr(pskrep_i).c_str()) && j < PSKREP_MENU_MAX) {
+		pskrep_i = pskrep_data.find("\r\n", pskrep_i + 1);
+		if (pskrep_i == string::npos) break;
+		pskrep_i += 2;
+		pskrep_str[j].assign(re.submatch(1)).append(" (").append(re.submatch(2)).
 			append(" ").append(atoi(re.submatch(2).c_str()) == 1 ? _("report") : _("reports")).append(")");
-		menu[j].label(str[j].c_str());
-		menu[++j].label(NULL);
+		pskrep_menu[j].label(pskrep_str[j].c_str());
+		pskrep_menu[++j].label(NULL);
 	}
-
-	if ((i = data.find(" grid ", i)) != string::npos)
-		data.assign(data, i + strlen(" grid"), 3);
-	else
-		data = " (?)";
-	if (j)
-		data.insert(0, _("Recent activity for grid"));
-	else
-		data = "No recent activity";
-
-	if ((j = quick_choice_menu(data.c_str(), 1, menu)))
-		qsy(strtoll(str[j - 1].erase(str[j - 1].find(' ')).c_str(), NULL, 10));
+	if ((pskrep_i = pskrep_data.rfind(" grid ")) != string::npos) {
+		popup_title.assign(_("Recent activity for grid ")).
+					append(pskrep_data.substr(pskrep_i + 5, 3));
+	} else {
+		popup_title = " (?) Check network event log!\n";
+#ifdef __WIN32__
+		popup_title.append("fldigi.files\\debug\\network_debug.txt");
+#else
+		popup_title.append("~/.fldigi/debug/network_debug.txt");
+#endif
+	}
+	REQ(do_pskreporter_popup);
+	pskrep_working = false;
+	return NULL;
 }
+
+void cb_qso_inpAct(Fl_Widget*, void*)
+{
+	if (pskrep_working) {
+		return;
+	}
+	if (pthread_create(&PSKREP_thread, NULL, do_pskreporter_lookup, NULL) < 0) {
+		LOG_ERROR("%s", "pthread_create failed");
+		return;
+	}
+	put_status("Fetching PSK Reporter data", 15); 
+}
+//======================================================================
 
 static int i_opUsage;
 static string s_opEntry;
