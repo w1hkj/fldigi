@@ -94,8 +94,6 @@ void thor::rx_init()
 	datashreg = 1;
 	sig = noise = 6;
 
-	fec_confidence = 0;
-
 	s2n_valid = false;
 	txstate = TX_STATE_RECEIVE;
 
@@ -485,10 +483,15 @@ void thor::decodePairs(unsigned char symbol)
 	if (c == -1)
 		return;
 
+	// differential modem, running average of FEC confidence
+	static int fec_confidence; 
 	if(met < 255 / 2) fec_confidence -=  2 + fec_confidence / 2;
 	else fec_confidence += 2;
 	if (fec_confidence < 0) fec_confidence = 0;
 	if (fec_confidence > 100) fec_confidence = 100;
+	
+	// Update confidence value for later display in GUI
+	update_quality(fec_confidence);
 
 	if (progStatus.sqlonoff && metric < progStatus.sldrSquelchValue)
 		return;
@@ -935,16 +938,7 @@ void thor::eval_s2n()
 	snprintf(thormsg, sizeof(thormsg), "s/n %3.0f dB", s2n );
 	put_Status1(thormsg);
 
-	// Scale FEC indicatior to reduce erratic / jumpy / unreadable display in GUI
-	int scalefec;
-	if (fec_confidence++ > 90) scalefec = 100;
-	else if (fec_confidence++ > 60) scalefec = 75;
-	else if (fec_confidence++ > 40) scalefec = 50;
-	else if (fec_confidence++ >= 20) scalefec = 25;
-	else if ( fec_confidence > 9) scalefec = 10;
-	else scalefec = 0; // Else just round to 0.
-
-	snprintf(confidence, sizeof(confidence), "FEC: %3.1d%%", scalefec);
+	snprintf(confidence, sizeof(confidence), "FEC: %3.1d%%", get_quality());
 	put_Status2(confidence);
 }
 

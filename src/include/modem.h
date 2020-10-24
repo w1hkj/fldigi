@@ -39,6 +39,9 @@
 // Constants for signal searching & s/n threshold
 #define SIGSEARCH 5
 
+// How many samples to average the signal-quality value over
+#define QUALITYDEPTH 5
+
 #define TWOPI (2.0 * M_PI)
 
 class modem {
@@ -288,7 +291,13 @@ public:
 	virtual std::string fsq_mycall() {return "";}
 	virtual bool		fsq_squelch_open() {return false;}
 	virtual void		fsq_transmit(void *) {}
-
+	
+// modem decode-quality data and statistics
+public:
+	int update_quality(int value, int mode=0); // for displaying signal-quality in the GUI
+	int get_quality(int mode=0);	// return an average of the quality values
+private:
+	int quality[QUALITYDEPTH];		// array containining a 0-100 number representing the signal-quality
 };
 
 extern modem *null_modem;
