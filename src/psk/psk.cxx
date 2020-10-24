@@ -1305,6 +1305,33 @@ void psk::rx_symbol(cmplx symbol, int car)
 		softangle = 127.0 - 255.0 * alpha;
 		softbit = (unsigned char) ((softangle / ( 1.0 + softamp / 2.0)) + 128);
 	}
+	
+	
+	// Only update phase_quality once every dcdbits/4 function-calls
+	static int counter=0;
+	if (counter++ > dcdbits/4) {
+		counter = 0;
+
+		// Calculate how far the phase/constellation is off from perfect, on a scale of 0-100 
+		double PhaseOffset = (phase * 180.0 / M_PI) / (360.0/n);
+		PhaseOffset -= (int)PhaseOffset; 	// cutoff integer, leave just the decimal part
+		if (PhaseOffset > 0.5) 				// fix the wraparound issue
+			PhaseOffset = 1.0 - PhaseOffset;
+				
+		int phase_quality= (int)(100 - PhaseOffset * 200); // Save the phase_quality to a global for later display
+		
+		// Adjust the phase-error for non 8psk modes
+		if (n == 2) 		// bpsk, pskr
+			phase_quality *= 1.25;
+		else if (n == 4) 	// qpsk, xpsk
+			phase_quality *= 1.05;
+		
+		if (phase_quality > 100) phase_quality = 100;
+		else if (phase_quality < 0) phase_quality = 0;
+		
+		update_quality(phase_quality);
+
+	}
 
 	// simple low pass filter for quality of signal
 	double decay = SQLDECAY;
@@ -1586,6 +1613,37 @@ void psk::update_syncscope()
 			strcpy(msg2, "IMD ---");
 		else
 			snprintf(msg2, sizeof(msg2), "IMD %2.0f dB", imd);
+
+		put_Status2(
+			msg2,
+			progdefaults.StatusTimeout,
+			progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
+	
+	} else if (displaysn) {
+		
+		// Only update the GUI once every dcdbits/4 function calls 
+		// to prevent high CPU load from high-baudrate modes
+		static int counter=0;
+		if (counter++ < dcdbits/4)
+			return;
+		else counter = 0;
+		
+		memset(msg1, 0, sizeof(msg1));
+		memset(msg2, 0, sizeof(msg2));
+
+		s2n = 10.0*log10( snratio );
+		if (s2n < 6)
+			strcpy(msg1, "S/N ---");
+		else
+			snprintf(msg1, sizeof(msg1), "S/N %2.0f dB", s2n);
+
+		put_Status1(
+			msg1,
+			progdefaults.StatusTimeout,
+			progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
+
+		// Display the phase-error of the
+		snprintf(msg2, sizeof(msg2), "Phase: %d%%", get_quality() );
 
 		put_Status2(
 			msg2,
