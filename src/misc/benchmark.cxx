@@ -146,14 +146,15 @@ void do_benchmark(void)
 	}
 
 	info << "processed: " << nproc << " samples (decoded " << nrx << ") in "
-		 << precision(3)
 		 <<  wall_time[1].tv_sec + wall_time[1].tv_nsec / 1e9 << " seconds";
 	LOG_INFO("%s", info.str().c_str());
 
 	double speed = nproc / (ru[1].ru_utime.tv_sec + ru[1].ru_utime.tv_usec / 1e6);
-	info << "cpu time : " << width(10)
-		 << (intmax_t)ru[1].ru_utime.tv_sec << "." << width(3) << fill('0')
-		 << (intmax_t)ru[1].ru_utime.tv_usec / 1000
+	char secs[20];
+	snprintf(secs, sizeof(secs), "%d.%06d", 
+		(int)(ru[1].ru_utime.tv_sec),
+		(int)(ru[1].ru_utime.tv_usec / 1000) );
+	info << "cpu time : " << secs 
 		 << "; speed=" << speed
 		 << "/s; factor=" << speed / active_modem->get_samplerate();
 	LOG_INFO("%s", info.str().c_str());
