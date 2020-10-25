@@ -1215,8 +1215,9 @@ int main(int argc, char ** argv)
 	}
 	kml_init(true);
 
-	if (progdefaults.kml_purge_on_startup)
+	if (progdefaults.kml_purge_on_startup) {
 		KmlServer::GetInstance()->Reset();
+	}
 
 // OS X will prevent the main window from being resized if we change its
 // size *after* it has been shown. With some X11 window managers, OTOH,

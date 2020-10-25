@@ -1002,7 +1002,6 @@ class  KmlSrvImpl : public KmlServer {
 			if( ( ret_rm != 0 ) && ( errno != ENOENT ) ) {
 				LOG_WARN("Cannot remove %s: %s", m_filnam.c_str(), strerror(errno) );
 			}
-
 			int ret_mv = rename( m_filtmp.c_str(), m_filnam.c_str() );
 			if( ret_mv ) {
 				LOG_WARN("Cannot rename %s to %s:%s", m_filtmp.c_str(), m_filnam.c_str(), strerror(errno) );
@@ -1686,6 +1685,7 @@ public:
 	/// Empties the generated files.
 	void Reset(void) {
 		for( size_t i = 0; i < nb_categories; ++i ) {
+std::cout << "reset: " << categories[i] << std::endl;
 			CreateNewKmlFile(categories[i]);
 		}
 		ResetCounter();
