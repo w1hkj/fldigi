@@ -15678,7 +15678,8 @@ ed)"));
         inpMyLocator->when(FL_WHEN_RELEASE);
         inpMyLocator->labelsize(FL_NORMAL_SIZE);
       } // Fl_Input2* inpMyLocator
-      { Fl_ListBox* o = listbox_states = new Fl_ListBox(386, 237, 160, 24, _("State"));
+      { Fl_ListBox* o = listbox_states = new Fl_ListBox(386, 237, 319, 24, _("State / Provinces"));
+        listbox_states->tooltip(_("US States / Canadian Provinces"));
         listbox_states->box(FL_DOWN_BOX);
         listbox_states->color(FL_BACKGROUND2_COLOR);
         listbox_states->selection_color(FL_BACKGROUND_COLOR);
@@ -15694,8 +15695,8 @@ ed)"));
         o->index(progdefaults.SQSOstate);
         listbox_states->end();
       } // Fl_ListBox* listbox_states
-      { Fl_Input2* o = inp_QP_state_short = new Fl_Input2(553, 237, 43, 24);
-        inp_QP_state_short->tooltip(_("Abbreviation for state"));
+      { Fl_Input2* o = inp_QP_state_short = new Fl_Input2(710, 237, 60, 24);
+        inp_QP_state_short->tooltip(_("Abbreviation for State/Province"));
         inp_QP_state_short->box(FL_DOWN_BOX);
         inp_QP_state_short->color(FL_BACKGROUND2_COLOR);
         inp_QP_state_short->selection_color(FL_SELECTION_COLOR);
@@ -15707,7 +15708,8 @@ ed)"));
         inp_QP_state_short->when(FL_WHEN_RELEASE);
         o->value(states.state_short(listbox_states->value()).c_str());
       } // Fl_Input2* inp_QP_state_short
-      { Fl_ListBox* o = listbox_counties = new Fl_ListBox(386, 268, 284, 24, _("County"));
+      { Fl_ListBox* o = listbox_counties = new Fl_ListBox(386, 268, 319, 24, _("Counties / Regions"));
+        listbox_counties->tooltip(_("US/Canadian Counties / Regions"));
         listbox_counties->box(FL_DOWN_BOX);
         listbox_counties->color(FL_BACKGROUND2_COLOR);
         listbox_counties->selection_color(FL_BACKGROUND_COLOR);
@@ -15723,8 +15725,8 @@ ed)"));
         o->labelsize(FL_NORMAL_SIZE);
         listbox_counties->end();
       } // Fl_ListBox* listbox_counties
-      { inp_QP_short_county = new Fl_Input2(678, 268, 60, 24);
-        inp_QP_short_county->tooltip(_("Abbreviation for county"));
+      { inp_QP_short_county = new Fl_Input2(710, 268, 60, 24);
+        inp_QP_short_county->tooltip(_("Abbreviation for County/Region"));
         inp_QP_short_county->box(FL_DOWN_BOX);
         inp_QP_short_county->color(FL_BACKGROUND2_COLOR);
         inp_QP_short_county->selection_color(FL_SELECTION_COLOR);
