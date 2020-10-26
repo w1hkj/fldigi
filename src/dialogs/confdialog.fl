@@ -469,7 +469,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {642 20 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
+    xywh {754 206 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
   } {
     Fl_Group {} {
       xywh {0 0 201 385} resizable
@@ -7795,7 +7795,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group grpOperator {
-      label {Operator-Station}
+      label {Operator-Station} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX color 50 align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Operator-Station"));}
       code1 {config_pages.push_back(p);}
@@ -7881,7 +7881,7 @@ progdefaults.changed = true;}
         class Fl_Input2
       }
       Fl_Group listbox_states {
-        label State
+        label {State / Provinces}
         callback {listbox_counties->clear();
 listbox_counties->add(states.counties(o->value()).c_str());
 listbox_counties->index(0);
@@ -7889,7 +7889,7 @@ inp_QP_short_county->value(states.cnty_short(listbox_states->value(),listbox_cou
 inp_QP_state_short->value(states.state_short(o->value()).c_str());
 progdefaults.SQSOstate = o->index();
 progdefaults.changed = true;} open
-        xywh {386 237 160 24} box DOWN_BOX color 7 align 4
+        tooltip {US States / Canadian Provinces} xywh {386 237 319 24} box DOWN_BOX color 7 align 4
         code0 {\#include "counties.h"}
         code1 {o->labelsize(FL_NORMAL_SIZE);}
         code2 {o->add(states.names().c_str());}
@@ -7897,23 +7897,23 @@ progdefaults.changed = true;} open
         class Fl_ListBox
       } {}
       Fl_Input inp_QP_state_short {
-        tooltip {Abbreviation for state} xywh {553 237 43 24} align 5
+        tooltip {Abbreviation for State/Province} xywh {710 237 60 24} align 5
         code0 {o->value(states.state_short(listbox_states->value()).c_str());}
         class Fl_Input2
       }
       Fl_Group listbox_counties {
-        label County
+        label {Counties / Regions}
         callback {inp_QP_short_county->value(states.cnty_short(listbox_states->value(),o->value()).c_str());
 progdefaults.SQSOcounty = o->index();
 progdefaults.changed = true;} open
-        xywh {386 268 284 24} box DOWN_BOX color 7 align 4
+        tooltip {US/Canadian Counties / Regions} xywh {386 268 319 24} box DOWN_BOX color 7 align 4
         code0 {o->clear(); o->add(states.counties(listbox_states->value()).c_str());}
         code1 {o->index(progdefaults.SQSOcounty);}
         code2 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_ListBox
       } {}
       Fl_Input inp_QP_short_county {
-        tooltip {Abbreviation for county} xywh {678 268 60 24} align 5
+        tooltip {Abbreviation for County/Region} xywh {710 268 60 24} align 5
         code0 {inp_QP_short_county->value(states.cnty_short(listbox_states->value(),listbox_counties->value()).c_str());}
         class Fl_Input2
       }
@@ -9748,7 +9748,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Signal Level} selected
+      label {Signal Level}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Signal Level"));}
       code1 {config_pages.push_back(p);}
