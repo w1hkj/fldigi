@@ -38,7 +38,8 @@
 
 #define VCW_MAXCH		30
 #define	VCW_DEC_RATIO	16
-#define VCW_SAMPLERATE	8000
+#define VCW_SAMPLERATE	 8000
+
 // VKWPM conversion factor 
 // # samples per dot = VKWPM / wpm
 // 30 samples @ 20 wpm

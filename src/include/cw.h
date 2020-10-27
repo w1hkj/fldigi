@@ -38,7 +38,7 @@
 
 #include "view_cw.h"
 
-#define	CW_SAMPLERATE	16000 //8000
+#define	CW_SAMPLERATE	8000
 
 #define	CWMaxSymLen		4096		// AG1LE: - was 4096 
 
