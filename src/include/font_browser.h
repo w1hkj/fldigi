@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-//  Font_Browser.h      v 0.0.1                        2005-10-17 
+//  Font_Browser.h      v 0.0.1                        2005-10-17
 //
 //         for the Fast Light Tool Kit (FLTK) 1.1.x .
 //
@@ -44,19 +44,21 @@
 class Preview_Box : public Fl_Widget
 {
 private:
-    int		fontName;
-    int		fontSize;
-    Fl_Color	fontColor;
+	int		fontName;
+	int		fontSize;
+	Fl_Color	fontColor;
 
-    void	draw();
+	void	draw();
 public:
-    Preview_Box(int x, int y, int w, int h, const char* l);
-    void SetFont( int fontname, int fontsize, Fl_Color c);
+	Preview_Box(int x, int y, int w, int h, const char* l);
+	void SetFont( int fontname, int fontsize, Fl_Color c);
 };
 
 // Font browser widget
 class Font_Browser : public Fl_Window
 {
+friend void *find_fixed_fonts(void *);
+
 public:
 	struct font_pair {
 		int  nbr;
@@ -70,53 +72,58 @@ public:
 		}
 	};
 
-    enum filter_t { FIXED_WIDTH, VARIABLE_WIDTH, ALL_TYPES };
+	enum filter_t { FIXED_WIDTH, VARIABLE_WIDTH, ALL_TYPES };
+
+// these are shared by all instances of Font_Browser
+// created for instance 1 and deleted for instance 0
+
+	static int			*fixed;
+	static font_pair	*font_pairs;
+	static int			instance;
+	static int			numfonts;
 
 private:
-    int		numfonts;
-    Fl_Font	fontnbr;
-    int		fontsize;
-    Fl_Color	fontcolor;
-    filter_t	filter;
-    void	*data_;
 
-    static int *fixed;
-    static font_pair *font_pairs;
-    static int instance;
+	Fl_Font	fontnbr;
+	int		fontsize;
+	Fl_Color	fontcolor;
+	filter_t	filter;
+	void	*data_;
 
-    Fl_Browser	*lst_Font;
-    Fl_Browser	*lst_Size;
-    Fl_Value_Input2 *txt_Size;
-    Fl_Return_Button *btn_OK;
-    Fl_Button	*btn_Cancel;
-    Fl_Button	*btn_Color;
-    Fl_Check_Button	*btn_fixed;
-    Preview_Box	*box_Example;
+	Fl_Browser	*lst_Font;
+	Fl_Browser	*lst_Size;
+	Fl_Value_Input2 *txt_Size;
+	Fl_Return_Button *btn_OK;
+	Fl_Button	*btn_Cancel;
+	Fl_Button	*btn_Color;
+	Fl_Check_Button	*btn_fixed;
+	Preview_Box	*box_Example;
 
-    Fl_Callback* callback_;
+	Fl_Callback* callback_;
 
 public:
-    Font_Browser(int x = 100, int y = 100, int w = 430, int h = 225, const char *lbl = "Font Browser");
-    ~Font_Browser();
+	Font_Browser(int x = 100, int y = 100, int w = 430, int h = 225, const char *lbl = "Font Browser");
+	~Font_Browser();
 
-    void callback(Fl_Callback* cb, void *d = 0) { callback_ = cb; data_ = d; }
-    static void fb_callback(Fl_Widget* w, void* arg);
-    void	FontNameSelect();
-    void	ColorSelect();
+	void callback(Fl_Callback* cb, void *d = 0) { callback_ = cb; data_ = d; }
+	static void fb_callback(Fl_Widget* w, void* arg);
+	void	FontNameSelect();
+	void	ColorSelect();
 
-    int numFonts() { return numfonts; }
-    void fontNumber(Fl_Font n);
-    Fl_Font fontNumber() { return fontnbr; }
-    void fontSize(int s);
-    int fontSize() { return fontsize; }
-    void fontColor(Fl_Color c);
-    Fl_Color fontColor() { return fontcolor; };
+	int numFonts() { return numfonts; }
+	void fontNumber(Fl_Font n);
+	Fl_Font fontNumber() { return fontnbr; }
+	void fontSize(int s);
+	int fontSize() { return fontsize; }
+	void fontColor(Fl_Color c);
+	Fl_Color fontColor() { return fontcolor; };
 
-    const char *fontName() { return lst_Font->text(lst_Font->value()); }
-    void fontName(const char* n);
+	const char *fontName() { return lst_Font->text(lst_Font->value()); }
+	void fontName(const char* n);
 
-    static bool fixed_width(Fl_Font f);
-    void fontFilter(filter_t filter);
+static	bool fixed_width(Fl_Font f);
+
+	void fontFilter(filter_t filter);
 };
 
 extern Font_Browser* font_browser;
