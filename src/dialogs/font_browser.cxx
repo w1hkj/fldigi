@@ -39,13 +39,21 @@
 #include "flslider2.h"
 #include "gettext.h"
 
+#include "threads.h"
+#include "debug.h"
+
 using namespace std;
+
+void find_fonts();
 
 Font_Browser* font_browser;
 
-int Font_Browser::instance = 0;
-int * Font_Browser::fixed = 0;
+int		Font_Browser::instance = 0;
+int 	*Font_Browser::fixed = 0;
+int 	Font_Browser::numfonts = 0;
+
 Font_Browser::font_pair *Font_Browser::font_pairs = 0;
+
 
 static int  font_compare(const void *p1, const void *p2)
 {
@@ -130,8 +138,6 @@ void Font_Browser::FontNameSelect()
 	fontSize(fontsize);
 }
 
-//#define FBDEBUG 1
-
 Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
 	 : Fl_Window(x, y, w, h, lbl)
 {
@@ -139,7 +145,6 @@ Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
 	lst_Font->align(FL_ALIGN_TOP_LEFT);
 	lst_Font->type(FL_HOLD_BROWSER);
 	lst_Font->callback(fb_callback, this);
-	fixed = 0;
 
 	txt_Size = new Fl_Value_Input2(290, 15, 50, 22, _("Size:"));
 	txt_Size->align(FL_ALIGN_TOP_LEFT);
@@ -153,6 +158,7 @@ Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
 
 	btn_fixed = new Fl_Check_Button(345, 15, 18, 18, _("Fixed"));
 	btn_fixed->callback(fb_callback, this);
+	btn_fixed->value(0);
 
 	btn_OK = new Fl_Return_Button(345, 40, 80, 25, _("&OK"));
 	btn_OK->shortcut(0x8006f);
@@ -169,10 +175,10 @@ Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
 	btn_Color->callback(fb_callback, this);
 
 	box_Example = new Preview_Box(5, 145, 420, 75,
-	_(
-"The quick red fox jumped over the lazy dog!\n\
-ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789\n\
-!\"#$%&'()*+,-./:;<=>?@@[\\]^_`{|}~"
+	_("\
+abcdefghijklmnopqrstuvwxyz\n\
+ABCDEFGHIJKLMNOPQRSTUVWXYZ\n\
+0123456789"
 	) );
 	box_Example->box(FL_DOWN_BOX);
 	box_Example->align(FL_ALIGN_WRAP|FL_ALIGN_CLIP|FL_ALIGN_CENTER|FL_ALIGN_INSIDE);
@@ -194,7 +200,6 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789\n\
 		++instance;
 
 		numfonts =   Fl::set_fonts(0); // Nr of fonts available on the server
-
 		font_pairs = new font_pair[numfonts];
 		fixed = new int[numfonts];
 
@@ -209,6 +214,7 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789\n\
 					break;
 				}
 			}
+			if (fntname.empty()) ok = false;
 			if (ok) {
 				font_pairs[j].name = new std::string;
 				*(font_pairs[j].name) = fntname;
@@ -218,40 +224,23 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789\n\
 		}
 
 		numfonts = j;
+
 		qsort(&font_pairs[0], numfonts, sizeof(font_pair), font_compare);
 
-#ifdef FBDEBUG
-	FILE *sys_fonts = fopen("fonts.txt", "w");
-	fprintf(sys_fonts, "Font #, Name, Type\n");
-#endif
 		for (int i = 0; i < numfonts; i++) {
-			if ((*(font_pairs[i].name)).length()) {
-				lst_Font->add((*(font_pairs[i].name)).c_str(), reinterpret_cast<void *>(font_pairs[i].nbr));
-				fixed[i] = fixed_width(font_pairs[i].nbr);
-#ifdef FBDEBUG
-				fprintf(
-					sys_fonts,
-					"%d, %s, %c\n",
-					font_pairs[i].nbr,
-					(*(font_pairs[i].name)).c_str(),
-					fixed[i] ? 'F' : 'P');
-#endif
-			}
+			lst_Font->add((*(font_pairs[i].name)).c_str(), reinterpret_cast<void *>(font_pairs[i].nbr));
+			fixed[i] = 0;
 		}
-#ifdef FBDEBUG
-		fclose(sys_fonts);
-#endif
+		find_fonts();
 	} else {
 		++instance;
 		for (int i = 0; i < numfonts; i++) {
-			if ((*(font_pairs[i].name)).length()) {
-				lst_Font->add((*(font_pairs[i].name)).c_str(), reinterpret_cast<void *>(font_pairs[i].nbr));
-			}
+			lst_Font->add((*(font_pairs[i].name)).c_str(), reinterpret_cast<void *>(font_pairs[i].nbr));
 		}
 	}
 
 	fontnbr = FL_HELVETICA;;
-	fontsize = FL_NORMAL_SIZE; // Font Size to be used
+	fontsize = FL_NORMAL_SIZE;
 	fontcolor = FL_FOREGROUND_COLOR;
 	filter = ALL_TYPES;
 
@@ -317,50 +306,6 @@ void Font_Browser::fontName(const char* n)
 	}
 }
 
-bool Font_Browser::fixed_width(Fl_Font f)
-{
-	fl_font(f, FL_NORMAL_SIZE);
-	return fl_width(".") == fl_width("W");
-}
-
-#include <vector>
-#include <FL/Fl_Double_Window.H>
-#include <FL/Fl_Progress.H>
-
-class Progress_Window : public Fl_Double_Window
-{
-public:
-	Progress_Window(float min = 0.0f, float max = 100.0f, const char* l = 0)
-		: Fl_Double_Window(200, 34), ps(5, 5, 190, 24, l)
-	{
-		end();
-
-		range(min, max);
-		ps.align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
-		ps.selection_color(FL_SELECTION_COLOR);
-		set_modal();
-		callback(nop);
-
-		if (l && *l) {
-			fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
-			int s = (int)(fl_width(l) + fl_width('W'));
-			if (s > ps.w()) {
-				ps.size(s, ps.h());
-				size(ps.w() + 10, h());
-			}
-		}
-		position(Fl::event_x_root() - w() / 2, Fl::event_y_root() - h());
-
-		xclass(PACKAGE_TARNAME);
-		show();
-	}
-	void range(float min, float max) { ps.minimum(min); ps.maximum(max); }
-	void value(float val) { ps.value(val); }
-	static void nop(Fl_Widget*, void*) { }
-private:
-	Fl_Progress ps;
-};
-
 void Font_Browser::fontFilter(filter_t filter)
 {
 	int s = lst_Font->size();
@@ -394,7 +339,64 @@ void Font_Browser::fontFilter(filter_t filter)
 	lst_Font->topline(lst_Font->value());
 }
 
-//////////////////////////////////////////////////////////////////////
+// separate thread used to evaluate fixed / proportional fonts
+// friend of Font_Browser
+// launched by Font_Browser instance 1
+
+static pthread_t find_font_thread;
+
+//#define FBDEBUG 1
+
+static int is_fixed;
+Fl_Font test_font;
+void font_test(void *)
+{
+	fl_font(test_font, FL_NORMAL_SIZE);
+	is_fixed = (fl_width(".") == fl_width("W"));
+}
+
+void *find_fixed_fonts(void *)
+{
+#ifdef FBDEBUG
+	FILE *sys_fonts = fopen("fonts.txt", "w");
+	fprintf(sys_fonts, "Font #, Type, Name\n");
+#endif
+	for (int i = 0; i < Font_Browser::numfonts; i++) {
+		test_font = Font_Browser::font_pairs[i].nbr;
+		is_fixed = -1;
+		Fl::awake(font_test);
+		while (is_fixed == -1) MilliSleep(10);
+		Font_Browser::fixed[i] = is_fixed;
+#ifdef FBDEBUG
+		fprintf(
+			sys_fonts,
+			"%d, %c, %s\n",
+			Font_Browser::font_pairs[i].nbr,
+			Font_Browser::fixed[i] ? 'F' : 'P',
+			(*(Font_Browser::font_pairs[i].name)).c_str());
+#endif
+	}
+#ifdef FBDEBUG
+		fclose(sys_fonts);
+#endif
+	return NULL;
+}
+
+void find_fonts()
+{
+	if (pthread_create(&find_font_thread, NULL, find_fixed_fonts, NULL) < 0) {
+		LOG_ERROR("%s", "pthread_create find_fixed_fonts failed");
+	}
+	return;
+}
+
+bool Font_Browser::fixed_width(Fl_Font f)
+{
+	fl_font(f, FL_NORMAL_SIZE);
+	return fl_width(".") == fl_width("W");
+}
+
+//----------------------------------------------------------------------
 
 Preview_Box::Preview_Box(int x, int y, int w, int h, const char* l)
   : Fl_Widget(x, y, w, h, l)
