@@ -9,10 +9,10 @@ dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(FLDIGI_MAJOR, [4])
 m4_define(FLDIGI_MINOR, [1])
-m4_define(FLDIGI_PATCH, [.13.18])
+m4_define(FLDIGI_PATCH, [.15])
 m4_define(FLARQ_MAJOR,  [4])
 m4_define(FLARQ_MINOR,  [3])
-m4_define(FLARQ_PATCH,  [.7.08])
+m4_define(FLARQ_PATCH,  [.7])
 
 AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[]FLDIGI_PATCH, [fldigi-devel@sourceforge.net])
 
@@ -297,13 +297,6 @@ AC_FLDIGI_PKG_CHECK([flxmlrpc], [flxmlrpc >= 0.1.0],
 AC_FLDIGI_PKG_CHECK([libmbedtls], [libmbedtls >= 2.16.0], 
   [yes], [yes], [use mbedtls libraries @<:@autodetect@:>@],
   [ENABLE_LIBMBEDTLS])
-
-### regex
-# Does no provide a pkgconf file, so find manually
-AC_SEARCH_LIBS([regcomp], [regex], [], [
-        AC_MSG_ERROR([Unable to find a compatible regex library.])
-])
-
 
 ### libintl
 # Substitute INTL_CFLAGS in Makefile
