@@ -28,6 +28,7 @@
 #include <config.h>
 
 #include <string>
+#include <algorithm>	// std:fill_n
 #include <cmath>
 #include <cstring>
 #include <float.h>
@@ -167,7 +168,7 @@ void cRsId::reset()
 	rsid_secondary_time_out = 0;
 
 	memset(aInputSamples, 0, (RSID_ARRAY_SIZE * 2) * sizeof(float));
-	memset(aFFTcmplx, 0, RSID_ARRAY_SIZE * sizeof(rs_cpx_type));
+	std::fill_n(aFFTcmplx, RSID_ARRAY_SIZE, 0);
 	memset(aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(rs_fft_type));
 	memset(fft_buckets, 0, RSID_NTIMES * RSID_FFT_SIZE * sizeof(int));
 

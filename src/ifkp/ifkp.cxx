@@ -24,6 +24,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <algorithm>	// std::fill_n
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -650,7 +651,7 @@ int ifkp::rx_process(const double *buf, int len)
 				memmove(rx_stream,								// to
 						&rx_stream[IFKP_SHIFT_SIZE],			// from
 						IFKP_BLOCK_SIZE*sizeof(*rx_stream));	// # bytes
-				memset(fft_data, 0, sizeof(fft_data));
+				std::fill_n(fft_data, IFKP_NUMBINS, 0);
 				for (int i = 0; i < IFKP_BLOCK_SIZE; i++) {
 					double d = rx_stream[i] * a_blackman[i];
 					fft_data[i] = cmplx(d,d);
