@@ -450,7 +450,7 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 							fprintf(adiFile, "%s", adif2export(sFld).c_str());
 							if (!adif2submode(sFld).empty()) {
 								fprintf(adiFile, adifmt,
-									"SUBMODE",
+										"SUBMODE",
 									adif2submode(sFld).length());
 								fprintf(adiFile, "%s", adif2submode(sFld).c_str());
 							}
@@ -462,16 +462,13 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
                                 
                                 //Exchange commas by dots in frequency for ADIF-conformity
                                 if (strcmp(fields[j].name,"FREQ") == 0) {
-                                    char sfreq[20];
-                                    char* comma_position;
-                                    memset(sfreq, 0, 20);
-                                    strncpy (sfreq, sFld.c_str(), sizeof(sfreq) - 1);
-                                    comma_position = strchr(sfreq,',');
-                                    if (comma_position != NULL) {
-                                        strncpy(comma_position,".",1);
+									std::string sfreq = sFld.c_str();
+									std::size_t comma_position = sfreq.find(',');
+									if (comma_position != std::string::npos) {
+										sfreq.replace(comma_position, 1, ".");
                                     }
                                     
-                                    fprintf(adiFile, "%s", sfreq);
+                                    fprintf(adiFile, "%s", sfreq.c_str());
                                 } else {
                                     fprintf(adiFile, "%s", sFld.c_str());
                                 }
