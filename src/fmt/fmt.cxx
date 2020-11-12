@@ -117,9 +117,11 @@ static double rfreq = 0, ramp = 0;
 // formatting strings used by csv export method
 static std::string csv_string;
 static std::string buffered_csv_string;
+// debugging data string
+static std::string debug_csv_string;
 
 static char comma_format[] = "\
-\"%02d:%02d:%02d.%02d\",\
+\"T %02d:%02d:%02d.%02d\",\
 \"%6.2f\",\
 \"%13.3f\",\
 \"%13.4f\",\
@@ -134,7 +136,7 @@ static char comma_format[] = "\
 ,,\"=L%d-F%d-D%d\"\n";
 
 static char tab_format[] = "\
-\"%02d:%02d:%02d.%02d\"\t\
+\"T %02d:%02d:%02d.%02d\"\t\
 \"%6.2f\"\t\
 \"%13.3f\"\t\
 \"%13.4f\"\t\
@@ -224,7 +226,7 @@ static void noshow(void *) {
 	txt_fmt_wav_filename->value("");
 }
 
-static std::ofstream out;
+static std::ofstream csv_file;
 
 static void fmt_create_file()
 {
@@ -242,9 +244,9 @@ static void fmt_create_file()
 		append(".").append(call).
 		append(".csv");
 
-	out.open(fmt_filename.c_str());
+	csv_file.open(fmt_filename.c_str());
 
-	if (unlikely(!out.is_open())) {
+	if (!csv_file.is_open()) {
 		LOG_ERROR("fl_fopen: %s", fmt_filename.c_str());
 		return;
 	}
@@ -286,6 +288,8 @@ csv_string.append("\
 			is_recording = true;
 		}
 	}
+
+//	debug_csv_string = csv_string;
 
 	put_status (file_datetime_name);
 }
@@ -347,6 +351,19 @@ void stop_auto_recording(void *)
 }
 
 static char sz_temp[512];
+
+// debugging
+void write_debug_string()
+{
+	std::string debug_filename;
+	debug_filename.assign(FMTDir).append("debug.csv");
+	rotate_log(debug_filename);
+
+	FILE *csv_debug = fopen(debug_filename.c_str(), "w");
+	fprintf(csv_debug, "%s", debug_csv_string.c_str());
+	fclose(csv_debug);
+	debug_csv_string.clear();
+}
 
 void fmt_write_file()
 {
@@ -429,11 +446,13 @@ void fmt_write_file()
 			fmt_auto_record = 0;
 
 		if (!record_unk && !record_ref && !btn_fmt_autorecord->value()) {
-			if (out) {
+			if (csv_file.is_open()) {
 				buffered_csv_string.assign(csv_string);
-				out << buffered_csv_string;
-				out.flush();
-				out.close();
+				csv_file << buffered_csv_string;
+				csv_file.flush();
+				csv_file.close();
+				debug_csv_string.append(csv_string);
+				write_debug_string();
 				csv_string.clear();
 			}
 			Fl::awake (fmt_show_recording, (void *)0);
@@ -444,17 +463,19 @@ void fmt_write_file()
 			break;
 		}
 
-		if (write_recs && !out.is_open()) {
+		if (write_recs && !csv_file.is_open()) {
 			fmt_create_file();
 			record_ok = false;
 			reset_ticks = true;
 			Fl::awake (fmt_show_recording, (void *)1);
-		} else if (!write_recs && out) {
+		} else if (!write_recs && csv_file.is_open()) {
 			Fl::awake (fmt_show_recording, (void *)0);
 			buffered_csv_string.assign(csv_string);
-			out << buffered_csv_string;
-			out.flush();
-			out.close();
+			csv_file << buffered_csv_string;
+			csv_file.flush();
+			csv_file.close();
+			debug_csv_string.append(csv_string);
+			write_debug_string();
 			csv_string.clear();
 			put_Status1 ("");
 			put_status ("");
@@ -463,7 +484,7 @@ void fmt_write_file()
 
 		if (ticks % rec_interval[progStatus.FMT_rec_interval] == 0) {
 
-			if (record_ok && (record_unk || record_ref) && write_recs && out) {
+			if (record_ok && (record_unk || record_ref) && write_recs && csv_file.is_open()) {
 				{
 					guard_lock datalock (&data_mutex);
 						ufreq = fmt_unk_base_freq;
@@ -510,8 +531,11 @@ void fmt_write_file()
 				csv_string.append(sz_temp);
 				csvrow++;
 				buffered_csv_string.assign(csv_string);
-				out << buffered_csv_string;
-				out.flush();
+				csv_file << buffered_csv_string;
+				csv_file.flush();
+
+				debug_csv_string.append(csv_string);
+
 				csv_string.clear();
 			}
 		}
