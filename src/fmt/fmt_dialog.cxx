@@ -233,14 +233,14 @@ Fl_Group* fmt_panel(int X, int Y, int W, int H) {
 				50, 20, "Unk'");
 			btn_unk_enable->selection_color(progdefaults.default_btn_color);
 
-		ref_color = new Fl_Box(
+		unk_color = new Fl_Box(
 			btn_unk_enable->x() + btn_unk_enable->w() + 2, btn_unk_enable->y() + 4,
 			12, 12, "");
-			ref_color->box(FL_DOWN_BOX);
-			ref_color->color(progdefaults.FMT_unk_color);
+			unk_color->box(FL_DOWN_BOX);
+			unk_color->color(progdefaults.FMT_unk_color);
 
 		btn_unk_dn = new Fl_Button(
-			ref_color->x() + ref_color->w() + 2, btn_unk_enable->y(),
+			unk_color->x() + unk_color->w() + 2, btn_unk_enable->y(),
 				20, 20, "@|<");
 			btn_unk_dn->callback((Fl_Callback*)cb_unk_dn);
 
@@ -327,11 +327,11 @@ Fl_Group* fmt_panel(int X, int Y, int W, int H) {
 				50, 20, "Ref'");
 			btn_ref_enable->selection_color(progdefaults.default_btn_color);
 
-		unk_color = new Fl_Box(
+		ref_color = new Fl_Box(
 			btn_ref_enable->x() + btn_ref_enable->w() + 2, btn_ref_enable->y() + 4,
 			12, 12, "");
-			unk_color->box(FL_DOWN_BOX);
-			unk_color->color(progdefaults.FMT_ref_color);
+			ref_color->box(FL_DOWN_BOX);
+			ref_color->color(progdefaults.FMT_ref_color);
 
 		btn_ref_dn = new Fl_Button(
 			unk_color->x() + unk_color->w() + 2, btn_ref_enable->y(),
