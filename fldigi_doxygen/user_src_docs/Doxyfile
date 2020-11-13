@@ -11,7 +11,7 @@
 # input used in their production; they are not affected by this license.
 
 PROJECT_NAME         = "Fldigi Users Manual"
-PROJECT_NUMBER       = 4.1.15
+PROJECT_NUMBER       = 4.1.16
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = YES
