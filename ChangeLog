@@ -1,8 +1,39 @@
 
 
-=Version 4.1.15=
+=Version 4.1.16=
 
-2020-10-17  David Freese  <w1hkj@bellsouth.net>
+2020-11-13  David Freese  <w1hkj@bellsouth.net>
+
+	1fee05952: Cty.dat
+
+2020-11-13  Haris Andrianos  <sv1grb@gmail.com>
+
+	fe08f4a30: Greek translation
+
+2020-11-13  David Freese  <w1hkj@bellsouth.net>
+
+	ab267f3a1: Globals
+	8abff85e7: fmt fixes
+	2d8ec5eef: fonts
+	ca234a1d4: view_cw
+	942838ddb: Canadian Provinces
+	54e316710: FreeBSD/nullptr
+	2d9245c0f: Navtex
+	a8ea4ce88: benchmark
+
+2020-10-24  John Phelps  <kl4yfd@gmail.com>
+
+	744f0f692: Phase and FEC quality display  * Add phase-accuracy display for PSK modes (non-PSK31)  * Added better FEC confidence code to THOR
+	87931775a: Add new platform optimizations
+	9bcfdb212: Updated Doxygen Sourcecode Docs  * Now renders to SVG for graphics (doxygen 1.18)  * Fixed scripts for Cppcheck 1.9 changes  * Added auto-installer for packages on Debian-like systems  * Improved main page: index.html
+
+2020-10-19  David Freese  <w1hkj@bellsouth.net>
+
+	824582cd3: PSK Reporter query
+	48c3a7df7: Logbook compile warning
+
+
+=Version 4.1.15=
 
 	fb6be0c2d: Doxygen cleanup
 
