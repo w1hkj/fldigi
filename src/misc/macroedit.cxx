@@ -266,7 +266,7 @@ void loadBrowser(Fl_Widget *widget) {
 		w->add(s);
 	}
 	// add some Contestia macros
-	const char* contestia[] = { "250:8", "500:8", "500:16", "1000:8", "1000:16" };
+	const char* contestia[] = { "250:8", "250:16", "500:8", "500:16", "1000:8", "1000:16" };
 	for (size_t i = 0; i < sizeof(contestia)/sizeof(*contestia); i++) {
 		snprintf(s, sizeof(s), "<MODEM:%s:%s>", mode_info[MODE_CONTESTIA].sname, contestia[i]);
 		w->add(s);
@@ -277,7 +277,7 @@ void loadBrowser(Fl_Widget *widget) {
 	}
 	assert(MODE_OLIVIA < MODE_RTTY);
 	// add some Olivia macros
-	const char* olivia[] = { "250:8", "500:8", "500:16", "1000:8", "1000:32" };
+	const char* olivia[] = { "250:8", "250:16", "500:8", "500:16", "1000:8", "500:32", "1000:32" };
 	for (size_t i = 0; i < sizeof(olivia)/sizeof(*olivia); i++) {
 		snprintf(s, sizeof(s), "<MODEM:%s:%s>", mode_info[MODE_OLIVIA].sname, olivia[i]);
 		w->add(s);

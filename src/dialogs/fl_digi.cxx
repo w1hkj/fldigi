@@ -1046,6 +1046,7 @@ static const Fl_Menu_Item quick_change_contestia[] = {
 	{ mode_info[MODE_CONTESTIA_8_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_1000 },
 	{ mode_info[MODE_CONTESTIA_8_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_2000 },
 
+	{ mode_info[MODE_CONTESTIA_16_250].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_250 },
 	{ mode_info[MODE_CONTESTIA_16_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_500 },
 	{ mode_info[MODE_CONTESTIA_16_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_1000 },
 	{ mode_info[MODE_CONTESTIA_16_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_2000 },
@@ -1925,24 +1926,14 @@ void init_modem(trx_mode mode, int freq)
 		break;
 
 	case MODE_CONTESTIA:
-	case MODE_CONTESTIA_4_125:
-	case MODE_CONTESTIA_4_250:
-	case MODE_CONTESTIA_4_500:
-	case MODE_CONTESTIA_4_1000:
-	case MODE_CONTESTIA_4_2000:
-	case MODE_CONTESTIA_8_125:
-	case MODE_CONTESTIA_8_250:
-	case MODE_CONTESTIA_8_500:
-	case MODE_CONTESTIA_8_1000:
-	case MODE_CONTESTIA_8_2000:
-	case MODE_CONTESTIA_16_500:
-	case MODE_CONTESTIA_16_1000:
-	case MODE_CONTESTIA_16_2000:
-	case MODE_CONTESTIA_32_1000:
-	case MODE_CONTESTIA_32_2000:
-	case MODE_CONTESTIA_64_500:
-	case MODE_CONTESTIA_64_1000:
-	case MODE_CONTESTIA_64_2000:
+	case MODE_CONTESTIA_4_125:  case MODE_CONTESTIA_4_250:
+	case MODE_CONTESTIA_4_500:  case MODE_CONTESTIA_4_1000:   case MODE_CONTESTIA_4_2000:
+	case MODE_CONTESTIA_8_125:  case MODE_CONTESTIA_8_250:
+	case MODE_CONTESTIA_8_500:  case MODE_CONTESTIA_8_1000:   case MODE_CONTESTIA_8_2000:
+	case MODE_CONTESTIA_16_250:  case MODE_CONTESTIA_16_500:
+	case MODE_CONTESTIA_16_1000: case MODE_CONTESTIA_16_2000:
+	case MODE_CONTESTIA_32_1000: case MODE_CONTESTIA_32_2000:
+	case MODE_CONTESTIA_64_500:  case MODE_CONTESTIA_64_1000: case MODE_CONTESTIA_64_2000:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 				  *mode_info[mode].modem = new contestia(mode), freq);
 //		modem_config_tab = tabContestia;
@@ -2338,7 +2329,8 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 		case MODE_CONTESTIA_4_1000:  case MODE_CONTESTIA_4_2000:
 		case MODE_CONTESTIA_8_125:   case MODE_CONTESTIA_8_250:   case MODE_CONTESTIA_8_500: 
 		case MODE_CONTESTIA_8_1000:  case MODE_CONTESTIA_8_2000:
-		case MODE_CONTESTIA_16_500:  case MODE_CONTESTIA_16_1000: case MODE_CONTESTIA_16_2000:
+		case MODE_CONTESTIA_16_250:  case MODE_CONTESTIA_16_500:
+		case MODE_CONTESTIA_16_1000: case MODE_CONTESTIA_16_2000:
 		case MODE_CONTESTIA_32_1000: case MODE_CONTESTIA_32_2000:
 		case MODE_CONTESTIA_64_500:  case MODE_CONTESTIA_64_1000: case MODE_CONTESTIA_64_2000:
 			open_config(TAB_CONTESTIA);
@@ -5839,6 +5831,7 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_CONTESTIA_8_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_CONTESTIA_8_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
+{ mode_info[MODE_CONTESTIA_16_250].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_CONTESTIA_16_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_CONTESTIA_16_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_CONTESTIA_16_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -7485,6 +7478,7 @@ static Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_CONTESTIA_8_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_CONTESTIA_8_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_8_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
+{ mode_info[MODE_CONTESTIA_16_250].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_CONTESTIA_16_500].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_CONTESTIA_16_1000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_CONTESTIA_16_2000].name, 0, cb_init_mode, (void *)MODE_CONTESTIA_16_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
