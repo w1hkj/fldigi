@@ -413,6 +413,11 @@ contestia::contestia(trx_mode omode)
 			progdefaults.contestiabw = bw = 4;
 			REQ(set_contestia_tab_widgets);
 			break;
+		case MODE_CONTESTIA_16_250:
+			progdefaults.contestiatones = tones = 3;
+			progdefaults.contestiabw = bw = 1;
+			REQ(set_contestia_tab_widgets);
+			break;
 		case MODE_CONTESTIA_16_500:
 			progdefaults.contestiatones = tones = 3;
 			progdefaults.contestiabw = bw = 2;

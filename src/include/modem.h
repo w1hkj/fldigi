@@ -447,6 +447,7 @@ extern modem *contestia_8_500_modem;
 extern modem *contestia_8_1000_modem;
 extern modem *contestia_8_2000_modem;
 
+extern modem *contestia_16_250_modem;
 extern modem *contestia_16_500_modem;
 extern modem *contestia_16_1000_modem;
 extern modem *contestia_16_2000_modem;

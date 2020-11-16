@@ -2735,34 +2735,57 @@ static void doMODEM(std::string s)
 				if (args.at(0) != DBL_MIN && args.at(1) != DBL_MIN) {
 					int bw = (int)args[0];
 					int tones = (int)args[1];
+					set_contestia_bw(bw);
+					set_contestia_tones(tones);
 					switch (tones) {
 						case 4 :
 							if (bw == 125) m = MODE_CONTESTIA_4_125;
-							if (bw == 250) m = MODE_CONTESTIA_4_250;
-							if (bw == 500) m = MODE_CONTESTIA_4_500;
-							if (bw == 1000) m = MODE_CONTESTIA_4_1000;
-							if (bw == 2000) m = MODE_CONTESTIA_4_2000;
+							else if (bw == 250) m = MODE_CONTESTIA_4_250;
+							else if (bw == 500) m = MODE_CONTESTIA_4_500;
+							else if (bw == 1000) m = MODE_CONTESTIA_4_1000;
+							else if (bw == 2000) m = MODE_CONTESTIA_4_2000;
+							else {
+								set_contestia_bw(bw);
+								set_contestia_tones(tones);
+							}
 							break;
 						case 8 :
 							if (bw == 125) m = MODE_CONTESTIA_8_125;
-							if (bw == 250) m = MODE_CONTESTIA_8_250;
-							if (bw == 500) m = MODE_CONTESTIA_8_500;
-							if (bw == 1000) m = MODE_CONTESTIA_8_1000;
-							if (bw == 2000) m = MODE_CONTESTIA_8_2000;
+							else if (bw == 250) m = MODE_CONTESTIA_8_250;
+							else if (bw == 500) m = MODE_CONTESTIA_8_500;
+							else if (bw == 1000) m = MODE_CONTESTIA_8_1000;
+							else if (bw == 2000) m = MODE_CONTESTIA_8_2000;
+							else {
+								set_contestia_bw(bw);
+								set_contestia_tones(tones);
+							}
 							break;
 						case 16 :
-							if (bw == 500) m = MODE_CONTESTIA_16_500;
-							if (bw == 1000) m = MODE_CONTESTIA_16_1000;
-							if (bw == 2000) m = MODE_CONTESTIA_16_2000;
+							if (bw == 250) m = MODE_CONTESTIA_16_250;
+							else if (bw == 500) m = MODE_CONTESTIA_16_500;
+							else if (bw == 1000) m = MODE_CONTESTIA_16_1000;
+							else if (bw == 2000) m = MODE_CONTESTIA_16_2000;
+							else {
+								set_contestia_bw(bw);
+								set_contestia_tones(tones);
+							}
 							break;
 						case 32 :
 							if (bw == 1000) m = MODE_CONTESTIA_32_1000;
-							if (bw == 2000) m = MODE_CONTESTIA_32_2000;
+							else if (bw == 2000) m = MODE_CONTESTIA_32_2000;
+							else {
+								set_contestia_bw(bw);
+								set_contestia_tones(tones);
+							}
 							break;
 						case 64 :
 							if (bw == 500) m = MODE_CONTESTIA_64_500;
-							if (bw == 1000) m = MODE_CONTESTIA_64_1000;
-							if (bw == 2000) m = MODE_CONTESTIA_64_2000;
+							else if (bw == 1000) m = MODE_CONTESTIA_64_1000;
+							else if (bw == 2000) m = MODE_CONTESTIA_64_2000;
+							else {
+								set_contestia_bw(bw);
+								set_contestia_tones(tones);
+							}
 							break;
 						default :
 							set_contestia_bw(bw);
@@ -2774,34 +2797,56 @@ static void doMODEM(std::string s)
 				if (args.at(0) != DBL_MIN && args.at(1) != DBL_MIN) {
 					int bw = (int)args[0];
 					int tones = (int)args[1];
+					set_olivia_bw(bw);
+					set_olivia_tones(tones);
 					switch (tones) {
 						case 4 :
 							if (bw == 125) m = MODE_OLIVIA_4_125;
-							if (bw == 250) m = MODE_OLIVIA_4_250;
-							if (bw == 500) m = MODE_OLIVIA_4_500;
-							if (bw == 1000) m = MODE_OLIVIA_4_1000;
-							if (bw == 2000) m = MODE_OLIVIA_4_2000;
+							else if (bw == 250) m = MODE_OLIVIA_4_250;
+							else if (bw == 500) m = MODE_OLIVIA_4_500;
+							else if (bw == 1000) m = MODE_OLIVIA_4_1000;
+							else if (bw == 2000) m = MODE_OLIVIA_4_2000;
+							else  {
+								set_olivia_bw(bw);
+								set_olivia_tones(tones);
+							}
 							break;
 						case 8 :
 							if (bw == 125) m = MODE_OLIVIA_8_125;
-							if (bw == 250) m = MODE_OLIVIA_8_250;
-							if (bw == 500) m = MODE_OLIVIA_8_500;
-							if (bw == 1000) m = MODE_OLIVIA_8_1000;
-							if (bw == 2000) m = MODE_OLIVIA_8_2000;
+							else if (bw == 250) m = MODE_OLIVIA_8_250;
+							else if (bw == 500) m = MODE_OLIVIA_8_500;
+							else if (bw == 1000) m = MODE_OLIVIA_8_1000;
+							else if (bw == 2000) m = MODE_OLIVIA_8_2000;
+							else  {
+								set_olivia_bw(bw);
+								set_olivia_tones(tones);
+							}
 							break;
 						case 16 :
 							if (bw == 500) m = MODE_OLIVIA_16_500;
-							if (bw == 1000) m = MODE_OLIVIA_16_1000;
-							if (bw == 2000) m = MODE_OLIVIA_16_2000;
+							else if (bw == 1000) m = MODE_OLIVIA_16_1000;
+							else if (bw == 2000) m = MODE_OLIVIA_16_2000;
+							else  {
+								set_olivia_bw(bw);
+								set_olivia_tones(tones);
+							}
 							break;
 						case 32 :
 							if (bw == 1000) m = MODE_OLIVIA_32_1000;
-							if (bw == 2000) m = MODE_OLIVIA_32_2000;
+							else if (bw == 2000) m = MODE_OLIVIA_32_2000;
+							else  {
+								set_olivia_bw(bw);
+								set_olivia_tones(tones);
+							}
 							break;
 						case 64 :
 							if (bw == 500) m = MODE_OLIVIA_64_500;
-							if (bw == 1000) m = MODE_OLIVIA_64_1000;
-							if (bw == 2000) m = MODE_OLIVIA_64_2000;
+							else if (bw == 1000) m = MODE_OLIVIA_64_1000;
+							else if (bw == 2000) m = MODE_OLIVIA_64_2000;
+							else  {
+								set_olivia_bw(bw);
+								set_olivia_tones(tones);
+							}
 							break;
 						default :
 							set_olivia_bw(bw);
@@ -2935,34 +2980,57 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 				if (args.at(0) != DBL_MIN && args.at(1) != DBL_MIN) {
 					int bw = (int)args[0];
 					int tones = (int)args[1];
+					set_contestia_bw(bw);
+					set_contestia_tones(tones);
 					switch (tones) {
 						case 4 :
 							if (bw == 125) m = MODE_CONTESTIA_4_125;
-							if (bw == 250) m = MODE_CONTESTIA_4_250;
-							if (bw == 500) m = MODE_CONTESTIA_4_500;
-							if (bw == 1000) m = MODE_CONTESTIA_4_1000;
-							if (bw == 2000) m = MODE_CONTESTIA_4_2000;
+							else if (bw == 250) m = MODE_CONTESTIA_4_250;
+							else if (bw == 500) m = MODE_CONTESTIA_4_500;
+							else if (bw == 1000) m = MODE_CONTESTIA_4_1000;
+							else if (bw == 2000) m = MODE_CONTESTIA_4_2000;
+							else {
+								set_contestia_bw(bw);
+								set_contestia_tones(tones);
+							}
 							break;
 						case 8 :
 							if (bw == 125) m = MODE_CONTESTIA_8_125;
-							if (bw == 250) m = MODE_CONTESTIA_8_250;
-							if (bw == 500) m = MODE_CONTESTIA_8_500;
-							if (bw == 1000) m = MODE_CONTESTIA_8_1000;
-							if (bw == 2000) m = MODE_CONTESTIA_8_2000;
+							else if (bw == 250) m = MODE_CONTESTIA_8_250;
+							else if (bw == 500) m = MODE_CONTESTIA_8_500;
+							else if (bw == 1000) m = MODE_CONTESTIA_8_1000;
+							else if (bw == 2000) m = MODE_CONTESTIA_8_2000;
+							else {
+								set_contestia_bw(bw);
+								set_contestia_tones(tones);
+							}
 							break;
 						case 16 :
-							if (bw == 500) m = MODE_CONTESTIA_16_500;
-							if (bw == 1000) m = MODE_CONTESTIA_16_1000;
-							if (bw == 2000) m = MODE_CONTESTIA_16_2000;
+							if (bw == 250) m = MODE_CONTESTIA_16_250;
+							else if (bw == 500) m = MODE_CONTESTIA_16_500;
+							else if (bw == 1000) m = MODE_CONTESTIA_16_1000;
+							else if (bw == 2000) m = MODE_CONTESTIA_16_2000;
+							else {
+								set_contestia_bw(bw);
+								set_contestia_tones(tones);
+							}
 							break;
 						case 32 :
 							if (bw == 1000) m = MODE_CONTESTIA_32_1000;
-							if (bw == 2000) m = MODE_CONTESTIA_32_2000;
+							else if (bw == 2000) m = MODE_CONTESTIA_32_2000;
+							else {
+								set_contestia_bw(bw);
+								set_contestia_tones(tones);
+							}
 							break;
 						case 64 :
 							if (bw == 500) m = MODE_CONTESTIA_64_500;
-							if (bw == 1000) m = MODE_CONTESTIA_64_1000;
-							if (bw == 2000) m = MODE_CONTESTIA_64_2000;
+							else if (bw == 1000) m = MODE_CONTESTIA_64_1000;
+							else if (bw == 2000) m = MODE_CONTESTIA_64_2000;
+							else {
+								set_contestia_bw(bw);
+								set_contestia_tones(tones);
+							}
 							break;
 						default :
 							set_contestia_bw(bw);
@@ -2974,34 +3042,56 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 				if (args.at(0) != DBL_MIN && args.at(1) != DBL_MIN) {
 					int bw = (int)args[0];
 					int tones = (int)args[1];
+					set_olivia_bw(bw);
+					set_olivia_tones(tones);
 					switch (tones) {
 						case 4 :
 							if (bw == 125) m = MODE_OLIVIA_4_125;
-							if (bw == 250) m = MODE_OLIVIA_4_250;
-							if (bw == 500) m = MODE_OLIVIA_4_500;
-							if (bw == 1000) m = MODE_OLIVIA_4_1000;
-							if (bw == 2000) m = MODE_OLIVIA_4_2000;
+							else if (bw == 250) m = MODE_OLIVIA_4_250;
+							else if (bw == 500) m = MODE_OLIVIA_4_500;
+							else if (bw == 1000) m = MODE_OLIVIA_4_1000;
+							else if (bw == 2000) m = MODE_OLIVIA_4_2000;
+							else  {
+								set_olivia_bw(bw);
+								set_olivia_tones(tones);
+							}
 							break;
 						case 8 :
 							if (bw == 125) m = MODE_OLIVIA_8_125;
-							if (bw == 250) m = MODE_OLIVIA_8_250;
-							if (bw == 500) m = MODE_OLIVIA_8_500;
-							if (bw == 1000) m = MODE_OLIVIA_8_1000;
-							if (bw == 2000) m = MODE_OLIVIA_8_2000;
+							else if (bw == 250) m = MODE_OLIVIA_8_250;
+							else if (bw == 500) m = MODE_OLIVIA_8_500;
+							else if (bw == 1000) m = MODE_OLIVIA_8_1000;
+							else if (bw == 2000) m = MODE_OLIVIA_8_2000;
+							else  {
+								set_olivia_bw(bw);
+								set_olivia_tones(tones);
+							}
 							break;
 						case 16 :
 							if (bw == 500) m = MODE_OLIVIA_16_500;
-							if (bw == 1000) m = MODE_OLIVIA_16_1000;
-							if (bw == 2000) m = MODE_OLIVIA_16_2000;
+							else if (bw == 1000) m = MODE_OLIVIA_16_1000;
+							else if (bw == 2000) m = MODE_OLIVIA_16_2000;
+							else  {
+								set_olivia_bw(bw);
+								set_olivia_tones(tones);
+							}
 							break;
 						case 32 :
 							if (bw == 1000) m = MODE_OLIVIA_32_1000;
-							if (bw == 2000) m = MODE_OLIVIA_32_2000;
+							else if (bw == 2000) m = MODE_OLIVIA_32_2000;
+							else  {
+								set_olivia_bw(bw);
+								set_olivia_tones(tones);
+							}
 							break;
 						case 64 :
 							if (bw == 500) m = MODE_OLIVIA_64_500;
-							if (bw == 1000) m = MODE_OLIVIA_64_1000;
-							if (bw == 2000) m = MODE_OLIVIA_64_2000;
+							else if (bw == 1000) m = MODE_OLIVIA_64_1000;
+							else if (bw == 2000) m = MODE_OLIVIA_64_2000;
+							else  {
+								set_olivia_bw(bw);
+								set_olivia_tones(tones);
+							}
 							break;
 						default :
 							set_olivia_bw(bw);
