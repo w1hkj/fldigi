@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: fldigi 4.1.15\n"
+"Project-Id-Version: fldigi 4.1.16\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2020-10-17 18:42-0500\n"
-"PO-Revision-Date: 2020-10-28 20:12+0200\n"
+"POT-Creation-Date: 2020-11-16 08:02-0600\n"
+"PO-Revision-Date: 2020-11-14 10:14+0200\n"
 "Last-Translator: Haris Andrianos <sv1grb@gmail.com>\n"
 "Language-Team: Greek (Haris Andrianos) <sv1grb@gmail.com>\n"
 "Language: el\n"
@@ -16,22 +16,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: iso-8859-7\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #: src/main.cxx:1037
 #, c-format
 msgid "%s log started on %s"
 msgstr ""
 
-#: src/main.cxx:1739
+#: src/main.cxx:1740
 msgid "Bad modem id"
 msgstr ""
 
-#: src/main.cxx:1746
+#: src/main.cxx:1747
 msgid "Bad frequency"
 msgstr ""
 
-#: src/main.cxx:1869
+#: src/main.cxx:1870
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later <http://www.gnu.org/licenses/"
 "gpl-3.0.html>\n"
@@ -39,7 +39,7 @@ msgid ""
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
 
-#: src/main.cxx:2096 src/main.cxx:2138 src/main.cxx:2162 src/main.cxx:2176
+#: src/main.cxx:2097 src/main.cxx:2139 src/main.cxx:2163 src/main.cxx:2177
 msgid "Could not make directory "
 msgstr "Αδυναμία δημιουργίας φακέλου "
 
@@ -71,7 +71,7 @@ msgstr ""
 msgid "Log all RX/TX text"
 msgstr "Καταγραφή όλου του κειμένου Λήψης/Εκπομπής"
 
-#: src/dialogs/fl_digi.cxx:201 src/dialogs/fl_digi.cxx:7412
+#: src/dialogs/fl_digi.cxx:201 src/dialogs/fl_digi.cxx:7471
 msgid "Op &Mode"
 msgstr "&Mode λειτουργίας"
 
@@ -126,7 +126,7 @@ msgstr "Μερικό"
 
 #: src/dialogs/fl_digi.cxx:217 src/waterfall/waterfall.cxx:2521
 #: src/dialogs/confdialog.cxx:10195 src/dialogs/confdialog.cxx:10284
-#: src/dialogs/confdialog.cxx:17338
+#: src/dialogs/confdialog.cxx:17340
 msgid "None"
 msgstr "Κανένα"
 
@@ -147,10 +147,10 @@ msgid "Connect to server"
 msgstr "Σύνδεση με server"
 
 #: src/dialogs/fl_digi.cxx:1032 src/dialogs/fl_digi.cxx:1060
-#: src/dialogs/fl_digi.cxx:1070 src/dialogs/fl_digi.cxx:5853
-#: src/dialogs/fl_digi.cxx:5938 src/dialogs/fl_digi.cxx:6015
-#: src/dialogs/fl_digi.cxx:7439 src/dialogs/fl_digi.cxx:7496
-#: src/dialogs/fl_digi.cxx:7541
+#: src/dialogs/fl_digi.cxx:1070 src/dialogs/fl_digi.cxx:5852
+#: src/dialogs/fl_digi.cxx:5937 src/dialogs/fl_digi.cxx:6014
+#: src/dialogs/fl_digi.cxx:7498 src/dialogs/fl_digi.cxx:7555
+#: src/dialogs/fl_digi.cxx:7600
 msgid "Custom..."
 msgstr "Προσαρμοσμένο..."
 
@@ -194,47 +194,47 @@ msgid "Misc"
 msgstr "Διάφορα"
 
 #: src/dialogs/fl_digi.cxx:1136 src/dialogs/confdialog.cxx:351
-#: src/dialogs/confdialog.cxx:16682
+#: src/dialogs/confdialog.cxx:16684
 msgid "Rig Control"
 msgstr "Έλεγχος Π/Δ"
 
 #: src/dialogs/fl_digi.cxx:1137 src/dialogs/confdialog.cxx:352
-#: src/dialogs/confdialog.cxx:17284
+#: src/dialogs/confdialog.cxx:17286
 msgid "Soundcard"
 msgstr "Κάρτα Ήχου"
 
 #: src/dialogs/fl_digi.cxx:1138 src/dialogs/confdialog.cxx:353
-#: src/dialogs/confdialog.cxx:17807
+#: src/dialogs/confdialog.cxx:17809
 msgid "UI"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1139 src/dialogs/fl_digi.cxx:6102
+#: src/dialogs/fl_digi.cxx:1139 src/dialogs/fl_digi.cxx:6101
 #: src/dialogs/confdialog.cxx:354 src/dialogs/confdialog.cxx:12509
-#: src/dialogs/confdialog.cxx:18342
+#: src/dialogs/confdialog.cxx:18344
 msgid "Waterfall"
 msgstr "Καταρράκτης"
 
 #: src/dialogs/fl_digi.cxx:1140 src/dialogs/confdialog.cxx:355
-#: src/dialogs/confdialog.cxx:18536
+#: src/dialogs/confdialog.cxx:18538
 msgid "Web"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1572 src/dialogs/fl_digi.cxx:4439
+#: src/dialogs/fl_digi.cxx:1572 src/dialogs/fl_digi.cxx:4438
 msgid "Save changed macros?"
 msgstr "Αποθήκευση αλλαγών macros;"
 
-#: src/dialogs/fl_digi.cxx:1572 src/dialogs/fl_digi.cxx:4063
-#: src/dialogs/fl_digi.cxx:4122 src/dialogs/fl_digi.cxx:6469
+#: src/dialogs/fl_digi.cxx:1572 src/dialogs/fl_digi.cxx:4062
+#: src/dialogs/fl_digi.cxx:4121 src/dialogs/fl_digi.cxx:6468
 #: src/logbook/logsupport.cxx:1203 src/misc/configuration.cxx:723
-#: src/dialogs/font_browser.cxx:161 src/logbook/lgbook.cxx:833
+#: src/dialogs/font_browser.cxx:167 src/logbook/lgbook.cxx:833
 #: src/logbook/lgbook.cxx:1643
 msgid "Cancel"
 msgstr "Ακύρωση"
 
-#: src/dialogs/fl_digi.cxx:1572 src/dialogs/fl_digi.cxx:6114
+#: src/dialogs/fl_digi.cxx:1572 src/dialogs/fl_digi.cxx:6113
 #: src/logbook/logsupport.cxx:331 src/logbook/logsupport.cxx:1202
 #: src/dialogs/confdialog.cxx:11896 src/dialogs/confdialog.cxx:13660
-#: src/dialogs/confdialog.cxx:18539
+#: src/dialogs/confdialog.cxx:18541
 msgid "Save"
 msgstr "Αποθήκευση"
 
@@ -247,20 +247,20 @@ msgid "Switch to ARQ I/O"
 msgstr "Μετάβαση σε ARQ I/O"
 
 #: src/dialogs/fl_digi.cxx:1707 src/dialogs/fl_digi.cxx:2559
-#: src/dialogs/fl_digi.cxx:2882 src/dialogs/fl_digi.cxx:4431
-#: src/dialogs/fl_digi.cxx:4439 src/dialogs/fl_digi.cxx:4447
-#: src/dialogs/fl_digi.cxx:4463 src/dialogs/fl_digi.cxx:4472
-#: src/dialogs/fl_digi.cxx:4485 src/dialogs/fl_digi.cxx:9866
+#: src/dialogs/fl_digi.cxx:2881 src/dialogs/fl_digi.cxx:4430
+#: src/dialogs/fl_digi.cxx:4438 src/dialogs/fl_digi.cxx:4446
+#: src/dialogs/fl_digi.cxx:4462 src/dialogs/fl_digi.cxx:4471
+#: src/dialogs/fl_digi.cxx:4484 src/dialogs/fl_digi.cxx:9925
 #: src/logbook/logsupport.cxx:360 src/logbook/logsupport.cxx:405
 #: src/logbook/logsupport.cxx:1812 src/misc/configuration.cxx:725
 msgid "No"
 msgstr "Όχι"
 
 #: src/dialogs/fl_digi.cxx:1707 src/dialogs/fl_digi.cxx:2559
-#: src/dialogs/fl_digi.cxx:2882 src/dialogs/fl_digi.cxx:4431
-#: src/dialogs/fl_digi.cxx:4439 src/dialogs/fl_digi.cxx:4447
-#: src/dialogs/fl_digi.cxx:4463 src/dialogs/fl_digi.cxx:4472
-#: src/dialogs/fl_digi.cxx:4485 src/dialogs/fl_digi.cxx:9866
+#: src/dialogs/fl_digi.cxx:2881 src/dialogs/fl_digi.cxx:4430
+#: src/dialogs/fl_digi.cxx:4438 src/dialogs/fl_digi.cxx:4446
+#: src/dialogs/fl_digi.cxx:4462 src/dialogs/fl_digi.cxx:4471
+#: src/dialogs/fl_digi.cxx:4484 src/dialogs/fl_digi.cxx:9925
 #: src/logbook/logsupport.cxx:360 src/logbook/logsupport.cxx:405
 #: src/logbook/logsupport.cxx:1812 src/misc/configuration.cxx:725
 msgid "Yes"
@@ -307,19 +307,19 @@ msgstr ""
 msgid "Checking for updates..."
 msgstr "Έλεγχος για ενημερώσεις..."
 
-#: src/dialogs/fl_digi.cxx:2724
+#: src/dialogs/fl_digi.cxx:2723
 msgid "Update site not available"
 msgstr "Δεν υπάρχει διαθέσιμο site ενημερώσεων"
 
-#: src/dialogs/fl_digi.cxx:2736
+#: src/dialogs/fl_digi.cxx:2735
 msgid "You are running the latest version"
 msgstr "Τρέχετε την τελευταία έκδοση"
 
-#: src/dialogs/fl_digi.cxx:2740
+#: src/dialogs/fl_digi.cxx:2739
 msgid "You are probably running an alpha version "
 msgstr "Πιθανότατα τρέχετε μια έκδοση alpha "
 
-#: src/dialogs/fl_digi.cxx:2741
+#: src/dialogs/fl_digi.cxx:2740
 msgid ""
 "\n"
 "Posted version: "
@@ -327,350 +327,350 @@ msgstr ""
 "\n"
 "Δημοσιευμένη έκδοση: "
 
-#: src/dialogs/fl_digi.cxx:2746
+#: src/dialogs/fl_digi.cxx:2745
 #, c-format
 msgid "Version %s is available at Source Forge"
 msgstr "Η έκδοση %s είναι διαθέσιμη στο Source Forge"
 
-#: src/dialogs/fl_digi.cxx:2815
+#: src/dialogs/fl_digi.cxx:2814
 msgid "Sunspot creation underway!"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2822
+#: src/dialogs/fl_digi.cxx:2821
 msgid "Audio device information is only available for the PortAudio backend"
 msgstr ""
 "Πληροφορίες της συσκευής ήχου είναι διαθέσιμες μόνο για το backend του "
 "PortAudio"
 
-#: src/dialogs/fl_digi.cxx:2831
+#: src/dialogs/fl_digi.cxx:2830
 msgid "Capture device"
 msgstr "Συσκευή εγγραφής"
 
-#: src/dialogs/fl_digi.cxx:2832
+#: src/dialogs/fl_digi.cxx:2831
 msgid "Playback device"
 msgstr "Συσκευή αναπαραγωγής"
 
-#: src/dialogs/fl_digi.cxx:2836
+#: src/dialogs/fl_digi.cxx:2835
 msgid "Capture and playback devices"
 msgstr "Συσκευές εγγραφής και αναπαραγωγής"
 
-#: src/dialogs/fl_digi.cxx:2882
+#: src/dialogs/fl_digi.cxx:2881
 #, c-format
 msgid "%s: Do not exist, create?"
 msgstr "%s: Δεν υπάρχει, δημιουργία;"
 
-#: src/dialogs/fl_digi.cxx:4063
+#: src/dialogs/fl_digi.cxx:4062
 msgid "Clear log fields?"
 msgstr "Καθαρισμός πεδίων log;"
 
-#: src/dialogs/fl_digi.cxx:4063 src/misc/configuration.cxx:723
+#: src/dialogs/fl_digi.cxx:4062 src/misc/configuration.cxx:723
 #: src/logbook/lgbook.cxx:830 src/logbook/lgbook.cxx:1640
 msgid "OK"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4122 src/dialogs/fl_digi.cxx:6469
+#: src/dialogs/fl_digi.cxx:4121 src/dialogs/fl_digi.cxx:6468
 msgid "Confirm"
 msgstr "Επιβεβ."
 
-#: src/dialogs/fl_digi.cxx:4431
+#: src/dialogs/fl_digi.cxx:4430
 msgid "Save changed configuration?"
 msgstr "Αποθήκευση αλλαγών ρυθμίσεων;"
 
-#: src/dialogs/fl_digi.cxx:4447 src/dialogs/fl_digi.cxx:4472
+#: src/dialogs/fl_digi.cxx:4446 src/dialogs/fl_digi.cxx:4471
 msgid "Save log entry?"
 msgstr "Αποθήκευση καταχώρησης log;"
 
-#: src/dialogs/fl_digi.cxx:4463
+#: src/dialogs/fl_digi.cxx:4462
 msgid "Confirm Quit"
 msgstr "Επιβεβαίωση εξόδου"
 
-#: src/dialogs/fl_digi.cxx:4485
+#: src/dialogs/fl_digi.cxx:4484
 msgid "Confirm quit?"
 msgstr "Επιβεβαίωση εξόδου;"
 
-#: src/dialogs/fl_digi.cxx:5793 src/dialogs/fl_digi.cxx:7408
+#: src/dialogs/fl_digi.cxx:5792 src/dialogs/fl_digi.cxx:7467
 msgid "&File"
 msgstr "Αρχείο"
 
-#: src/dialogs/fl_digi.cxx:5795
+#: src/dialogs/fl_digi.cxx:5794
 msgid "Folders"
 msgstr "Φάκελοι"
 
-#: src/dialogs/fl_digi.cxx:5796
+#: src/dialogs/fl_digi.cxx:5795
 msgid "Fldigi config..."
 msgstr "Φάκελος ρυθμ.Fldigi..."
 
-#: src/dialogs/fl_digi.cxx:5797
+#: src/dialogs/fl_digi.cxx:5796
 msgid "FLMSG files..."
 msgstr "Αρχεία FLMSG..."
 
-#: src/dialogs/fl_digi.cxx:5798
+#: src/dialogs/fl_digi.cxx:5797
 msgid "NBEMS files..."
 msgstr "Αρχεία NBEMS..."
 
-#: src/dialogs/fl_digi.cxx:5799
+#: src/dialogs/fl_digi.cxx:5798
 msgid "WEFAX images..."
-msgstr ""
+msgstr "Εικόνες WEFAX..."
 
-#: src/dialogs/fl_digi.cxx:5800
+#: src/dialogs/fl_digi.cxx:5799
 msgid "Data files..."
 msgstr "Αρχεία δεδομένων..."
 
-#: src/dialogs/fl_digi.cxx:5803
+#: src/dialogs/fl_digi.cxx:5802
 msgid "Macros"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5804
+#: src/dialogs/fl_digi.cxx:5803
 msgid "Open ..."
 msgstr "Άνοιγμα ..."
 
-#: src/dialogs/fl_digi.cxx:5805
+#: src/dialogs/fl_digi.cxx:5804
 msgid "Save ..."
 msgstr "Αποθήκευση ..."
 
-#: src/dialogs/fl_digi.cxx:5808
+#: src/dialogs/fl_digi.cxx:5807
 msgid "Config Scripts"
 msgstr "Script ρυθμίσεων"
 
-#: src/dialogs/fl_digi.cxx:5809
+#: src/dialogs/fl_digi.cxx:5808
 msgid "Execute"
 msgstr "Εκτέλεση"
 
-#: src/dialogs/fl_digi.cxx:5810
+#: src/dialogs/fl_digi.cxx:5809
 msgid "Generate"
 msgstr "Δημιουργία"
 
-#: src/dialogs/fl_digi.cxx:5813
+#: src/dialogs/fl_digi.cxx:5812
 msgid "Text Capture"
 msgstr "Καταγραφή κειμένου"
 
-#: src/dialogs/fl_digi.cxx:5817
+#: src/dialogs/fl_digi.cxx:5816
 msgid "Audio"
 msgstr "Ήχος"
 
-#: src/dialogs/fl_digi.cxx:5818
+#: src/dialogs/fl_digi.cxx:5817
 msgid "RX capture"
 msgstr "Καταγραφή σημάτων Λήψης"
 
-#: src/dialogs/fl_digi.cxx:5819
+#: src/dialogs/fl_digi.cxx:5818
 msgid "TX generate"
 msgstr "Δημιουργία σημάτων Εκπομπής"
 
-#: src/dialogs/fl_digi.cxx:5820 src/dialogs/confdialog.cxx:17053
+#: src/dialogs/fl_digi.cxx:5819 src/dialogs/confdialog.cxx:17055
 msgid "Playback"
 msgstr "Αναπαραγωγή"
 
-#: src/dialogs/fl_digi.cxx:5823 src/dialogs/fl_digi.cxx:7409
+#: src/dialogs/fl_digi.cxx:5822 src/dialogs/fl_digi.cxx:7468
 msgid "Exit"
 msgstr "Έξοδος"
 
-#: src/dialogs/fl_digi.cxx:6067 src/dialogs/fl_digi.cxx:7571
+#: src/dialogs/fl_digi.cxx:6066 src/dialogs/fl_digi.cxx:7630
 msgid "&Configure"
 msgstr "Ρύθμιση"
 
-#: src/dialogs/fl_digi.cxx:6069 src/dialogs/fl_digi.cxx:7572
+#: src/dialogs/fl_digi.cxx:6068 src/dialogs/fl_digi.cxx:7631
 msgid "Config Dialog"
 msgstr "Ρυθμίσεις"
 
-#: src/dialogs/fl_digi.cxx:6070 src/dialogs/fl_digi.cxx:7575
+#: src/dialogs/fl_digi.cxx:6069 src/dialogs/fl_digi.cxx:7634
 msgid "Save Config"
 msgstr "Αποθήκευση ρυθμίσεων"
 
-#: src/dialogs/fl_digi.cxx:6071 src/dialogs/fl_digi.cxx:7574
+#: src/dialogs/fl_digi.cxx:6070 src/dialogs/fl_digi.cxx:7633
 #: src/dialogs/notifydialog.cxx:104
 msgid "Notifications"
 msgstr "Ειδοποιήσεις"
 
-#: src/dialogs/fl_digi.cxx:6072 src/dialogs/fl_digi.cxx:7573
+#: src/dialogs/fl_digi.cxx:6071 src/dialogs/fl_digi.cxx:7632
 msgid "Test Signals"
 msgstr "Σήματα δοκιμών"
 
-#: src/dialogs/fl_digi.cxx:6077 src/dialogs/fl_digi.cxx:7579
+#: src/dialogs/fl_digi.cxx:6076 src/dialogs/fl_digi.cxx:7638
 msgid "Rx Audio Dialog"
 msgstr "Διάλογος ήχου RX"
 
-#: src/dialogs/fl_digi.cxx:6079
+#: src/dialogs/fl_digi.cxx:6078
 msgid "View/Hide Channels"
 msgstr "Εμφ./Απόκρ.καναλιών"
 
-#: src/dialogs/fl_digi.cxx:6080
+#: src/dialogs/fl_digi.cxx:6079
 msgid "Signal browser"
 msgstr "Περιηγητής σημάτων"
 
-#: src/dialogs/fl_digi.cxx:6082
+#: src/dialogs/fl_digi.cxx:6081
 msgid "View/Hide 48 macros"
 msgstr "Εμφ./Απόκρ.48 macros"
 
-#: src/dialogs/fl_digi.cxx:6084
+#: src/dialogs/fl_digi.cxx:6083
 msgid "DX Cluster"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6086
+#: src/dialogs/fl_digi.cxx:6085
 msgid "Floating scope"
 msgstr "Ελεύθερο παλμογράφημα"
 
-#: src/dialogs/fl_digi.cxx:6087 src/dialogs/fl_digi.cxx:7581
+#: src/dialogs/fl_digi.cxx:6086 src/dialogs/fl_digi.cxx:7640
 msgid "Spectrum scope"
 msgstr "Αναλυτής φάσματος"
 
-#: src/dialogs/fl_digi.cxx:6096
+#: src/dialogs/fl_digi.cxx:6095
 msgid "Rig/Log Controls"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6109
+#: src/dialogs/fl_digi.cxx:6108
 msgid "&Logbook"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6110
+#: src/dialogs/fl_digi.cxx:6109
 msgid "View"
 msgstr "Εμφάνιση"
 
-#: src/dialogs/fl_digi.cxx:6112
+#: src/dialogs/fl_digi.cxx:6111
 msgid "Files"
 msgstr "Αρχεία"
 
-#: src/dialogs/fl_digi.cxx:6113 src/dialogs/confdialog.cxx:15845
+#: src/dialogs/fl_digi.cxx:6112 src/dialogs/confdialog.cxx:15847
 msgid "Open..."
 msgstr "Άνοιγμα..."
 
-#: src/dialogs/fl_digi.cxx:6115 src/logbook/logsupport.cxx:1211
+#: src/dialogs/fl_digi.cxx:6114 src/logbook/logsupport.cxx:1211
 #: src/logbook/lgbook.cxx:1563
 msgid "New"
 msgstr "Νέο"
 
-#: src/dialogs/fl_digi.cxx:6118
+#: src/dialogs/fl_digi.cxx:6117
 msgid "ADIF"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6119
+#: src/dialogs/fl_digi.cxx:6118
 msgid "Merge..."
 msgstr "Ένωση..."
 
-#: src/dialogs/fl_digi.cxx:6120
+#: src/dialogs/fl_digi.cxx:6119
 msgid "Export..."
 msgstr "Εξαγωγή..."
 
-#: src/dialogs/fl_digi.cxx:6123 src/logbook/lgbook.cxx:827
+#: src/dialogs/fl_digi.cxx:6122 src/logbook/lgbook.cxx:827
 msgid "LoTW"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6125
+#: src/dialogs/fl_digi.cxx:6124
 msgid "Reports"
 msgstr "Αναφορές"
 
-#: src/dialogs/fl_digi.cxx:6126
+#: src/dialogs/fl_digi.cxx:6125
 msgid "Text..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6127
+#: src/dialogs/fl_digi.cxx:6126
 msgid "CSV..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6128
+#: src/dialogs/fl_digi.cxx:6127
 msgid "Cabrillo..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6133
+#: src/dialogs/fl_digi.cxx:6132
 msgid "Field Day Logging"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6138 src/dialogs/fl_digi.cxx:7590
+#: src/dialogs/fl_digi.cxx:6137 src/dialogs/fl_digi.cxx:7649
 msgid "&Help"
 msgstr "Βοήθεια"
 
-#: src/dialogs/fl_digi.cxx:6141
+#: src/dialogs/fl_digi.cxx:6140
 msgid "Create sunspots"
 msgstr "Δημιουργία sunspots"
 
-#: src/dialogs/fl_digi.cxx:6143
+#: src/dialogs/fl_digi.cxx:6142
 msgid "Beginners' Guide"
 msgstr "Οδηγός για αρχάριους"
 
-#: src/dialogs/fl_digi.cxx:6144 src/dialogs/fl_digi.cxx:7591
+#: src/dialogs/fl_digi.cxx:6143 src/dialogs/fl_digi.cxx:7650
 msgid "Online documentation..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6145
+#: src/dialogs/fl_digi.cxx:6144
 msgid "Fldigi web site..."
 msgstr "Ιστότοπος Fldigi..."
 
-#: src/dialogs/fl_digi.cxx:6146
+#: src/dialogs/fl_digi.cxx:6145
 msgid "Reception reports..."
 msgstr "Αναφορές λήψης..."
 
-#: src/dialogs/fl_digi.cxx:6147
+#: src/dialogs/fl_digi.cxx:6146
 msgid "Command line options"
 msgstr "Επιλογές γραμμής εντολών"
 
-#: src/dialogs/fl_digi.cxx:6148
+#: src/dialogs/fl_digi.cxx:6147
 msgid "Audio device info"
 msgstr "Πληροφ.συσκευής ήχου"
 
-#: src/dialogs/fl_digi.cxx:6149
+#: src/dialogs/fl_digi.cxx:6148
 msgid "Build info"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6150 src/dialogs/fl_digi.cxx:7592
+#: src/dialogs/fl_digi.cxx:6149 src/dialogs/fl_digi.cxx:7651
 msgid "Event log"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6151 src/dialogs/fl_digi.cxx:7593
+#: src/dialogs/fl_digi.cxx:6150 src/dialogs/fl_digi.cxx:7652
 msgid "Check for updates..."
 msgstr "Έλεγχος για ενημερώσεις..."
 
-#: src/dialogs/fl_digi.cxx:6152 src/dialogs/fl_digi.cxx:7594
+#: src/dialogs/fl_digi.cxx:6151 src/dialogs/fl_digi.cxx:7653
 msgid "&About"
 msgstr "Σχετικά"
 
-#: src/dialogs/fl_digi.cxx:6401
+#: src/dialogs/fl_digi.cxx:6400
 msgid "waterfall-only mode"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:6403
+#: src/dialogs/fl_digi.cxx:6402
 msgid "NO CALLSIGN SET"
 msgstr "ΔΕΝ ΕΧΕΙ ΟΡΙΣΤΕΙ CALLSIGN"
 
-#: src/dialogs/fl_digi.cxx:6428
+#: src/dialogs/fl_digi.cxx:6427
 msgid "Close List"
 msgstr "Κλείσιμο λίστας"
 
-#: src/dialogs/fl_digi.cxx:6436
+#: src/dialogs/fl_digi.cxx:6435
 msgid "Open List"
 msgstr "Άνοιγμα λίστας"
 
-#: src/dialogs/fl_digi.cxx:6469
+#: src/dialogs/fl_digi.cxx:6468
 msgid "Clear list?"
 msgstr "Καθαρισμός λίστας;"
 
-#: src/dialogs/fl_digi.cxx:6506
+#: src/dialogs/fl_digi.cxx:6550
 msgid "report"
 msgstr "αναφορά"
 
-#: src/dialogs/fl_digi.cxx:6506
+#: src/dialogs/fl_digi.cxx:6550
 msgid "reports"
 msgstr "αναφορές"
 
-#: src/dialogs/fl_digi.cxx:6516
-msgid "Recent activity for grid"
+#: src/dialogs/fl_digi.cxx:6555
+msgid "Recent activity for grid "
 msgstr "Πρόσφατη δραστηριότητα για το grid"
 
-#: src/dialogs/fl_digi.cxx:7580 src/dialogs/Viewer.cxx:287
+#: src/dialogs/fl_digi.cxx:7639 src/dialogs/Viewer.cxx:287
 msgid "Signal Browser"
 msgstr "Περιηγητής σημάτων"
 
-#: src/dialogs/fl_digi.cxx:7881
+#: src/dialogs/fl_digi.cxx:7940
 msgid "Scope"
 msgstr "Παλμογράφημα"
 
-#: src/dialogs/fl_digi.cxx:7966
+#: src/dialogs/fl_digi.cxx:8025
 msgid "Detected signal level"
 msgstr "Επίπεδο ανίχν.σήματος"
 
-#: src/dialogs/fl_digi.cxx:7978 src/waterfall/waterfall.cxx:2522
+#: src/dialogs/fl_digi.cxx:8037 src/waterfall/waterfall.cxx:2522
 msgid "Squelch level"
 msgstr "Επίπεδο Squelch"
 
-#: src/dialogs/fl_digi.cxx:7994
+#: src/dialogs/fl_digi.cxx:8053
 msgid ""
 "Left click: change mode\n"
 "Right click: configure"
@@ -678,43 +678,43 @@ msgstr ""
 "Αριστερό κλικ: αλλαγή mode\n"
 "Δεξί κλικ: ρύθμιση"
 
-#: src/dialogs/fl_digi.cxx:8003
+#: src/dialogs/fl_digi.cxx:8062
 msgid "CW transmit WPM"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:8012
+#: src/dialogs/fl_digi.cxx:8071
 msgid "Default WPM"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:8042
+#: src/dialogs/fl_digi.cxx:8101
 msgid "Left click to toggle VuMeter"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:8048
+#: src/dialogs/fl_digi.cxx:8107
 msgid "Left click to toggle Status Bar"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:8060
+#: src/dialogs/fl_digi.cxx:8119
 msgid "Tx level attenuator (dB)"
 msgstr "Εξασθενητής επιπέδου Εκπομπής (dB)"
 
-#: src/dialogs/fl_digi.cxx:8088
+#: src/dialogs/fl_digi.cxx:8147
 msgid "Automatic Frequency Control"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:8093 src/dialogs/confdialog.cxx:10888
+#: src/dialogs/fl_digi.cxx:8152 src/dialogs/confdialog.cxx:10888
 msgid "Squelch"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:8098
+#: src/dialogs/fl_digi.cxx:8157
 msgid "Power Signal Monitor"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:9866
+#: src/dialogs/fl_digi.cxx:9925
 msgid "Delete entry?"
 msgstr "Διαγραφή καταχώρησης;"
 
-#: src/dialogs/fl_digi.cxx:9866 src/spot/notify.cxx:223 src/spot/notify.cxx:229
+#: src/dialogs/fl_digi.cxx:9925 src/spot/notify.cxx:223 src/spot/notify.cxx:229
 msgid "All"
 msgstr "Όλα"
 
@@ -725,7 +725,7 @@ msgstr "Εύρεση: "
 #: src/dialogs/Viewer.cxx:312 src/logbook/logsupport.cxx:325
 #: src/logbook/logsupport.cxx:1061 src/misc/macroedit.cxx:503
 #: src/mfsk/mfsk-pic.cxx:338 src/spot/notify.cxx:523 src/spot/notify.cxx:527
-#: src/dialogs/confdialog.cxx:18542
+#: src/dialogs/confdialog.cxx:18544
 msgid "Close"
 msgstr "Κλείσιμο"
 
@@ -913,8 +913,8 @@ msgstr "Πάντα LSB"
 msgid "Always USB"
 msgstr "Πάντα USB"
 
-#: src/misc/configuration.cxx:547 src/dialogs/confdialog.cxx:16302
-#: src/dialogs/confdialog.cxx:16570 src/dialogs/confdialog.cxx:16572
+#: src/misc/configuration.cxx:547 src/dialogs/confdialog.cxx:16304
+#: src/dialogs/confdialog.cxx:16572 src/dialogs/confdialog.cxx:16574
 msgid "Rig Control/Hamlib"
 msgstr "Έλεγχος ΠΔ/Hamlib"
 
@@ -1657,7 +1657,7 @@ msgstr ""
 msgid "Lock transmit frequency"
 msgstr "Κλείδωμα συχνότητας εκπομπής"
 
-#: src/waterfall/waterfall.cxx:2043 src/dialogs/confdialog.cxx:17818
+#: src/waterfall/waterfall.cxx:2043 src/dialogs/confdialog.cxx:17820
 msgid "Reverse"
 msgstr "Αναστροφή"
 
@@ -1720,9 +1720,9 @@ msgstr "Αφαίρεση"
 #: src/spot/notify.cxx:219 src/dialogs/confdialog.cxx:12705
 #: src/dialogs/confdialog.cxx:12716 src/dialogs/confdialog.cxx:12806
 #: src/dialogs/confdialog.cxx:12817 src/dialogs/confdialog.cxx:13378
-#: src/dialogs/confdialog.cxx:16698 src/dialogs/confdialog.cxx:16727
-#: src/dialogs/confdialog.cxx:16756 src/dialogs/confdialog.cxx:16785
-#: src/dialogs/confdialog.cxx:16809 src/dialogs/confdialog.cxx:17406
+#: src/dialogs/confdialog.cxx:16700 src/dialogs/confdialog.cxx:16729
+#: src/dialogs/confdialog.cxx:16758 src/dialogs/confdialog.cxx:16787
+#: src/dialogs/confdialog.cxx:16811 src/dialogs/confdialog.cxx:17408
 msgid "Select"
 msgstr "Επιλογή"
 
@@ -1850,13 +1850,12 @@ msgid "QTH"
 msgstr ""
 
 #: src/widgets/FTextRXTX.cxx:153 src/dialogs/confdialog.cxx:9567
-#: src/dialogs/confdialog.cxx:15681 src/logbook/lgbook.cxx:712
+#: src/logbook/lgbook.cxx:712
 msgid "State"
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:154 src/dialogs/confdialog.cxx:15710
-#: src/logbook/lgbook.cxx:775 src/logbook/lgbook.cxx:1146
-#: src/logbook/lgbook.cxx:1147
+#: src/widgets/FTextRXTX.cxx:154 src/logbook/lgbook.cxx:775
+#: src/logbook/lgbook.cxx:1146 src/logbook/lgbook.cxx:1147
 msgid "County"
 msgstr ""
 
@@ -2447,7 +2446,7 @@ msgstr "Μετρητής ισχύος"
 msgid "Power scale"
 msgstr "Κλίμακα ισχύος"
 
-#: src/dialogs/confdialog.cxx:9107 src/dialogs/confdialog.cxx:18131
+#: src/dialogs/confdialog.cxx:9107 src/dialogs/confdialog.cxx:18133
 msgid "Select the type of FFT prefilter"
 msgstr ""
 
@@ -2489,7 +2488,7 @@ msgid "Background color for Function key group 3"
 msgstr "Χρώμα φόντου για την Ομάδα 3 των πλήκτρων F"
 
 #: src/dialogs/confdialog.cxx:9157 src/dialogs/confdialog.cxx:9352
-#: src/dialogs/confdialog.cxx:12742 src/dialogs/confdialog.cxx:16567
+#: src/dialogs/confdialog.cxx:12742 src/dialogs/confdialog.cxx:16569
 #: src/logbook/lgbook.cxx:824
 msgid "Defaults"
 msgstr "Αρχικές ρυθμ."
@@ -2513,8 +2512,8 @@ msgstr ""
 #: src/dialogs/confdialog.cxx:10731 src/dialogs/confdialog.cxx:10931
 #: src/dialogs/confdialog.cxx:14772 src/dialogs/confdialog.cxx:14857
 #: src/dialogs/confdialog.cxx:14871 src/dialogs/confdialog.cxx:14918
-#: src/dialogs/confdialog.cxx:14984 src/dialogs/confdialog.cxx:15764
-#: src/dialogs/confdialog.cxx:17247 src/dialogs/confdialog.cxx:18466
+#: src/dialogs/confdialog.cxx:14984 src/dialogs/confdialog.cxx:15766
+#: src/dialogs/confdialog.cxx:17249 src/dialogs/confdialog.cxx:18468
 msgid "Default"
 msgstr "Επαναφ."
 
@@ -2664,35 +2663,35 @@ msgid "Signal Level Indicator"
 msgstr "Ένδειξη στάθμης σήματος"
 
 #: src/dialogs/confdialog.cxx:9393 src/dialogs/confdialog.cxx:9888
-#: src/dialogs/confdialog.cxx:17182 src/dialogs/confdialog.cxx:18749
+#: src/dialogs/confdialog.cxx:17184 src/dialogs/confdialog.cxx:18751
 msgid "Low"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:9401 src/dialogs/confdialog.cxx:17190
+#: src/dialogs/confdialog.cxx:9401 src/dialogs/confdialog.cxx:17192
 msgid ""
 "Transition\n"
 "Level (dB)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:9409 src/dialogs/confdialog.cxx:17198
+#: src/dialogs/confdialog.cxx:9409 src/dialogs/confdialog.cxx:17200
 msgid "Normal"
 msgstr ""
 
 #: src/dialogs/confdialog.cxx:9424 src/dialogs/confdialog.cxx:9888
-#: src/dialogs/confdialog.cxx:17213 src/dialogs/confdialog.cxx:18769
+#: src/dialogs/confdialog.cxx:17215 src/dialogs/confdialog.cxx:18771
 msgid "High"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:9439 src/dialogs/confdialog.cxx:17228
+#: src/dialogs/confdialog.cxx:9439 src/dialogs/confdialog.cxx:17230
 msgid "Over"
 msgstr ""
 
 #: src/dialogs/confdialog.cxx:9442 src/dialogs/confdialog.cxx:9445
-#: src/dialogs/confdialog.cxx:17231 src/dialogs/confdialog.cxx:17234
+#: src/dialogs/confdialog.cxx:17233 src/dialogs/confdialog.cxx:17236
 msgid "label"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:9456 src/dialogs/confdialog.cxx:17245
+#: src/dialogs/confdialog.cxx:9456 src/dialogs/confdialog.cxx:17247
 msgid "Input signal level"
 msgstr "Επίπεδο σήματος εισόδου"
 
@@ -3222,7 +3221,7 @@ msgstr ""
 #: src/dialogs/confdialog.cxx:13757 src/dialogs/confdialog.cxx:13997
 #: src/dialogs/confdialog.cxx:14841 src/dialogs/confdialog.cxx:14893
 #: src/dialogs/confdialog.cxx:14940 src/dialogs/confdialog.cxx:14973
-#: src/dialogs/confdialog.cxx:15784
+#: src/dialogs/confdialog.cxx:15786
 msgid "Port"
 msgstr "Θύρα"
 
@@ -3233,7 +3232,7 @@ msgstr ""
 #: src/dialogs/confdialog.cxx:10147 src/dialogs/confdialog.cxx:14773
 #: src/dialogs/confdialog.cxx:14858 src/dialogs/confdialog.cxx:14872
 #: src/dialogs/confdialog.cxx:14919 src/dialogs/confdialog.cxx:14985
-#: src/dialogs/confdialog.cxx:15765
+#: src/dialogs/confdialog.cxx:15767
 msgid ""
 "Returns IP Address and port\n"
 "number to the default value."
@@ -3656,7 +3655,7 @@ msgstr ""
 msgid "Prompt to save log on exit"
 msgstr "Ερώτ.για αποθήκ.log κατά την έξοδο"
 
-#: src/dialogs/confdialog.cxx:10666 src/dialogs/confdialog.cxx:17532
+#: src/dialogs/confdialog.cxx:10666 src/dialogs/confdialog.cxx:17534
 msgid "Bug me about saving log entries"
 msgstr "Ερώτηση για αποθήκευση καταχώρησης log"
 
@@ -3759,7 +3758,7 @@ msgstr "Ισχύς εξόδου που χρησιμοποιείται για κ�
 msgid "Display logbook read datum at start"
 msgstr "Εμφάνιση ονόματος αρχείου logbook κατά την εκκίνηση"
 
-#: src/dialogs/confdialog.cxx:10755 src/dialogs/confdialog.cxx:17682
+#: src/dialogs/confdialog.cxx:10755 src/dialogs/confdialog.cxx:17684
 msgid "The filename is written to the RX text area"
 msgstr "Το όνομα αρχείου εμφανίζεται στον πίνακα Λήψης"
 
@@ -3784,7 +3783,7 @@ msgstr ""
 msgid "Automatic Rx speed tracking"
 msgstr "Αυτόματη παρακολ.ταχύτητας λήψης"
 
-#: src/dialogs/confdialog.cxx:10787 src/dialogs/confdialog.cxx:18710
+#: src/dialogs/confdialog.cxx:10787 src/dialogs/confdialog.cxx:18712
 msgid "Filter bandwidth"
 msgstr "Εύρος ζώνης φίλτρου"
 
@@ -3852,7 +3851,7 @@ msgstr ""
 msgid "The default CW speed"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:10951 src/dialogs/confdialog.cxx:18102
+#: src/dialogs/confdialog.cxx:10951 src/dialogs/confdialog.cxx:18104
 msgid "Lower limit"
 msgstr "Κατώτατο όριο"
 
@@ -3860,7 +3859,7 @@ msgstr "Κατώτατο όριο"
 msgid "No slower than this"
 msgstr "Όχι πιο αργό από αυτό"
 
-#: src/dialogs/confdialog.cxx:10963 src/dialogs/confdialog.cxx:18151
+#: src/dialogs/confdialog.cxx:10963 src/dialogs/confdialog.cxx:18153
 msgid "Upper limit"
 msgstr "Ανώτατο όριο"
 
@@ -4598,8 +4597,7 @@ msgid ""
 "\n"
 "No settings for baud, stops bits, etc are needed."
 msgstr ""
-"Ο χειρισμός μέσω DTR/RTS μπορεί να μοιραστεί την ίδια σειριακή θύρα με το "
-"RigCat\n"
+"Ο χειρισμός μέσω DTR/RTS μπορεί να μοιραστεί την ίδια ξεχωριστή θύρα PTT\n"
 "ή να αντιστοιχιστεί σε διαφορετική σειριακή θύρα \n"
 "\n"
 "Δεν απαιτούνται ρυθμίσεις ταχύτητας, stop bits κ.λπ."
@@ -4791,13 +4789,13 @@ msgstr ""
 msgid "Audio Stream Procesing"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:12328 src/dialogs/confdialog.cxx:17033
+#: src/dialogs/confdialog.cxx:12328 src/dialogs/confdialog.cxx:17035
 msgid "Sample rate"
 msgstr "Ρυθμός δειγματοληψίας"
 
 #: src/dialogs/confdialog.cxx:12329
 msgid "FMT sample rate"
-msgstr ""
+msgstr "Ρυθμός δειγματοληψίας FMT"
 
 #: src/dialogs/confdialog.cxx:12344
 msgid "Rx Codec PPM"
@@ -4871,11 +4869,11 @@ msgstr ""
 msgid "Offset plot lines on vertical scale"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:12401 src/dialogs/confdialog.cxx:17145
+#: src/dialogs/confdialog.cxx:12401 src/dialogs/confdialog.cxx:17147
 msgid "@|<"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:12405 src/dialogs/confdialog.cxx:17159
+#: src/dialogs/confdialog.cxx:12405 src/dialogs/confdialog.cxx:17161
 msgid "@>|"
 msgstr ""
 
@@ -5144,10 +5142,10 @@ msgstr ""
 
 #: src/dialogs/confdialog.cxx:12700 src/dialogs/confdialog.cxx:12711
 #: src/dialogs/confdialog.cxx:12801 src/dialogs/confdialog.cxx:12812
-#: src/dialogs/confdialog.cxx:15003 src/dialogs/confdialog.cxx:16710
-#: src/dialogs/confdialog.cxx:16739 src/dialogs/confdialog.cxx:16768
-#: src/dialogs/confdialog.cxx:16797 src/dialogs/confdialog.cxx:16824
-#: src/dialogs/confdialog.cxx:16950
+#: src/dialogs/confdialog.cxx:15003 src/dialogs/confdialog.cxx:16712
+#: src/dialogs/confdialog.cxx:16741 src/dialogs/confdialog.cxx:16770
+#: src/dialogs/confdialog.cxx:16799 src/dialogs/confdialog.cxx:16826
+#: src/dialogs/confdialog.cxx:16952
 msgid "Enable"
 msgstr "Ενεργοπ."
 
@@ -5267,7 +5265,7 @@ msgid "Modem/Contestia"
 msgstr ""
 
 #: src/dialogs/confdialog.cxx:12907 src/dialogs/confdialog.cxx:13008
-#: src/dialogs/confdialog.cxx:17960
+#: src/dialogs/confdialog.cxx:17962
 msgid "Bandwidth"
 msgstr "Εύρος ζώνης"
 
@@ -5346,11 +5344,11 @@ msgstr ""
 msgid "Capture signals within this frequency range"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:13139 src/dialogs/confdialog.cxx:18392
+#: src/dialogs/confdialog.cxx:13139 src/dialogs/confdialog.cxx:18394
 msgid "Acquisition S/N (dB)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:13140 src/dialogs/confdialog.cxx:18393
+#: src/dialogs/confdialog.cxx:13140 src/dialogs/confdialog.cxx:18395
 msgid "Capture signals over this threshold"
 msgstr ""
 
@@ -5528,9 +5526,9 @@ msgstr ""
 msgid "RTTY Bell audio wav"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:13381 src/dialogs/confdialog.cxx:16701
-#: src/dialogs/confdialog.cxx:16730 src/dialogs/confdialog.cxx:16759
-#: src/dialogs/confdialog.cxx:16788 src/dialogs/confdialog.cxx:16812
+#: src/dialogs/confdialog.cxx:13381 src/dialogs/confdialog.cxx:16703
+#: src/dialogs/confdialog.cxx:16732 src/dialogs/confdialog.cxx:16761
+#: src/dialogs/confdialog.cxx:16790 src/dialogs/confdialog.cxx:16814
 msgid "Sound:"
 msgstr "Ήχος:"
 
@@ -5538,9 +5536,9 @@ msgstr "Ήχος:"
 #: src/dialogs/confdialog.cxx:14623 src/dialogs/confdialog.cxx:14627
 #: src/dialogs/confdialog.cxx:14631 src/dialogs/confdialog.cxx:14635
 #: src/dialogs/confdialog.cxx:14639 src/dialogs/confdialog.cxx:14643
-#: src/dialogs/confdialog.cxx:16715 src/dialogs/confdialog.cxx:16744
-#: src/dialogs/confdialog.cxx:16773 src/dialogs/confdialog.cxx:16802
-#: src/dialogs/confdialog.cxx:16821
+#: src/dialogs/confdialog.cxx:16717 src/dialogs/confdialog.cxx:16746
+#: src/dialogs/confdialog.cxx:16775 src/dialogs/confdialog.cxx:16804
+#: src/dialogs/confdialog.cxx:16823
 msgid "Test"
 msgstr "Δοκιμή"
 
@@ -6254,7 +6252,7 @@ msgstr ""
 
 #: src/dialogs/confdialog.cxx:14707 src/dialogs/confdialog.cxx:14824
 #: src/dialogs/confdialog.cxx:14876 src/dialogs/confdialog.cxx:14923
-#: src/dialogs/confdialog.cxx:14965 src/dialogs/confdialog.cxx:15768
+#: src/dialogs/confdialog.cxx:14965 src/dialogs/confdialog.cxx:15770
 msgid "Addr"
 msgstr ""
 
@@ -6271,7 +6269,7 @@ msgstr ""
 
 #: src/dialogs/confdialog.cxx:14725 src/dialogs/confdialog.cxx:14842
 #: src/dialogs/confdialog.cxx:14894 src/dialogs/confdialog.cxx:14941
-#: src/dialogs/confdialog.cxx:14974 src/dialogs/confdialog.cxx:15785
+#: src/dialogs/confdialog.cxx:14974 src/dialogs/confdialog.cxx:15787
 msgid "IP Address Port Number"
 msgstr ""
 
@@ -6374,7 +6372,7 @@ msgstr ""
 msgid "flrig"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:14924 src/dialogs/confdialog.cxx:15769
+#: src/dialogs/confdialog.cxx:14924 src/dialogs/confdialog.cxx:15771
 msgid ""
 "IP Address for flrig interface\n"
 "IP Address format: nnn.nnn.nnn.nnn\n"
@@ -6382,7 +6380,7 @@ msgid ""
 msgstr ""
 
 #: src/dialogs/confdialog.cxx:14956 src/dialogs/confdialog.cxx:14980
-#: src/dialogs/confdialog.cxx:15799
+#: src/dialogs/confdialog.cxx:15801
 msgid "Reconnect"
 msgstr ""
 
@@ -6626,8 +6624,8 @@ msgstr "Θύρα:"
 msgid "Using UDP port #"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15279 src/dialogs/confdialog.cxx:15951
-#: src/dialogs/confdialog.cxx:16561 src/dialogs/confdialog.cxx:16648
+#: src/dialogs/confdialog.cxx:15279 src/dialogs/confdialog.cxx:15953
+#: src/dialogs/confdialog.cxx:16563 src/dialogs/confdialog.cxx:16650
 msgid "Initialize"
 msgstr ""
 
@@ -6883,8 +6881,8 @@ msgstr ""
 msgid "Default Settings"
 msgstr "Προεπ.ρυθμίσεις"
 
-#: src/dialogs/confdialog.cxx:15591 src/dialogs/confdialog.cxx:15739
-#: src/dialogs/confdialog.cxx:15741
+#: src/dialogs/confdialog.cxx:15591 src/dialogs/confdialog.cxx:15741
+#: src/dialogs/confdialog.cxx:15743
 msgid "Operator-Station"
 msgstr "Χειριστής-Σταθμός "
 
@@ -6936,687 +6934,703 @@ msgstr "Locator σταθμού:"
 msgid "Maidenhead locator as in EM64qv"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15698
-msgid "Abbreviation for state"
+#: src/dialogs/confdialog.cxx:15681
+msgid "State / Provinces"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15727
-msgid "Abbreviation for county"
+#: src/dialogs/confdialog.cxx:15682
+msgid "US States / Canadian Provinces"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15744 src/dialogs/confdialog.cxx:15822
-#: src/dialogs/confdialog.cxx:15824
+#: src/dialogs/confdialog.cxx:15699
+msgid "Abbreviation for State/Province"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:15711
+msgid "Counties / Regions"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:15712
+msgid "US/Canadian Counties / Regions"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:15729
+msgid "Abbreviation for County/Region"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:15746 src/dialogs/confdialog.cxx:15824
+#: src/dialogs/confdialog.cxx:15826
 msgid "Rig Control/flrig"
 msgstr "Έλεγχος ΠΔ/flrig"
 
-#: src/dialogs/confdialog.cxx:15748
+#: src/dialogs/confdialog.cxx:15750
 msgid ""
 "\"Disable PTT keys modem if multiple instances of fldigi (client)\n"
 "are connected to a single flrig (server)."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15752
+#: src/dialogs/confdialog.cxx:15754
 msgid "Flrig PTT keys modem"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15753
+#: src/dialogs/confdialog.cxx:15755
 msgid "\" \""
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15760
+#: src/dialogs/confdialog.cxx:15762
 msgid ""
 "flrig xmlrpc server parameters\n"
 "these controls are mirrored on the IO configuration tab"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15800
+#: src/dialogs/confdialog.cxx:15802
 msgid "Press only if you change the address/port"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15805
+#: src/dialogs/confdialog.cxx:15807
 msgid "flrig is the preferred method of tranceiver control"
 msgstr "Το flrig είναι η προτιμώμενη μέθοδος ελέγχου πομποδέκτη"
 
-#: src/dialogs/confdialog.cxx:15808
+#: src/dialogs/confdialog.cxx:15810
 msgid "Enable flrig xcvr control with fldigi as client"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15809 src/dialogs/confdialog.cxx:15815
+#: src/dialogs/confdialog.cxx:15811 src/dialogs/confdialog.cxx:15817
 msgid "Disable if flrig not used."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15814
+#: src/dialogs/confdialog.cxx:15816
 msgid "Shutdown flrig with fldigi"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15827 src/dialogs/confdialog.cxx:16030
-#: src/dialogs/confdialog.cxx:16032
+#: src/dialogs/confdialog.cxx:15829 src/dialogs/confdialog.cxx:16032
+#: src/dialogs/confdialog.cxx:16034
 msgid "Rig Control/CAT (rigcat)"
 msgstr "Έλεγχος ΠΔ/CAT (rigcat)"
 
-#: src/dialogs/confdialog.cxx:15831
+#: src/dialogs/confdialog.cxx:15833
 msgid "Use RigCAT"
 msgstr "Χρήση RigCAT"
 
-#: src/dialogs/confdialog.cxx:15832
+#: src/dialogs/confdialog.cxx:15834
 msgid "RigCAT used for rig control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15839
+#: src/dialogs/confdialog.cxx:15841
 msgid "Rig description file:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15840
+#: src/dialogs/confdialog.cxx:15842
 msgid "Use Open to select descriptor file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15846
+#: src/dialogs/confdialog.cxx:15848
 msgid "Select rig descriptor file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15850 src/dialogs/confdialog.cxx:16327
-#: src/dialogs/confdialog.cxx:16597 src/dialogs/confdialog.cxx:16867
+#: src/dialogs/confdialog.cxx:15852 src/dialogs/confdialog.cxx:16329
+#: src/dialogs/confdialog.cxx:16599 src/dialogs/confdialog.cxx:16869
 msgid "Device:"
 msgstr "Συσκευή:"
 
-#: src/dialogs/confdialog.cxx:15865 src/dialogs/confdialog.cxx:16342
+#: src/dialogs/confdialog.cxx:15867 src/dialogs/confdialog.cxx:16344
 msgid "Retries"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15866
+#: src/dialogs/confdialog.cxx:15868
 msgid "# retries before giving up"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15882
+#: src/dialogs/confdialog.cxx:15884
 msgid "Retry interval (ms)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15883
+#: src/dialogs/confdialog.cxx:15885
 msgid "Time between retires in msec"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15899
+#: src/dialogs/confdialog.cxx:15901
 msgid "Write delay (ms)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15900
+#: src/dialogs/confdialog.cxx:15902
 msgid "Wait for response to subsequent command"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15916 src/dialogs/confdialog.cxx:16410
+#: src/dialogs/confdialog.cxx:15918 src/dialogs/confdialog.cxx:16412
 msgid "Baud rate:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15932 src/dialogs/confdialog.cxx:16426
+#: src/dialogs/confdialog.cxx:15934 src/dialogs/confdialog.cxx:16428
 msgid "Stopbits"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15952
+#: src/dialogs/confdialog.cxx:15954
 msgid "Initialize RigCAT interface"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15956
+#: src/dialogs/confdialog.cxx:15958
 msgid "Commands are echoed"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15957
+#: src/dialogs/confdialog.cxx:15959
 msgid "Rig or interface echos serial data"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15962
+#: src/dialogs/confdialog.cxx:15964
 msgid "CAT command for PTT"
 msgstr "Εντολή CAT για PTT"
 
-#: src/dialogs/confdialog.cxx:15963
+#: src/dialogs/confdialog.cxx:15965
 msgid "PTT is a CAT command (not hardware)"
 msgstr "Η εντολή CAT είναι το PTT"
 
-#: src/dialogs/confdialog.cxx:15969
+#: src/dialogs/confdialog.cxx:15971
 msgid "Toggle RTS for PTT"
 msgstr "Εναλλαγή RTS για PTT"
 
-#: src/dialogs/confdialog.cxx:15970
+#: src/dialogs/confdialog.cxx:15972
 msgid "RTS is ptt line"
 msgstr "Το RTS είναι η εντολή PTT"
 
-#: src/dialogs/confdialog.cxx:15975
+#: src/dialogs/confdialog.cxx:15977
 msgid "Toggle DTR for PTT"
 msgstr "Εναλλαγή DTR για PTT"
 
-#: src/dialogs/confdialog.cxx:15976
+#: src/dialogs/confdialog.cxx:15978
 msgid "DTR is ptt line"
 msgstr "Το DTR είναι η εντολή PTT"
 
-#: src/dialogs/confdialog.cxx:15981
+#: src/dialogs/confdialog.cxx:15983
 msgid "RTS +12 v"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15982 src/dialogs/confdialog.cxx:16483
+#: src/dialogs/confdialog.cxx:15984 src/dialogs/confdialog.cxx:16485
 msgid "Initial state of RTS"
 msgstr "Αρχική κατάσταση του RTS"
 
-#: src/dialogs/confdialog.cxx:15987
+#: src/dialogs/confdialog.cxx:15989
 msgid "DTR +12 v"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:15988 src/dialogs/confdialog.cxx:16477
+#: src/dialogs/confdialog.cxx:15990 src/dialogs/confdialog.cxx:16479
 msgid "Initial state of DTR"
 msgstr "Αρχική κατάσταση του DTR"
 
-#: src/dialogs/confdialog.cxx:15993 src/dialogs/confdialog.cxx:16488
+#: src/dialogs/confdialog.cxx:15995 src/dialogs/confdialog.cxx:16490
 msgid "RTS/CTS flow control"
 msgstr "Έλεγχος ροής RTS/CTS"
 
-#: src/dialogs/confdialog.cxx:15994
+#: src/dialogs/confdialog.cxx:15996
 msgid "Rig uses RTS/CTS handshake"
 msgstr "Ο Π/Δ χρησιμοποιεί έλεγχο ροής RTC/CTS"
 
-#: src/dialogs/confdialog.cxx:15999
+#: src/dialogs/confdialog.cxx:16001
 msgid "Restore UART Settings on Close"
 msgstr "Επαναφορά ρυθμίσεων UART στο Κλείσιμο"
 
-#: src/dialogs/confdialog.cxx:16000
+#: src/dialogs/confdialog.cxx:16002
 msgid "Restore the serial (COM) port settings"
 msgstr "Επαναφέρει τις ρυθμίσεις της σειριακής (COM) θύρας"
 
-#: src/dialogs/confdialog.cxx:16005
+#: src/dialogs/confdialog.cxx:16007
 msgid "VSP Enable"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16006
+#: src/dialogs/confdialog.cxx:16008
 msgid "Virtual Serial Port Emulator - suppress WARNINGS"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16011
+#: src/dialogs/confdialog.cxx:16013
 msgid "Init delay (ms)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16012
+#: src/dialogs/confdialog.cxx:16014
 msgid "Wait for response to first CAT command"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16035 src/dialogs/confdialog.cxx:16297
-#: src/dialogs/confdialog.cxx:16299
+#: src/dialogs/confdialog.cxx:16037 src/dialogs/confdialog.cxx:16299
+#: src/dialogs/confdialog.cxx:16301
 msgid "Rig Control/GPIO"
 msgstr "Έλεγχος ΠΔ/GPIO"
 
-#: src/dialogs/confdialog.cxx:16039 src/dialogs/confdialog.cxx:16281
+#: src/dialogs/confdialog.cxx:16041 src/dialogs/confdialog.cxx:16283
 msgid "BCM GPIO  pin    Value"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16043
+#: src/dialogs/confdialog.cxx:16045
 msgid "17   00   11"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16044 src/dialogs/confdialog.cxx:16051
-#: src/dialogs/confdialog.cxx:16058 src/dialogs/confdialog.cxx:16065
-#: src/dialogs/confdialog.cxx:16072 src/dialogs/confdialog.cxx:16079
-#: src/dialogs/confdialog.cxx:16086 src/dialogs/confdialog.cxx:16093
-#: src/dialogs/confdialog.cxx:16100 src/dialogs/confdialog.cxx:16107
-#: src/dialogs/confdialog.cxx:16114 src/dialogs/confdialog.cxx:16121
-#: src/dialogs/confdialog.cxx:16128 src/dialogs/confdialog.cxx:16135
-#: src/dialogs/confdialog.cxx:16142 src/dialogs/confdialog.cxx:16149
-#: src/dialogs/confdialog.cxx:16156
+#: src/dialogs/confdialog.cxx:16046 src/dialogs/confdialog.cxx:16053
+#: src/dialogs/confdialog.cxx:16060 src/dialogs/confdialog.cxx:16067
+#: src/dialogs/confdialog.cxx:16074 src/dialogs/confdialog.cxx:16081
+#: src/dialogs/confdialog.cxx:16088 src/dialogs/confdialog.cxx:16095
+#: src/dialogs/confdialog.cxx:16102 src/dialogs/confdialog.cxx:16109
+#: src/dialogs/confdialog.cxx:16116 src/dialogs/confdialog.cxx:16123
+#: src/dialogs/confdialog.cxx:16130 src/dialogs/confdialog.cxx:16137
+#: src/dialogs/confdialog.cxx:16144 src/dialogs/confdialog.cxx:16151
+#: src/dialogs/confdialog.cxx:16158
 msgid "Select pin number"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16050
+#: src/dialogs/confdialog.cxx:16052
 msgid "18   01   12"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16057
+#: src/dialogs/confdialog.cxx:16059
 msgid "27   02   13"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16064
+#: src/dialogs/confdialog.cxx:16066
 msgid "22   03   15"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16071
+#: src/dialogs/confdialog.cxx:16073
 msgid "23   04   16"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16078
+#: src/dialogs/confdialog.cxx:16080
 msgid "24   05   18"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16085
+#: src/dialogs/confdialog.cxx:16087
 msgid "25   06   22"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16092
+#: src/dialogs/confdialog.cxx:16094
 msgid " 4   07    7"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16099
+#: src/dialogs/confdialog.cxx:16101
 msgid " 5   21   29"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16106
+#: src/dialogs/confdialog.cxx:16108
 msgid " 6   22   31"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16113
+#: src/dialogs/confdialog.cxx:16115
 msgid "13   23   33"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16120
+#: src/dialogs/confdialog.cxx:16122
 msgid "19   24   35"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16127
+#: src/dialogs/confdialog.cxx:16129
 msgid "26   25   37"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16134
+#: src/dialogs/confdialog.cxx:16136
 msgid "12   26   32"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16141
+#: src/dialogs/confdialog.cxx:16143
 msgid "16   27   36"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16148
+#: src/dialogs/confdialog.cxx:16150
 msgid "20   28   38"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16155
+#: src/dialogs/confdialog.cxx:16157
 msgid "21   29   40"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16162 src/dialogs/confdialog.cxx:16169
-#: src/dialogs/confdialog.cxx:16176 src/dialogs/confdialog.cxx:16183
-#: src/dialogs/confdialog.cxx:16190 src/dialogs/confdialog.cxx:16197
-#: src/dialogs/confdialog.cxx:16204 src/dialogs/confdialog.cxx:16211
-#: src/dialogs/confdialog.cxx:16218 src/dialogs/confdialog.cxx:16225
-#: src/dialogs/confdialog.cxx:16232 src/dialogs/confdialog.cxx:16239
-#: src/dialogs/confdialog.cxx:16246 src/dialogs/confdialog.cxx:16253
-#: src/dialogs/confdialog.cxx:16260 src/dialogs/confdialog.cxx:16267
-#: src/dialogs/confdialog.cxx:16274
+#: src/dialogs/confdialog.cxx:16164 src/dialogs/confdialog.cxx:16171
+#: src/dialogs/confdialog.cxx:16178 src/dialogs/confdialog.cxx:16185
+#: src/dialogs/confdialog.cxx:16192 src/dialogs/confdialog.cxx:16199
+#: src/dialogs/confdialog.cxx:16206 src/dialogs/confdialog.cxx:16213
+#: src/dialogs/confdialog.cxx:16220 src/dialogs/confdialog.cxx:16227
+#: src/dialogs/confdialog.cxx:16234 src/dialogs/confdialog.cxx:16241
+#: src/dialogs/confdialog.cxx:16248 src/dialogs/confdialog.cxx:16255
+#: src/dialogs/confdialog.cxx:16262 src/dialogs/confdialog.cxx:16269
+#: src/dialogs/confdialog.cxx:16276
 msgid "= 1 (on)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16163 src/dialogs/confdialog.cxx:16170
-#: src/dialogs/confdialog.cxx:16177 src/dialogs/confdialog.cxx:16184
-#: src/dialogs/confdialog.cxx:16191 src/dialogs/confdialog.cxx:16198
-#: src/dialogs/confdialog.cxx:16205 src/dialogs/confdialog.cxx:16212
-#: src/dialogs/confdialog.cxx:16219 src/dialogs/confdialog.cxx:16226
-#: src/dialogs/confdialog.cxx:16233 src/dialogs/confdialog.cxx:16240
-#: src/dialogs/confdialog.cxx:16247 src/dialogs/confdialog.cxx:16254
-#: src/dialogs/confdialog.cxx:16261 src/dialogs/confdialog.cxx:16268
-#: src/dialogs/confdialog.cxx:16275
+#: src/dialogs/confdialog.cxx:16165 src/dialogs/confdialog.cxx:16172
+#: src/dialogs/confdialog.cxx:16179 src/dialogs/confdialog.cxx:16186
+#: src/dialogs/confdialog.cxx:16193 src/dialogs/confdialog.cxx:16200
+#: src/dialogs/confdialog.cxx:16207 src/dialogs/confdialog.cxx:16214
+#: src/dialogs/confdialog.cxx:16221 src/dialogs/confdialog.cxx:16228
+#: src/dialogs/confdialog.cxx:16235 src/dialogs/confdialog.cxx:16242
+#: src/dialogs/confdialog.cxx:16249 src/dialogs/confdialog.cxx:16256
+#: src/dialogs/confdialog.cxx:16263 src/dialogs/confdialog.cxx:16270
+#: src/dialogs/confdialog.cxx:16277
 msgid "Select PTT on state"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16285
+#: src/dialogs/confdialog.cxx:16287
 msgid "Enable GPIO PTT (Pi specific controls)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16287
+#: src/dialogs/confdialog.cxx:16289
 msgid "Pulse width (msec)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16288
+#: src/dialogs/confdialog.cxx:16290
 msgid "Set >0 if pulsed PTT used"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16306
+#: src/dialogs/confdialog.cxx:16308
 msgid "Use Hamlib"
 msgstr "Χρήση Hamlib"
 
-#: src/dialogs/confdialog.cxx:16307
+#: src/dialogs/confdialog.cxx:16309
 msgid "Hamlib used for rig control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16313
+#: src/dialogs/confdialog.cxx:16315
 msgid "Rig:"
 msgstr "Π/Δ:"
 
-#: src/dialogs/confdialog.cxx:16343
+#: src/dialogs/confdialog.cxx:16345
 msgid "# times to resend command before giving up"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16359
+#: src/dialogs/confdialog.cxx:16361
 msgid "Timeout (msec)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16360
+#: src/dialogs/confdialog.cxx:16362
 msgid "Hamlib read timeout"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16376
+#: src/dialogs/confdialog.cxx:16378
 msgid "Write delay (msec)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16377
+#: src/dialogs/confdialog.cxx:16379
 msgid "Msec's between sequential commands"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16393
+#: src/dialogs/confdialog.cxx:16395
 msgid "Post write delay (msec)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16394
+#: src/dialogs/confdialog.cxx:16396
 msgid "Wait interval (msecs) before reading response"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16445
+#: src/dialogs/confdialog.cxx:16447
 msgid "Polling Interval (msec)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16464
+#: src/dialogs/confdialog.cxx:16466
 msgid "PTT via Hamlib command"
 msgstr "PTT μεσώ εντολής hamlib"
 
-#: src/dialogs/confdialog.cxx:16465
+#: src/dialogs/confdialog.cxx:16467
 msgid "PTT using hamlib command"
 msgstr "PTT με χρήση εντολής hamlib"
 
-#: src/dialogs/confdialog.cxx:16470
+#: src/dialogs/confdialog.cxx:16472
 msgid "Audio on Auxiliary Port"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16471
+#: src/dialogs/confdialog.cxx:16473
 msgid "PTT enables auxiliary audio source"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16476
+#: src/dialogs/confdialog.cxx:16478
 msgid "DTR +12"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16482
+#: src/dialogs/confdialog.cxx:16484
 msgid "RTS +12"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16489
+#: src/dialogs/confdialog.cxx:16491
 msgid "Rig requires RTS/CTS flow control"
 msgstr "Ο πομποδέκτης απαιτεί έλεγχο ροής RTS/CTS"
 
-#: src/dialogs/confdialog.cxx:16495
+#: src/dialogs/confdialog.cxx:16497
 msgid "XON/XOFF flow control"
 msgstr "Έλεγχος ροής XON/XOFF"
 
-#: src/dialogs/confdialog.cxx:16496
+#: src/dialogs/confdialog.cxx:16498
 msgid "Rig requires Xon/Xoff flow control"
 msgstr "Ο πομποδέκτης απαιτεί έλεγχο ροής Xon/Xoff"
 
-#: src/dialogs/confdialog.cxx:16501
+#: src/dialogs/confdialog.cxx:16503
 msgid "CW is LSB mode"
 msgstr "Το CW είναι διαμ. LSB"
 
-#: src/dialogs/confdialog.cxx:16502
+#: src/dialogs/confdialog.cxx:16504
 msgid "Check if xcvr uses LSB for CW"
 msgstr "Επιλέξτε εάν ο Π/Δ χρησιμοποιεί LSB για CW"
 
-#: src/dialogs/confdialog.cxx:16507
+#: src/dialogs/confdialog.cxx:16509
 msgid "RTTY is USB mode"
 msgstr "Το RTTY είναι διαμ. USB"
 
-#: src/dialogs/confdialog.cxx:16508
+#: src/dialogs/confdialog.cxx:16510
 msgid "Check if xcvr uses USB for RTTY"
 msgstr "Επιλέξτε εάν ο Π/Δ χρησιμοποιεί USB για RTTY"
 
-#: src/dialogs/confdialog.cxx:16513
+#: src/dialogs/confdialog.cxx:16515
 msgid "Mode delay (msec)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16514
+#: src/dialogs/confdialog.cxx:16516
 msgid "Delay NN msec after executing mode change"
 msgstr "Καθυστέρηση ΝΝ msec μετά από εκτέλεση αλλαγής mode"
 
-#: src/dialogs/confdialog.cxx:16533
+#: src/dialogs/confdialog.cxx:16535
 msgid "Sideband:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16546
+#: src/dialogs/confdialog.cxx:16548
 msgid "Advanced configuration:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16547
+#: src/dialogs/confdialog.cxx:16549
 msgid ""
 "Optional configuration\n"
 "in format: param=val ..."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16562
+#: src/dialogs/confdialog.cxx:16564
 msgid "Initialize hamlib interface"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16575 src/dialogs/confdialog.cxx:16679
-#: src/dialogs/confdialog.cxx:16681
+#: src/dialogs/confdialog.cxx:16577 src/dialogs/confdialog.cxx:16681
+#: src/dialogs/confdialog.cxx:16683
 msgid "Rig Control/Hardware PTT"
 msgstr "Έλεγχος ΠΔ/Hardware PTT"
 
-#: src/dialogs/confdialog.cxx:16581 src/dialogs/confdialog.cxx:16990
+#: src/dialogs/confdialog.cxx:16583 src/dialogs/confdialog.cxx:16992
 msgid "PTT tone on right audio channel "
 msgstr "Τόνος PTT στο δεξί κανάλι ήχου"
 
-#: src/dialogs/confdialog.cxx:16582
+#: src/dialogs/confdialog.cxx:16584
 msgid "Can be used in lieu of or in addition to other PTT types"
 msgstr "Μπορεί να χρησιμοποιηθεί αντί για ή σε συνδιασμό με άλλους τρόπους PTT"
 
-#: src/dialogs/confdialog.cxx:16589
+#: src/dialogs/confdialog.cxx:16591
 msgid "h/w ptt device-pin"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16592
+#: src/dialogs/confdialog.cxx:16594
 msgid "Use separate serial port PTT"
 msgstr "Χρήση ξεχωριστής θύρας για PTT"
 
-#: src/dialogs/confdialog.cxx:16611
+#: src/dialogs/confdialog.cxx:16613
 msgid "Port is second SCU-17 device"
 msgstr "Η θύρα είναι η δεύτερη συσκευή του SCU-17"
 
-#: src/dialogs/confdialog.cxx:16612
+#: src/dialogs/confdialog.cxx:16614
 msgid "Driver requires stop bits to be ZERO!"
 msgstr "Ο οδηγός απαιτεί τα stop bits να είναι ΜΗΔΕΝ!"
 
-#: src/dialogs/confdialog.cxx:16618
+#: src/dialogs/confdialog.cxx:16620
 msgid "Use parallel port PTT"
 msgstr "Χρήση της παράλληλης θύρας για PTT"
 
-#: src/dialogs/confdialog.cxx:16623
+#: src/dialogs/confdialog.cxx:16625
 msgid "Use uHRouter PTT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16628
+#: src/dialogs/confdialog.cxx:16630
 msgid "Use RTS"
 msgstr "Χρήση RTS"
 
-#: src/dialogs/confdialog.cxx:16629
+#: src/dialogs/confdialog.cxx:16631
 msgid "RTS is PTT signal line"
 msgstr "Το RTS είναι η γραμμή σήματος PTT"
 
-#: src/dialogs/confdialog.cxx:16633
+#: src/dialogs/confdialog.cxx:16635
 msgid "RTS = +V"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16634
+#: src/dialogs/confdialog.cxx:16636
 msgid "Initial voltage on RTS"
 msgstr "Αρχική τάση στο RTS"
 
-#: src/dialogs/confdialog.cxx:16638
+#: src/dialogs/confdialog.cxx:16640
 msgid "Use DTR"
 msgstr "Χρήση DTR"
 
-#: src/dialogs/confdialog.cxx:16639
+#: src/dialogs/confdialog.cxx:16641
 msgid "DTR is PTT signal line"
 msgstr "Το DTR είναι η γραμμή σήματος PTT"
 
-#: src/dialogs/confdialog.cxx:16643
+#: src/dialogs/confdialog.cxx:16645
 msgid "DTR = +V"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16644
+#: src/dialogs/confdialog.cxx:16646
 msgid "Initial voltage on DTR"
 msgstr "Αρχική τάση στο DTR"
 
-#: src/dialogs/confdialog.cxx:16649
+#: src/dialogs/confdialog.cxx:16651
 msgid "Initialize the H/W PTT interface"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16654
+#: src/dialogs/confdialog.cxx:16656
 msgid "PTT delays valid for all CAT/PTT types"
 msgstr "Οι καθυστερήσεις PTT ισχύουν για όλους τους τρόπους CAT/PTT"
 
-#: src/dialogs/confdialog.cxx:16657
+#: src/dialogs/confdialog.cxx:16659
 msgid "Start of transmit PTT delay"
 msgstr "Καθυστέρηση PTT έναρξης εκμπομπής"
 
-#: src/dialogs/confdialog.cxx:16658
+#: src/dialogs/confdialog.cxx:16660
 msgid "Delay NN msec before starting audio"
 msgstr "Καθυστέρηση ΝΝ msec πριν από την έναρξη του ήχου"
 
-#: src/dialogs/confdialog.cxx:16667
+#: src/dialogs/confdialog.cxx:16669
 msgid "PTT end of transmit delay"
 msgstr "Καθυστέρηση PTT λήξης εκμπομπής"
 
-#: src/dialogs/confdialog.cxx:16668
+#: src/dialogs/confdialog.cxx:16670
 msgid "Delay NN msec before releasing PTT"
 msgstr "Καθυστέρηση ΝΝ msec πριν από την αποδέσμευση του PTT"
 
-#: src/dialogs/confdialog.cxx:16685 src/dialogs/confdialog.cxx:16850
-#: src/dialogs/confdialog.cxx:16852
+#: src/dialogs/confdialog.cxx:16687 src/dialogs/confdialog.cxx:16852
+#: src/dialogs/confdialog.cxx:16854
 msgid "Soundcard/Alerts"
 msgstr "Κάρτα Ήχου/Ειδοποιήσεις"
 
-#: src/dialogs/confdialog.cxx:16694
+#: src/dialogs/confdialog.cxx:16696
 msgid "REGEX detected wav"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16723
+#: src/dialogs/confdialog.cxx:16725
 msgid "MYCALL detected wav"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16752
+#: src/dialogs/confdialog.cxx:16754
 msgid "RsID audio alert wav"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16781
+#: src/dialogs/confdialog.cxx:16783
 msgid "flmsg received wav"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16805
+#: src/dialogs/confdialog.cxx:16807
 msgid "flmsg timed out wav"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16831
+#: src/dialogs/confdialog.cxx:16833
 msgid "Alert volume"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16855 src/dialogs/confdialog.cxx:16962
-#: src/dialogs/confdialog.cxx:16964
+#: src/dialogs/confdialog.cxx:16857 src/dialogs/confdialog.cxx:16964
+#: src/dialogs/confdialog.cxx:16966
 msgid "Soundcard/Devices"
 msgstr "Κάρτα Ήχου/Συσκευές"
 
-#: src/dialogs/confdialog.cxx:16861
+#: src/dialogs/confdialog.cxx:16863
 msgid "OSS"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16862
+#: src/dialogs/confdialog.cxx:16864
 msgid "Use OSS audio server"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16868
+#: src/dialogs/confdialog.cxx:16870
 msgid "Select device"
 msgstr "Επιλογή συσκευής"
 
-#: src/dialogs/confdialog.cxx:16876
+#: src/dialogs/confdialog.cxx:16878
 msgid "PortAudio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16877
+#: src/dialogs/confdialog.cxx:16879
 msgid "Use Port Audio server"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16882
+#: src/dialogs/confdialog.cxx:16884
 msgid "Capture:"
 msgstr "Εγγραφή:"
 
-#: src/dialogs/confdialog.cxx:16883
+#: src/dialogs/confdialog.cxx:16885
 msgid "Audio input device"
 msgstr "Συσκευή εισόδου ήχου"
 
-#: src/dialogs/confdialog.cxx:16887
+#: src/dialogs/confdialog.cxx:16889
 msgid "Playback:"
 msgstr "Αναπαραγωγή:"
 
-#: src/dialogs/confdialog.cxx:16888 src/dialogs/confdialog.cxx:16945
+#: src/dialogs/confdialog.cxx:16890 src/dialogs/confdialog.cxx:16947
 msgid "Audio output device"
 msgstr "Συσκευή εξόδου ήχου"
 
-#: src/dialogs/confdialog.cxx:16896
+#: src/dialogs/confdialog.cxx:16898
 msgid "PulseAudio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16897
+#: src/dialogs/confdialog.cxx:16899
 msgid "Use Pulse Audio server"
 msgstr "Χρήση διακομιστή Pulse Audio"
 
-#: src/dialogs/confdialog.cxx:16902
+#: src/dialogs/confdialog.cxx:16904
 msgid "Server string:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16903
+#: src/dialogs/confdialog.cxx:16905
 msgid ""
 "Leave this blank or refer to\n"
 "http://www.pulseaudio.org/wiki/ServerStrings"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16921
+#: src/dialogs/confdialog.cxx:16923
 msgid "File I/O only"
 msgstr "Είσ/Έξ μόνο σε αρχείο"
 
-#: src/dialogs/confdialog.cxx:16922
+#: src/dialogs/confdialog.cxx:16924
 msgid "NO AUDIO DEVICE AVAILABLE (or testing)"
 msgstr "ΕΑΝ ΔΕΝ ΥΠΑΡΧΕΙ ΔΙΑΘΕΣΙΜΗ ΣΥΣΚΕΥΗ ΗΧΟΥ (ή για δοκιμές)"
 
-#: src/dialogs/confdialog.cxx:16931
+#: src/dialogs/confdialog.cxx:16933
 msgid "Device supports full duplex"
 msgstr "Η συσκευή υποστηρίζει αμφίδρομη λειτουργία"
 
-#: src/dialogs/confdialog.cxx:16932
+#: src/dialogs/confdialog.cxx:16934
 msgid "Capture/Playback supports full duplex operation"
 msgstr "Η συσκευή Εγγραφής/Αναπαραγωγής υποστηρίζει αμφίδρομη λειτουργία"
 
-#: src/dialogs/confdialog.cxx:16944
+#: src/dialogs/confdialog.cxx:16946
 msgid "Audio device shared by Audio Alerts and Rx Monitor"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16951
+#: src/dialogs/confdialog.cxx:16953
 msgid "First select audio alert playback device"
 msgstr "Πρώτα επιλέξτε συσκευή για τις ηχητικές ειδοποιήσεις"
 
-#: src/dialogs/confdialog.cxx:16957
+#: src/dialogs/confdialog.cxx:16959
 msgid "Note: must be selected and enabled for Rx Audio monitoring!"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:16967 src/dialogs/confdialog.cxx:17024
-#: src/dialogs/confdialog.cxx:17026
+#: src/dialogs/confdialog.cxx:16969 src/dialogs/confdialog.cxx:17026
+#: src/dialogs/confdialog.cxx:17028
 msgid "Soundcard/Right channel"
 msgstr "Κάρτα Ήχου/Δεξί κανάλι"
 
-#: src/dialogs/confdialog.cxx:16971
+#: src/dialogs/confdialog.cxx:16973
 msgid "Transmit Usage"
 msgstr "Χρήση κατά την Εκπομπή"
 
-#: src/dialogs/confdialog.cxx:16974
+#: src/dialogs/confdialog.cxx:16976
 msgid "Modem signal on left and right channels"
 msgstr "Σήμα του modem σε αριστερό και δεξί κανάλι"
 
-#: src/dialogs/confdialog.cxx:16975
+#: src/dialogs/confdialog.cxx:16977
 msgid "Left and right channels both contain modem audio"
 msgstr "Θα περιέχουν ήχο του modem και τα δύο κανάλια"
 
-#: src/dialogs/confdialog.cxx:16980 src/dialogs/confdialog.cxx:17016
+#: src/dialogs/confdialog.cxx:16982 src/dialogs/confdialog.cxx:17018
 msgid "Reverse Left/Right channels"
 msgstr "Αναστροφή Αριστερού/Δεξιού καναλιού"
 
-#: src/dialogs/confdialog.cxx:16981 src/dialogs/confdialog.cxx:17017
+#: src/dialogs/confdialog.cxx:16983 src/dialogs/confdialog.cxx:17019
 msgid "Software reversal of left-right audio channels"
 msgstr "Αναστροφή αριστερού-δεξιού καναλιού"
 
-#: src/dialogs/confdialog.cxx:16986
+#: src/dialogs/confdialog.cxx:16988
 msgid ""
 "...\n"
 "These controls are on other tabs.\n"
@@ -7630,7 +7644,7 @@ msgstr ""
 "Μπορείτε να αλλάξετε μια ρύθμιση από οποιαδήποτε θέση.\n"
 "..."
 
-#: src/dialogs/confdialog.cxx:16991
+#: src/dialogs/confdialog.cxx:16993
 msgid ""
 "1000 Hz tone when PTT enabled\n"
 "Can be used in lieu of or in addition to other PTT types"
@@ -7638,136 +7652,136 @@ msgstr ""
 "Τόνος 1000 Hz όταν ενεργοποιείται το PTT\n"
 "Μπορεί να χρησιμοποιηθεί αντί για ή σε συνδιασμό με άλλους τρόπους PTT"
 
-#: src/dialogs/confdialog.cxx:16997
+#: src/dialogs/confdialog.cxx:16999
 msgid "CW QSK signal on right channel"
 msgstr "Σήμα CW QSK στο δεξί κανάλι"
 
-#: src/dialogs/confdialog.cxx:16998
+#: src/dialogs/confdialog.cxx:17000
 msgid "Generate 1000 Hz square wave signal on right channel"
 msgstr "Δημιουργεί ένα τετραγωνικό σήμα 1000 Hz στο δεξί κανάλι"
 
-#: src/dialogs/confdialog.cxx:17003
+#: src/dialogs/confdialog.cxx:17005
 msgid "Pseudo-FSK on right audio channel"
 msgstr "Ψευδο-FSK σήμα στο δεξί κανάλι ήχου"
 
-#: src/dialogs/confdialog.cxx:17004
+#: src/dialogs/confdialog.cxx:17006
 msgid "Create 1000 Hz square wave on right channel"
 msgstr "Δημιουργεί ένα τετραγωνικό σήμα 1000 Hz στο δεξί κανάλι"
 
-#: src/dialogs/confdialog.cxx:17013
+#: src/dialogs/confdialog.cxx:17015
 msgid "Receive Usage"
 msgstr "Χρήση κατά την Λήψη"
 
-#: src/dialogs/confdialog.cxx:17029 src/dialogs/confdialog.cxx:17166
-#: src/dialogs/confdialog.cxx:17168
+#: src/dialogs/confdialog.cxx:17031 src/dialogs/confdialog.cxx:17168
+#: src/dialogs/confdialog.cxx:17170
 msgid "Soundcard/Settings"
 msgstr "Κάρτα Ήχου/Ρυθμίσεις"
 
-#: src/dialogs/confdialog.cxx:17036
+#: src/dialogs/confdialog.cxx:17038
 msgid "Capture"
 msgstr "Εγγραφή"
 
-#: src/dialogs/confdialog.cxx:17037
+#: src/dialogs/confdialog.cxx:17039
 msgid ""
 "Force a specific sample rate. Select \"Native\" if \"Auto\"\n"
 "does not work well with your audio device."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17069
+#: src/dialogs/confdialog.cxx:17071
 msgid "Converter"
 msgstr "Μετατροπέας"
 
-#: src/dialogs/confdialog.cxx:17070
+#: src/dialogs/confdialog.cxx:17072
 msgid "Set the type of resampler used of offset correction"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17086
+#: src/dialogs/confdialog.cxx:17088
 msgid "Corrections"
 msgstr "Διορθώσεις"
 
-#: src/dialogs/confdialog.cxx:17089
+#: src/dialogs/confdialog.cxx:17091
 msgid "RX ppm"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17090
+#: src/dialogs/confdialog.cxx:17092
 msgid "RX sound card correction"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17106
+#: src/dialogs/confdialog.cxx:17108
 msgid "TX ppm"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17107
+#: src/dialogs/confdialog.cxx:17109
 msgid "TX sound card correction"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17123
+#: src/dialogs/confdialog.cxx:17125
 msgid "TX offset"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17124
+#: src/dialogs/confdialog.cxx:17126
 msgid "Difference between Rx & Tx freq (rig offset)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17142
+#: src/dialogs/confdialog.cxx:17144
 msgid "Frequency Analysis / FMT Rx Correction"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17150
+#: src/dialogs/confdialog.cxx:17152
 msgid "Frequency Correction"
-msgstr ""
+msgstr "Διόρθωση συχνότητας"
 
-#: src/dialogs/confdialog.cxx:17151
+#: src/dialogs/confdialog.cxx:17153
 msgid "Used ONLY for frequency analysis mode"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17171
+#: src/dialogs/confdialog.cxx:17173
 msgid "Signal Level"
 msgstr "Επίπεδο σήματος"
 
-#: src/dialogs/confdialog.cxx:17175
+#: src/dialogs/confdialog.cxx:17177
 msgid "Signal Levels"
 msgstr "Επίπεδα σήματος"
 
-#: src/dialogs/confdialog.cxx:17250 src/dialogs/confdialog.cxx:17252
+#: src/dialogs/confdialog.cxx:17252 src/dialogs/confdialog.cxx:17254
 msgid "Soundcard/Signal Level"
 msgstr "Κάρτα Ήχου/Επίπεδο σήματος"
 
-#: src/dialogs/confdialog.cxx:17255 src/dialogs/confdialog.cxx:17281
-#: src/dialogs/confdialog.cxx:17283
+#: src/dialogs/confdialog.cxx:17257 src/dialogs/confdialog.cxx:17283
+#: src/dialogs/confdialog.cxx:17285
 msgid "Soundcard/Wav file recording"
 msgstr "Κάρτα Ήχου/Εγγραφή αρχείου Wav"
 
-#: src/dialogs/confdialog.cxx:17259
+#: src/dialogs/confdialog.cxx:17261
 msgid "Wav write sample rate"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17260
+#: src/dialogs/confdialog.cxx:17262
 msgid "Pick baud rate from list"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17276
+#: src/dialogs/confdialog.cxx:17278
 msgid "Record both channels"
 msgstr "Εγγραφή και των δύο καναλιών"
 
-#: src/dialogs/confdialog.cxx:17287 src/dialogs/confdialog.cxx:17373
-#: src/dialogs/confdialog.cxx:17375
+#: src/dialogs/confdialog.cxx:17289 src/dialogs/confdialog.cxx:17375
+#: src/dialogs/confdialog.cxx:17377
 msgid "UI/Browser/Channels"
 msgstr "Περιβάλλον Χρήστη/Περιηγητής/Κανάλια"
 
-#: src/dialogs/confdialog.cxx:17291
+#: src/dialogs/confdialog.cxx:17293
 msgid "Channels, first channel starts at waterfall lower limit"
 msgstr "Κανάλια, το πρώτο κανάλι ξεκινάει από το κατώτερο όριο του καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:17292
+#: src/dialogs/confdialog.cxx:17294
 msgid "Change # of psk viewer channels"
 msgstr "Αλλαγή αριθμού καναλιών στον περιηγητή σημάτων"
 
-#: src/dialogs/confdialog.cxx:17309
+#: src/dialogs/confdialog.cxx:17311
 msgid "Inactivity timeout"
 msgstr "Χρόνος αδράνειας"
 
-#: src/dialogs/confdialog.cxx:17310
+#: src/dialogs/confdialog.cxx:17312
 msgid ""
 "Clear channel text after\n"
 "# seconds of inactivity"
@@ -7775,47 +7789,47 @@ msgstr ""
 "Καθαρισμός του κειμένου καναλιού\n"
 "μετά από # δευτερόλεπτα αδράνεια"
 
-#: src/dialogs/confdialog.cxx:17326
+#: src/dialogs/confdialog.cxx:17328
 msgid "Channel label"
 msgstr "Ετικέτα καναλιού"
 
-#: src/dialogs/confdialog.cxx:17327
+#: src/dialogs/confdialog.cxx:17329
 msgid "Appearance of label on each channel"
 msgstr "Εμφάνιση ετικέτας του κάθε καναλιού"
 
-#: src/dialogs/confdialog.cxx:17338
+#: src/dialogs/confdialog.cxx:17340
 msgid "Audio frequency"
 msgstr "Συχνότητα ήχου"
 
-#: src/dialogs/confdialog.cxx:17339
+#: src/dialogs/confdialog.cxx:17341
 msgid "Radio frequency"
 msgstr "Συχνότητα Π/Δ"
 
-#: src/dialogs/confdialog.cxx:17339
+#: src/dialogs/confdialog.cxx:17341
 msgid "Channel number"
 msgstr "Αριθ.καναλιού"
 
-#: src/dialogs/confdialog.cxx:17344 src/dialogs/confdialog.cxx:18055
+#: src/dialogs/confdialog.cxx:17346 src/dialogs/confdialog.cxx:18057
 msgid "Font..."
 msgstr "Γραμμ..."
 
-#: src/dialogs/confdialog.cxx:17345
+#: src/dialogs/confdialog.cxx:17347
 msgid "select browser font"
 msgstr "επιλογή γραμματοσειράς περιηγητή"
 
-#: src/dialogs/confdialog.cxx:17348
+#: src/dialogs/confdialog.cxx:17350
 msgid "Fixed Intervals"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17349
+#: src/dialogs/confdialog.cxx:17351
 msgid "Force channel spacing to even 100 Hz increments"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17355
+#: src/dialogs/confdialog.cxx:17357
 msgid "Continuous scrolling"
 msgstr "Συνεχόμενη κύλιση"
 
-#: src/dialogs/confdialog.cxx:17356
+#: src/dialogs/confdialog.cxx:17358
 msgid ""
 "ON - Marquee style\n"
 "OFF - Clear & restart"
@@ -7823,207 +7837,207 @@ msgstr ""
 "ON - Συνεχή κύλιση κειμένου\n"
 "OFF - Καθαρισμός & επανεκκίνηση κειμένου"
 
-#: src/dialogs/confdialog.cxx:17361
+#: src/dialogs/confdialog.cxx:17363
 msgid "Lowest freq on bottom of viewer"
 msgstr "Χαμηλότερη συχνότητα στο κάτω μέρος"
 
-#: src/dialogs/confdialog.cxx:17362
+#: src/dialogs/confdialog.cxx:17364
 msgid "Change positions of low to high channels"
 msgstr "Αλλαγή θέσεων των χαμηλών προς υψηλών καναλιών"
 
-#: src/dialogs/confdialog.cxx:17367
+#: src/dialogs/confdialog.cxx:17369
 msgid "Play back history when active channel selected"
 msgstr "Αναπαραγωγή ιστορικού όταν επιλέγεται ενεργό κανάλι"
 
-#: src/dialogs/confdialog.cxx:17368
+#: src/dialogs/confdialog.cxx:17370
 msgid "Audio stream history decoded on selected signal"
 msgstr "Το ιστορικό ροής ήχου αποκωδικοποιείται στο επιλεγμένο σήμα"
 
-#: src/dialogs/confdialog.cxx:17378 src/dialogs/confdialog.cxx:17412
-#: src/dialogs/confdialog.cxx:17414
+#: src/dialogs/confdialog.cxx:17380 src/dialogs/confdialog.cxx:17414
+#: src/dialogs/confdialog.cxx:17416
 msgid "UI/Browser/Colors"
 msgstr "Περιβάλλον Χρήστη/Περιηγητής/Χρώματα"
 
-#: src/dialogs/confdialog.cxx:17382
+#: src/dialogs/confdialog.cxx:17384
 msgid "HiLite 1"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17383
+#: src/dialogs/confdialog.cxx:17385
 msgid "PSK/RTTY Viewer HiLite Color 1"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17388
+#: src/dialogs/confdialog.cxx:17390
 msgid "HiLite 2"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17389
+#: src/dialogs/confdialog.cxx:17391
 msgid "PSK/RTTY Viewer HiLite Color 2"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17394
+#: src/dialogs/confdialog.cxx:17396
 msgid "Even"
 msgstr "Ζυγές"
 
-#: src/dialogs/confdialog.cxx:17395
+#: src/dialogs/confdialog.cxx:17397
 msgid "Even lines"
 msgstr "Ζυγές γραμμές"
 
-#: src/dialogs/confdialog.cxx:17400
+#: src/dialogs/confdialog.cxx:17402
 msgid "Odd"
 msgstr "Μονές"
 
-#: src/dialogs/confdialog.cxx:17401
+#: src/dialogs/confdialog.cxx:17403
 msgid "Odd lines"
 msgstr "Μονές γραμμές"
 
-#: src/dialogs/confdialog.cxx:17407
+#: src/dialogs/confdialog.cxx:17409
 msgid "Select line"
 msgstr "Επιλογή γραμμής"
 
-#: src/dialogs/confdialog.cxx:17417 src/dialogs/confdialog.cxx:17433
-#: src/dialogs/confdialog.cxx:17435
+#: src/dialogs/confdialog.cxx:17419 src/dialogs/confdialog.cxx:17435
+#: src/dialogs/confdialog.cxx:17437
 msgid "UI/Browser/Detection Level"
 msgstr "Περιβάλλον Χρήστη/Περιηγητής/Επίπεδο εντοπισμού"
 
-#: src/dialogs/confdialog.cxx:17421
+#: src/dialogs/confdialog.cxx:17423
 msgid "Backgnd"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17422
+#: src/dialogs/confdialog.cxx:17424
 msgid "Background color of signal viewer squelch control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17427
+#: src/dialogs/confdialog.cxx:17429
 msgid "Button"
 msgstr "Κουμπί"
 
-#: src/dialogs/confdialog.cxx:17428
+#: src/dialogs/confdialog.cxx:17430
 msgid "Slider hilite color of signal viewer squelch control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17438 src/dialogs/confdialog.cxx:17572
-#: src/dialogs/confdialog.cxx:17574
+#: src/dialogs/confdialog.cxx:17440 src/dialogs/confdialog.cxx:17574
+#: src/dialogs/confdialog.cxx:17576
 msgid "UI/General"
 msgstr "Περιβάλλον Χρήστη/Γενικά"
 
-#: src/dialogs/confdialog.cxx:17444
+#: src/dialogs/confdialog.cxx:17446
 msgid "Show tooltips"
 msgstr "Εμφ.βοηθ.κειμένου"
 
-#: src/dialogs/confdialog.cxx:17445
+#: src/dialogs/confdialog.cxx:17447
 msgid "Enable / disable tooltips"
 msgstr "Ενεργοποίηση / Απενεργοποίηση βοηθητικού κειμένου"
 
-#: src/dialogs/confdialog.cxx:17451
+#: src/dialogs/confdialog.cxx:17453
 msgid "Show menu icons"
 msgstr "Εμφάνιση εικονιδίων μενού"
 
-#: src/dialogs/confdialog.cxx:17452
+#: src/dialogs/confdialog.cxx:17454
 msgid "Enable / disable icons on menus"
 msgstr "Ενεργοποίηση Απενεργοποίηση εικονιδίων στα μενού"
 
-#: src/dialogs/confdialog.cxx:17457
+#: src/dialogs/confdialog.cxx:17459
 msgid "UI scheme"
 msgstr "Σχέδιο UI"
 
-#: src/dialogs/confdialog.cxx:17458
+#: src/dialogs/confdialog.cxx:17460
 msgid "Change application look and feel"
 msgstr "Αλλαγή όψης και αίσθησης του προγράμματος"
 
-#: src/dialogs/confdialog.cxx:17476
+#: src/dialogs/confdialog.cxx:17478
 msgid "Visible modes"
 msgstr "Ορατά modes"
 
-#: src/dialogs/confdialog.cxx:17477
+#: src/dialogs/confdialog.cxx:17479
 msgid "Select modes for menu access"
 msgstr "Επιλογή modes για πρόσβαση στο μενού"
 
-#: src/dialogs/confdialog.cxx:17480
+#: src/dialogs/confdialog.cxx:17482
 msgid "UI language"
 msgstr "Γλώσσα περιβ.χρήστη (UI)"
 
-#: src/dialogs/confdialog.cxx:17481 src/dialogs/confdialog.cxx:18212
+#: src/dialogs/confdialog.cxx:17483 src/dialogs/confdialog.cxx:18214
 msgid "Changes take effect on next program startup"
 msgstr "Οι αλλαγές θα εφαρμοστούν στην επόμενη εκτέλεση του προγράμματος"
 
-#: src/dialogs/confdialog.cxx:17500
+#: src/dialogs/confdialog.cxx:17502
 msgid "Print CW / RTTY / THROB / CONTESTIA in lowercase"
 msgstr "Αποτύπωση CW / RTTY / THROB / CONTESTIA με πεζά"
 
-#: src/dialogs/confdialog.cxx:17510
+#: src/dialogs/confdialog.cxx:17512
 msgid "Transmit lower case text"
 msgstr "Εκπομπή κειμένου σε πεζά"
 
-#: src/dialogs/confdialog.cxx:17517
+#: src/dialogs/confdialog.cxx:17519
 msgid "Exit prompts"
 msgstr "Υπενθυμίσεις εξόδου"
 
-#: src/dialogs/confdialog.cxx:17520
+#: src/dialogs/confdialog.cxx:17522
 msgid "Prompt to save Configuration"
 msgstr "Ερώτ.για αποθήκευση ρυθμίσεων"
 
-#: src/dialogs/confdialog.cxx:17525 src/dialogs/confdialog.cxx:17687
+#: src/dialogs/confdialog.cxx:17527 src/dialogs/confdialog.cxx:17689
 msgid "Prompt to save macro file"
 msgstr "Ερώτ.για αποθήκ.αρχείου macro"
 
-#: src/dialogs/confdialog.cxx:17526 src/dialogs/confdialog.cxx:17688
+#: src/dialogs/confdialog.cxx:17528 src/dialogs/confdialog.cxx:17690
 msgid "Write current macro set on program exit"
 msgstr "Αποθήκευση του τρέχοντος macro set κατά την έξοδο"
 
-#: src/dialogs/confdialog.cxx:17531
+#: src/dialogs/confdialog.cxx:17533
 msgid "Prompt to save log"
 msgstr "Ερώτ.για αποθήκευση log"
 
-#: src/dialogs/confdialog.cxx:17537
+#: src/dialogs/confdialog.cxx:17539
 msgid "Confirm exit"
 msgstr "Επιβεβαίωση εξόδου"
 
-#: src/dialogs/confdialog.cxx:17544
+#: src/dialogs/confdialog.cxx:17546
 msgid "Check for updates"
 msgstr "Έλεγχος για ενημερώσεις"
 
-#: src/dialogs/confdialog.cxx:17547
+#: src/dialogs/confdialog.cxx:17549
 msgid "Check for updates when starting program"
 msgstr "Έλεγχος για ενημερώσεις κατά την εκκίνηση του προγράμματος"
 
-#: src/dialogs/confdialog.cxx:17557
+#: src/dialogs/confdialog.cxx:17559
 msgid "Show TX timer"
 msgstr "Εμφάνιση χρονομέτρου Εκπομπής"
 
-#: src/dialogs/confdialog.cxx:17562
+#: src/dialogs/confdialog.cxx:17564
 msgid "TX deadmen timeout (mins)"
 msgstr "Όριο χρόνου Εκπομπής (λεπτά)"
 
-#: src/dialogs/confdialog.cxx:17577 src/dialogs/confdialog.cxx:17715
-#: src/dialogs/confdialog.cxx:17717
+#: src/dialogs/confdialog.cxx:17579 src/dialogs/confdialog.cxx:17717
+#: src/dialogs/confdialog.cxx:17719
 msgid "UI/Macro buttons"
 msgstr "Περιβάλλον Χρήστη/Κουμπιά Macro"
 
-#: src/dialogs/confdialog.cxx:17583
+#: src/dialogs/confdialog.cxx:17585
 msgid "Mouse wheel active on macro buttons"
 msgstr "Ενεργή ροδέλα ποντικιού στα κουμπιά macro"
 
-#: src/dialogs/confdialog.cxx:17584
+#: src/dialogs/confdialog.cxx:17586
 msgid "enable mouse wheel control of macro bar"
 msgstr "Ενεργοποίηση της ροδέλας ποντικιού στα κουμπιά macro"
 
-#: src/dialogs/confdialog.cxx:17591
+#: src/dialogs/confdialog.cxx:17593
 msgid "Number and position of macro bars"
 msgstr "Πλήθος και θέση των μπαρών macro"
 
-#: src/dialogs/confdialog.cxx:17594
+#: src/dialogs/confdialog.cxx:17596
 msgid "Button Height"
 msgstr "Ύψος κουμπιού"
 
-#: src/dialogs/confdialog.cxx:17595
+#: src/dialogs/confdialog.cxx:17597
 msgid "Height of macro bar"
 msgstr "Ύψος της μπάρας macro"
 
-#: src/dialogs/confdialog.cxx:17605
+#: src/dialogs/confdialog.cxx:17607
 msgid "One above Rx/Tx"
 msgstr "Μία επάνω από Rx/Tx"
 
-#: src/dialogs/confdialog.cxx:17606
+#: src/dialogs/confdialog.cxx:17608
 msgid ""
 "Single macro bar below logging panel\n"
 "variable height"
@@ -8031,59 +8045,59 @@ msgstr ""
 "Μονή μπάρα macro κάτω από τον logging πίνακα\n"
 "μεταβλητό ύψος"
 
-#: src/dialogs/confdialog.cxx:17611
+#: src/dialogs/confdialog.cxx:17613
 msgid "One above waterfall"
 msgstr "Μία επάνω από καταρρ."
 
-#: src/dialogs/confdialog.cxx:17616
+#: src/dialogs/confdialog.cxx:17618
 msgid "One below waterfall"
 msgstr "Μία κάτω από καταρρ."
 
-#: src/dialogs/confdialog.cxx:17621
+#: src/dialogs/confdialog.cxx:17623
 msgid "Two scheme 1"
 msgstr "Σχέδιο των δύο 1"
 
-#: src/dialogs/confdialog.cxx:17626
+#: src/dialogs/confdialog.cxx:17628
 msgid "Two scheme 2"
 msgstr "Σχέδιο των δύο 2"
 
-#: src/dialogs/confdialog.cxx:17631
+#: src/dialogs/confdialog.cxx:17633
 msgid "Two scheme 3"
 msgstr "Σχέδιο των δύο 3"
 
-#: src/dialogs/confdialog.cxx:17636
+#: src/dialogs/confdialog.cxx:17638
 msgid "Two scheme 4"
 msgstr "Σχέδιο των δύο 4"
 
-#: src/dialogs/confdialog.cxx:17641
+#: src/dialogs/confdialog.cxx:17643
 msgid "Two scheme 5"
 msgstr "Σχέδιο των δύο 5"
 
-#: src/dialogs/confdialog.cxx:17646
+#: src/dialogs/confdialog.cxx:17648
 msgid "Two scheme 6"
 msgstr "Σχέδιο των δύο 6"
 
-#: src/dialogs/confdialog.cxx:17651
+#: src/dialogs/confdialog.cxx:17653
 msgid "Two scheme 7"
 msgstr "Σχέδιο των δύο 7"
 
-#: src/dialogs/confdialog.cxx:17656
+#: src/dialogs/confdialog.cxx:17658
 msgid "Two scheme 8"
 msgstr "Σχέδιο των δύο 8"
 
-#: src/dialogs/confdialog.cxx:17661
+#: src/dialogs/confdialog.cxx:17663
 msgid "Two scheme 9"
 msgstr "Σχέδιο των δύο 9"
 
-#: src/dialogs/confdialog.cxx:17666
+#: src/dialogs/confdialog.cxx:17668
 msgid "Two scheme 10"
 msgstr "Σχέδιο των δύο 10"
 
-#: src/dialogs/confdialog.cxx:17675
+#: src/dialogs/confdialog.cxx:17677
 msgid "Load last used macro file at start"
 msgstr "Φόρτ.τελευτ.αρχείου macro κατά την εκκίν."
 
-#: src/dialogs/confdialog.cxx:17676
+#: src/dialogs/confdialog.cxx:17678
 msgid ""
 "ON - use last set of macros\n"
 "OFF - use default set"
@@ -8091,23 +8105,23 @@ msgstr ""
 "ON - χρήση του τελευταίου σετ macros\n"
 "OFF - χρήση του προκαθορισμένου σετ"
 
-#: src/dialogs/confdialog.cxx:17681
+#: src/dialogs/confdialog.cxx:17683
 msgid "Display macro filename at start"
 msgstr "Προβολή αρχείου macro κατά την εκκίνηση"
 
-#: src/dialogs/confdialog.cxx:17697
+#: src/dialogs/confdialog.cxx:17699
 msgid "Show macro control codes"
 msgstr "Εμφ.χαρακτήρων ελέγχου macro"
 
-#: src/dialogs/confdialog.cxx:17698
+#: src/dialogs/confdialog.cxx:17700
 msgid "print ^! execution codes in Rx panel"
 msgstr "εμφάνιση των ^! συμβόλων εκτέλεσης στον πίνακα Λήψης"
 
-#: src/dialogs/confdialog.cxx:17707
+#: src/dialogs/confdialog.cxx:17709
 msgid "4 bar macro set below Tx"
 msgstr "4 bar macro κάτω από πίνακα εκπομπ."
 
-#: src/dialogs/confdialog.cxx:17708
+#: src/dialogs/confdialog.cxx:17710
 msgid ""
 "Position the 4 bar macro set below Tx panel\n"
 "Default above Rx panel"
@@ -8115,54 +8129,54 @@ msgstr ""
 "Τοποθετεί τις 4 μπάρες macro κάτω από τον πίνακα Εκπομπής\n"
 "Η προεπιλεγμένη ρύθμιση είναι επάνω από τον πίνακα Λήψης"
 
-#: src/dialogs/confdialog.cxx:17720 src/dialogs/confdialog.cxx:17764
-#: src/dialogs/confdialog.cxx:17766
+#: src/dialogs/confdialog.cxx:17722 src/dialogs/confdialog.cxx:17766
+#: src/dialogs/confdialog.cxx:17768
 msgid "UI/Rx Text"
 msgstr "Περιβάλλον Χρήστη/Κείμενο Λήψης"
 
-#: src/dialogs/confdialog.cxx:17724
+#: src/dialogs/confdialog.cxx:17726
 msgid "Single-click to capture"
 msgstr "Συλλογή κειμένου με μονό κλικ"
 
-#: src/dialogs/confdialog.cxx:17725 src/dialogs/confdialog.cxx:17754
+#: src/dialogs/confdialog.cxx:17727 src/dialogs/confdialog.cxx:17756
 msgid "Enable for single click capure of text in Rx panel"
 msgstr ""
 "Ενεργοποιήστε για αυτόματη συμπλήρωση πεδίου log με μονό κλικ στον πίνακα "
 "Λήψης"
 
-#: src/dialogs/confdialog.cxx:17730
+#: src/dialogs/confdialog.cxx:17732
 msgid "callsign tooltips in received text"
 msgstr "βοηθ.κείμενο του callsign στο λαμβαν.κείμενο"
 
-#: src/dialogs/confdialog.cxx:17731
+#: src/dialogs/confdialog.cxx:17733
 msgid "Popup info after a 2 second hover on a callsign"
 msgstr ""
 "Αναδυόμενες πληροφορίες μετά από ένα πέρασμα 2 δευτερολέπτων στο callsign"
 
-#: src/dialogs/confdialog.cxx:17736
+#: src/dialogs/confdialog.cxx:17738
 msgid "Word delimiters"
 msgstr "Διαχωριστικά λέξεων"
 
-#: src/dialogs/confdialog.cxx:17737
+#: src/dialogs/confdialog.cxx:17739
 msgid ""
 "RX text QSO data entry is bounded by the non-word characters\n"
 "defined here. Tab and newline are automatically included."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17753
+#: src/dialogs/confdialog.cxx:17755
 msgid "US units of distance (QRB)"
 msgstr "Μονάδες απόστασης ΗΠΑ (QRB)"
 
-#: src/dialogs/confdialog.cxx:17759
+#: src/dialogs/confdialog.cxx:17761
 msgid "Clear log fields - new CALL"
 msgstr "Καθαρισμός πεδίων log- νέο CALL"
 
-#: src/dialogs/confdialog.cxx:17769 src/dialogs/confdialog.cxx:17804
-#: src/dialogs/confdialog.cxx:17806
+#: src/dialogs/confdialog.cxx:17771 src/dialogs/confdialog.cxx:17806
+#: src/dialogs/confdialog.cxx:17808
 msgid "UI/Touch"
 msgstr "Περιβάλλον Χρήστη/Touch"
 
-#: src/dialogs/confdialog.cxx:17773
+#: src/dialogs/confdialog.cxx:17775
 msgid ""
 "Note:\n"
 "These configuration items are useful for but not unique to using fldigi on "
@@ -8174,11 +8188,11 @@ msgstr ""
 "σε μια\n"
 "συσκευή με οθόνη αφής, όπως ένα tablet."
 
-#: src/dialogs/confdialog.cxx:17777
+#: src/dialogs/confdialog.cxx:17779
 msgid "Arrow Key Control of Frequency Entry"
 msgstr "Τα πλήκτρα με τα βέλη ελέγχουν την εισαγωγή συχνότητας"
 
-#: src/dialogs/confdialog.cxx:17780
+#: src/dialogs/confdialog.cxx:17782
 msgid ""
 "Right/Left = 1 x LSD\n"
 "Up/Dn= 10 x LSD\n"
@@ -8186,288 +8200,288 @@ msgid ""
 "Shift - Up/Dn = 1000 x LSD"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17784
+#: src/dialogs/confdialog.cxx:17786
 msgid ""
 "Right/Left\n"
 "Select Least Signficant Digit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17793
+#: src/dialogs/confdialog.cxx:17795
 msgid "Rx / Tx Panels"
 msgstr "Πίνακες Λήψης/Εκπομπής"
 
-#: src/dialogs/confdialog.cxx:17796
+#: src/dialogs/confdialog.cxx:17798
 msgid "Tx above Rx"
 msgstr "Εκπομπή πάνω από Λήψη"
 
-#: src/dialogs/confdialog.cxx:17797
+#: src/dialogs/confdialog.cxx:17799
 msgid "Enable to put Tx panel above Rx panel"
 msgstr ""
 "Ενεργοποιήστε για τα έχετε τον πίνακα Εκπομπής επάνω από τον πίνακα Λήψης"
 
-#: src/dialogs/confdialog.cxx:17810 src/dialogs/confdialog.cxx:17890
-#: src/dialogs/confdialog.cxx:17892
+#: src/dialogs/confdialog.cxx:17812 src/dialogs/confdialog.cxx:17892
+#: src/dialogs/confdialog.cxx:17894
 msgid "Waterfall/Buttons & Controls"
 msgstr "Καταρράκτης/Κουμπιά & Ρυθμιστικά"
 
-#: src/dialogs/confdialog.cxx:17814
+#: src/dialogs/confdialog.cxx:17816
 msgid "Enable check box to show each respective operator control"
 msgstr "Ενεργ.επιλογής για την εμφάνιση του αντίστοιχου στοιχείου ελέγχου"
 
-#: src/dialogs/confdialog.cxx:17824
+#: src/dialogs/confdialog.cxx:17826
 msgid "WF Magnification"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17830
+#: src/dialogs/confdialog.cxx:17832
 msgid "WF carrier"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17836
+#: src/dialogs/confdialog.cxx:17838
 msgid "WF Shift Controls"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17842
+#: src/dialogs/confdialog.cxx:17844
 msgid "WF ref level"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17848
+#: src/dialogs/confdialog.cxx:17850
 msgid "WF drop rate"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17854
+#: src/dialogs/confdialog.cxx:17856
 msgid "WF amp span"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17860
+#: src/dialogs/confdialog.cxx:17862
 msgid "WF Store"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17866
+#: src/dialogs/confdialog.cxx:17868
 msgid "WF mode"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17872
+#: src/dialogs/confdialog.cxx:17874
 msgid "QSY"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17878
+#: src/dialogs/confdialog.cxx:17880
 msgid "XMT lock"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17884
+#: src/dialogs/confdialog.cxx:17886
 msgid "Enable all"
 msgstr "Ενεργ.όλων"
 
-#: src/dialogs/confdialog.cxx:17887
+#: src/dialogs/confdialog.cxx:17889
 msgid "Disable all"
 msgstr "Απενεργ.όλων"
 
-#: src/dialogs/confdialog.cxx:17895 src/dialogs/confdialog.cxx:18091
-#: src/dialogs/confdialog.cxx:18093
+#: src/dialogs/confdialog.cxx:17897 src/dialogs/confdialog.cxx:18093
+#: src/dialogs/confdialog.cxx:18095
 msgid "Waterfall/Display"
 msgstr "Καταρράκτης/Εμφάνιση"
 
-#: src/dialogs/confdialog.cxx:17899
+#: src/dialogs/confdialog.cxx:17901
 msgid "Colors and cursors"
 msgstr "Χρώματα και κέρσορες"
 
-#: src/dialogs/confdialog.cxx:17902
+#: src/dialogs/confdialog.cxx:17904
 msgid "aa"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17917 src/dialogs/confdialog.cxx:17921
-#: src/dialogs/confdialog.cxx:17925 src/dialogs/confdialog.cxx:17929
-#: src/dialogs/confdialog.cxx:17933 src/dialogs/confdialog.cxx:17937
-#: src/dialogs/confdialog.cxx:17941 src/dialogs/confdialog.cxx:17945
-#: src/dialogs/confdialog.cxx:17949 src/dialogs/confdialog.cxx:17970
-#: src/dialogs/confdialog.cxx:17994 src/dialogs/confdialog.cxx:18018
-#: src/dialogs/confdialog.cxx:18036
+#: src/dialogs/confdialog.cxx:17919 src/dialogs/confdialog.cxx:17923
+#: src/dialogs/confdialog.cxx:17927 src/dialogs/confdialog.cxx:17931
+#: src/dialogs/confdialog.cxx:17935 src/dialogs/confdialog.cxx:17939
+#: src/dialogs/confdialog.cxx:17943 src/dialogs/confdialog.cxx:17947
+#: src/dialogs/confdialog.cxx:17951 src/dialogs/confdialog.cxx:17972
+#: src/dialogs/confdialog.cxx:17996 src/dialogs/confdialog.cxx:18020
+#: src/dialogs/confdialog.cxx:18038
 msgid "Change color"
 msgstr "Αλλαγή χρώματος"
 
-#: src/dialogs/confdialog.cxx:17952
+#: src/dialogs/confdialog.cxx:17954
 msgid "Load..."
 msgstr "Φόρτ..."
 
-#: src/dialogs/confdialog.cxx:17953
+#: src/dialogs/confdialog.cxx:17955
 msgid "Load a new palette"
 msgstr "Φόρτωση καινούριας παλέτας"
 
-#: src/dialogs/confdialog.cxx:17956
+#: src/dialogs/confdialog.cxx:17958
 msgid "Save..."
 msgstr "Αποθήκ..."
 
-#: src/dialogs/confdialog.cxx:17957
+#: src/dialogs/confdialog.cxx:17959
 msgid "Save this palette"
 msgstr "Αποθήκευση αυτής της παλέτας"
 
-#: src/dialogs/confdialog.cxx:17963 src/dialogs/confdialog.cxx:17987
-#: src/dialogs/confdialog.cxx:18011
+#: src/dialogs/confdialog.cxx:17965 src/dialogs/confdialog.cxx:17989
+#: src/dialogs/confdialog.cxx:18013
 msgid "ON"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:17964
+#: src/dialogs/confdialog.cxx:17966
 msgid "Show cursor with bandwidth lines"
 msgstr "Εμφάνιση κέρσορα με γραμμές εύρους ζώνης"
 
-#: src/dialogs/confdialog.cxx:17969 src/dialogs/confdialog.cxx:17993
-#: src/dialogs/confdialog.cxx:18017 src/dialogs/confdialog.cxx:18035
-#: src/dialogs/font_browser.cxx:165
+#: src/dialogs/confdialog.cxx:17971 src/dialogs/confdialog.cxx:17995
+#: src/dialogs/confdialog.cxx:18019 src/dialogs/confdialog.cxx:18037
+#: src/dialogs/font_browser.cxx:171
 msgid "Color"
 msgstr "Χρώμα"
 
-#: src/dialogs/confdialog.cxx:17976 src/dialogs/confdialog.cxx:18000
-#: src/dialogs/confdialog.cxx:18024
+#: src/dialogs/confdialog.cxx:17978 src/dialogs/confdialog.cxx:18002
+#: src/dialogs/confdialog.cxx:18026
 msgid "Wide"
 msgstr "Φαρδύ"
 
-#: src/dialogs/confdialog.cxx:17977 src/dialogs/confdialog.cxx:18001
-#: src/dialogs/confdialog.cxx:18012 src/dialogs/confdialog.cxx:18025
+#: src/dialogs/confdialog.cxx:17979 src/dialogs/confdialog.cxx:18003
+#: src/dialogs/confdialog.cxx:18014 src/dialogs/confdialog.cxx:18027
 msgid "Show bandwidth tracks on waterfall"
 msgstr "Εμφάνιση ίχνους εύρους ζώνης στον καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:17984
+#: src/dialogs/confdialog.cxx:17986
 msgid "Center line"
 msgstr "Κεντρ.Γραμμή"
 
-#: src/dialogs/confdialog.cxx:17988
+#: src/dialogs/confdialog.cxx:17990
 msgid "Show cursor with center line"
 msgstr "Εμφάνιση κέρσορα με κεντρική γραμμή"
 
-#: src/dialogs/confdialog.cxx:18008
+#: src/dialogs/confdialog.cxx:18010
 msgid "Signal tracks"
 msgstr "Ίχνη σήματος"
 
-#: src/dialogs/confdialog.cxx:18032
+#: src/dialogs/confdialog.cxx:18034
 msgid "Notch"
 msgstr "Αποκοπή"
 
-#: src/dialogs/confdialog.cxx:18046
+#: src/dialogs/confdialog.cxx:18048
 msgid "Frequency scale"
 msgstr "Κλίμακα συχνοτήτων"
 
-#: src/dialogs/confdialog.cxx:18049
+#: src/dialogs/confdialog.cxx:18051
 msgid "Always show audio frequencies"
 msgstr "Εμφάνιση συχνοτήτων ήχου πάντα"
 
-#: src/dialogs/confdialog.cxx:18050
+#: src/dialogs/confdialog.cxx:18052
 msgid "Audio or RF frequencies on waterfall scale"
 msgstr "Συχνότητες ήχου ή RF στην κλίμακα του καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:18056
+#: src/dialogs/confdialog.cxx:18058
 msgid "Select waterfall scale font"
 msgstr "Επιλογή γραμματοσειρά κλίμακας καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:18061
+#: src/dialogs/confdialog.cxx:18063
 msgid "Transmit signal"
 msgstr "Σήμα εκπομπής"
 
-#: src/dialogs/confdialog.cxx:18064
+#: src/dialogs/confdialog.cxx:18066
 msgid "Monitor transmitted signal"
 msgstr "Παρακολούθηση σήματος εκπομπής"
 
-#: src/dialogs/confdialog.cxx:18065
+#: src/dialogs/confdialog.cxx:18067
 msgid "Show transmit signal on waterfall"
 msgstr "Να φαίνεται το εκπεμπόμενο σήμα στον καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:18070
+#: src/dialogs/confdialog.cxx:18072
 msgid "Signal level"
 msgstr "Επίπεδο σήματος"
 
-#: src/dialogs/confdialog.cxx:18071
+#: src/dialogs/confdialog.cxx:18073
 msgid "Set level for good viewing"
 msgstr "Ορισμός επιπέδου για καλή προβολή"
 
-#: src/dialogs/confdialog.cxx:18096 src/dialogs/confdialog.cxx:18238
-#: src/dialogs/confdialog.cxx:18240
+#: src/dialogs/confdialog.cxx:18098 src/dialogs/confdialog.cxx:18240
+#: src/dialogs/confdialog.cxx:18242
 msgid "Waterfall/FFT Processing"
 msgstr "Καταρράκτης/Επεξεργασία FFT"
 
-#: src/dialogs/confdialog.cxx:18103
+#: src/dialogs/confdialog.cxx:18105
 msgid "Low frequency limit in Hz"
 msgstr "Κατώτατο όριο συχνότητας σε Hz"
 
-#: src/dialogs/confdialog.cxx:18122
+#: src/dialogs/confdialog.cxx:18124
 msgid "FFT averaging"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18123
+#: src/dialogs/confdialog.cxx:18125
 msgid "Use averaging to decrease waterfall noise"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18130
+#: src/dialogs/confdialog.cxx:18132
 msgid "FFT prefilter window function"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18144
+#: src/dialogs/confdialog.cxx:18146
 msgid "Rectangular"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18146
+#: src/dialogs/confdialog.cxx:18148
 msgid "Triangular"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18152
+#: src/dialogs/confdialog.cxx:18154
 msgid "High frequency limit in Hz"
 msgstr "Ανώτατο όριο συχνότητας σε Hz"
 
-#: src/dialogs/confdialog.cxx:18171
+#: src/dialogs/confdialog.cxx:18173
 msgid "Latency"
 msgstr "Καθυστέρηση μεταφ."
 
-#: src/dialogs/confdialog.cxx:18172
+#: src/dialogs/confdialog.cxx:18174
 msgid ""
 "Signal averaging over time\n"
 "0 - least\n"
 "4 - greatest"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18196 src/dialogs/confdialog.cxx:18213
+#: src/dialogs/confdialog.cxx:18198 src/dialogs/confdialog.cxx:18215
 msgid "Show me more or less waterfall"
 msgstr "Εμφάνιση μεγαλύτερου ή μικρότερου καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:18199
+#: src/dialogs/confdialog.cxx:18201
 msgid "Slow drop rate"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18200
+#: src/dialogs/confdialog.cxx:18202
 msgid "Normal drop speed / value"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18216
+#: src/dialogs/confdialog.cxx:18218
 msgid "Waterfall height in pixels"
 msgstr "Ύψος καταρράκτη σε pixels"
 
-#: src/dialogs/confdialog.cxx:18217
+#: src/dialogs/confdialog.cxx:18219
 msgid "CPU usage increases with waterfall height"
 msgstr "Η χρήση της CPU αυξάνεται με αύξηση του ύψους του καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:18243 src/dialogs/confdialog.cxx:18297
-#: src/dialogs/confdialog.cxx:18299
+#: src/dialogs/confdialog.cxx:18245 src/dialogs/confdialog.cxx:18299
+#: src/dialogs/confdialog.cxx:18301
 msgid "Waterfall/Mouse usage"
 msgstr "Καταρράκτης/Χρήση Ποντικιού"
 
-#: src/dialogs/confdialog.cxx:18249
+#: src/dialogs/confdialog.cxx:18251
 msgid "Left or right click always replays audio history"
 msgstr "Αριστερό ή δεξί κλικ αναπαράγει πάντα το ιστορικό ήχου"
 
-#: src/dialogs/confdialog.cxx:18250
+#: src/dialogs/confdialog.cxx:18252
 msgid "Replay trackline audio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18255
+#: src/dialogs/confdialog.cxx:18257
 msgid "Dragging on the waterfall scale changes frequency"
 msgstr "Σέρνοντας την κλίμακα καταρράκτη αλλάζει η συχνότητα"
 
-#: src/dialogs/confdialog.cxx:18256
+#: src/dialogs/confdialog.cxx:18258
 msgid "Enable drag cursor on waterfall scale"
 msgstr "Ενεργοποίηση συρσίματος της κλίμακας καταρράκτη με τον κέρσορα"
 
-#: src/dialogs/confdialog.cxx:18261
+#: src/dialogs/confdialog.cxx:18263
 msgid "Insert text on single left click"
 msgstr "Εισαγωγή κειμένου με μονό αριστερό κλικ"
 
-#: src/dialogs/confdialog.cxx:18262
+#: src/dialogs/confdialog.cxx:18264
 msgid ""
 "Insert special text in Rx panel\n"
 "when waterfall clicked"
@@ -8475,17 +8489,17 @@ msgstr ""
 "Εισαγωγή ειδικού κειμένου στον πίνακα Λήψης\n"
 "όταν γίνεται κλικ στον καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:18268
+#: src/dialogs/confdialog.cxx:18270
 msgid ""
 "The string <FREQ> is replaced with\n"
 "the current modem and frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18280
+#: src/dialogs/confdialog.cxx:18282
 msgid "Wheel action"
 msgstr "Ενέργεια ροδέλας"
 
-#: src/dialogs/confdialog.cxx:18281
+#: src/dialogs/confdialog.cxx:18283
 msgid ""
 "Select how the mouse wheel\n"
 "behaves inside the waterfall"
@@ -8493,288 +8507,288 @@ msgstr ""
 "Επιλέξτε πως θα συμπεριφέρεται η ροδέλα\n"
 "του ποντικιού στον καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:18302 src/dialogs/confdialog.cxx:18339
-#: src/dialogs/confdialog.cxx:18341
+#: src/dialogs/confdialog.cxx:18304 src/dialogs/confdialog.cxx:18341
+#: src/dialogs/confdialog.cxx:18343
 msgid "Waterfall/Spectrum"
 msgstr "Καταρράκτης/Φάσμα"
 
-#: src/dialogs/confdialog.cxx:18306
+#: src/dialogs/confdialog.cxx:18308
 msgid "Spectrum Scope / Waterfall interaction"
 msgstr "Αναλυτής φάσματος / Αλληλεπίδραση καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:18309
+#: src/dialogs/confdialog.cxx:18311
 msgid "left click transfers frequency to scope center frequency"
 msgstr "το αριστερό κλικ μεταφέρει την συχν. στην κεντρική συχν. του αναλυτή"
 
-#: src/dialogs/confdialog.cxx:18310
+#: src/dialogs/confdialog.cxx:18312
 msgid "left click on WF recenters spectrum scope"
 msgstr "το αριστερό κλικ στον καταρράκτη επανακεντράρει τον αναλυτή φάσματος"
 
-#: src/dialogs/confdialog.cxx:18315
+#: src/dialogs/confdialog.cxx:18317
 msgid "use waterfall range/limit values"
 msgstr "χρήση τιμών του εύρους/ορίου καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:18316
+#: src/dialogs/confdialog.cxx:18318
 msgid "values left/below waterfall"
 msgstr "τιμές αριστερά/κάτω από καταρράκτη"
 
-#: src/dialogs/confdialog.cxx:18321
+#: src/dialogs/confdialog.cxx:18323
 msgid "freq scale = N * modem bandwidth"
 msgstr "Κλίμακα συχνότ. = Ν * το εύρος του mode"
 
-#: src/dialogs/confdialog.cxx:18331
+#: src/dialogs/confdialog.cxx:18333
 msgid "use"
 msgstr "χρήση"
 
-#: src/dialogs/confdialog.cxx:18332
+#: src/dialogs/confdialog.cxx:18334
 msgid "scale spectrum display linked to modem bandwidth"
 msgstr "Κλίμακα αναλυτή φάσματος συνδεδεμένη με το εύρος του modem"
 
-#: src/dialogs/confdialog.cxx:18345 src/dialogs/confdialog.cxx:18451
-#: src/dialogs/confdialog.cxx:18453
+#: src/dialogs/confdialog.cxx:18347 src/dialogs/confdialog.cxx:18453
+#: src/dialogs/confdialog.cxx:18455
 msgid "Web/Pskmail"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18349
+#: src/dialogs/confdialog.cxx:18351
 msgid "Mail Server Attributes"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18352
+#: src/dialogs/confdialog.cxx:18354
 msgid "Carrier frequency (Hz)"
 msgstr "Συχνότητα φέρουσας (Hz)"
 
-#: src/dialogs/confdialog.cxx:18353
+#: src/dialogs/confdialog.cxx:18355
 msgid "Default listen / transmit frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18372
+#: src/dialogs/confdialog.cxx:18374
 msgid "Search range (Hz)"
 msgstr "Εύρος αναζήτησης (Hz)"
 
-#: src/dialogs/confdialog.cxx:18373
+#: src/dialogs/confdialog.cxx:18375
 msgid "Listen for signals within this range"
 msgstr "Αναζήτηση για σήματα μέσα στο εύρος αυτό"
 
-#: src/dialogs/confdialog.cxx:18412
+#: src/dialogs/confdialog.cxx:18414
 msgid "AFC range (Hz)"
 msgstr "Εύρος AFC (Hz)"
 
-#: src/dialogs/confdialog.cxx:18413
+#: src/dialogs/confdialog.cxx:18415
 msgid "Limit AFC movement to this range"
 msgstr "Περιορισμός κίνησης AFC στο εύρος αυτό"
 
-#: src/dialogs/confdialog.cxx:18432
+#: src/dialogs/confdialog.cxx:18434
 msgid "Reset to Carrier"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18433
+#: src/dialogs/confdialog.cxx:18435
 msgid "When no signal present"
 msgstr "Όταν δεν υπάρχει σήμα"
 
-#: src/dialogs/confdialog.cxx:18441
+#: src/dialogs/confdialog.cxx:18443
 msgid "General"
 msgstr "Γενικά"
 
-#: src/dialogs/confdialog.cxx:18444
+#: src/dialogs/confdialog.cxx:18446
 msgid "Report ARQ frames average S/N"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18456 src/dialogs/confdialog.cxx:18533
-#: src/dialogs/confdialog.cxx:18535
+#: src/dialogs/confdialog.cxx:18458 src/dialogs/confdialog.cxx:18535
+#: src/dialogs/confdialog.cxx:18537
 msgid "Web/WX"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18460
+#: src/dialogs/confdialog.cxx:18462
 msgid "Access URL"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18461
+#: src/dialogs/confdialog.cxx:18463
 msgid "Enter METAR data internet URL"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18467
+#: src/dialogs/confdialog.cxx:18469
 msgid "Default URL"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18470
+#: src/dialogs/confdialog.cxx:18472
 msgid "METAR station ID code"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18471
+#: src/dialogs/confdialog.cxx:18473
 msgid ""
 "for example KMDQ for\n"
 "Huntsville-Madison Executive Airport, AL"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18476
+#: src/dialogs/confdialog.cxx:18478
 msgid "Search on  web"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18479
+#: src/dialogs/confdialog.cxx:18481
 msgid "Full report"
 msgstr "Πλήρης αναφορά"
 
-#: src/dialogs/confdialog.cxx:18480
+#: src/dialogs/confdialog.cxx:18482
 msgid "Insert full METAR report"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18485
+#: src/dialogs/confdialog.cxx:18487
 msgid "METAR station location"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18486
+#: src/dialogs/confdialog.cxx:18488
 msgid "Add geopolitical name of METAR station"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18491
+#: src/dialogs/confdialog.cxx:18493
 msgid "Conditions"
 msgstr "Συνθήκες"
 
-#: src/dialogs/confdialog.cxx:18492
+#: src/dialogs/confdialog.cxx:18494
 msgid "current wx conditions"
 msgstr "τρέχουσες καιρικές συνθήκες"
 
-#: src/dialogs/confdialog.cxx:18497
+#: src/dialogs/confdialog.cxx:18499
 msgid "Fahrenheit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18498
+#: src/dialogs/confdialog.cxx:18500
 msgid "report Fahrenheit"
 msgstr "να αναφέρονται βαθμοί Fahrenheit"
 
-#: src/dialogs/confdialog.cxx:18503
+#: src/dialogs/confdialog.cxx:18505
 msgid "Celsius"
 msgstr "Κελσίου"
 
-#: src/dialogs/confdialog.cxx:18504
+#: src/dialogs/confdialog.cxx:18506
 msgid "report Celsius"
 msgstr "να αναφέρονται βαθμοί Κελσίου"
 
-#: src/dialogs/confdialog.cxx:18509
+#: src/dialogs/confdialog.cxx:18511
 msgid "Miles / Hour"
 msgstr "Μίλια / Ώρα"
 
-#: src/dialogs/confdialog.cxx:18510
+#: src/dialogs/confdialog.cxx:18512
 msgid "report miles per hour"
 msgstr "να αναφέρονται Μίλια ανά ώρα"
 
-#: src/dialogs/confdialog.cxx:18515
+#: src/dialogs/confdialog.cxx:18517
 msgid "kilometers / hour"
 msgstr "Χιλιόμετρα / Ώρα"
 
-#: src/dialogs/confdialog.cxx:18516
+#: src/dialogs/confdialog.cxx:18518
 msgid "report kilometers per hour"
 msgstr "να αναφέρονται Χιλιόμετρα ανά ώρα"
 
-#: src/dialogs/confdialog.cxx:18521
+#: src/dialogs/confdialog.cxx:18523
 msgid "Inches Hg."
 msgstr "Ίντσες υδραρ.Hg."
 
-#: src/dialogs/confdialog.cxx:18522
+#: src/dialogs/confdialog.cxx:18524
 msgid "report inches mercury"
 msgstr "να αναφέρονται ίντσες υδραργύρου (Hg)"
 
-#: src/dialogs/confdialog.cxx:18527
+#: src/dialogs/confdialog.cxx:18529
 msgid "mbars"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18528
+#: src/dialogs/confdialog.cxx:18530
 msgid "report millibars"
 msgstr "να αναφέρονται millibars"
 
-#: src/dialogs/confdialog.cxx:18545
+#: src/dialogs/confdialog.cxx:18547
 msgid "Restore defaults"
 msgstr "Επαν.προεπιλογών"
 
-#: src/dialogs/confdialog.cxx:18546
+#: src/dialogs/confdialog.cxx:18548
 msgid "WARNING - this will over write ALL settings"
 msgstr "ΠΡΟΣΟΧΗ - αυτή η ενέργ.θα αντικαταστήσει ΟΛΕΣ τις ρυθμίσεις"
 
-#: src/dialogs/confdialog.cxx:18698
+#: src/dialogs/confdialog.cxx:18700
 msgid "Rx Audio Monitor"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18700
+#: src/dialogs/confdialog.cxx:18702
 msgid "Monitor ON"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18701
+#: src/dialogs/confdialog.cxx:18703
 msgid "Rx audio stream ON"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18706
+#: src/dialogs/confdialog.cxx:18708
 msgid "Filter Settings"
 msgstr "Ρυθμίσεις φίλτρου"
 
-#: src/dialogs/confdialog.cxx:18709
+#: src/dialogs/confdialog.cxx:18711
 msgid "BW"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18729
+#: src/dialogs/confdialog.cxx:18731
 msgid "Mid"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18730
+#: src/dialogs/confdialog.cxx:18732
 msgid "Filter center frequ ency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18750
+#: src/dialogs/confdialog.cxx:18752
 msgid "Filter low cutoff frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18770
+#: src/dialogs/confdialog.cxx:18772
 msgid "Filter high cutoff frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18789
+#: src/dialogs/confdialog.cxx:18791
 msgid "track WF cursor"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18790
+#: src/dialogs/confdialog.cxx:18792
 msgid "Filter center freq tracks waterfall track point"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18797
+#: src/dialogs/confdialog.cxx:18799
 msgid "Vol'"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18798
+#: src/dialogs/confdialog.cxx:18800
 msgid "Rx audio volume"
 msgstr "Ένταση ήχου RX"
 
-#: src/dialogs/confdialog.cxx:18816
+#: src/dialogs/confdialog.cxx:18818
 msgid "Filtered audio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:18817
+#: src/dialogs/confdialog.cxx:18819
 msgid "Enable DSP filtering of rx audio stream"
 msgstr ""
 
-#: src/dialogs/font_browser.cxx:63
+#: src/dialogs/font_browser.cxx:71
 msgid "Font color"
 msgstr "Χρώμα γραμματοσειράς"
 
-#: src/dialogs/font_browser.cxx:138
+#: src/dialogs/font_browser.cxx:144
 msgid "Font:"
 msgstr "Γραμματοσειρά:"
 
-#: src/dialogs/font_browser.cxx:144
+#: src/dialogs/font_browser.cxx:149
 msgid "Size:"
 msgstr "Μέγεθος:"
 
-#: src/dialogs/font_browser.cxx:154
+#: src/dialogs/font_browser.cxx:159
 msgid "Fixed"
 msgstr ""
 
-#: src/dialogs/font_browser.cxx:157
+#: src/dialogs/font_browser.cxx:163
 msgid "&OK"
 msgstr ""
 
-#: src/dialogs/font_browser.cxx:173
+#: src/dialogs/font_browser.cxx:178
 msgid ""
-"The quick red fox jumped over the lazy dog!\n"
-"ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789\n"
-"!\"#$%&'()*+,-./:;<=>?@@[\\]^_`{|}~"
+"abcdefghijklmnopqrstuvwxyz\n"
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
+"0123456789"
 msgstr ""
 
 #: src/dialogs/record_browse.cxx:25 src/dialogs/record_browse.cxx:30
@@ -9486,17 +9500,33 @@ msgstr "Ημερομηνία QSO"
 #~ msgid "unknown wave file error"
 #~ msgstr "Άγνωστο σφάλμα αρχείου wave"
 
+#, fuzzy
+#~ msgid "ARQ control"
+#~ msgstr "Έλεγχος Π/Δ"
+
 #~ msgid "Rig control"
 #~ msgstr "Έλεγχος Π/Δ"
 
 #~ msgid "KISS control"
 #~ msgstr "Έλεγχος KISS"
 
+#, fuzzy
+#~ msgid "Change log level"
+#~ msgstr "Ετικέτα καναλιού"
+
+#, fuzzy
+#~ msgid "Signal Level Colors"
+#~ msgstr "Επίπεδα σήματος"
+
 #~ msgid "Keyline on separate serial port"
 #~ msgstr "Χειρισμός μέσω ξεχωριστής σειριακής θύρας"
 
 #~ msgid "Center freq (1500 Hz)"
 #~ msgstr "Κεντρική συχν. (1500 Hz)"
+
+#, fuzzy
+#~ msgid "Save image as monochrome file"
+#~ msgstr "Αποθήκευση αρχείου macro"
 
 #~ msgid "Misc/IO"
 #~ msgstr "Διάφορα/IO"
@@ -9638,9 +9668,6 @@ msgstr "Ημερομηνία QSO"
 #~ msgstr ""
 #~ "Αριστερό κλικ - επιλογή\n"
 #~ "Δεξί κλικ - καθαρισμός γραμμής"
-
-#~ msgid "Select FSQ station"
-#~ msgstr "Επιλογή σταθμού FSQ"
 
 #~ msgid "Stations Heard"
 #~ msgstr "Σταθμοί που ακούστηκαν"
