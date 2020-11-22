@@ -85,6 +85,7 @@ extern Fl_Scroll       *wefax_pic_rx_scroll;
 #include "rigio.h"
 #include "globals.h"
 #include "confdialog.h"
+#include "rxmon.h"
 #include "configuration.h"
 #include "macros.h"
 #include "status.h"

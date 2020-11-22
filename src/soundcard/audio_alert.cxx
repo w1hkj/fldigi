@@ -5,6 +5,7 @@
 #include "audio_alert.h"
 #include "configuration.h"
 #include "confdialog.h"
+#include "rxmon.h"
 
 #define SC_RATE 8000
 #define PHONERING 15000

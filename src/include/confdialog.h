@@ -21,6 +21,8 @@ void cbViewerFontBrowser(Fl_Widget*, void*);
 void cbFreqControlFontBrowser(Fl_Widget*, void*);
 void set_qrzxml_buttons(Fl_Button* b);
 void set_qrzweb_buttons(Fl_Button* b);
+class Fl_File_Chooser ;
+void createConfig();
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Tree.H>
@@ -1008,19 +1010,6 @@ extern Fl_Button *btnResetConfig;
 Fl_Double_Window* ConfigureDialog();
 void openConfig();
 void closeDialog();
-void createConfig();
-class Fl_File_Chooser ;
 void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
 void KmlDestDirSet(Fl_File_Chooser *w, void *userdata);
-void make_window();
-void make_window();
-extern Fl_Check_Button *btn_mon_xcvr_audio;
-extern Fl_Value_Slider2 *sldrRxFilt_bw;
-extern Fl_Value_Slider2 *sldrRxFilt_mid;
-extern Fl_Value_Slider2 *sldrRxFilt_low;
-extern Fl_Value_Slider2 *sldrRxFilt_high;
-extern Fl_Check_Button *btn_RxFilt_at_track;
-extern Fl_Value_Slider2 *sldrRxFilt_vol;
-extern Fl_Check_Button *btn_mon_dsp_audio;
-Fl_Double_Window* make_rxaudio_dialog();
 #endif
