@@ -416,6 +416,7 @@ FLDIGI_FL_SRC = \
 		dialogs/confdialog.fl \
 		dialogs/notifydialog.fl \
 		dialogs/record_browse.fl \
+		dialogs/rxmon.fl \
 		dialogs/testsigs.fl \
 		logbook/lgbook.fl \
 		logbook/fd_view.fl \
@@ -525,6 +526,7 @@ fldigi_SOURCES += \
 	dialogs/htmlstrings.cxx \
 	dialogs/notifydialog.cxx \
 	dialogs/record_browse.cxx \
+	dialogs/rxmon.cxx \
 	dialogs/testsigs.cxx \
 	dialogs/tod_clock.cxx \
 	dialogs/Viewer.cxx \
@@ -879,6 +881,7 @@ EXTRA_fldigi_SOURCES += \
 	include/rsid.h \
 	include/rtty.h \
 	include/rx_extract.h \
+	include/rxmon.h \
 	include/serial.h \
 	include/smeter.h \
 	include/vumeter.h \
