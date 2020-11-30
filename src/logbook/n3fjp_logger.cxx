@@ -2163,17 +2163,17 @@ static void enter_log_data()
 	try {
 		send_log_data();
 		send_action("ENTER");
-		if (n3fjp_contest != FJP_SS) {
-			string other = "XCVR:";
-			char szfreq[6];
-			snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
-			other.append(ModeIsLSB(rec.getField(ADIF_MODE)) ? "LSB" : "USB");
-			other.append(" MODE:");
-			other.append(strip(rec.getField(ADIF_MODE)));
-			other.append(" WF:");
-			other.append(szfreq);
-			send_control("OTHER8", other);
-		}
+//		if (n3fjp_contest != FJP_SS) {
+//			string other = "XCVR:";
+//			char szfreq[6];
+//			snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
+//			other.append(ModeIsLSB(rec.getField(ADIF_MODE)) ? "LSB" : "USB");
+//			other.append(" MODE:");
+//			other.append(strip(rec.getField(ADIF_MODE)));
+//			other.append(" WF:");
+//			other.append(szfreq);
+//			send_control("OTHER8", other);
+//		}
 
 	} catch (...) { throw; }
 }
