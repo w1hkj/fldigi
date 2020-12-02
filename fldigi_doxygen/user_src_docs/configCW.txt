@@ -271,8 +271,10 @@ See \ref nanoIO_page for additional information on nanoIO interface.
 <br>
 See \ref cw_winkeyer_page for additional information on WinKeyer interface.
 <br>
-See \ref cw_dtr_rts_keying for additional information on DTR/RTS keying
-
+See \ref cw_dtr_rts_keying for additional information on DTR/RTS keying.
+<br>
+See \ref cw_cat_keying for additional information on CAT keying.
+<br>
 \ref cw_configuration_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"

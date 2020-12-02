@@ -180,6 +180,13 @@ void exec_flrig_ptt() {
 }
 
 void set_flrig_ptt(int on) {
+	if (progdefaults.CATkeying_disable_ptt && 
+		( progdefaults.use_ELCTkeying ||
+		  progdefaults.use_ICOMkeying ||
+		  progdefaults.use_KNWDkeying ||
+		  progdefaults.use_YAESUkeying ) &&
+		  active_modem->get_mode() == MODE_CW )
+		return;
 	if (progdefaults.disable_CW_PTT && 
 		active_modem->get_mode() == MODE_CW &&
 		progStatus.nanoCW_online)
@@ -1001,38 +1008,38 @@ void connect_to_flrig()
 
 void * flrig_thread_loop(void *d)
 {
-	while(run_flrig_thread) {
-		for (int i = 0; i < poll_interval; i++) {
-			if (!run_flrig_thread) {
-//				LOG_VERBOSE("Exiting thread - 1");
-				return NULL;
+	int poll = poll_interval;
+	while (run_flrig_thread) {
+
+		MilliSleep(10);
+
+		if (connected_to_flrig) {
+			if (new_ptt > -1) {
+				exec_flrig_ptt();
+				continue;
 			}
-			MilliSleep(10);
 		}
 
-		if (!run_flrig_thread) break;
-
-		if (progdefaults.fldigi_client_to_flrig) {
-			if (!flrig_client)
-				connect_to_flrig();
-			if (!connected_to_flrig) flrig_connection();
-			else if (flrig_get_xcvr()) {
-				if (new_ptt > -1) {
-					exec_flrig_ptt();
-					continue;
+		if (--poll == 0) {
+			poll = poll_interval;
+			if (progdefaults.fldigi_client_to_flrig) {
+				if (!flrig_client) {
+					connect_to_flrig();
 				}
-				if (progdefaults.flrig_keys_modem) flrig_get_ptt();
-				if (trx_state == STATE_RX) {
-					flrig_get_frequency();
-					flrig_get_smeter();
-					flrig_get_notch();
-					if (!modes_posted) flrig_get_modes();
-					if (modes_posted)  flrig_get_mode();
-					if (!bws_posted)   flrig_get_bws();
-					else if (bws_posted)    flrig_get_bw();
+				else {
+					if (progdefaults.flrig_keys_modem) flrig_get_ptt();
+					if (trx_state == STATE_RX) {
+						flrig_get_frequency();
+						flrig_get_smeter();
+						flrig_get_notch();
+						if (!modes_posted) flrig_get_modes();
+						if (modes_posted)  flrig_get_mode();
+						if (!bws_posted)   flrig_get_bws();
+						else if (bws_posted)    flrig_get_bw();
+					}
+//					else
+//						flrig_get_pwrmeter();
 				}
-				else
-					flrig_get_pwrmeter();
 			}
 		}
 	}
@@ -1065,12 +1072,14 @@ void stop_flrig_thread()
 void reconnect_to_flrig()
 {
 	flrig_client->close();
-	pthread_mutex_lock(&mutex_flrig);
+	guard_lock flrig_lock(&mutex_flrig);
+
 	delete flrig_client;
 	flrig_client = (XmlRpcClient *)0;
 	connected_to_flrig = false;
-	pthread_mutex_unlock(&mutex_flrig);
 }
+
+unsigned long st, et;
 
 void xmlrpc_send_command(std::string cmd)
 {
@@ -1080,13 +1089,24 @@ void xmlrpc_send_command(std::string cmd)
 
 	XmlRpcValue val, result;
 	try {
-		val = string(cmd);
-		if (!flrig_client->execute("rig.cat_string", val, result, timeout)) {
-			LOG_ERROR("%s", "rig.cat_string failed");
-		} else {
-			LOG_VERBOSE("rig.cat_string: %s", cmd.c_str());
-		}
+		val = std::string(cmd);
+		flrig_client->execute("rig.cat_string", val, result, timeout);
+		std::string ans = std::string(result);
 	} catch (...) {}
+	return;
+}
+
+void xmlrpc_priority(std::string cmd)
+{
+	if (!connected_to_flrig) return;
+
+	guard_lock flrig_lock(&mutex_flrig);
+	XmlRpcValue val, result;
+	try {
+		val = std::string(cmd);
+		flrig_client->execute("rig.cat_priority", val, result, 0.20);//timeout);
+	} catch (...) {}
+	return;
 }
 
 void xmlrpc_shutdown_flrig()

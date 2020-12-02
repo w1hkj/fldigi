@@ -87,6 +87,7 @@ but the defaults should be satisfactory for most users.
 		<li> \subpage navigator_page </li>
 		<li> \subpage cw_winkeyer_page </li>
 		<li> \subpage cw_dtr_rts_keying </li>
+		<li> \subpage cw_cat_keying </li>
 	</ul>
 	<li> \subpage domino_ex_configuration_page </li>
 	<li> \subpage feld_hell_configuration_page </li>

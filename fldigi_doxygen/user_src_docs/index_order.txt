@@ -15,6 +15,7 @@ configAutostart.txt \
 configContestia.txt \
 configCW.txt \
 config-cw-dtr-keying.txt \
+config-cw-cat-keying.txt \
 configDomEX.txt \
 configFSQ.txt \
 configFH.txt \
