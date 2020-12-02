@@ -1,6 +1,21 @@
 
 
+=Version 4.1.17=
+
+2020-12-02  David Freese  <w1hkj@bellsouth.net>
+
+	c2714afa1: CW keying
+	87b923e9f: N3FJP support
+	37d3598b3: Rx Monitor
+	039dff7e2: Contestia / Olivia
+
+2020-11-16  Haris SV1GRB  <sv1grb@gmail.com>
+
+	83358bf65: Greek translation
+
+
 =Version 4.1.16=
+
 
 2020-11-13  David Freese  <w1hkj@bellsouth.net>
 
