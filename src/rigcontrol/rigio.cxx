@@ -1291,6 +1291,14 @@ bool rigCAT_active(void)
 
 void rigCAT_set_ptt(int ptt)
 {
+	if (progdefaults.CATkeying_disable_ptt && 
+		( progdefaults.use_ELCTkeying ||
+		  progdefaults.use_ICOMkeying ||
+		  progdefaults.use_KNWDkeying ||
+		  progdefaults.use_YAESUkeying ) &&
+		  active_modem->get_mode() == MODE_CW )
+		return;
+
 	if (rigCAT_open == false)
 		return;
 	if (ptt) {
@@ -2354,7 +2362,6 @@ static void *rigCAT_loop(void *args)
 	for (;;) {
 		for (int i = 0; i < xmlrig.pollinterval / 10; i++) {
 			MilliSleep(10);
-			guard_lock ser_guard( &rigCAT_mutex );
 			if (rigCAT_exit == true) {
 				LOG_INFO("%s", "Exited rigCAT loop");
 				return NULL;

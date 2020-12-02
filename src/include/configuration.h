@@ -219,6 +219,27 @@
         ELEM_(int, CW_KEYLINE, "CWKEYLINE",                                             \
               "0 - none, 1 - RTS, 2 - DTR",                                             \
               0)                                                                        \
+        ELEM_(bool, use_KNWDkeying, "USE_KYWDKEYING",                                   \
+              "0 - false, 1 - true; Kenwood xcvrs",                                     \
+              0)                                                                        \
+        ELEM_(bool, use_ELCTkeying, "USE_ELCTKEYING",                                   \
+              "0 - false, 1 - true; Elecraft xcvrs",                                    \
+              0)                                                                        \
+        ELEM_(bool, use_ICOMkeying, "USE_ICOMKEYING",                                   \
+              "0 - false, 1 - true",                                                    \
+              0)                                                                        \
+        ELEM_(std::string, ICOMcivaddr, "ICOMcivaddr",                                  \
+              "Icom transceiver CIV address",                                           \
+              "")                                                                       \
+        ELEM_(bool, use_YAESUkeying, "USE_YAESUKEYING",                                 \
+              "0 - false, 1 - true",                                                    \
+              0)                                                                        \
+        ELEM_(int, CATkeying_compensation, "CATKEYINGCOMP",                             \
+              "compensate delays in CW CAT keying (msecs)",                             \
+              0)                                                                        \
+        ELEM_(bool, CATkeying_disable_ptt, "CATKEYING_disable_ptt",                     \
+              "disable CAT ptt for text string CW",                                     \
+              0)                                                                        \
         ELEM_(int, cwio_comp, "cwio_comp",                                              \
               "compensate delays in set/clr DTR/RTS serial line\n"                      \
               "most likely required for Windows operating system\n"                     \

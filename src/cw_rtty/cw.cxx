@@ -57,6 +57,9 @@
 
 #include "winkeyer.h"
 #include "nanoIO.h"
+#include "KYkeying.h"
+#include "ICOMkeying.h"
+#include "YAESUkeying.h"
 
 #include "audio_alert.h"
 
@@ -359,6 +362,7 @@ cw::cw() : modem()
 	sig_avg = 0.0;
 
 	start_cwio_thread();
+
 }
 
 // SHOULD ONLY BE CALLED FROM THE rx_processing loop
@@ -1171,6 +1175,39 @@ int cw::tx_process()
 		return 0;
 	}
 
+	if (progdefaults.use_ELCTkeying || progdefaults.use_KNWDkeying) {
+		if (c == GET_TX_CHAR_ETX || stopflag) {
+			stopflag = false;
+			put_echo_char('\n');
+			return -1;
+		}
+		KYkeyer_send_char(c);
+		put_echo_char(c);
+		return 0;
+	}
+
+	if (progdefaults.use_ICOMkeying) {
+		if (c == GET_TX_CHAR_ETX || stopflag) {
+			stopflag = false;
+			put_echo_char('\n');
+			return -1;
+		}
+		ICOMkeyer_send_char(c);
+		put_echo_char(c);
+		return 0;
+	}
+
+	if (progdefaults.use_YAESUkeying) {
+		if (c == GET_TX_CHAR_ETX || stopflag) {
+			stopflag = false;
+			put_echo_char('\n');
+			return -1;
+		}
+		FTkeyer_send_char(c);
+		put_echo_char(c);
+		return 0;
+	}
+
 	if (c == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
 		put_echo_char('\n');
@@ -1562,3 +1599,132 @@ void cw::send_CW(int c)
 
 }
 
+unsigned long CAT_start_time = 0L;
+unsigned long CAT_end_time = 0L;
+
+void CAT_keying_calibrate_finished(void *)
+{
+	int comp = (CAT_end_time - CAT_start_time - 60000);
+
+	progdefaults.CATkeying_compensation = comp;
+
+	out_CATkeying_compensation->value(comp / 1000.0);
+
+	char info[1000];
+	snprintf(info, sizeof(info),
+		"Speed test: %.0f wpm : %0.2f secs",
+		progdefaults.CWspeed,
+		(CAT_end_time - CAT_start_time) / 1000.0);
+	LOG_INFO("\n%s", info);
+
+}
+
+static pthread_t       CW_keying_pthread;
+bool   CW_CAT_thread_running = false;
+
+void *do_CAT_keying_calibrate(void *args)
+{
+	CW_CAT_thread_running = true;
+
+	if (progdefaults.use_KNWDkeying || progdefaults.use_ELCTkeying)
+		set_KYkeyer();
+	else if (progdefaults.use_ICOMkeying)
+		set_ICOMkeyer();
+	else if (progdefaults.use_YAESUkeying)
+		set_FTkeyer();
+
+	std::string paris = "PARIS "; 
+	bool farnsworth = progdefaults.CWusefarnsworth;
+	progdefaults.CWusefarnsworth = false;
+	progdefaults.CATkeying_compensation = 0;
+
+	CAT_start_time = zmsec();
+	for (int i = 0; i < progdefaults.CWspeed; i++) {
+		for (size_t n = 0; n < paris.length(); n++) {
+			if (progdefaults.use_KNWDkeying || progdefaults.use_ELCTkeying)
+				KYkeyer_send_char(paris[n]);
+			else if (progdefaults.use_ICOMkeying)
+				ICOMkeyer_send_char(paris[n]);
+			else if (progdefaults.use_YAESUkeying)
+				FTkeyer_send_char(paris[n]);
+		}
+	}
+	CAT_end_time = zmsec();
+
+	progdefaults.CWusefarnsworth = farnsworth;
+
+	Fl::awake(CAT_keying_calibrate_finished);
+	CW_CAT_thread_running = false;
+	return NULL;
+}
+
+void CAT_keying_calibrate()
+{
+	if (CW_CAT_thread_running) return;
+
+	if (pthread_create(&CW_keying_pthread, NULL, do_CAT_keying_calibrate, NULL) < 0) {
+		LOG_ERROR("CW CAT calibration thread create failed");
+		return;
+	}
+
+	LOG_VERBOSE("started CW CAT calibration thread");
+
+	MilliSleep(10);
+	
+}
+
+void CAT_keying_test_finished(void *)
+{
+	int comp = (CAT_end_time - CAT_start_time - 60000);
+	out_CATkeying_test_result->value(comp / 1000.0);
+}
+
+void *do_CAT_keying_test(void *args)
+{
+	CW_CAT_thread_running = true;
+
+	if (progdefaults.use_KNWDkeying || progdefaults.use_ELCTkeying)
+		set_KYkeyer();
+	else if (progdefaults.use_ICOMkeying)
+		set_ICOMkeyer();
+	else if (progdefaults.use_YAESUkeying)
+		set_FTkeyer();
+
+	std::string paris = "PARIS "; 
+	bool farnsworth = progdefaults.CWusefarnsworth;
+	progdefaults.CWusefarnsworth = false;
+
+	CAT_start_time = zmsec();
+	for (int i = 0; i < progdefaults.CWspeed; i++) {
+		for (size_t n = 0; n < paris.length(); n++) {
+			if (progdefaults.use_KNWDkeying || progdefaults.use_ELCTkeying)
+				KYkeyer_send_char(paris[n]);
+			else if (progdefaults.use_ICOMkeying)
+				ICOMkeyer_send_char(paris[n]);
+			else if (progdefaults.use_YAESUkeying)
+				FTkeyer_send_char(paris[n]);
+		}
+	}
+	CAT_end_time = zmsec();
+
+	progdefaults.CWusefarnsworth = farnsworth;
+
+	Fl::awake(CAT_keying_test_finished);
+	CW_CAT_thread_running = false;
+	return NULL;
+}
+
+void CAT_keying_test()
+{
+	if (CW_CAT_thread_running) return;
+
+	if (pthread_create(&CW_keying_pthread, NULL, do_CAT_keying_test, NULL) < 0) {
+		LOG_ERROR("CW CAT calibration thread create failed");
+		return;
+	}
+
+	LOG_VERBOSE("started CW CAT calibration thread");
+
+	MilliSleep(10);
+	
+}

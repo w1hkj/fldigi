@@ -194,6 +194,7 @@
 		<li>\ref cw_configuration_page</li>
 		<li>\ref cw_keying_page</li>
 		<li>\ref cw_dtr_rts_keying</li>
+		<li>\ref cw_cat_keying</li>
 		<li>\ref nanoIO_page</li><ul>
 			<li>\ref nanoCW_configure</li>
 			<li>\ref nanoIO_diagram</li>

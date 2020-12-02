@@ -261,6 +261,8 @@ extern void cal_cwio();
 extern void cwio_display_calibration();
 extern void calibrate_cwio();
 
+extern void CAT_keying_calibrate();
+
 extern pthread_mutex_t cwio_ptt_mutex;
 
 #endif

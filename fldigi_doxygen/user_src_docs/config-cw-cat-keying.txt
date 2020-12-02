@@ -1,0 +1,40 @@
+/**
+\page cw_cat_keying  CW CAT Keying Configuration
+
+fldigi supports CW keying using CAT commands to transceivers which support that method.  The
+CAT connection may be either using RigCAT or flrig.
+<br>
+fldigi must be in the CW mode, and the transceiver set to CW mode for the keyline
+to be active.  If available, the transceiver should be configured for either semi or full break-in.
+<br>
+<br>
+<center>
+\image html  config-cw-cat-keying.png "CW CAT Keying configuration"
+\image latex config-cw-cat-keying.png "CW CAT Keying configuration" width=5.0in
+</center>
+<br>
+The CW CAT-keying may require compensation for timing.  This is principally dependent
+on the pc architecture, and operating system, and the effect is to lengthen the time between
+characters.  The calibrate button
+is used to measure the timing inaccuracy.  The measurement is made by sending a sequence 
+of "PARIS " strings at the current CW WPM setting for 1 minute.  The actual time to transmit is
+measured and compared to the ideal timing.  Be aware that this 
+may transmit the characters.  Use low power or a dummy load for the test.  If needed, 
+the computed compensation value will be entered in the Comp control.  You may also
+manually enter or change this value.  After calibration you may test to see if the character spacing
+algorithm are providing the correct compensation.
+<br>
+Tested and known to work correctly with these transceivers:
+<ul>
+<li>Elecraft K3X</li>
+<li>Elecraft K3S</li>
+<li>Icom 7100</li>
+<li>Icom 7300</li>
+<li>Kenwood TS480</li>
+<li>Kenwood TS590SG</li>
+<li>Yaesu FT991A</li>
+</ul>
+<br>
+\ref main_page "Return to Main Page"
+
+*/

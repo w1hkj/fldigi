@@ -513,6 +513,9 @@ fldigi_SOURCES += \
 	cw_rtty/cw.cxx \
 	cw_rtty/morse.cxx \
 	cw_rtty/nanoIO.cxx \
+	cw_rtty/ICOMkeying.cxx \
+	cw_rtty/KYkeying.cxx  \
+	cw_rtty/YAESUkeying.cxx \
 	cw_rtty/Nav.cxx \
 	cw_rtty/rtty.cxx \
 	cw_rtty/view_cw.cxx \
@@ -817,6 +820,9 @@ EXTRA_fldigi_SOURCES += \
 	include/jalocha/pj_struc.h \
 	include/kiss_io.h \
 	include/kmlserver.h \
+	include/ICOMkeying.h \
+	include/KYkeying.h \
+	include/YAESUkeying.h \
 	include/lgbook.h \
 	include/locator.h \
 	include/logbook.h \
