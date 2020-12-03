@@ -26,8 +26,9 @@ algorithm are providing the correct compensation.
 <br>
 Tested and known to work correctly with these transceivers:
 <ul>
-<li>Elecraft K3X</li>
+<li>Elecraft KX3</li>
 <li>Elecraft K3S</li>
+<li>Icom 705</li>
 <li>Icom 7100</li>
 <li>Icom 7300</li>
 <li>Kenwood TS480</li>
