@@ -977,7 +977,7 @@ void flrig_connection()
 		} else {
 			LOG_VERBOSE("%s", "Waiting for flrig");
 			connected_to_flrig = false;
-			poll_interval = 500; // every 5 seconds
+			poll_interval = 200; // every 2 seconds
 		}
 	} catch (...) {
 		LOG_ERROR("%s", "failure in flrig_client");
@@ -1023,22 +1023,25 @@ void * flrig_thread_loop(void *d)
 		if (--poll == 0) {
 			poll = poll_interval;
 			if (progdefaults.fldigi_client_to_flrig) {
-				if (!flrig_client) {
+				if (!flrig_client)
 					connect_to_flrig();
-				}
 				else {
-					if (progdefaults.flrig_keys_modem) flrig_get_ptt();
-					if (trx_state == STATE_RX) {
-						flrig_get_frequency();
-						flrig_get_smeter();
-						flrig_get_notch();
-						if (!modes_posted) flrig_get_modes();
-						if (modes_posted)  flrig_get_mode();
-						if (!bws_posted)   flrig_get_bws();
-						else if (bws_posted)    flrig_get_bw();
+					if (!connected_to_flrig)
+						flrig_connection();
+					else {
+						if (progdefaults.flrig_keys_modem) flrig_get_ptt();
+						if (trx_state == STATE_RX) {
+							flrig_get_frequency();
+							flrig_get_smeter();
+							flrig_get_notch();
+							if (!modes_posted) flrig_get_modes();
+							if (modes_posted)  flrig_get_mode();
+							if (!bws_posted)   flrig_get_bws();
+							else if (bws_posted)    flrig_get_bw();
+						}
+						else
+							flrig_get_pwrmeter();
 					}
-//					else
-//						flrig_get_pwrmeter();
 				}
 			}
 		}
@@ -1050,7 +1053,7 @@ void * flrig_thread_loop(void *d)
 void FLRIG_start_flrig_thread()
 {
 	flrig_thread = new pthread_t;
-	poll_interval = 100;
+	poll_interval = 100;  // every second
 	if (pthread_create(flrig_thread, NULL, flrig_thread_loop, NULL)) {
 		LOG_ERROR("%s", "flrig_thread create");
 		exit(EXIT_FAILURE);
