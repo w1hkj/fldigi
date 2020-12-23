@@ -4230,18 +4230,50 @@ void macro_timer(void*)
 
 static long mt_xdt, mt_xtm;
 
+// called by main loop...ok to write to widget
+void show_clock(bool yes)
+{
+	if (!yes) {
+		StatusBar->label("");
+		StatusBar->redraw();
+		return;
+	}
+	static char s_clk_time[40];
+	time_t sked_time = time(NULL);
+	tm sked_tm;
+	gmtime_r(&sked_time, &sked_tm);
+	int hrs = sked_tm.tm_hour;
+	int mins = sked_tm.tm_min;
+	int secs = sked_tm.tm_sec;
+	snprintf(s_clk_time, sizeof(s_clk_time), "%02d:%02d:%02d",
+		hrs, mins, secs);
+	StatusBar->label(s_clk_time);
+	StatusBar->redraw();
+}
+
+static int timed_ptt = -1;
 void macro_timed_execute(void *)
 {
 	long dt, tm;
 	dt = atol(local_timed_exec ? ldate() : zdate());
 	tm = atol(local_timed_exec ? ltime() : ztime());
 	if (dt >= mt_xdt && tm >= mt_xtm) {
+		show_clock(false);
+		if (timed_ptt != 1) {
+			push2talk->set(true);
+			timed_ptt = 1;
+		}
 		macros.timed_execute();
 		btnMacroTimer->label(0);
 		btnMacroTimer->color(FL_BACKGROUND_COLOR);
 		btnMacroTimer->set_output();
 		mt_xdt = mt_xtm = 0;
 	} else {
+		show_clock(true);
+		if (timed_ptt != 0) {
+			push2talk->set(false);
+			timed_ptt = 0;
+		}
 		Fl::repeat_timeout(1.0, macro_timed_execute);
 	}
 }
