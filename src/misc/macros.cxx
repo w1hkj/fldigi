@@ -95,6 +95,71 @@ static std::string buffered_macro;
 static bool buffered = false;
 static size_t buffered_pointer;
 
+/*
+static const char *ascii4[256] = {
+	"<NUL>", "<SOH>", "<STX>", "<ETX>", "<EOT>", "<ENQ>", "<ACK>", "<BEL>",
+	"<BS>",  "<TAB>", "<LF>\n",  "<VT>", "<FF>",  "<CR>",  "<SO>",  "<SI>",
+	"<DLE>", "<DC1>", "<DC2>", "<DC3>", "<DC4>", "<NAK>", "<SYN>", "<ETB>",
+	"<CAN>", "<EM>",  "<SUB>", "<ESC>", "<FS>",  "<GS>",  "<RS>",  "<US>",
+	" ",     "!",     "\"",    "#",     "$",     "%",     "&",     "\'",
+	"(",     ")",     "*",     "+",     ",",     "-",     ".",     "/",
+	"0",     "1",     "2",     "3",     "4",     "5",     "6",     "7",
+	"8",     "9",     ":",     ";",     "<",     "=",     ">",     "?",
+	"@",     "A",     "B",     "C",     "D",     "E",     "F",     "G",
+	"H",     "I",     "J",     "K",     "L",     "M",     "N",     "O",
+	"P",     "Q",     "R",     "S",     "T",     "U",     "V",     "W",
+	"X",     "Y",     "Z",     "[",     "\\",    "]",     "^",     "_",
+	"`",     "a",     "b",     "c",     "d",     "e",     "f",     "g",
+	"h",     "i",     "j",     "k",     "l",     "m",     "n",     "o",
+	"p",     "q",     "r",     "s",     "t",     "u",     "v",     "w",
+	"x",     "y",     "z",     "{",     "|",     "}",     "~",     "<DEL>",
+	"<128>", "<129>", "<130>", "<131>", "<132>", "<133>", "<134>", "<135>",
+	"<136>", "<137>", "<138>", "<139>", "<140>", "<141>", "<142>", "<143>",
+	"<144>", "<145>", "<146>", "<147>", "<148>", "<149>", "<150>", "<151>",
+	"<152>", "<153>", "<154>", "<155>", "<156>", "<157>", "<158>", "<159>",
+	"<160>", "<161>", "<162>", "<163>", "<164>", "<165>", "<166>", "<167>",
+	"<168>", "<169>", "<170>", "<171>", "<172>", "<173>", "<174>", "<175>",
+	"<176>", "<177>", "<178>", "<179>", "<180>", "<181>", "<182>", "<183>",
+	"<184>", "<185>", "<186>", "<187>", "<188>", "<189>", "<190>", "<191>",
+	"<192>", "<193>", "<194>", "<195>", "<196>", "<197>", "<198>", "<199>",
+	"<200>", "<201>", "<202>", "<203>", "<204>", "<205>", "<206>", "<207>",
+	"<208>", "<209>", "<210>", "<211>", "<212>", "<213>", "<214>", "<215>",
+	"<216>", "<217>", "<218>", "<219>", "<220>", "<221>", "<222>", "<223>",
+	"<224>", "<225>", "<226>", "<227>", "<228>", "<229>", "<230>", "<231>",
+	"<232>", "<233>", "<234>", "<235>", "<236>", "<237>", "<238>", "<239>",
+	"<240>", "<241>", "<242>", "<243>", "<244>", "<245>", "<246>", "<247>",
+	"<248>", "<249>", "<250>", "<251>", "<252>", "<253>", "<254>", "<255>" 
+};
+
+static std::string hout(std::string s)
+{
+	static std::string sout;
+	sout.clear();
+	for (size_t n = 0; n < s.length(); n++)
+		sout.append(ascii4[int(s[n])]);
+	return sout;
+}
+*/
+
+static void substitute (std::string &s, size_t &start, size_t end, std::string sub)
+{
+	if (start && s[start - 1] == '\n') {
+		start--;
+	}
+//std::cout << "--------------------------------------------------------" << std::endl;
+	if (sub.empty()) {
+//std::cout << "ERASED:" << hout(s.substr(start, end - start + 1)) << std::endl;
+		s.erase(start, end - start + 1);
+	} else {
+//std::cout << "REPLACED: '" << hout(s.substr(start, end - start + 1)) <<
+//			 "' WITH '" << hout(sub) << "'" << std::endl;
+		s.replace(start, end - start + 1, sub);
+	}
+//std::cout << "--------------------------------------------------------" << std::endl;
+//std::cout << hout(s) << std::endl;
+//std::cout << "=========================================================" << std::endl;
+}
+
 static void add_text(std::string text)
 {
 	if (buffered) {
@@ -124,7 +189,7 @@ char next_buffered_macro_char()
 
 static void pBUFFERED(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 	buffered = true;
 	buffered_macro.clear();
 }
@@ -149,6 +214,7 @@ static void setfwpm(double d)
 // following used for debugging and development
 void push_txcmd(CMDS cmd)
 {
+std::cout << "Push to Tx queu " << cmd.cmd << std::endl;
 	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)Tx_cmds.size());
 	Tx_cmds.push(cmd);
 }
@@ -448,7 +514,7 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 			else
 				ReceiveText->add(resp.c_str(), FTextBase::ALTR);
 			LOG_WARN("%s not found", fname.c_str());
-			s.replace(i, endbracket - i + 1, "");
+			substitute(s, i, endbracket, "");
 			PERFORM_CPS_TEST = false;
 		}
 	} else {
@@ -709,7 +775,7 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 			else
 				ReceiveText->add(resp.c_str(), FTextBase::ALTR);
 			LOG_WARN("%s not found", fname.c_str());
-			s.replace(i, endbracket - i + 1, "");
+			substitute(s, i, endbracket, "");
 			PERFORM_CPS_TEST = false;
 		}
 	} else {
@@ -775,7 +841,7 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 
 static void pCOMMENT(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 	if (s[i] == '\n') i++;
 }
 
@@ -788,17 +854,23 @@ static void pFILE(std::string &s, size_t &i, size_t endbracket)
 			std::string buffer;
 			char c = getc(toadd);
 			while (c && !feof(toadd)) {
-				if (c != '\r') buffer += c; // damn MSDOS txt files
+				if (c != '\r') buffer += c; // change CRLF to LF
 				c = getc(toadd);
 			}
-			s.replace(i, endbracket - i + 1, buffer);
+			size_t blen = buffer.length();
+			if (blen > 0) {
+				if (!(buffer[blen -1] == ' ' || buffer[blen-1] == '\n'))
+					buffer += ' ';
+			}
+			substitute(s, i, endbracket, buffer);
 			fclose(toadd);
 		} else {
 			LOG_WARN("%s not found", fname.c_str());
-			s.replace(i, endbracket - i + 1, "");
+			substitute(s, i, endbracket, "ERROR: CANNOT OPEN FILE");
 		}
-	} else
-		s.replace(i, endbracket - i + 1, "");
+	} else {
+		substitute(s, i, endbracket, "OH SHIT");
+	}
 }
 
 static notify_dialog *macro_alert_dialog = 0;
@@ -829,12 +901,12 @@ static void doTIMER(std::string s)
 static void pTIMER(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTIMER };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doAFTER(std::string s)
@@ -853,22 +925,22 @@ static void doAFTER(std::string s)
 static void pAFTER(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doAFTER };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pREPEAT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	progStatus.repeatMacro = mNbr;
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 	text2repeat = s;
 	repeatchar = 0;
 	s.insert(i, "[REPEAT]");
@@ -877,7 +949,7 @@ static void pREPEAT(std::string &s, size_t &i, size_t endbracket)
 static void pWPM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	float number;
@@ -908,13 +980,13 @@ static void pWPM(std::string &s, size_t &i, size_t endbracket)
 		}
 	}
 
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pRISETIME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	float number;
@@ -926,13 +998,13 @@ static void pRISETIME(std::string &s, size_t &i, size_t endbracket)
 		progdefaults.CWrisetime = number;
 		cntCWrisetime->value(number);
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pPRE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	float number;
@@ -944,13 +1016,13 @@ static void pPRE(std::string &s, size_t &i, size_t endbracket)
 		progdefaults.CWpre = number;
 		cntPreTiming->value(number);
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pPOST(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	float number;
@@ -962,7 +1034,7 @@ static void pPOST(std::string &s, size_t &i, size_t endbracket)
 		progdefaults.CWpost = number;
 		cntPostTiming->value(number);
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doWPM(std::string s)
@@ -1000,12 +1072,12 @@ static void doWPM(std::string s)
 static void pTxQueWPM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWPM };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 struct STRpush {
@@ -1060,29 +1132,29 @@ static void pPOP(std::string &s, size_t &i, size_t endbracket)
 		if (!psh.smode.empty()) mMODEM(psh.smode);
 	} else
 		LOG_INFO("%s", "stack empty");
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pTxQuePOP(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOP };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pRxQuePOP(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOP };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doPUSHmode(std::string s)
@@ -1107,23 +1179,24 @@ static void doPUSHmode(std::string s)
 static void pTxQuePUSH(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPUSHmode };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pRxQuePUSH(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPUSHmode };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+//	substitute(s, i, endbracket, "^!");
+	substitute(s, i, endbracket, "");
 }
 
 static void pPUSH(std::string &s, size_t &i, size_t endbracket)
@@ -1142,7 +1215,7 @@ static void pPUSH(std::string &s, size_t &i, size_t endbracket)
 	}
 	LOG_INFO("%s, %d", psh.smode.c_str(), psh.freq);
 	mf_stack.push(psh);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 	return;
 }
 
@@ -1162,7 +1235,7 @@ static void pTxDIGI(std::string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTxDIGI };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void doTxFREQ(std::string s)
@@ -1175,7 +1248,7 @@ static void pTxFREQ(std::string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTxFREQ };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void setRISETIME(int d)
@@ -1200,12 +1273,12 @@ static void doRISETIME(std::string s)
 static void pTxQueRISETIME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRISETIME };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void setPRE(int d)
@@ -1230,12 +1303,12 @@ static void doPRE(std::string s)
 static void pTxQuePRE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPRE };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void setPOST(int d)
@@ -1260,12 +1333,12 @@ static void doPOST(std::string s)
 static void pTxQuePOST(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOST };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void setTXATTEN(float v)
@@ -1281,7 +1354,7 @@ static void setTXATTEN(float v)
 static void pTXATTEN(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	float number;
@@ -1290,7 +1363,7 @@ static void pTXATTEN(std::string &s, size_t &i, size_t endbracket)
 		sscanf(sVal.c_str(), "%f", &number);
 		setTXATTEN(number);
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doTXATTEN(std::string s)
@@ -1306,18 +1379,18 @@ static void doTXATTEN(std::string s)
 static void pTxQueTXATTEN(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTXATTEN };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "");
 }
 
 static void pIDLE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	float number;
@@ -1327,7 +1400,7 @@ static void pIDLE(std::string &s, size_t &i, size_t endbracket)
 		macro_idle_on = true;
 		idleTime = number;
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static int idle_time = 0; // in 0.1 second increments
@@ -1362,12 +1435,12 @@ static void doIDLE(std::string s)
 static void pTxQueIDLE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doIDLE };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 bool do_tune_on;
@@ -1412,12 +1485,12 @@ static void doTUNE(std::string s)
 static void pTxQueTUNE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTUNE };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void end_rxtune(void *)
@@ -1442,18 +1515,18 @@ static void doRxTUNE(std::string s)
 static void pRxQueTUNE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRxTUNE };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pTUNE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sTime = s.substr(i+6, endbracket - i - 6);
@@ -1464,7 +1537,7 @@ static void pTUNE(std::string &s, size_t &i, size_t endbracket)
 		Fl::add_timeout(0, start_tune);
 	}
 
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pQSONBR(std::string &s, size_t &i, size_t endbracket)
@@ -1492,7 +1565,7 @@ static void pNXTNBR(std::string &s, size_t &i, size_t endbracket)
 static void pNRSID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	int number = 0;
@@ -1501,7 +1574,7 @@ static void pNRSID(std::string &s, size_t &i, size_t endbracket)
 		sscanf(sNumber.c_str(), "%d", &number);
 		progStatus.n_rsids = number;
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static bool useWait = false;
@@ -1510,7 +1583,7 @@ static float  waitTime = 0;
 static void pWAIT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	float number;
@@ -1520,7 +1593,7 @@ static void pWAIT(std::string &s, size_t &i, size_t endbracket)
 		useWait = true;
 		waitTime = number;
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doneWAIT(void *)
@@ -1545,12 +1618,12 @@ static void doWAIT(std::string s)
 static void pTxQueWAIT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWAIT };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void doRxWAIT(std::string s)
@@ -1567,12 +1640,12 @@ static void doRxWAIT(std::string s)
 static void pRxQueWAIT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRxWAIT };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pINFO1(std::string &s, size_t &i, size_t endbracket)
@@ -1588,10 +1661,10 @@ static void pINFO2(std::string &s, size_t &i, size_t endbracket)
 static void pCLRRX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace( i, 7, "" );
+	substitute(s, i, endbracket, "");
 	trx_mode md = active_modem->get_mode();
 
 	if (md == MODE_IFKP)
@@ -1607,10 +1680,10 @@ static void pCLRRX(std::string &s, size_t &i, size_t endbracket)
 static void pCLRTX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace( i, 7, "" );
+	substitute(s, i, endbracket, "");
 	queue_reset();
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_tx_text->clear();
@@ -1622,12 +1695,12 @@ static void pCLRTX(std::string &s, size_t &i, size_t endbracket)
 
 static void pCLRQSO(std::string &s, size_t &i, size_t endbracket)
 {
-       if (within_exec) {
-               s.replace(i, endbracket - i + 1, "");
-               return;
-       }
-       s.replace( i, 8, "" );
-       clearQSO();
+	if (within_exec) {
+		substitute(s, i, endbracket, "");
+		return;
+	}
+	substitute(s, i, endbracket, "");
+	clearQSO();
 }
 
 static void pFOCUS(std::string &s, size_t &i, size_t endbracket)
@@ -1646,13 +1719,13 @@ static void pFOCUS(std::string &s, size_t &i, size_t endbracket)
 			qsoFreqDisp->reverse_colors();
 		}
 	}
-	s.replace( i, 7, "" );
+	substitute(s, i, endbracket, "");
 }
 
 static void pQSYPLUS(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	int rf = 0;
@@ -1660,7 +1733,7 @@ static void pQSYPLUS(std::string &s, size_t &i, size_t endbracket)
 	std::string sIncrFreq = s.substr(i+6, endbracket - i - 6);
 	// no frequency(s) specified
 	if (sIncrFreq.length() == 0) {
-		s.replace(i, endbracket-i+1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	// rf first value
@@ -1669,7 +1742,7 @@ static void pQSYPLUS(std::string &s, size_t &i, size_t endbracket)
 		rf = wf->rfcarrier() + (int)(1000*rfd);
 		qsy(rf, active_modem ? active_modem->get_freq() : 1500);
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pCALL(std::string &s, size_t &i, size_t endbracket)
@@ -1979,21 +2052,21 @@ static void pZD(std::string &s, size_t &i, size_t endbracket)
 static void p_ID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	progdefaults.macroid = true;
-	s.replace( i, 4, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pTEXT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	progdefaults.macrotextid = true;
-	s.replace( i, 6, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doCWID(std::string s)
@@ -2005,12 +2078,12 @@ static void doCWID(std::string s)
 static void pCWID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	CMDS cmd = {s.substr(i, endbracket - i + 1), doCWID};
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void doDTMF(std::string s)
@@ -2022,23 +2095,23 @@ static void doDTMF(std::string s)
 static void pDTMF(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	CMDS cmd = {s.substr(i, endbracket - i + 1), doDTMF};
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pALERT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (trx_state != STATE_RX) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string cmd = s.substr(i+7, endbracket - i - 7);
@@ -2047,7 +2120,7 @@ static void pALERT(std::string &s, size_t &i, size_t endbracket)
 			audio_alert->alert(cmd);
 		} catch (...) {
 		}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doAUDIO(std::string s)
@@ -2060,41 +2133,41 @@ static void doAUDIO(std::string s)
 static void pAUDIO(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string acmd = "Xmt audio file: ";
 	acmd.append(s.substr(i + 7, endbracket - (i + 7)));
 	CMDS cmd = {acmd, doAUDIO};
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pPAUSE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace (i, 7, "^p");
+	substitute(s, i, endbracket, "");
 }
 
 static void pRX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace (i, 4, "^r");
+	substitute(s, i, endbracket, "^r");
 }
 
 static void pTX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.erase(i, 4);
+	substitute(s, i, endbracket, "");
 	if (rx_only)
 		TransmitON = false;
 	else {
@@ -2106,10 +2179,10 @@ static void pTX(std::string &s, size_t &i, size_t endbracket)
 static void pTXRX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.erase(i, 7);
+	substitute(s, i, endbracket, "");
 	if (rx_only)
 		ToggleTXRX = false;
 	else
@@ -2183,29 +2256,29 @@ static void doRIGCAT(std::string s)
 static void pTxQueRIGCAT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGCAT };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pRxQueRIGCAT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGCAT };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pRIGCAT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 
@@ -2254,7 +2327,7 @@ static void pRIGCAT(std::string &s, size_t &i, size_t endbracket)
 
 	add_to_cmdque( "RIGCAT macro", buff, retnbr, progdefaults.RigCatWait);
 
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doFLRIG(std::string s)
@@ -2272,29 +2345,29 @@ static void doFLRIG(std::string s)
 static void pTxQueFLRIG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFLRIG };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pRxQueFLRIG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFLRIG };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pFLRIG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 
@@ -2304,7 +2377,7 @@ static void pFLRIG(std::string &s, size_t &i, size_t endbracket)
 	std::string cmd = s.substr(start + 1, s.length() - start - 2);
 	xmlrpc_send_command(cmd);
 
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doVIDEO(string s)
@@ -2325,12 +2398,12 @@ static void doVIDEO(string s)
 static void pVIDEO(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doVIDEO };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 
@@ -2395,23 +2468,23 @@ static void pCNTR(std::string &s, size_t &i, size_t endbracket)
 static void pDECR(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	contest_count.count--;
 	if (contest_count.count < 0) contest_count.count = 0;
-	s.replace (i, 6, "");
+	substitute(s, i, endbracket, "");
 	updateOutSerNo();
 }
 
 static void pINCR(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	contest_count.count++;
-	s.replace (i, 6, "");
+	substitute(s, i, endbracket, "");
 	updateOutSerNo();
 }
 
@@ -2428,31 +2501,31 @@ static void pXOUT(std::string &s, size_t &i, size_t endbracket)
 static void pXBEG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace( i, 6, "");
+	substitute(s, i, endbracket, "");
 	xbeg = i;
 }
 
 static void pXEND(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace( i, 6, "");
+	substitute(s, i, endbracket, "");
 	xend = i;
 }
 
 static void pSAVEXCHG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	save_xchg = true;
-	s.replace( i, 10, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pFD_CLASS(std::string &s, size_t &i, size_t endbracket)
@@ -2478,7 +2551,7 @@ static void pSECTION(std::string &s, size_t &i, size_t endbracket)
 static void pLOG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	size_t start = s.find(':', i);
@@ -2488,14 +2561,14 @@ static void pLOG(std::string &s, size_t &i, size_t endbracket)
 		msg.append(s.substr(start + 1, endbracket-start-1));
 		inpNotes->value(msg.c_str());
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 	qsoSave_cb(0, 0);
 }
 
 static void pLNW(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 		return;
 	}
 	size_t start = s.find(':', i);
@@ -2505,22 +2578,22 @@ static void pLNW(std::string &s, size_t &i, size_t endbracket)
 		msg.append(s.substr(start + 1, endbracket-start-1));
 		inpNotes->value(msg.c_str());
 	}
-	s.replace(i, endbracket - i + 1, "^L");
+	substitute(s, i, endbracket, "");
 }
 
 static void pCLRLOG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace(i, 10, "^C");
+	substitute(s, i, endbracket, "");
 }
 
-static void pMODEM_compSKED(std::string &s, size_t &i, size_t endbracket)
+static void pMODEM_COMPSKED(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	size_t	j, k,
@@ -2583,13 +2656,13 @@ static void doIMAGE(std::string s)
 static void pTxQueIMAGE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	string Tx_cmdstr = s.substr(i, endbracket - i + 1);
 	struct CMDS cmd = { Tx_cmdstr, doIMAGE };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void doINSERTIMAGE(std::string s)
@@ -2678,7 +2751,7 @@ static void pTxQueAVATAR(std::string &s, size_t &i, size_t endbracket)
 
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doAVATAR };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void doMODEM(std::string s)
@@ -2869,7 +2942,7 @@ static void doMODEM(std::string s)
 static void pTxQueMODEM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	string Tx_cmdstr = s.substr(i, endbracket - i + 1);
@@ -2883,26 +2956,27 @@ static void pTxQueMODEM(std::string &s, size_t &i, size_t endbracket)
 			s.clear();
 	} else {
 		push_txcmd(cmd);
-		s.replace(i, endbracket - i + 1, "^!");
+		if (i && s[i-1] == '\n') i--;
+		substitute(s, i, endbracket, "^!");
 	}
 }
 
 static void pRxQueMODEM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	string rx_cmdstr = s.substr(i, endbracket - i + 1);
 	struct CMDS cmd = { rx_cmdstr, doMODEM };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	static fre_t re("<MODEM:([[:alnum:]-]+)((:[[:digit:].+-]*)*)>", REG_EXTENDED);
@@ -3112,13 +3186,13 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 			MilliSleep(10);
 	}
 
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pAFC(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sVal = s.substr(i+5, endbracket - i - 5);
@@ -3133,13 +3207,13 @@ static void pAFC(std::string &s, size_t &i, size_t endbracket)
 
 		btnAFC->do_callback();
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pREV(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sVal = s.substr(i+5, endbracket - i - 5);
@@ -3154,14 +3228,14 @@ static void pREV(std::string &s, size_t &i, size_t endbracket)
 
 		wf->btnRev->do_callback();
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 // <HS:on|off|t>
 static void pHS(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sVal = s.substr(i+4, endbracket - i - 4);
@@ -3174,14 +3248,14 @@ static void pHS(std::string &s, size_t &i, size_t endbracket)
 		else if (sVal.compare(0,1,"t") == 0)
 			bHighSpeed = !bHighSpeed;
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 
 static void pLOCK(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sVal = s.substr(i+6, endbracket - i - 6);
@@ -3197,7 +3271,7 @@ static void pLOCK(std::string &s, size_t &i, size_t endbracket)
 		wf->xmtlock->damage();
 		wf->xmtlock->do_callback();
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doLOCK( std::string s){
@@ -3218,19 +3292,19 @@ static void doLOCK( std::string s){
 static void pRxQueLOCK(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doLOCK };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 
 static void pTX_RSID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sVal = s.substr(i+8, endbracket - i - 8);
@@ -3244,7 +3318,7 @@ static void pTX_RSID(std::string &s, size_t &i, size_t endbracket)
 			btnTxRSID->value(!btnTxRSID->value());
 		btnTxRSID->do_callback();
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doTXRSID(std::string s)
@@ -3267,18 +3341,18 @@ static void doTXRSID(std::string s)
 static void pRxQueTXRSID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTXRSID };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pRX_RSID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sVal = s.substr(i+8, endbracket - i - 8);
@@ -3293,13 +3367,13 @@ static void pRX_RSID(std::string &s, size_t &i, size_t endbracket)
 
 		btnRSID->do_callback();
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pCSV(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sVal = s.substr(i+5, endbracket - i - 5);
@@ -3312,14 +3386,14 @@ static void pCSV(std::string &s, size_t &i, size_t endbracket)
 		else if (sVal.compare(0,1,"t") == 0)
 			set_CSV(2);
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 #ifdef __WIN32__
 static void pTALK(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sVal = s.substr(i+6, endbracket - i - 6);
@@ -3332,17 +3406,17 @@ static void pTALK(std::string &s, size_t &i, size_t endbracket)
 		else if (sVal.compare(0,1,"t") == 0)
 			toggle_talker();
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 #endif
 
 static void pSRCHUP(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace( i, 8, "");
+	substitute(s, i, endbracket, "");
 	active_modem->searchUp();
 	if (progdefaults.WaterfallClickInsert)
 		wf->insert_text(true);
@@ -3351,10 +3425,10 @@ static void pSRCHUP(std::string &s, size_t &i, size_t endbracket)
 static void pSRCHDN(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace( i, 8, "");
+	substitute(s, i, endbracket, "");
 	active_modem->searchDown();
 	if (progdefaults.WaterfallClickInsert)
 		wf->insert_text(true);
@@ -3363,10 +3437,10 @@ static void pSRCHDN(std::string &s, size_t &i, size_t endbracket)
 static void pGOHOME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace( i, 8, "");
+	substitute(s, i, endbracket, "");
 	if (active_modem == cw_modem)
 		active_modem->set_freq(progdefaults.CWsweetspot);
 	else if (active_modem == rtty_modem)
@@ -3389,29 +3463,29 @@ static void doGOHOME(std::string s)
 static void pTxQueGOHOME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOHOME };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pRxQueGOHOME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOHOME };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pGOFREQ(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	int number;
@@ -3424,7 +3498,7 @@ static void pGOFREQ(std::string &s, size_t &i, size_t endbracket)
 			number = progdefaults.HighFreqCutoff;
 		active_modem->set_freq(number);
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doGOFREQ(std::string s)
@@ -3450,49 +3524,49 @@ static void pTxQueGOFREQ(std::string &s, size_t &i, size_t endbracket)
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOFREQ };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pRxQueGOFREQ(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOFREQ };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pQRG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string prefix = "\n";
 	prefix.append(s.substr(i+5, endbracket - i - 5));
 	if (prefix.length()) note_qrg ( false, prefix.c_str(), "\n" );
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pQSYTO(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace( i, 7, "");
+	substitute(s, i, endbracket, "");
 	do_qsy(true);
 }
 
 static void pQSYFM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
-	s.replace( i, 7, "");
+	substitute(s, i, endbracket, "");
 	do_qsy(false);
 }
 
@@ -3506,7 +3580,7 @@ static queue<rfafmd> fpairs;
 static void pQSY(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 
@@ -3517,7 +3591,7 @@ static void pQSY(std::string &s, size_t &i, size_t endbracket)
 	std::string sGoFreq = s.substr(i+5, endbracket - i - 5);
 	// no frequency(s) specified
 	if (sGoFreq.length() == 0) {
-		s.replace(i, endbracket-i+1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 
@@ -3569,7 +3643,7 @@ static void pQSY(std::string &s, size_t &i, size_t endbracket)
 	else
 		active_modem->set_freq(af);
 
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doQSY(std::string s)
@@ -3610,12 +3684,12 @@ static void doQSY(std::string s)
 static void pTxQueQSY(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doQSY };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 float  wait_after_mode_change = 0.0;
@@ -3630,13 +3704,13 @@ static void delayedFILWID(void *)
 static void pFILWID(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sWidth = s.substr(i+8, endbracket - i - 8);
 	sFILWID = sWidth;
 	Fl::add_timeout(wait_after_mode_change, delayedFILWID);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doFILWID(std::string s)
@@ -3650,35 +3724,35 @@ static void doFILWID(std::string s)
 static void pTxQueFILWID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFILWID };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pRxQueFILWID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFILWID };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pRIGMODE(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sMode = s.substr(i+9, endbracket - i - 9);
 	qso_opMODE->value(sMode.c_str());
 	cb_qso_opMODE();
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 	if ((s.find("FILWID") != string::npos) ||
 		(s.find("RIGLO") != string::npos) ||
 		(s.find("RIGHI") != string::npos) )
@@ -3698,23 +3772,23 @@ static void doRIGMODE(std::string s)
 static void pTxQueRIGMODE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGMODE };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pRxQueRIGMODE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGMODE };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static string sRIGLO;
@@ -3729,7 +3803,7 @@ static void delayedRIGLO(void *)
 static void pRIGLO(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sLO = s.substr(i+7, endbracket - i - 7);
@@ -3740,7 +3814,7 @@ static void pRIGLO(std::string& s, size_t& i, size_t endbracket)
 		qso_opBW2->value(sLO.c_str());
 		cb_qso_opBW2();
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doRIGLO(std::string s)
@@ -3754,23 +3828,23 @@ static void doRIGLO(std::string s)
 static void pTxQueRIGLO(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGLO };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pRxQueRIGLO(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGLO };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static string sRIGHI;
@@ -3785,7 +3859,7 @@ static void delayedRIGHI(void *)
 static void pRIGHI(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sHI = s.substr(i+7, endbracket - i - 7);
@@ -3796,7 +3870,7 @@ static void pRIGHI(std::string& s, size_t& i, size_t endbracket)
 		qso_opBW1->value(sHI.c_str());
 		cb_qso_opBW1();
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void doRIGHI(std::string s)
@@ -3810,23 +3884,23 @@ static void doRIGHI(std::string s)
 static void pTxQueRIGHI(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGHI };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pRxQueRIGHI(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGHI };
 	push_rxcmd(cmd);
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pWX(std::string &s, size_t &i, size_t endbracket)
@@ -3841,7 +3915,7 @@ static void pWX2(std::string &s, size_t &i, size_t endbracket)
 {
 	string wx;
 	getwx(wx, s.substr(i+4, endbracket - i - 4).c_str());
-	s.replace(i, endbracket - i + 1, wx);
+	substitute(s, i, endbracket, "");
 }
 
 
@@ -4103,7 +4177,7 @@ void set_macro_env(void)
 // which is not permitted
 static void pEND_EXEC(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 	return;
 }
 
@@ -4111,7 +4185,7 @@ static void pEND_EXEC(std::string &s, size_t &i, size_t endbracket)
 static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 
@@ -4193,7 +4267,7 @@ static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 static void pEXEC(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	size_t start, end;
@@ -4230,7 +4304,7 @@ static void pEXEC(std::string& s, size_t& i, size_t endbracket)
 static void pEQSL(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec || progdefaults.eqsl_when_logged) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	size_t start = s.find(':', i);
@@ -4241,7 +4315,7 @@ static void pEQSL(std::string& s, size_t& i, size_t endbracket)
 
 	makeEQSL(msg.c_str());
 
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 	return;
 }
 
@@ -4292,7 +4366,7 @@ static void MAPIT(int how)
 static void pMAPIT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string sVal = s.substr(i + 7, endbracket - i - 7);
@@ -4314,7 +4388,7 @@ static void pMAPIT(std::string &s, size_t &i, size_t endbracket)
 static void pSTOP(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	s.erase(i, s.find('>', i) + 1 - i);
@@ -4324,7 +4398,7 @@ static void pSTOP(std::string &s, size_t &i, size_t endbracket)
 static void pCONT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	s.erase(i, s.find('>', i) + 1 - i);
@@ -4340,13 +4414,13 @@ static long sk_xdt, sk_xtm;
 static void pLOCAL(std::string &s, size_t &i, size_t endbracket)
 {
 	local_timed_exec = true;
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 static void pSKED(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec || progStatus.skip_sked_macro) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string data = s.substr(i+6, endbracket - i - 6);
@@ -4366,8 +4440,10 @@ static void pSKED(std::string &s, size_t &i, size_t endbracket)
 	sk_xtm = atol(exec_time.c_str());
 
 	timed_exec = true;
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
+
+int timed_ptt = -1;
 
 void do_timed_execute(void *)
 {
@@ -4376,6 +4452,11 @@ void do_timed_execute(void *)
 	tm = atol( local_timed_exec ? ltime() : ztime() );
 
 	if (dt >= sk_xdt && tm >= sk_xtm) {
+		show_clock(false);
+		if (timed_ptt != 1) {
+			push2talk->set(true);
+			timed_ptt = 1;
+		}
 		Qwait_time = 0;
 		start_tx();
 		que_ok = true;
@@ -4384,6 +4465,11 @@ void do_timed_execute(void *)
 		btnMacroTimer->set_output();
 		sk_xdt = sk_xtm = 0;
 	} else {
+		show_clock(true);
+		if (timed_ptt != 0) {
+			push2talk->set(false);
+			timed_ptt = 0;
+		}
 		Fl::repeat_timeout(1.0, do_timed_execute);
 	}
 }
@@ -4429,18 +4515,18 @@ static void doSKED(std::string s)
 static void pTxQueSKED(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i + 7, endbracket - i - 7), doSKED };
 	push_txcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	substitute(s, i, endbracket, "^!");
 }
 
 static void pUNTIL(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	std::string data = s.substr(i+7, endbracket - i - 7);
@@ -4453,12 +4539,12 @@ static void pUNTIL(std::string &s, size_t &i, size_t endbracket)
 		until_date = data.substr(p+1);
 	}
 	if (until_time.empty()) {
-		s.replace(i, endbracket - i + 1, "");
+		substitute(s, i, endbracket, "");
 		return;
 	}
 	if (until_time.length() == 4) until_time.append("00");
 	run_until = true;
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 void queue_reset()
@@ -4484,6 +4570,7 @@ void queue_reset()
 // occurs during the Tx state
 void Tx_queue_execute()
 {
+std::cout << "Tx_queue size = " << Tx_cmds.size() << std::endl;
 	if (Tx_cmds.empty()) {
 		Qwait_time = 0;
 		Qidle_time = 0;
@@ -4492,6 +4579,7 @@ void Tx_queue_execute()
 	}
 	CMDS cmd = Tx_cmds.front();
 	Tx_cmds.pop();
+std::cout << "Executing: " << cmd.cmd << std::endl;
 	LOG_INFO("%s", cmd.cmd.c_str());
 	REQ(postQueue, cmd.cmd);
 	cmd.fp(cmd.cmd);
@@ -4657,7 +4745,7 @@ static const MTAGS mtags[] = {
 	{"<TUNE:",		pTUNE},
 	{"<WAIT:",		pWAIT},
 	{"<NRSID:",		pNRSID},
-	{"<MODEM>",		pMODEM_compSKED},
+	{"<MODEM>",		pMODEM_COMPSKED},
 	{"<MODEM:",		pMODEM},
 	{"<EXEC>",		pEXEC},
 	{"</EXEC>",		pEND_EXEC},
@@ -4936,7 +5024,7 @@ void MACROTEXT::saveMacroFile()
 void MACROTEXT::savecurrentMACROS(std::string &s, size_t &i, size_t endbracket)
 {
 	writeMacroFile();
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 }
 
 void MACROTEXT::loadnewMACROS(std::string &s, size_t &i, size_t endbracket)
@@ -4946,7 +5034,7 @@ void MACROTEXT::loadnewMACROS(std::string &s, size_t &i, size_t endbracket)
 		loadMacros(fname);
 		progStatus.LastMacroFile = fl_filename_name(fname.c_str());
 	}
-	s.replace(i, endbracket - i + 1, "");
+	substitute(s, i, endbracket, "");
 	showMacroSet();
 }
 
