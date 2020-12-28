@@ -4531,48 +4531,58 @@ bool clean_exit(bool ask) {
 	if (dlgViewer) dlgViewer->hide();
 	if (dlgLogbook) dlgLogbook->hide();
 
+	if (trx_state != STATE_RX) {
+LOG_INFO("Disable TUNE");
+		btnTune->labelcolor(FL_FOREGROUND_COLOR);
+		Fl::flush();
+		push2talk->set(0);
+		set_flrig_ptt(0);
+		trx_receive();
+		MilliSleep(200);
+	}
+
+LOG_INFO("Disable PTT");
 	delete push2talk;
 #if USE_HAMLIB
-LOG_INFO("hamlib_close");
+LOG_INFO("Close hamlib");
 	hamlib_close();
 #endif
-LOG_INFO("rigCAT_close");
+LOG_INFO("Close rigCAT");
 	rigCAT_close();
 
-LOG_INFO("ADIF_RW_close");
+LOG_INFO("Close ADIF i/o");
 	ADIF_RW_close();
 
-LOG_INFO("trx_close");
+LOG_INFO("Close T/R processing");
 	trx_close();
 
 #if USE_HAMLIB
-LOG_INFO("delete xcvr %p", xcvr);
 	if (xcvr) delete xcvr;
 #endif
 
-LOG_INFO("close_logbook");
+LOG_INFO("Close logbook");
 	close_logbook();
 	MilliSleep(50);
 
-LOG_INFO("stop_flrig_thread");
+LOG_INFO("Stop flrig i/o");
 	stop_flrig_thread();
 
-LOG_INFO("Stopping N3FJP thread");
+LOG_INFO("Stop N3FJP logging");
 	n3fjp_close();
 
-LOG_VERBOSE("Deleting FMT thread");
+LOG_VERBOSE("Stop FMT process");
 	FMT_thread_close();
 
-LOG_INFO("Closing WinKeyer interface");
+LOG_INFO("Close WinKeyer i/o");
 	WK_exit();
 
-LOG_INFO("Stopping TOD clock");
+LOG_INFO("Stop TOD clock");
 	TOD_close();
 
-LOG_VERBOSE("Deleting audio_alert");
+LOG_VERBOSE("Delete audio_alert");
 	delete audio_alert;
 
-LOG_INFO("exit_process");
+LOG_INFO("Exit_process");
 	exit_process();
 
 
