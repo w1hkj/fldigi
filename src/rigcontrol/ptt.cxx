@@ -130,6 +130,7 @@ void PTT::set(bool ptt)
 		pttdev == PTT_PARPORT ? "PARPORT" :
 		pttdev == PTT_UHROUTER ? "UHROUTER" : "UNKNOWN";
 	LOG_VERBOSE("PTT via %s : %s", ptt_temp.c_str(), ptt ? "ON" : "OFF");
+	LOG_WARN("PTT via %s : %s", ptt_temp.c_str(), ptt ? "ON" : "OFF");
 
 // add milliseconds - no audio to clear virtual audio card used by Flex systems
 	if (!ptt && progdefaults.PTT_off_delay)

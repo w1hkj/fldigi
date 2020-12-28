@@ -1255,24 +1255,31 @@ int main(int argc, char ** argv)
 
 void exit_process() {
 
+LOG_INFO("Close Spectrum dialog");
 	close_spectrum_viewer();
 
+LOG_INFO("Stop KML server");
 	if (progdefaults.kml_enabled)
 		KmlServer::Exit();
 
+LOG_INFO("Stop PSM processing");
 	stop_psm_thread();
+LOG_INFO("Stop ARQ processing");
 	arq_close();
+LOG_INFO("Close FD dialog");
 	FD_close();
+LOG_INFO("Stop DX cluster i/o");
 	DXcluster_close();
-
+LOG_INFO("Stop KISS processing");
 	kiss_close(false);
+LOG_INFO("Stop MacLogger i/o");
 	maclogger_close();
-
+LOG_INFO("Send shutdown signal to flrig");
 	if (progdefaults.flrig_auto_shutdown)
 		xmlrpc_shutdown_flrig();
-
+LOG_INFO("Stop xmlrpc processing");
 	XML_RPC_Server::stop();
-
+LOG_INFO("Stop PSK reporter processing");
 	if (progdefaults.usepskrep)
 		pskrep_stop();
 

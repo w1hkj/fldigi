@@ -156,6 +156,9 @@ void exec_flrig_ptt() {
 						LOG_VERBOSE("ptt %s in %d msec",
 							ptt_state ? "ON" : "OFF",
 							(j + 1)*50);//20);
+						LOG_WARN("ptt %s in %d msec",
+							ptt_state ? "ON" : "OFF",
+							(j + 1)*50);//20);
 						new_ptt = -1;
 						return;
 					}
