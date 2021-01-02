@@ -61,11 +61,9 @@
 #include <dirent.h>
 
 #include "fileselect.h"
-
 #include "socket.h"
 
-#include <dirent.h>
-
+#include "debug.h"
 #include "threads.h"
 #include "flarq.h"
 #include "flarqenv.h"
@@ -80,6 +78,10 @@
 #include "xml_server.h"
 
 #include "FTextView.h"
+
+debug::level_e debug::level = debug::INFO_LEVEL;
+unsigned int debug::mask;
+void debug::log(debug::level_e, const char*, const char*, int line, const char* ...) {}
 
 #define FLDIGI_port "7322"
 #define MPSK_port "3122"
@@ -2059,27 +2061,3 @@ void open_nbems_file_folder()
 {
 	cb_mnuVisitURL(0, (void*)NBEMS_dir.c_str());
 }
-
-
-//----------------------------------------------------------------------
-// dummy class debug included to allow sharing source with fldigi
-//----------------------------------------------------------------------
-#ifndef debug
-struct debug
-{
-	enum level_e {
-		QUIET_LEVEL, ERROR_LEVEL, WARN_LEVEL, INFO_LEVEL,
-		VERBOSE_LEVEL, DEBUG_LEVEL, LOG_NLEVELS
-	};
-	static void log(debug::level_e, const char*, const char*, int line, const char* ...);
-	static level_e level;
-	static int mask;
-};
-
-debug::level_e debug::level = debug::INFO_LEVEL;
-
-int debug::mask;
-
-void debug::log(debug::level_e, const char*, const char*, int line, const char* ...) {}
-
-#endif
