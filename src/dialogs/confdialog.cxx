@@ -18347,8 +18347,6 @@ i on a\ntouch screen device such as a tablet."));
           btnWFaveraging->tooltip(_("Use averaging to decrease waterfall noise"));
           btnWFaveraging->down_box(FL_DOWN_BOX);
           btnWFaveraging->callback((Fl_Callback*)cb_btnWFaveraging);
-          btnWFaveraging->hide();
-          btnWFaveraging->deactivate();
           o->value(progdefaults.WFaveraging);
         } // Fl_Check_Button* btnWFaveraging
         { Fl_ListBox* o = listboxFFTPrefilter = new Fl_ListBox(296, 109, 120, 24, _("FFT prefilter window function"));
@@ -18363,8 +18361,6 @@ i on a\ntouch screen device such as a tablet."));
           listboxFFTPrefilter->callback((Fl_Callback*)cb_listboxFFTPrefilter);
           listboxFFTPrefilter->align(Fl_Align(FL_ALIGN_RIGHT));
           listboxFFTPrefilter->when(FL_WHEN_RELEASE);
-          listboxFFTPrefilter->hide();
-          listboxFFTPrefilter->deactivate();
           listboxFFTPrefilter->add(_("Rectangular")); listboxFFTPrefilter->add("Blackman");
           listboxFFTPrefilter->add("Hamming"); listboxFFTPrefilter->add("Hanning");
           listboxFFTPrefilter->add(_("Triangular"));
@@ -18409,8 +18405,6 @@ i on a\ntouch screen device such as a tablet."));
           wf_latency->callback((Fl_Callback*)cb_wf_latency);
           wf_latency->align(Fl_Align(FL_ALIGN_RIGHT));
           wf_latency->when(FL_WHEN_CHANGED);
-          wf_latency->hide();
-          wf_latency->deactivate();
           o->value(progdefaults.wf_latency);
           o->labelsize(FL_NORMAL_SIZE);
         } // Fl_Counter2* wf_latency
