@@ -144,11 +144,9 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	pwr				= new wf_fft_type[IMAGE_WIDTH];
 	fft_db			= new short int[image_area];
 	tmp_fft_db		= new short int[image_area];
-//	circbuff		= new double[WF_FFTLEN];
 	circbuff		= new wf_fft_type[WF_FFTLEN];
 	wfbuf			= new wf_cpx_type[WF_FFTLEN];
 	wfft			= new g_fft<wf_fft_type>(WF_FFTLEN);
-//	fftwindow		= new double[WF_FFTLEN];
 	fftwindow		= new wf_fft_type[WF_FFTLEN];
 	setPrefilter(progdefaults.wfPreFilter);
 
@@ -558,14 +556,14 @@ double WFdisp::powerDensityMaximum(int bw_nb, const int (*bw)[2]) const
 
 void WFdisp::setPrefilter(int v)
 {
-//	switch (v) {
-//	case WF_FFT_RECTANGULAR: RectWindow(fftwindow, WF_FFTLEN); break;
-//	case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, WF_FFTLEN); break;
-//	case WF_FFT_HAMMING: HammingWindow(fftwindow, WF_FFTLEN); break;
-//	case WF_FFT_HANNING: HanningWindow(fftwindow, WF_FFTLEN); break;
-//	case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, WF_FFTLEN); break;
-//	}
-	BlackmanWindow(fftwindow, WF_FFTLEN);
+	switch (v) {
+	case WF_FFT_RECTANGULAR: RectWindow(fftwindow, WF_FFTLEN); break;
+	case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, WF_FFTLEN); break;
+	case WF_FFT_HAMMING: HammingWindow(fftwindow, WF_FFTLEN); break;
+	case WF_FFT_HANNING: HanningWindow(fftwindow, WF_FFTLEN); break;
+	case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, WF_FFTLEN); break;
+	}
+//	BlackmanWindow(fftwindow, WF_FFTLEN);
 	prefilter = v;
 }
 
@@ -578,8 +576,8 @@ int WFdisp::log2disp(int v)
 }
 
 void WFdisp::processFFT() {
-//	if (prefilter != progdefaults.wfPreFilter)
-//		setPrefilter(progdefaults.wfPreFilter);
+	if (prefilter != progdefaults.wfPreFilter)
+		setPrefilter(progdefaults.wfPreFilter);
 
 	wf_fft_type scale = WF_FFTLEN / 8000.0;
 
@@ -592,13 +590,13 @@ void WFdisp::processFFT() {
 		void *pv = static_cast<void*>(wfbuf);
 		wf_fft_type *pbuf = static_cast<wf_fft_type*>(pv);
 
-//		int latency = progdefaults.wf_latency;
-//		if (latency < 1) latency = 1;
-//		if (latency > 16) latency = 16;
-//		int nsamples = WF_FFTLEN * latency / 16;
-//		vscale *= sqrt(16.0 / latency);
-//		for (int i = 0; i < nsamples; i++)
-//			pbuf[i] = fftwindow[i * 16 / latency] * circbuff[i] * vscale;
+		int latency = progdefaults.wf_latency;
+		if (latency < 1) latency = 1;
+		if (latency > 16) latency = 16;
+		int nsamples = WF_FFTLEN * latency / 16;
+		vscale *= sqrt(16.0 / latency);
+		for (int i = 0; i < nsamples; i++)
+			pbuf[i] = fftwindow[i * 16 / latency] * circbuff[i] * vscale;
 
 		for (int i = 0; i < WF_FFTLEN; i++)
 			pbuf[i] = fftwindow[i] * circbuff[i] * vscale;
@@ -1048,21 +1046,21 @@ case Step: for (int row = 0; row < image_height; row++) { \
 		p3 += disp_width; \
 	}; break
 
-//	if (progdefaults.WFaveraging) {
+	if (progdefaults.WFaveraging) {
 		switch(step) {
 			UPD_LOOP( 4, (*p2 + *(p2+1) + *(p2+2) + *(p2-1) + *(p2-1))/5 );
 			UPD_LOOP( 2, (*p2 + *(p2+1) + *(p2-1))/3 );
 			UPD_LOOP( 1, *p2 );
 			default:;
 		}
-//	} else {
-//		switch(step) {
-//			UPD_LOOP( 4, MAX( MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2-2) ), *(p2-1) ) );
-//			UPD_LOOP( 2, MAX( MAX( *p2, *(p2+1) ), *(p2-1) ) );
-//			UPD_LOOP( 1, *p2 );
-//			default:;
-//		}
-//	}
+	} else {
+		switch(step) {
+			UPD_LOOP( 4, MAX( MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2-2) ), *(p2-1) ) );
+			UPD_LOOP( 2, MAX( MAX( *p2, *(p2+1) ), *(p2-1) ) );
+			UPD_LOOP( 1, *p2 );
+			default:;
+		}
+	}
 #undef UPD_LOOP
 
 	if (active_modem && progdefaults.UseBWTracks) {
