@@ -1643,6 +1643,7 @@ void cb_wMain(Fl_Widget*, void*)
 {
 	if (!clean_exit(true)) return;
 	remove_windows();
+	LOG_INFO("Hiding main window");
 	fl_digi_main->hide();
 }
 
@@ -1651,6 +1652,7 @@ void cb_E(Fl_Menu_*, void*) {
 	if (!clean_exit(true))
 		return;
 	remove_windows();
+	LOG_INFO("Hiding main window");
 // this will make Fl::run return
 	fl_digi_main->hide();
 }
@@ -4570,7 +4572,7 @@ LOG_INFO("Stop flrig i/o");
 LOG_INFO("Stop N3FJP logging");
 	n3fjp_close();
 
-LOG_VERBOSE("Stop FMT process");
+LOG_INFO("Stop FMT process");
 	FMT_thread_close();
 
 LOG_INFO("Close WinKeyer i/o");
@@ -4579,7 +4581,7 @@ LOG_INFO("Close WinKeyer i/o");
 LOG_INFO("Stop TOD clock");
 	TOD_close();
 
-LOG_VERBOSE("Delete audio_alert");
+LOG_INFO("Delete audio_alert");
 	delete audio_alert;
 
 LOG_INFO("Exit_process");

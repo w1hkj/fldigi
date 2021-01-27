@@ -159,7 +159,7 @@ void debug::stop(void)
 //std::cout << "debug stopped" << std::endl;
 }
 
-static char fmt[1024];
+static char fmt[2048];
 static char dtext[32768];
 
 void debug::log(level_e level, const char* func, const char* srcf, int line, const char* format, ...)
@@ -170,11 +170,32 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 		return;
 
 // always annotate with date/time & line number
-	time_t t = time(NULL);
-	struct tm stm;
-	(void)localtime_r(&t, &stm);
-	snprintf(fmt, sizeof(fmt), "%c: [%02d:%02d:%02d] %s : %d : %s\n    %s\n",
-		*prefix[level], stm.tm_hour, stm.tm_min, stm.tm_sec, srcf, line, func, format);
+
+	struct tm tm;
+	time_t t_temp;
+	struct timeval tv;
+
+	gettimeofday(&tv, NULL);
+
+	t_temp=(time_t)tv.tv_sec;
+
+//	gmtime_r(&t_temp, &tm);
+	localtime_r(&t_temp, &tm);
+
+	static int _zmsec = 0;
+	static int _zsec = 0;
+	static int _zmin = 0;
+	static int _zhr = 0;
+
+	_zmsec = tv.tv_usec / 1000;
+	_zsec = tm.tm_sec;
+	_zmin = tm.tm_min;
+	_zhr  = tm.tm_hour;
+
+	snprintf(fmt, sizeof(fmt), "%c: [%02d:%02d:%02d.%03d] %s : %d : %s\n    %s\n",
+		*prefix[level], 
+		_zhr, _zmin, _zsec, _zmsec, 
+		srcf, line, func, format);
 
 	va_list args;
 	va_start(args, format);
