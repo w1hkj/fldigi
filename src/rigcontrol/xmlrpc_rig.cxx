@@ -1066,13 +1066,15 @@ void FLRIG_start_flrig_thread()
 void stop_flrig_thread()
 {
 	if (!flrig_client) return;
-	LOG_VERBOSE("%s", "stopping flrig thread");
-	flrig_client->close();
+	LOG_INFO("%s", "lock mutex_flrig");
 	pthread_mutex_lock(&mutex_flrig);
 		run_flrig_thread = false;
 	pthread_mutex_unlock(&mutex_flrig);
+	LOG_INFO("%s", "wait for joined thread");
 	pthread_join(*flrig_thread, NULL);
-	LOG_VERBOSE("%s", "flrig thread closed");
+	LOG_INFO("%s", "flrig thread closed");
+	LOG_INFO("%s", "flrig_client->close()");
+	flrig_client->close();
 }
 
 void reconnect_to_flrig()
