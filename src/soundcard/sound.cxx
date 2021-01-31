@@ -1336,7 +1336,12 @@ int SoundPort::Open(int mode, int freq)
 						old_sample_rate == freq ||
 						sr[i] != SAMPLE_RATE_AUTO)) ) {
 			Close(i);
-			init_stream(i);
+			try {
+				init_stream(i);
+			} catch (const SndException& e) {
+				LOG_ERROR("SndException: %s", e.what());
+				throw SndPortException(paDeviceUnavailable);
+			}
 			src_data_reset(i);
 
 			// reset the semaphore
