@@ -211,6 +211,19 @@ void trx_xmit_wfall_queue(int samplerate, const double* buf, size_t len)
 
 //=============================================================================
 
+void audio_select_failure(std::string errmsg)
+{
+	progdefaults.btnAudioIOis = SND_IDX_NULL; // file i/o
+	sound_update(progdefaults.btnAudioIOis);
+	btnAudioIO[0]->value(0);
+	btnAudioIO[1]->value(0);
+	btnAudioIO[2]->value(0);
+	btnAudioIO[3]->value(1);
+	delete RXscard;
+	RXscard = 0;
+	fl_alert2("Could not open audio device: %s\nCheck for h/w connection, and restart fldigi", errmsg.c_str());
+}
+
 void trx_trx_receive_loop()
 {
 	size_t  numread;
@@ -250,13 +263,12 @@ void trx_trx_receive_loop()
 		if (RXscard) RXscard->Close();
 		RXsc_is_open = false;
 		current_RXsamplerate = 0;
-//	if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
 		if (progdefaults.btnAudioIOis == SND_IDX_PORT) {
 			sound_close();
 			sound_init();
 		}
-
-		MilliSleep(1000);
+		REQ(audio_select_failure, e.what());
+		MilliSleep(100);
 		return;
 	}
 	active_modem->rx_init();

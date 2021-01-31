@@ -776,4 +776,6 @@ extern void  disable_deadman();
 //======================================================================
 extern void FHdisp_char_height();
 
+extern bool clean_exit(bool);
+
 #endif

@@ -27,6 +27,8 @@
 #ifndef _SOUND_H
 #define _SOUND_H
 
+#include <iostream>
+
 #include <string>
 #include <cstring>
 #include <climits>
