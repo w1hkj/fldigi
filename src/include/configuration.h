@@ -155,40 +155,40 @@
               60.0)                                                                     \
         ELEM_(bool, WF_UIrev, "WF_UIREV",                                               \
               "WF_UI - enable reverse button",                                          \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, WF_UIx1, "WF_UIX1",                                                 \
               "WF_UI - enable scale multiplication button",                             \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(int, drop_speed, "DROP_SPEED",                                            \
               "DROP_SPEED - slow rate waterfall drop speed",                            \
               8)                                                                        \
         ELEM_(bool, WF_UIwfcarrier, "WF_UIWFCARRIER",                                   \
               "WF_UI - enable wf carrier button",                                       \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, WF_UIwfshift, "WF_UIWFSHIFT",                                       \
               "WF_UI - enable wf shift buttons",                                        \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, WF_UIwfreflevel, "WF_UIWFREFLEVEL",                                 \
               "WF_UI - enable rf level and range controls",                             \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, WF_UIwfdrop, "WF_UIWFDROP",                                         \
               "WF_UI - enable wf drop rate control",                                    \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, WF_UIwfampspan, "WF_UIWFAMPSPAN",                                   \
               "WF_UI - enable wf amp span control",                                     \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, WF_UIwfstore, "WF_UIWFSTORE",                                       \
               "WF_UI - enable wf memory store button",                                  \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, WF_UIwfmode, "WF_UIWFMODE",                                         \
               "WF_UI - enable wf mode control",                                         \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, WF_UIqsy, "WF_UIQSY",                                               \
               "WF_UI - enable wf qsy button",                                           \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, WF_UIxmtlock, "WF_UIXMTLOCK",                                       \
               "WF_UI - enable wf transmit lock button",                                 \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(int, LowFreqCutoff, "LOWFREQCUTOFF",                                      \
               "Lowest frequency shown on waterfall (Hz)",                               \
               0)                                                                        \
@@ -879,7 +879,7 @@
               1)   /* Blackman */                                                       \
         ELEM_(bool, WFaveraging, "WFAVERAGING",                                         \
               "Use FFT averaging to decrease waterfall noise",                          \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(int, wf_latency, "WF_LATENCY",                                            \
               "Waterfal latency, 1...16",                                               \
               8)                                                                        \
