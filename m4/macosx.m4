@@ -38,6 +38,10 @@ if test "x$target_darwin" = "xyes" && test "x$ac_cv_mac_universal" = "xyes"; the
         mac_arches="-arch i386 -arch x86_64"
         mac_sysroot="-isysroot /Developer/SDKs/MacOSX10.6.sdk"
         ;;
+      darwin20*)
+        mac_arches="-arch arm64 -arch x86_64"
+        mac_sysroot=""
+        ;;
       *)
         mac_arches=""
         mac_sysroot=""

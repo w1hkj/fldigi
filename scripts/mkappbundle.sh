@@ -106,7 +106,7 @@ if test "x$WANT_FLDIGI" = "xyes"; then
 	signature="$(echo $PACKAGE_TARNAME | sed 's/[aeiouAEIOU]//g; s/\(^....\).*/\1/')"
 	binary="$PACKAGE_TARNAME"
 	icon="$fldigi_icon"
-	version="${FLDIGI_VERSION_MAJOR}.${FLDIGI_VERSION_MINOR}.${FLDIGI_VERSION_PATCH}"
+	version="${FLDIGI_VERSION_MAJOR}.${FLDIGI_VERSION_MINOR}${FLDIGI_VERSION_PATCH}"
 	appversion="$FLDIGI_VERSION"
 
 	bundle
@@ -118,7 +118,7 @@ if test "x$WANT_FLARQ" = "xyes"; then
 	signature="flrq"
 	binary="flarq"
 	icon="$flarq_icon"
-	version="${FLARQ_VERSION_MAJOR}.${FLARQ_VERSION_MINOR}.${FLARQ_VERSION_PATCH}"
+	version="${FLARQ_VERSION_MAJOR}.${FLARQ_VERSION_MINOR}${FLARQ_VERSION_PATCH}"
 	appversion="$FLARQ_VERSION"
 
 	bundle
