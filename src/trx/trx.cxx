@@ -701,15 +701,13 @@ void trx_start_modem(modem* m, int f)
 static string reset_loop_msg;
 void show_reset_loop_alert()
 {
-	progdefaults.btnAudioIOis = SND_IDX_NULL; // file i/o
-	sound_update(progdefaults.btnAudioIOis);
-	if (btnAudioIO[0]) {
-		fl_alert2("%s", reset_loop_msg.c_str());
-		btnAudioIO[0]->value(0);
-		btnAudioIO[1]->value(0);
-		btnAudioIO[2]->value(0);
-		btnAudioIO[3]->value(1);
-	}
+//	if (btnAudioIO[0]) {
+	btnAudioIO[0]->value(0);
+	btnAudioIO[1]->value(0);
+	btnAudioIO[2]->value(0);
+	btnAudioIO[3]->value(1);
+	fl_alert2("%s", reset_loop_msg.c_str());
+//	}
 }
 
 void trx_reset_loop()
@@ -744,6 +742,8 @@ void trx_reset_loop()
 			TXsc_is_open = true;
 		} catch (...) {
 			reset_loop_msg = "OSS open failure";
+			progdefaults.btnAudioIOis = SND_IDX_NULL; // file i/o
+			sound_update(progdefaults.btnAudioIOis);
 			REQ(show_reset_loop_alert);
 		}
 		break;
@@ -786,6 +786,8 @@ void trx_reset_loop()
 			TXscard = 0;
 			LOG_PERROR("Port Audio device not available");
 			reset_loop_msg = "Port Audio device not available";
+			progdefaults.btnAudioIOis = SND_IDX_NULL; // file i/o
+			sound_update(progdefaults.btnAudioIOis);
 			REQ(show_reset_loop_alert);
 		} else {
 			LOG_INFO ("Port Audio device available after %0.1f seconds", tm / 1000.0 );
@@ -826,6 +828,8 @@ void trx_reset_loop()
 			reset_loop_msg = "Pulse Audio error:\n";
 			reset_loop_msg.append(e.what());
 			reset_loop_msg.append("\n\nIs the server running?\nClose fldigi and execute 'pulseaudio --start'");
+			progdefaults.btnAudioIOis = SND_IDX_NULL; // file i/o
+			sound_update(progdefaults.btnAudioIOis);
 			REQ(show_reset_loop_alert);
 		}
 		break;
@@ -914,6 +918,8 @@ void trx_start(void)
 			reset_loop_msg = "Pulse Audio error:\n";
 			reset_loop_msg.append(e.what());
 			reset_loop_msg.append("\n\nIs the server running?");
+			progdefaults.btnAudioIOis = SND_IDX_NULL; // file i/o
+			sound_update(progdefaults.btnAudioIOis);
 			REQ(show_reset_loop_alert);
 		}
 		break;

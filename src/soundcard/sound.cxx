@@ -2205,9 +2205,16 @@ int SoundPulse::Open(int dir, int freq)
 	sd[dir].stream_params.rate = freq;
 	snprintf(sname, sizeof(sname), "%s (%u)", (dir ? "playback" : "capture"), getpid());
 	setenv("PULSE_PROP_application.icon_name", PACKAGE_TARNAME, 1);
-	sd[dir].stream = pa_simple_new(server, main_window_title.c_str(), sd[dir].dir, NULL,
-				 sname, &sd[dir].stream_params, NULL,
-				 &sd[dir].buffer_attrs, &err);
+	sd[dir].stream = pa_simple_new(
+		server,						// server address
+		main_window_title.c_str(),	// application name
+		sd[dir].dir,				// playback / record
+		NULL,						// device (default)
+		sname,						// system description
+		&sd[dir].stream_params,		// sample format
+		NULL,						// channel map (default)
+		&sd[dir].buffer_attrs,		// buffering attributes
+		&err);						// return address for error code
 	if (!sd[dir].stream)
 		throw SndPulseException(err);
 
