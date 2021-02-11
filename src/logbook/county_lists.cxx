@@ -614,7 +614,7 @@ Georgia,GA,Appling,APPL\n\
 ,GA,Polk,POLK\n\
 ,GA,Pulaski,PULA\n\
 ,GA,Putnam,PUTN\n\
-,GA,Quitman,QUIT\n\
+,GA,Quitman,QCIT\n\
 ,GA,Rabun,RABU\n\
 ,GA,Randolph,RAND\n\
 ,GA,Richmond,RICH\n\
@@ -1327,6 +1327,7 @@ Maine,ME,Androscoggin,AND\n\
 ,ME,Waldo,WAL\n\
 ,ME,Washington,WAS\n\
 ,ME,York,YOR\n\
+Manitoba,MB,,\n\
 Maryland,MD,Allegany,ALY\n\
 ,MD,Anne Arundel,ANA\n\
 ,MD,Baltimore City,BAL\n\
@@ -1698,7 +1699,7 @@ Mississippi,MS,Adams,ADA\n\
 ,MS,Pike,PIK\n\
 ,MS,Pontotoc,PON\n\
 ,MS,Prentiss,PRE\n\
-,MS,Quitman,QUI\n\
+,MS,Quitman,QCI\n\
 ,MS,Rankin,RAN\n\
 ,MS,Scott,SCO\n\
 ,MS,Sharkey,SHA\n\
@@ -2023,6 +2024,32 @@ Nebraska,NE,Adams,ADMS\n\
 ,NE,Webster,WEBS\n\
 ,NE,Wheeler,WHEE\n\
 ,NE,York,YORK\n\
+New Brunswick,NB,Albert,\
+,NB,Carleton,\
+,NB,Charlotte,\
+,NB,Gloucester,\
+,NB,Kent,\
+,NB,Kings,\
+,NB,Madawaska,\
+,NB,Northumberland,\
+,NB,Queens,\
+,NB,Restigouche,\
+,NB,Saint John,\
+,NB,Sunbury,\
+,NB,Victoria,\
+,NB,Westmorland,\
+,NB,York,\
+Newfoundland and Labrador,NL,Avalon Peninsula-St. John's,\n\
+,NL,Burin Peninsula-Marystown,\n\
+,NL,South Coast-Channel-Port aux Basques,\n\
+,NL,St. George's-Stephenville,\n\
+,NL,Humber District-Corner Brook,\n\
+,NL,Central Newfoundland-Grand Falls-Windsor,\n\
+,NL,Bonavista/Trinity-Clarenville,\n\
+,NL,Notre Dame Bay-Lewisporte,\n\
+,NL,Northern Peninsula-St. Anthony,\n\
+,NL,Labrador-Happy Valley-Goose Bay,\n\
+,NL,Nunatsiavut-Nain,\n\
 New Hampshire,NH,Belknap,BEL\n\
 ,NH,Carroll,CAR\n\
 ,NH,Cheshire,CHE\n\
@@ -2074,7 +2101,7 @@ New Mexico,NM,Bernalillo,BER\n\
 ,NM,McKinley,MCK\n\
 ,NM,Mora,MOR\n\
 ,NM,Otero,OTE\n\
-,NM,Quay,QUA\n\
+,NM,Quay,QCA\n\
 ,NM,Rio Arriba,RIO\n\
 ,NM,Roosevelt,ROO\n\
 ,NM,San Juan,SJU\n\
@@ -2144,7 +2171,7 @@ New York,NY,Albany,ALB\n\
 ,NY,Oswego,OSW\n\
 ,NY,Otsego,OTS\n\
 ,NY,Putnam,PUT\n\
-,NY,Queens,QUE\n\
+,NY,Queens,QCE\n\
 ,NY,Rensselaer,REN\n\
 ,NY,Rockland,ROC\n\
 ,NY,Richmond,RIC\n\
@@ -2166,6 +2193,22 @@ New York,NY,Albany,ALB\n\
 ,NY,Westchester,WES\n\
 ,NY,Wyoming,WYO\n\
 ,NY,Yates,YAT\n\
+Northwest Territories,NT,Inuvik,\n\
+,NT,Norman Wells,\n\
+,NT,Behchokǫ̀,\n\
+,NT,Fort Simpson,\n\
+,NT,Fort Smith,\n\
+,NT,Yellowknife,\n\
+Nova Scotia,NS,Halifax,\n\
+,NS,Sydney,\n\
+,NS,Kentville,\n\
+,NS,Truro,\n\
+,NS,Liverpool,\n\
+,NS,Shelburne,\n\
+,NS,Yarmouth,\n\
+Nunavut,NU,Kitikmeot,\n\
+NU,Qikiqtaaluk,\n\
+NU,Kivalliq,\n\
 Ohio,OH,Adams,ADAM\n\
 ,OH,Allen,ALLE\n\
 ,OH,Ashland,ASHL\n\
@@ -2484,6 +2527,16 @@ Pennsylvania,PA,Adams,ADA\n\
 ,PA,Westmoreland,WES\n\
 ,PA,Wyoming,WYO\n\
 ,PA,York,YOR\n\
+Prince Edward Island,PE,Alberton,\n\
+,PE,Charlottetown,\n\
+,PE,Cornwall,\n\
+,PE,Georgetown,\n\
+,PE,Kensington,\n\
+,PE,Montague,\n\
+,PE,Souris,\n\
+,PE,Stratford,\n\
+,PE,Summerside,\n\
+,PE,Tignish,\n\
 Puerto Rico,PR,Adjuntas Municipio,\n\
 ,PR,Aguada Municipio,\n\
 ,PR,Aguadilla Municipio,\n\
@@ -2562,12 +2615,53 @@ Puerto Rico,PR,Adjuntas Municipio,\n\
 ,PR,Villalba Municipio,\n\
 ,PR,Yabucoa Municipio,\n\
 ,PR,Yauco Municipio,\n\
+Quebec,QC,Bas-Saint-Laurent,\n\
+,QC,Saguenay–Lac-Saint-Jean,\n\
+,QC,Capitale-Nationale,\n\
+,QC,Mauricie,\n\
+,QC,Estrie,\n\
+,QC,Montréal,\n\
+,QC,Outaouais,\n\
+,QC,Abitibi-Témiscamingue,\n\
+,QC,Côte-Nord,\n\
+,QC,Nord-du-Québec,\n\
+,QC,CRÉ de la Baie-James,\n\
+,QC,Cree Regional Authority,\n\
+,QC,Kativik Regional Government,\n\
+,QC,Gaspésie–Îles-de-la-Madeleine,\n\
+,QC,Chaudière-Appalaches,\n\
+,QC,Laval,\n\
+,QC,Lanaudière,\n\
+,QC,Laurentides,\n\
+,QC,Montérégie,\n\
+,QC,CRÉ de Longueuil,\n\
+,QC,CRÉ Montérégie Est,\n\
+,QC,CRÉ Vallée-du-Haut-Saint-Laurent,\n\
+,QC,Centre-du-Québec,\n\
 Rhode Island,RI,Bristol,BRI\n\
 ,RI,Kent,KNT\n\
 ,RI,Newport,NEW\n\
 ,RI,Providence,PRO\n\
 ,RI,Washington,WAR\n\
 Saskatchewan,SA,,\n\
+,SA,Assiniboia,,\n\
+,SA,Battleford,,\n\
+,SA,Estevan,,\n\
+,SA,Kindersley,,\n\
+,SA,La Ronge,,\n\
+,SA,Lloydminster,,\n\
+,SA,Maple Creek,,\n\
+,SA,Melfort,,\n\
+,SA,Melville,,\n\
+,SA,Moose Jaw,,\n\
+,SA,North Battleford,,\n\
+,SA,Prince Albert,,\n\
+,SA,Regina,,\n\
+,SA,Saskatoon,,\n\
+,SA,Swift Current,,\n\
+,SA,Weyburn,,\n\
+,SA,Wynyard,,\n\
+,SA,Yorkton,,\n\
 South Carolina,SC,Abbeville,ABBE\n\
 ,SC,Aiken,AIKE\n\
 ,SC,Allendale,ALLE\n\
@@ -3397,7 +3491,15 @@ Wyoming,WY,Albany,ALB\n\
 ,WY,Teton,TET\n\
 ,WY,Uinta,UIN\n\
 ,WY,Washakie,WAS\n\
-,WY,Weston,WES\n";
+,WY,Weston,WES\n\
+Yukon,YT,Carmacks,\n\
+,YT,Dawson,\n\
+,YT,Faro,\n\
+,YT,Haines Junction,\n\
+,YT,Mayo,\n\
+,YT,Teslin,\n\
+,YT,Watson Lake,\n\
+,YT,Whitehorse,\n";
 
 //std::string strNEQP
 const char *szNEQP = "\
