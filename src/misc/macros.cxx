@@ -214,7 +214,6 @@ static void setfwpm(double d)
 // following used for debugging and development
 void push_txcmd(CMDS cmd)
 {
-std::cout << "Push to Tx queu " << cmd.cmd << std::endl;
 	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)Tx_cmds.size());
 	Tx_cmds.push(cmd);
 }
@@ -3915,7 +3914,7 @@ static void pWX2(std::string &s, size_t &i, size_t endbracket)
 {
 	string wx;
 	getwx(wx, s.substr(i+4, endbracket - i - 4).c_str());
-	substitute(s, i, endbracket, "");
+	substitute(s, i, endbracket, wx);
 }
 
 
@@ -4570,7 +4569,6 @@ void queue_reset()
 // occurs during the Tx state
 void Tx_queue_execute()
 {
-std::cout << "Tx_queue size = " << Tx_cmds.size() << std::endl;
 	if (Tx_cmds.empty()) {
 		Qwait_time = 0;
 		Qidle_time = 0;
@@ -4579,7 +4577,6 @@ std::cout << "Tx_queue size = " << Tx_cmds.size() << std::endl;
 	}
 	CMDS cmd = Tx_cmds.front();
 	Tx_cmds.pop();
-std::cout << "Executing: " << cmd.cmd << std::endl;
 	LOG_INFO("%s", cmd.cmd.c_str());
 	REQ(postQueue, cmd.cmd);
 	cmd.fp(cmd.cmd);
