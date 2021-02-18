@@ -169,7 +169,6 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	mode = WATERFALL;
 	centercarrier = false;
 	overload = false;
-//	peakaudio = 0.0;
 	rfc = 0L;
 	usb = true;
 	wfspeed = NORMAL;
@@ -672,24 +671,29 @@ static pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
 struct AUDIO_BLOCK {
 	wf_fft_type sig[WF_BLOCKSIZE];
 };
+bool clear_audio_blocks;
 
 queue<AUDIO_BLOCK> audio_blocks;
 
 void WFdisp::sig_data( double *sig, int len )
 {
-	if (audio_blocks.size() > 8) {
+	double src_ratio = 1.0 * WF_SAMPLERATE / active_modem->get_samplerate();
+
+	if (audio_blocks.size() > 32) { //8) {
+		clear_audio_blocks = true;
+		LOG_ERROR("%s", "audio_blocks overflow");
 		return;
 	}
-	if (len > WF_BLOCKSIZE * 2) {
+	if ((len * src_ratio) > WF_BLOCKSIZE * 2) {
+		LOG_ERROR("%s", "len * src_ratio > WFBLOCKSIZE * 2");
 		return;
 	}
+
 	AUDIO_BLOCK audio_block;
 
 	buf = insamples;
 	srclen = len;
 	int error;
-
-	double src_ratio = 1.0 * WF_SAMPLERATE / active_modem->get_samplerate();
 
 	if (src_data.src_ratio != src_ratio) {
 		src_data.src_ratio = src_ratio;
@@ -738,7 +742,11 @@ void WFdisp::handle_sig_data()
 	double gain = pow(10, progdefaults.wfRefLevel / -20.0);
 	AUDIO_BLOCK current;
 	while (1) {//!audio_blocks.empty()) {
-
+		if (clear_audio_blocks) {
+			guard_lock data_lock(&data_mutex);
+			while ( !audio_blocks.empty() ) audio_blocks.pop();
+			clear_audio_blocks = false;
+		}
 		if (audio_blocks.empty())
 			return;
 
@@ -760,14 +768,13 @@ void WFdisp::handle_sig_data()
 			if (overval > peak) peak = overval;
 			circbuff[i] *= gain;
 		}
-//		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 
 		if (mode == SCOPE)
 			process_analog(circbuff, WF_FFTLEN);
 		else
 			processFFT();
 
-		put_WARNstatus(peak); //(peakaudio);
+		put_WARNstatus(peak);
 
 		static char szFrequency[14];
 		if (active_modem && rfc != 0) {
