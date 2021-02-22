@@ -359,6 +359,8 @@ void Cserial::FlushBuffer()
 #include <winbase.h>
 #include "estrings.h"
 
+#define HCOMM_DEBUG 1
+
 using namespace std;
 
 ///////////////////////////////////////////////////////
@@ -408,26 +410,39 @@ BOOL Cserial::OpenPort()
 // Description		: Closes the Port
 // Return type		: void
 ///////////////////////////////////////////////////////
+
 void Cserial::ClosePort()
 {
+	if (hComm == INVALID_HANDLE_VALUE)
+		return;
+if (HCOMM_DEBUG)
 	LOG_INFO("Closing COM port, handle = %p", hComm);
-
-	if (hComm != INVALID_HANDLE_VALUE) {
-		if (restore_tio)
-			bPortReady = SetCommTimeouts (hComm, &CommTimeoutsSaved);
-		if (CloseHandle(hComm) == 0) {
-			errno = GetLastError();
-			LOG_PERROR(win_error_string(errno).c_str());
-		}
-		hComm = INVALID_HANDLE_VALUE;
+	if (restore_tio) {
+if (HCOMM_DEBUG)
+	LOG_INFO("Closing COM port#1, handle = %p", hComm);
+		bPortReady = SetCommTimeouts (hComm, &CommTimeoutsSaved);
+}
+	if (CloseHandle(hComm) == 0) {
+if (HCOMM_DEBUG)
+	LOG_INFO("Closing COM port#2, handle = %p", hComm);
+		errno = GetLastError();
+if (HCOMM_DEBUG)
+	LOG_INFO("Closing COM port#3, handle = %p", hComm);
+		LOG_PERROR(win_error_string(errno).c_str());
+if (HCOMM_DEBUG)
+	LOG_INFO("Closing COM port#4, handle = %p", hComm);
 	}
+if (HCOMM_DEBUG)
+	LOG_INFO("Closing COM port#5, handle = %p", hComm);
+
+	hComm = INVALID_HANDLE_VALUE;
 	return;
 }
 
 int  Cserial::ReadData (unsigned char *buf, int nchars)
 {
-	if (!hComm)
-	return 0;
+	if (hComm == INVALID_HANDLE_VALUE)
+		return 0;
 
 	DWORD dwRead = 0;
 	if (ReadFile(hComm, buf, nchars, &dwRead, NULL))
@@ -463,7 +478,7 @@ void Cserial::FlushBuffer()
 ///////////////////////////////////////////////////////
 BOOL Cserial::WriteByte(UCHAR by)
 {
-	if (!hComm)
+	if (hComm == INVALID_HANDLE_VALUE)
 		return FALSE;
 
 	nBytesWritten = 0;
@@ -483,7 +498,7 @@ BOOL Cserial::WriteByte(UCHAR by)
 ///////////////////////////////////////////////////////
 int Cserial::WriteBuffer(unsigned char *buff, int n)
 {
-	if (!hComm)
+	if (hComm == INVALID_HANDLE_VALUE)
 		return 0;
 
 	if (WriteFile (hComm, buff, n, &nBytesWritten, NULL) == 0) {
