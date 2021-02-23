@@ -2871,6 +2871,282 @@ static void cb_btnCW_prosign_display(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_A_aelig=(Fl_Check_Button *)0;
+
+static void cb_btn_A_aelig(Fl_Check_Button* o, void*) {
+  progdefaults.A_aelig = o->value();
+if (progdefaults.A_aelig) {
+	progdefaults.A_umlaut = false;
+	btn_A_umlaut->value(0);
+}
+btn_A_umlaut->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_A_umlaut=(Fl_Check_Button *)0;
+
+static void cb_btn_A_umlaut(Fl_Check_Button* o, void*) {
+  progdefaults.A_umlaut = o->value();
+if (progdefaults.A_umlaut) {
+	progdefaults.A_aelig = false;
+	btn_A_aelig->value(0);
+}
+btn_A_aelig->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_A_ring=(Fl_Check_Button *)0;
+
+static void cb_btn_A_ring(Fl_Check_Button* o, void*) {
+  progdefaults.A_ring = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_O_acute=(Fl_Check_Button *)0;
+
+static void cb_btn_O_acute(Fl_Check_Button* o, void*) {
+  progdefaults.O_acute = o->value();
+if (progdefaults.O_acute) {
+	progdefaults.O_umlaut = false;
+	btn_O_umlaut->value(0);
+	progdefaults.O_slash = false;
+	btn_O_slash->value(0);
+}
+btn_O_umlaut->redraw();
+btn_O_slash->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_O_slash=(Fl_Check_Button *)0;
+
+static void cb_btn_O_slash(Fl_Check_Button* o, void*) {
+  progdefaults.O_slash = o->value();
+if (progdefaults.O_slash) {
+	progdefaults.O_umlaut = false;
+	btn_O_umlaut->value(0);
+	progdefaults.O_acute = false;
+	btn_O_acute->value(0);
+}
+btn_O_umlaut->redraw();
+btn_O_acute->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_O_umlaut=(Fl_Check_Button *)0;
+
+static void cb_btn_O_umlaut(Fl_Check_Button* o, void*) {
+  progdefaults.O_umlaut = o->value();
+if (progdefaults.O_umlaut) {
+	progdefaults.O_acute = false;
+	btn_O_acute->value(0);
+	progdefaults.O_slash = false;
+	btn_O_slash->value(0);
+}
+btn_O_acute->redraw();
+btn_O_slash->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_C_cedilla=(Fl_Check_Button *)0;
+
+static void cb_btn_C_cedilla(Fl_Check_Button* o, void*) {
+  progdefaults.C_cedilla = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_E_grave=(Fl_Check_Button *)0;
+
+static void cb_btn_E_grave(Fl_Check_Button* o, void*) {
+  progdefaults.E_grave = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_E_acute=(Fl_Check_Button *)0;
+
+static void cb_btn_E_acute(Fl_Check_Button* o, void*) {
+  progdefaults.E_acute = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_N_tilde=(Fl_Check_Button *)0;
+
+static void cb_btn_N_tilde(Fl_Check_Button* o, void*) {
+  progdefaults.N_tilde = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_U_umlaut=(Fl_Check_Button *)0;
+
+static void cb_btn_U_umlaut(Fl_Check_Button* o, void*) {
+  progdefaults.U_umlaut = o->value();
+if (progdefaults.U_umlaut) {
+	progdefaults.U_circ = false;
+	btn_U_circ->value(0);
+}
+btn_U_circ->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_U_circ=(Fl_Check_Button *)0;
+
+static void cb_btn_U_circ(Fl_Check_Button* o, void*) {
+  progdefaults.U_circ = o->value();
+if (progdefaults.U_circ) {
+	progdefaults.U_umlaut = false;
+	btn_U_umlaut->value(0);
+}
+btn_U_umlaut->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_backslash=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_backslash(Fl_Check_Button* o, void*) {
+  progdefaults.CW_backslash = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_single_quote=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_single_quote(Fl_Check_Button* o, void*) {
+  progdefaults.CW_single_quote = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_dollar_sign=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_dollar_sign(Fl_Check_Button* o, void*) {
+  progdefaults.CW_dollar_sign = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_open_paren=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_open_paren(Fl_Check_Button* o, void*) {
+  progdefaults.CW_open_paren = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_close_paren=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_close_paren(Fl_Check_Button* o, void*) {
+  progdefaults.CW_close_paren = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_colon=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_colon(Fl_Check_Button* o, void*) {
+  progdefaults.CW_colon = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_semi_colon=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_semi_colon(Fl_Check_Button* o, void*) {
+  progdefaults.CW_semi_colon = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_underscore=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_underscore(Fl_Check_Button* o, void*) {
+  progdefaults.CW_underscore = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_at_symbol=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_at_symbol(Fl_Check_Button* o, void*) {
+  progdefaults.CW_at_symbol = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_exclamation=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_exclamation(Fl_Check_Button* o, void*) {
+  progdefaults.CW_exclamation = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_noise0=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_noise0(Fl_Check_Button* o, void*) {
+  progdefaults.CW_noise = 0;
+if (o->value()) {
+  btn_CW_noise1->value(0);
+  btn_CW_noise2->value(0);
+  btn_CW_noise3->value(0);
+  }
+else
+  progdefaults.CW_noise = 0;
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_CW_noise1=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_noise1(Fl_Check_Button* o, void*) {
+  progdefaults.CW_noise = '*';
+if (o->value()) {
+  btn_CW_noise0->value(0);
+  btn_CW_noise2->value(0);
+  btn_CW_noise3->value(0);
+  }
+else
+  progdefaults.CW_noise = 0;
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_CW_noise2=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_noise2(Fl_Check_Button* o, void*) {
+  progdefaults.CW_noise = o->value();
+if (o->value()) {
+  btn_CW_noise0->value(0);
+  btn_CW_noise1->value(0);
+  btn_CW_noise3->value(0);
+  }
+else
+  progdefaults.CW_noise = 0;
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_CW_noise3=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_noise3(Fl_Check_Button* o, void*) {
+  progdefaults.CW_noise = ' ';
+if (o->value()) {
+  btn_CW_noise0->value(0);
+  btn_CW_noise1->value(0);
+  btn_CW_noise2->value(0);
+  }
+else
+  progdefaults.CW_noise = 0;
+progdefaults.changed = true;
+}
+
 Fl_ComboBox *select_WK_CommPort=(Fl_ComboBox *)0;
 
 static void cb_select_WK_CommPort(Fl_ComboBox* o, void*) {
@@ -3061,146 +3337,6 @@ Fl_Check_Button *btnK3NG=(Fl_Check_Button *)0;
 static void cb_btnK3NG(Fl_Check_Button* o, void*) {
   progdefaults.WK_K3NGsketch = o->value();
 progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_A_aelig=(Fl_Check_Button *)0;
-
-static void cb_btn_A_aelig(Fl_Check_Button* o, void*) {
-  progdefaults.A_aelig = o->value();
-if (progdefaults.A_aelig) {
-	progdefaults.A_umlaut = false;
-	btn_A_umlaut->value(0);
-}
-btn_A_umlaut->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_A_umlaut=(Fl_Check_Button *)0;
-
-static void cb_btn_A_umlaut(Fl_Check_Button* o, void*) {
-  progdefaults.A_umlaut = o->value();
-if (progdefaults.A_umlaut) {
-	progdefaults.A_aelig = false;
-	btn_A_aelig->value(0);
-}
-btn_A_aelig->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_A_ring=(Fl_Check_Button *)0;
-
-static void cb_btn_A_ring(Fl_Check_Button* o, void*) {
-  progdefaults.A_ring = o->value();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_O_acute=(Fl_Check_Button *)0;
-
-static void cb_btn_O_acute(Fl_Check_Button* o, void*) {
-  progdefaults.O_acute = o->value();
-if (progdefaults.O_acute) {
-	progdefaults.O_umlaut = false;
-	btn_O_umlaut->value(0);
-	progdefaults.O_slash = false;
-	btn_O_slash->value(0);
-}
-btn_O_umlaut->redraw();
-btn_O_slash->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_O_slash=(Fl_Check_Button *)0;
-
-static void cb_btn_O_slash(Fl_Check_Button* o, void*) {
-  progdefaults.O_slash = o->value();
-if (progdefaults.O_slash) {
-	progdefaults.O_umlaut = false;
-	btn_O_umlaut->value(0);
-	progdefaults.O_acute = false;
-	btn_O_acute->value(0);
-}
-btn_O_umlaut->redraw();
-btn_O_acute->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_O_umlaut=(Fl_Check_Button *)0;
-
-static void cb_btn_O_umlaut(Fl_Check_Button* o, void*) {
-  progdefaults.O_umlaut = o->value();
-if (progdefaults.O_umlaut) {
-	progdefaults.O_acute = false;
-	btn_O_acute->value(0);
-	progdefaults.O_slash = false;
-	btn_O_slash->value(0);
-}
-btn_O_acute->redraw();
-btn_O_slash->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_C_cedilla=(Fl_Check_Button *)0;
-
-static void cb_btn_C_cedilla(Fl_Check_Button* o, void*) {
-  progdefaults.C_cedilla = o->value();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_E_grave=(Fl_Check_Button *)0;
-
-static void cb_btn_E_grave(Fl_Check_Button* o, void*) {
-  progdefaults.E_grave = o->value();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_E_acute=(Fl_Check_Button *)0;
-
-static void cb_btn_E_acute(Fl_Check_Button* o, void*) {
-  progdefaults.E_acute = o->value();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_N_tilde=(Fl_Check_Button *)0;
-
-static void cb_btn_N_tilde(Fl_Check_Button* o, void*) {
-  progdefaults.N_tilde = o->value();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_U_umlaut=(Fl_Check_Button *)0;
-
-static void cb_btn_U_umlaut(Fl_Check_Button* o, void*) {
-  progdefaults.U_umlaut = o->value();
-if (progdefaults.U_umlaut) {
-	progdefaults.U_circ = false;
-	btn_U_circ->value(0);
-}
-btn_U_circ->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;
-}
-
-Fl_Check_Button *btn_U_circ=(Fl_Check_Button *)0;
-
-static void cb_btn_U_circ(Fl_Check_Button* o, void*) {
-  progdefaults.U_circ = o->value();
-if (progdefaults.U_circ) {
-	progdefaults.U_umlaut = false;
-	btn_U_umlaut->value(0);
-}
-btn_U_umlaut->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;
 }
 
 Fl_ComboBox *select_nanoCW_CommPort=(Fl_ComboBox *)0;
@@ -11551,6 +11687,236 @@ work!"));
       tab_tree->add(_("Modem/CW/Prosigns"));
       o->end();
     } // Fl_Group* o
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/Extended Chars."));
+      o->box(FL_ENGRAVED_BOX);
+      o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+      o->hide();
+      { Fl_Group* o = new Fl_Group(205, 30, 590, 286, _("Check to enable character encode/decode\nSelect one character from each group"));
+        o->box(FL_FLAT_BOX);
+        o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+        { Fl_Group* o = new Fl_Group(210, 109, 99, 80);
+          o->box(FL_ENGRAVED_FRAME);
+          { Fl_Check_Button* o = btn_A_aelig = new Fl_Check_Button(216, 125, 70, 15, _("A aelig"));
+            btn_A_aelig->tooltip(_("Swap left/right keyer contacts"));
+            btn_A_aelig->down_box(FL_DOWN_BOX);
+            btn_A_aelig->callback((Fl_Callback*)cb_btn_A_aelig);
+            o->value(progdefaults.A_aelig);
+          } // Fl_Check_Button* btn_A_aelig
+          { Fl_Check_Button* o = btn_A_umlaut = new Fl_Check_Button(216, 162, 70, 15, _(" A umlaut"));
+            btn_A_umlaut->tooltip(_("Swap left/right keyer contacts"));
+            btn_A_umlaut->down_box(FL_DOWN_BOX);
+            btn_A_umlaut->callback((Fl_Callback*)cb_btn_A_umlaut);
+            o->value(progdefaults.A_umlaut);
+          } // Fl_Check_Button* btn_A_umlaut
+          o->end();
+        } // Fl_Group* o
+        { Fl_Check_Button* o = btn_A_ring = new Fl_Check_Button(216, 199, 70, 15, _(" A ring"));
+          btn_A_ring->tooltip(_("Swap left/right keyer contacts"));
+          btn_A_ring->down_box(FL_DOWN_BOX);
+          btn_A_ring->callback((Fl_Callback*)cb_btn_A_ring);
+          o->value(progdefaults.A_ring);
+        } // Fl_Check_Button* btn_A_ring
+        { Fl_Group* o = new Fl_Group(311, 109, 99, 120);
+          o->box(FL_ENGRAVED_FRAME);
+          { Fl_Check_Button* o = btn_O_acute = new Fl_Check_Button(316, 125, 70, 15, _(" O acute"));
+            btn_O_acute->tooltip(_("Swap left/right keyer contacts"));
+            btn_O_acute->down_box(FL_DOWN_BOX);
+            btn_O_acute->callback((Fl_Callback*)cb_btn_O_acute);
+            o->value(progdefaults.O_acute);
+          } // Fl_Check_Button* btn_O_acute
+          { Fl_Check_Button* o = btn_O_slash = new Fl_Check_Button(316, 199, 70, 15, _(" O slash"));
+            btn_O_slash->tooltip(_("Swap left/right keyer contacts"));
+            btn_O_slash->down_box(FL_DOWN_BOX);
+            btn_O_slash->callback((Fl_Callback*)cb_btn_O_slash);
+            o->value(progdefaults.O_slash);
+          } // Fl_Check_Button* btn_O_slash
+          { Fl_Check_Button* o = btn_O_umlaut = new Fl_Check_Button(316, 162, 70, 15, _(" O umlaut"));
+            btn_O_umlaut->tooltip(_("Swap left/right keyer contacts"));
+            btn_O_umlaut->down_box(FL_DOWN_BOX);
+            btn_O_umlaut->callback((Fl_Callback*)cb_btn_O_umlaut);
+            o->value(progdefaults.O_umlaut);
+          } // Fl_Check_Button* btn_O_umlaut
+          o->end();
+        } // Fl_Group* o
+        { Fl_Check_Button* o = btn_C_cedilla = new Fl_Check_Button(413, 125, 70, 15, _(" C cedilla"));
+          btn_C_cedilla->tooltip(_("Swap left/right keyer contacts"));
+          btn_C_cedilla->down_box(FL_DOWN_BOX);
+          btn_C_cedilla->callback((Fl_Callback*)cb_btn_C_cedilla);
+          o->value(progdefaults.C_cedilla);
+        } // Fl_Check_Button* btn_C_cedilla
+        { Fl_Check_Button* o = btn_E_grave = new Fl_Check_Button(511, 125, 70, 15, _(" E grave"));
+          btn_E_grave->tooltip(_("Swap left/right keyer contacts"));
+          btn_E_grave->down_box(FL_DOWN_BOX);
+          btn_E_grave->callback((Fl_Callback*)cb_btn_E_grave);
+          o->value(progdefaults.E_grave);
+        } // Fl_Check_Button* btn_E_grave
+        { Fl_Check_Button* o = btn_E_acute = new Fl_Check_Button(511, 162, 70, 15, _(" E acute"));
+          btn_E_acute->tooltip(_("Swap left/right keyer contacts"));
+          btn_E_acute->down_box(FL_DOWN_BOX);
+          btn_E_acute->callback((Fl_Callback*)cb_btn_E_acute);
+          o->value(progdefaults.E_acute);
+        } // Fl_Check_Button* btn_E_acute
+        { Fl_Check_Button* o = btn_N_tilde = new Fl_Check_Button(604, 125, 70, 15, _(" N tilde"));
+          btn_N_tilde->tooltip(_("Swap left/right keyer contacts"));
+          btn_N_tilde->down_box(FL_DOWN_BOX);
+          btn_N_tilde->callback((Fl_Callback*)cb_btn_N_tilde);
+          o->value(progdefaults.N_tilde);
+        } // Fl_Check_Button* btn_N_tilde
+        { Fl_Group* o = new Fl_Group(690, 109, 99, 80);
+          o->box(FL_ENGRAVED_FRAME);
+          { Fl_Check_Button* o = btn_U_umlaut = new Fl_Check_Button(695, 125, 70, 15, _(" U umlaut"));
+            btn_U_umlaut->tooltip(_("Swap left/right keyer contacts"));
+            btn_U_umlaut->down_box(FL_DOWN_BOX);
+            btn_U_umlaut->callback((Fl_Callback*)cb_btn_U_umlaut);
+            o->value(progdefaults.U_umlaut);
+          } // Fl_Check_Button* btn_U_umlaut
+          { Fl_Check_Button* o = btn_U_circ = new Fl_Check_Button(695, 162, 70, 15, _(" U circ"));
+            btn_U_circ->tooltip(_("Swap left/right keyer contacts"));
+            btn_U_circ->down_box(FL_DOWN_BOX);
+            btn_U_circ->callback((Fl_Callback*)cb_btn_U_circ);
+            o->value(progdefaults.U_circ);
+          } // Fl_Check_Button* btn_U_circ
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(310, 249, 403, 45, _("See https://en.wikipedia.org/wiki/Morse_code\nfor information regarding exten\
+ded Morse characters."));
+          o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+          o->end();
+        } // Fl_Group* o
+        o->end();
+      } // Fl_Group* o
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Extended Chars."));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/CW/Extended Chars."));
+      o->end();
+    } // Fl_Group* o
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Punctuation/Noise Processing"));
+      o->box(FL_ENGRAVED_BOX);
+      o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+      o->hide();
+      { Fl_Group* o = new Fl_Group(205, 30, 590, 185, _("Check to enable character encode/decode"));
+        o->box(FL_ENGRAVED_BOX);
+        o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+        { Fl_Check_Button* o = btn_CW_backslash = new Fl_Check_Button(265, 65, 70, 15, _(" backslash \\     \".-..-.\""));
+          btn_CW_backslash->tooltip(_("disable for no printed character"));
+          btn_CW_backslash->down_box(FL_DOWN_BOX);
+          btn_CW_backslash->value(1);
+          btn_CW_backslash->labelfont(4);
+          btn_CW_backslash->callback((Fl_Callback*)cb_btn_CW_backslash);
+          o->value(progdefaults.CW_backslash);
+        } // Fl_Check_Button* btn_CW_backslash
+        { Fl_Check_Button* o = btn_CW_single_quote = new Fl_Check_Button(265, 92, 70, 15, _(" single quote \'  \".----.\""));
+          btn_CW_single_quote->tooltip(_("disable for no printed character"));
+          btn_CW_single_quote->down_box(FL_DOWN_BOX);
+          btn_CW_single_quote->value(1);
+          btn_CW_single_quote->labelfont(4);
+          btn_CW_single_quote->callback((Fl_Callback*)cb_btn_CW_single_quote);
+          o->value(progdefaults.CW_single_quote);
+        } // Fl_Check_Button* btn_CW_single_quote
+        { Fl_Check_Button* o = btn_CW_dollar_sign = new Fl_Check_Button(265, 120, 70, 15, _(" dollar sign $   \"...-..-\""));
+          btn_CW_dollar_sign->tooltip(_("disable for no printed character"));
+          btn_CW_dollar_sign->down_box(FL_DOWN_BOX);
+          btn_CW_dollar_sign->value(1);
+          btn_CW_dollar_sign->labelfont(4);
+          btn_CW_dollar_sign->callback((Fl_Callback*)cb_btn_CW_dollar_sign);
+          o->value(progdefaults.CW_dollar_sign);
+        } // Fl_Check_Button* btn_CW_dollar_sign
+        { Fl_Check_Button* o = btn_CW_open_paren = new Fl_Check_Button(265, 147, 70, 15, _(" open_paren (    \"-.--.\""));
+          btn_CW_open_paren->tooltip(_("disable for no printed character"));
+          btn_CW_open_paren->down_box(FL_DOWN_BOX);
+          btn_CW_open_paren->value(1);
+          btn_CW_open_paren->labelfont(4);
+          btn_CW_open_paren->callback((Fl_Callback*)cb_btn_CW_open_paren);
+          o->value(progdefaults.CW_open_paren);
+        } // Fl_Check_Button* btn_CW_open_paren
+        { Fl_Check_Button* o = btn_CW_close_paren = new Fl_Check_Button(265, 175, 70, 15, _(" close paren )   \"-.--.-\""));
+          btn_CW_close_paren->tooltip(_("disable for no printed character"));
+          btn_CW_close_paren->down_box(FL_DOWN_BOX);
+          btn_CW_close_paren->value(1);
+          btn_CW_close_paren->labelfont(4);
+          btn_CW_close_paren->callback((Fl_Callback*)cb_btn_CW_close_paren);
+          o->value(progdefaults.CW_close_paren);
+        } // Fl_Check_Button* btn_CW_close_paren
+        { Fl_Check_Button* o = btn_CW_colon = new Fl_Check_Button(535, 65, 70, 15, _(" colon :        \"---...\""));
+          btn_CW_colon->tooltip(_("disable for no printed character"));
+          btn_CW_colon->down_box(FL_DOWN_BOX);
+          btn_CW_colon->value(1);
+          btn_CW_colon->labelfont(4);
+          btn_CW_colon->callback((Fl_Callback*)cb_btn_CW_colon);
+          o->value(progdefaults.CW_colon);
+        } // Fl_Check_Button* btn_CW_colon
+        { Fl_Check_Button* o = btn_CW_semi_colon = new Fl_Check_Button(535, 92, 70, 15, _(" semi colon ;   \"-.-.-.\""));
+          btn_CW_semi_colon->tooltip(_("disable for no printed character"));
+          btn_CW_semi_colon->down_box(FL_DOWN_BOX);
+          btn_CW_semi_colon->value(1);
+          btn_CW_semi_colon->labelfont(4);
+          btn_CW_semi_colon->callback((Fl_Callback*)cb_btn_CW_semi_colon);
+          o->value(progdefaults.CW_semi_colon);
+        } // Fl_Check_Button* btn_CW_semi_colon
+        { Fl_Check_Button* o = btn_CW_underscore = new Fl_Check_Button(535, 120, 70, 15, _(" underscore _   \"..--.-\""));
+          btn_CW_underscore->tooltip(_("disable for no printed character"));
+          btn_CW_underscore->down_box(FL_DOWN_BOX);
+          btn_CW_underscore->value(1);
+          btn_CW_underscore->labelfont(4);
+          btn_CW_underscore->callback((Fl_Callback*)cb_btn_CW_underscore);
+          o->value(progdefaults.CW_underscore);
+        } // Fl_Check_Button* btn_CW_underscore
+        { Fl_Check_Button* o = btn_CW_at_symbol = new Fl_Check_Button(535, 147, 70, 15, _(" at symbol @@    \".--.-.\""));
+          btn_CW_at_symbol->tooltip(_("disable for no printed character"));
+          btn_CW_at_symbol->down_box(FL_DOWN_BOX);
+          btn_CW_at_symbol->value(1);
+          btn_CW_at_symbol->labelfont(4);
+          btn_CW_at_symbol->callback((Fl_Callback*)cb_btn_CW_at_symbol);
+          o->value(progdefaults.CW_at_symbol);
+        } // Fl_Check_Button* btn_CW_at_symbol
+        { Fl_Check_Button* o = btn_CW_exclamation = new Fl_Check_Button(535, 175, 70, 15, _(" exclamation !  \"-.-.--\""));
+          btn_CW_exclamation->tooltip(_("disable for no printed character"));
+          btn_CW_exclamation->down_box(FL_DOWN_BOX);
+          btn_CW_exclamation->value(1);
+          btn_CW_exclamation->labelfont(4);
+          btn_CW_exclamation->callback((Fl_Callback*)cb_btn_CW_exclamation);
+          o->value(progdefaults.CW_exclamation);
+        } // Fl_Check_Button* btn_CW_exclamation
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(205, 203, 590, 142, _("Unknown character decode (noise)"));
+        o->box(FL_ENGRAVED_BOX);
+        o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+        { Fl_Check_Button* o = btn_CW_noise0 = new Fl_Check_Button(265, 226, 193, 24, _(" Do not display unknown MORSE symbol"));
+          btn_CW_noise0->tooltip(_("disable \'*\'or no printed character"));
+          btn_CW_noise0->down_box(FL_DOWN_BOX);
+          btn_CW_noise0->labelfont(4);
+          btn_CW_noise0->callback((Fl_Callback*)cb_btn_CW_noise0);
+          o->value(progdefaults.CW_noise == 0);
+        } // Fl_Check_Button* btn_CW_noise0
+        { Fl_Check_Button* o = btn_CW_noise1 = new Fl_Check_Button(265, 254, 193, 24, _(" Display \'*\' character for unknown MORSE symbol"));
+          btn_CW_noise1->tooltip(_("disable \'*\'or no printed character"));
+          btn_CW_noise1->down_box(FL_DOWN_BOX);
+          btn_CW_noise1->labelfont(4);
+          btn_CW_noise1->callback((Fl_Callback*)cb_btn_CW_noise1);
+          o->value(progdefaults.CW_noise == '*');
+        } // Fl_Check_Button* btn_CW_noise1
+        { Fl_Check_Button* o = btn_CW_noise2 = new Fl_Check_Button(265, 283, 193, 24, _(" Display \'_\' character for unknown MORSE symbol"));
+          btn_CW_noise2->tooltip(_("disable \'_\' for no printed character"));
+          btn_CW_noise2->down_box(FL_DOWN_BOX);
+          btn_CW_noise2->labelfont(4);
+          btn_CW_noise2->callback((Fl_Callback*)cb_btn_CW_noise2);
+          o->value(progdefaults.CW_noise == '_');
+        } // Fl_Check_Button* btn_CW_noise2
+        { Fl_Check_Button* o = btn_CW_noise3 = new Fl_Check_Button(265, 312, 193, 24, _(" Display \' \' character for unknown MORSE symbol"));
+          btn_CW_noise3->tooltip(_("disable \' \' for no printed character"));
+          btn_CW_noise3->down_box(FL_DOWN_BOX);
+          btn_CW_noise3->labelfont(4);
+          btn_CW_noise3->callback((Fl_Callback*)cb_btn_CW_noise3);
+          o->value(progdefaults.CW_noise == ' ');
+        } // Fl_Check_Button* btn_CW_noise3
+        o->end();
+      } // Fl_Group* o
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Punctuation-Noise"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/CW/Punctuation-Noise"));
+      o->end();
+    } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/WinKeyer"));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11798,109 +12164,6 @@ work!"));
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/WinKeyer"));
       config_pages.push_back(p);
       tab_tree->add(_("Modem/CW/WinKeyer"));
-      o->end();
-    } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/Extended Chars."));
-      o->box(FL_ENGRAVED_BOX);
-      o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-      o->hide();
-      { Fl_Group* o = new Fl_Group(205, 30, 590, 286, _("Check to enable character encode/decode\nSelect one character from each group"));
-        o->box(FL_FLAT_BOX);
-        o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_Group* o = new Fl_Group(210, 109, 99, 80);
-          o->box(FL_ENGRAVED_FRAME);
-          { Fl_Check_Button* o = btn_A_aelig = new Fl_Check_Button(216, 125, 70, 15, _("A aelig"));
-            btn_A_aelig->tooltip(_("Swap left/right keyer contacts"));
-            btn_A_aelig->down_box(FL_DOWN_BOX);
-            btn_A_aelig->callback((Fl_Callback*)cb_btn_A_aelig);
-            o->value(progdefaults.A_aelig);
-          } // Fl_Check_Button* btn_A_aelig
-          { Fl_Check_Button* o = btn_A_umlaut = new Fl_Check_Button(216, 162, 70, 15, _(" A umlaut"));
-            btn_A_umlaut->tooltip(_("Swap left/right keyer contacts"));
-            btn_A_umlaut->down_box(FL_DOWN_BOX);
-            btn_A_umlaut->callback((Fl_Callback*)cb_btn_A_umlaut);
-            o->value(progdefaults.A_umlaut);
-          } // Fl_Check_Button* btn_A_umlaut
-          o->end();
-        } // Fl_Group* o
-        { Fl_Check_Button* o = btn_A_ring = new Fl_Check_Button(216, 199, 70, 15, _(" A ring"));
-          btn_A_ring->tooltip(_("Swap left/right keyer contacts"));
-          btn_A_ring->down_box(FL_DOWN_BOX);
-          btn_A_ring->callback((Fl_Callback*)cb_btn_A_ring);
-          o->value(progdefaults.A_ring);
-        } // Fl_Check_Button* btn_A_ring
-        { Fl_Group* o = new Fl_Group(311, 109, 99, 120);
-          o->box(FL_ENGRAVED_FRAME);
-          { Fl_Check_Button* o = btn_O_acute = new Fl_Check_Button(316, 125, 70, 15, _(" O acute"));
-            btn_O_acute->tooltip(_("Swap left/right keyer contacts"));
-            btn_O_acute->down_box(FL_DOWN_BOX);
-            btn_O_acute->callback((Fl_Callback*)cb_btn_O_acute);
-            o->value(progdefaults.O_acute);
-          } // Fl_Check_Button* btn_O_acute
-          { Fl_Check_Button* o = btn_O_slash = new Fl_Check_Button(316, 199, 70, 15, _(" O slash"));
-            btn_O_slash->tooltip(_("Swap left/right keyer contacts"));
-            btn_O_slash->down_box(FL_DOWN_BOX);
-            btn_O_slash->callback((Fl_Callback*)cb_btn_O_slash);
-            o->value(progdefaults.O_slash);
-          } // Fl_Check_Button* btn_O_slash
-          { Fl_Check_Button* o = btn_O_umlaut = new Fl_Check_Button(316, 162, 70, 15, _(" O umlaut"));
-            btn_O_umlaut->tooltip(_("Swap left/right keyer contacts"));
-            btn_O_umlaut->down_box(FL_DOWN_BOX);
-            btn_O_umlaut->callback((Fl_Callback*)cb_btn_O_umlaut);
-            o->value(progdefaults.O_umlaut);
-          } // Fl_Check_Button* btn_O_umlaut
-          o->end();
-        } // Fl_Group* o
-        { Fl_Check_Button* o = btn_C_cedilla = new Fl_Check_Button(413, 125, 70, 15, _(" C cedilla"));
-          btn_C_cedilla->tooltip(_("Swap left/right keyer contacts"));
-          btn_C_cedilla->down_box(FL_DOWN_BOX);
-          btn_C_cedilla->callback((Fl_Callback*)cb_btn_C_cedilla);
-          o->value(progdefaults.C_cedilla);
-        } // Fl_Check_Button* btn_C_cedilla
-        { Fl_Check_Button* o = btn_E_grave = new Fl_Check_Button(511, 125, 70, 15, _(" E grave"));
-          btn_E_grave->tooltip(_("Swap left/right keyer contacts"));
-          btn_E_grave->down_box(FL_DOWN_BOX);
-          btn_E_grave->callback((Fl_Callback*)cb_btn_E_grave);
-          o->value(progdefaults.E_grave);
-        } // Fl_Check_Button* btn_E_grave
-        { Fl_Check_Button* o = btn_E_acute = new Fl_Check_Button(511, 162, 70, 15, _(" E acute"));
-          btn_E_acute->tooltip(_("Swap left/right keyer contacts"));
-          btn_E_acute->down_box(FL_DOWN_BOX);
-          btn_E_acute->callback((Fl_Callback*)cb_btn_E_acute);
-          o->value(progdefaults.E_acute);
-        } // Fl_Check_Button* btn_E_acute
-        { Fl_Check_Button* o = btn_N_tilde = new Fl_Check_Button(604, 125, 70, 15, _(" N tilde"));
-          btn_N_tilde->tooltip(_("Swap left/right keyer contacts"));
-          btn_N_tilde->down_box(FL_DOWN_BOX);
-          btn_N_tilde->callback((Fl_Callback*)cb_btn_N_tilde);
-          o->value(progdefaults.N_tilde);
-        } // Fl_Check_Button* btn_N_tilde
-        { Fl_Group* o = new Fl_Group(690, 109, 99, 80);
-          o->box(FL_ENGRAVED_FRAME);
-          { Fl_Check_Button* o = btn_U_umlaut = new Fl_Check_Button(695, 125, 70, 15, _(" U umlaut"));
-            btn_U_umlaut->tooltip(_("Swap left/right keyer contacts"));
-            btn_U_umlaut->down_box(FL_DOWN_BOX);
-            btn_U_umlaut->callback((Fl_Callback*)cb_btn_U_umlaut);
-            o->value(progdefaults.U_umlaut);
-          } // Fl_Check_Button* btn_U_umlaut
-          { Fl_Check_Button* o = btn_U_circ = new Fl_Check_Button(695, 162, 70, 15, _(" U circ"));
-            btn_U_circ->tooltip(_("Swap left/right keyer contacts"));
-            btn_U_circ->down_box(FL_DOWN_BOX);
-            btn_U_circ->callback((Fl_Callback*)cb_btn_U_circ);
-            o->value(progdefaults.U_circ);
-          } // Fl_Check_Button* btn_U_circ
-          o->end();
-        } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(310, 249, 403, 45, _("See https://en.wikipedia.org/wiki/Morse_code\nfor information regarding exten\
-ded Morse characters."));
-          o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-          o->end();
-        } // Fl_Group* o
-        o->end();
-      } // Fl_Group* o
-      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Extended Chars."));
-      config_pages.push_back(p);
-      tab_tree->add(_("Modem/CW/Extended Chars."));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/CW/nanoIO"));
