@@ -221,6 +221,17 @@ void cMorse::init()
 	if (progdefaults.U_circ)
 		{ enable("Û", 1); enable("û", 1); }
 
+	enable ("\\", progdefaults.CW_backslash);
+	enable ("\'", progdefaults.CW_single_quote);
+	enable ("$", progdefaults.CW_dollar_sign);
+	enable ("(", progdefaults.CW_open_paren);
+	enable (")", progdefaults.CW_close_paren);
+	enable (":", progdefaults.CW_colon);
+	enable (";", progdefaults.CW_semi_colon);
+	enable ("_", progdefaults.CW_underscore);
+	enable ("@", progdefaults.CW_at_symbol);
+	enable ("!", progdefaults.CW_exclamation);
+
 	CW_table_changed = false;
 	utf8.reserve(4);
 	utf8.clear();

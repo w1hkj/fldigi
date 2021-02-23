@@ -213,6 +213,39 @@
         ELEM_(bool, CWIsLSB, "CWISLSB",                                                 \
               "Select if BFO is injected as LSB instead of USB",                        \
               false)                                                                    \
+        ELEM_(bool, CW_backslash, "CW_blackslash",                                      \
+              "encode/decode backslash character",                                      \
+              true)                                                                     \
+        ELEM_(bool, CW_single_quote, "CW_single_quote",                                 \
+              "encode/decode single_quote character",                                   \
+              true)                                                                     \
+        ELEM_(bool, CW_dollar_sign, "CW_dollar_sign",                                   \
+              "encode/decode dollar_sign character",                                    \
+              true)                                                                     \
+        ELEM_(bool, CW_open_paren, "CW_open_paren",                                     \
+              "encode/decode open_paren character",                                     \
+              true)                                                                     \
+        ELEM_(bool, CW_close_paren, "CW_close_paren",                                   \
+              "encode/decode close_paren character",                                    \
+              true)                                                                     \
+        ELEM_(bool, CW_colon, "CW_colon",                                               \
+              "encode/decode colon character",                                          \
+              true)                                                                     \
+        ELEM_(bool, CW_semi_colon, "CW_semi_colon",                                     \
+              "encode/decode semi_colon character",                                     \
+              true)                                                                     \
+        ELEM_(bool, CW_underscore, "CW_underscore",                                     \
+              "encode/decode underscore character",                                     \
+              true)                                                                     \
+        ELEM_(bool, CW_at_symbol, "CW_at_symbol",                                       \
+              "encode/decode at_symbol character",                                      \
+              true)                                                                     \
+        ELEM_(bool, CW_exclamation, "CW_exclamation",                                   \
+              "encode/decode exclamation character",                                    \
+              true)                                                                     \
+        ELEM_(int, CW_noise, "CW_noise",                                                \
+              "use CW_noise character to display invalid CW decodes",                   \
+              '*')                                                                      \
         ELEM_(std::string, CW_KEYLINE_serial_port_name, "CW_KEYLINE_SERIAL_PORT_NAME",  \
               "Independent serial port used for keying DTR or RTS as keyline",          \
               "")                                                                       \

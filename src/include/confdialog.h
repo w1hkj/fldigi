@@ -306,6 +306,33 @@ extern Fl_Check_Button *btnQSKadjust;
 extern Fl_ListBox *listbox_prosign[9];
 extern Fl_Check_Button *btnCW_use_paren;
 extern Fl_Check_Button *btnCW_prosign_display;
+#include "cw.h"
+extern Fl_Check_Button *btn_A_aelig;
+extern Fl_Check_Button *btn_A_umlaut;
+extern Fl_Check_Button *btn_A_ring;
+extern Fl_Check_Button *btn_O_acute;
+extern Fl_Check_Button *btn_O_slash;
+extern Fl_Check_Button *btn_O_umlaut;
+extern Fl_Check_Button *btn_C_cedilla;
+extern Fl_Check_Button *btn_E_grave;
+extern Fl_Check_Button *btn_E_acute;
+extern Fl_Check_Button *btn_N_tilde;
+extern Fl_Check_Button *btn_U_umlaut;
+extern Fl_Check_Button *btn_U_circ;
+extern Fl_Check_Button *btn_CW_backslash;
+extern Fl_Check_Button *btn_CW_single_quote;
+extern Fl_Check_Button *btn_CW_dollar_sign;
+extern Fl_Check_Button *btn_CW_open_paren;
+extern Fl_Check_Button *btn_CW_close_paren;
+extern Fl_Check_Button *btn_CW_colon;
+extern Fl_Check_Button *btn_CW_semi_colon;
+extern Fl_Check_Button *btn_CW_underscore;
+extern Fl_Check_Button *btn_CW_at_symbol;
+extern Fl_Check_Button *btn_CW_exclamation;
+extern Fl_Check_Button *btn_CW_noise0;
+extern Fl_Check_Button *btn_CW_noise1;
+extern Fl_Check_Button *btn_CW_noise2;
+extern Fl_Check_Button *btn_CW_noise3;
 #include "combo.h"
 #include "winkeyer.h"
 extern Fl_ComboBox *select_WK_CommPort;
@@ -343,19 +370,6 @@ extern Fl_Counter *cntr_WK_weight;
 extern Fl_Counter *cntr_WK_leadin;
 extern Fl_Counter *cntr_WK_tail;
 extern Fl_Check_Button *btnK3NG;
-#include "cw.h"
-extern Fl_Check_Button *btn_A_aelig;
-extern Fl_Check_Button *btn_A_umlaut;
-extern Fl_Check_Button *btn_A_ring;
-extern Fl_Check_Button *btn_O_acute;
-extern Fl_Check_Button *btn_O_slash;
-extern Fl_Check_Button *btn_O_umlaut;
-extern Fl_Check_Button *btn_C_cedilla;
-extern Fl_Check_Button *btn_E_grave;
-extern Fl_Check_Button *btn_E_acute;
-extern Fl_Check_Button *btn_N_tilde;
-extern Fl_Check_Button *btn_U_umlaut;
-extern Fl_Check_Button *btn_U_circ;
 #include "nanoIO.h"
 extern Fl_ComboBox *select_nanoCW_CommPort;
 extern Fl_Light_Button *btn_nanoCW_connect;

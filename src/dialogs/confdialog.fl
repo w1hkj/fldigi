@@ -3681,6 +3681,332 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
+      label {Modem/CW/Extended Chars.}
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Extended Chars."));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/CW/Extended Chars."));}
+    } {
+      Fl_Group {} {
+        label {Check to enable character encode/decode
+Select one character from each group} open
+        xywh {205 30 590 286} box FLAT_BOX align 17
+      } {
+        Fl_Group {} {open
+          xywh {210 109 99 80} box ENGRAVED_FRAME
+        } {
+          Fl_Check_Button btn_A_aelig {
+            label {A aelig}
+            callback {progdefaults.A_aelig = o->value();
+if (progdefaults.A_aelig) {
+	progdefaults.A_umlaut = false;
+	btn_A_umlaut->value(0);
+}
+btn_A_umlaut->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;}
+            tooltip {Swap left/right keyer contacts} xywh {216 125 70 15} down_box DOWN_BOX
+            code0 {\#include "cw.h"}
+            code1 {o->value(progdefaults.A_aelig);}
+          }
+          Fl_Check_Button btn_A_umlaut {
+            label { A umlaut}
+            callback {progdefaults.A_umlaut = o->value();
+if (progdefaults.A_umlaut) {
+	progdefaults.A_aelig = false;
+	btn_A_aelig->value(0);
+}
+btn_A_aelig->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;}
+            tooltip {Swap left/right keyer contacts} xywh {216 162 70 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.A_umlaut);}
+          }
+        }
+        Fl_Check_Button btn_A_ring {
+          label { A ring}
+          callback {progdefaults.A_ring = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {Swap left/right keyer contacts} xywh {216 199 70 15} down_box DOWN_BOX
+          code0 {o->value(progdefaults.A_ring);}
+        }
+        Fl_Group {} {open
+          xywh {311 109 99 120} box ENGRAVED_FRAME
+        } {
+          Fl_Check_Button btn_O_acute {
+            label { O acute}
+            callback {progdefaults.O_acute = o->value();
+if (progdefaults.O_acute) {
+	progdefaults.O_umlaut = false;
+	btn_O_umlaut->value(0);
+	progdefaults.O_slash = false;
+	btn_O_slash->value(0);
+}
+btn_O_umlaut->redraw();
+btn_O_slash->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;}
+            tooltip {Swap left/right keyer contacts} xywh {316 125 70 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.O_acute);}
+          }
+          Fl_Check_Button btn_O_slash {
+            label { O slash}
+            callback {progdefaults.O_slash = o->value();
+if (progdefaults.O_slash) {
+	progdefaults.O_umlaut = false;
+	btn_O_umlaut->value(0);
+	progdefaults.O_acute = false;
+	btn_O_acute->value(0);
+}
+btn_O_umlaut->redraw();
+btn_O_acute->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;}
+            tooltip {Swap left/right keyer contacts} xywh {316 199 70 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.O_slash);}
+          }
+          Fl_Check_Button btn_O_umlaut {
+            label { O umlaut}
+            callback {progdefaults.O_umlaut = o->value();
+if (progdefaults.O_umlaut) {
+	progdefaults.O_acute = false;
+	btn_O_acute->value(0);
+	progdefaults.O_slash = false;
+	btn_O_slash->value(0);
+}
+btn_O_acute->redraw();
+btn_O_slash->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;}
+            tooltip {Swap left/right keyer contacts} xywh {316 162 70 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.O_umlaut);}
+          }
+        }
+        Fl_Check_Button btn_C_cedilla {
+          label { C cedilla}
+          callback {progdefaults.C_cedilla = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {Swap left/right keyer contacts} xywh {413 125 70 15} down_box DOWN_BOX
+          code0 {o->value(progdefaults.C_cedilla);}
+        }
+        Fl_Check_Button btn_E_grave {
+          label { E grave}
+          callback {progdefaults.E_grave = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {Swap left/right keyer contacts} xywh {511 125 70 15} down_box DOWN_BOX
+          code0 {o->value(progdefaults.E_grave);}
+        }
+        Fl_Check_Button btn_E_acute {
+          label { E acute}
+          callback {progdefaults.E_acute = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {Swap left/right keyer contacts} xywh {511 162 70 15} down_box DOWN_BOX
+          code0 {o->value(progdefaults.E_acute);}
+        }
+        Fl_Check_Button btn_N_tilde {
+          label { N tilde}
+          callback {progdefaults.N_tilde = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {Swap left/right keyer contacts} xywh {604 125 70 15} down_box DOWN_BOX
+          code0 {o->value(progdefaults.N_tilde);}
+        }
+        Fl_Group {} {open
+          xywh {690 109 99 80} box ENGRAVED_FRAME
+        } {
+          Fl_Check_Button btn_U_umlaut {
+            label { U umlaut}
+            callback {progdefaults.U_umlaut = o->value();
+if (progdefaults.U_umlaut) {
+	progdefaults.U_circ = false;
+	btn_U_circ->value(0);
+}
+btn_U_circ->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;}
+            tooltip {Swap left/right keyer contacts} xywh {695 125 70 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.U_umlaut);}
+          }
+          Fl_Check_Button btn_U_circ {
+            label { U circ}
+            callback {progdefaults.U_circ = o->value();
+if (progdefaults.U_circ) {
+	progdefaults.U_umlaut = false;
+	btn_U_umlaut->value(0);
+}
+btn_U_umlaut->redraw();
+progdefaults.changed = true;
+CW_table_changed = true;}
+            tooltip {Swap left/right keyer contacts} xywh {695 162 70 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.U_circ);}
+          }
+        }
+        Fl_Group {} {
+          label {See https://en.wikipedia.org/wiki/Morse_code
+for information regarding extended Morse characters.} open
+          xywh {310 249 403 45} align 17
+        } {}
+      }
+    }
+    Fl_Group {} {
+      label {Punctuation/Noise Processing} selected
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Punctuation-Noise"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Modem/CW/Punctuation-Noise"));}
+    } {
+      Fl_Group {} {
+        label {Check to enable character encode/decode} open
+        xywh {205 30 590 185} box ENGRAVED_BOX align 17
+      } {
+        Fl_Check_Button btn_CW_backslash {
+          label { backslash \\     ".-..-."}
+          callback {progdefaults.CW_backslash = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {265 65 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_backslash);}
+        }
+        Fl_Check_Button btn_CW_single_quote {
+          label { single quote '  ".----."}
+          callback {progdefaults.CW_single_quote = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {265 92 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_single_quote);}
+        }
+        Fl_Check_Button btn_CW_dollar_sign {
+          label { dollar sign $   "...-..-"}
+          callback {progdefaults.CW_dollar_sign = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {265 120 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_dollar_sign);}
+        }
+        Fl_Check_Button btn_CW_open_paren {
+          label { open_paren (    "-.--."}
+          callback {progdefaults.CW_open_paren = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {265 147 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_open_paren);}
+        }
+        Fl_Check_Button btn_CW_close_paren {
+          label { close paren )   "-.--.-"}
+          callback {progdefaults.CW_close_paren = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {265 175 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_close_paren);}
+        }
+        Fl_Check_Button btn_CW_colon {
+          label { colon :        "---..."}
+          callback {progdefaults.CW_colon = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {535 65 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_colon);}
+        }
+        Fl_Check_Button btn_CW_semi_colon {
+          label { semi colon ;   "-.-.-."}
+          callback {progdefaults.CW_semi_colon = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {535 92 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_semi_colon);}
+        }
+        Fl_Check_Button btn_CW_underscore {
+          label { underscore _   "..--.-"}
+          callback {progdefaults.CW_underscore = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {535 120 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_underscore);}
+        }
+        Fl_Check_Button btn_CW_at_symbol {
+          label { at symbol @@    ".--.-."}
+          callback {progdefaults.CW_at_symbol = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {535 147 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_at_symbol);}
+        }
+        Fl_Check_Button btn_CW_exclamation {
+          label { exclamation !  "-.-.--"}
+          callback {progdefaults.CW_exclamation = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {535 175 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_exclamation);}
+        }
+      }
+      Fl_Group {} {
+        label {Unknown character decode (noise)} open
+        xywh {205 203 590 142} box ENGRAVED_BOX align 17
+      } {
+        Fl_Check_Button btn_CW_noise0 {
+          label { Do not display unknown MORSE symbol}
+          callback {progdefaults.CW_noise = 0;
+if (o->value()) {
+  btn_CW_noise1->value(0);
+  btn_CW_noise2->value(0);
+  btn_CW_noise3->value(0);
+  }
+else
+  progdefaults.CW_noise = 0;
+progdefaults.changed = true;}
+          tooltip {disable '*'or no printed character} xywh {265 226 193 24} down_box DOWN_BOX labelfont 4
+          code0 {o->value(progdefaults.CW_noise == 0);}
+        }
+        Fl_Check_Button btn_CW_noise1 {
+          label { Display '*' character for unknown MORSE symbol}
+          callback {progdefaults.CW_noise = '*';
+if (o->value()) {
+  btn_CW_noise0->value(0);
+  btn_CW_noise2->value(0);
+  btn_CW_noise3->value(0);
+  }
+else
+  progdefaults.CW_noise = 0;
+progdefaults.changed = true;}
+          tooltip {disable '*'or no printed character} xywh {265 254 193 24} down_box DOWN_BOX labelfont 4
+          code0 {o->value(progdefaults.CW_noise == '*');}
+        }
+        Fl_Check_Button btn_CW_noise2 {
+          label { Display '_' character for unknown MORSE symbol}
+          callback {progdefaults.CW_noise = o->value();
+if (o->value()) {
+  btn_CW_noise0->value(0);
+  btn_CW_noise1->value(0);
+  btn_CW_noise3->value(0);
+  }
+else
+  progdefaults.CW_noise = 0;
+progdefaults.changed = true;}
+          tooltip {disable '_' for no printed character} xywh {265 283 193 24} down_box DOWN_BOX labelfont 4
+          code0 {o->value(progdefaults.CW_noise == '_');}
+        }
+        Fl_Check_Button btn_CW_noise3 {
+          label { Display ' ' character for unknown MORSE symbol}
+          callback {progdefaults.CW_noise = ' ';
+if (o->value()) {
+  btn_CW_noise0->value(0);
+  btn_CW_noise1->value(0);
+  btn_CW_noise2->value(0);
+  }
+else
+  progdefaults.CW_noise = 0;
+progdefaults.changed = true;}
+          tooltip {disable ' ' for no printed character} xywh {265 312 193 24} down_box DOWN_BOX labelfont 4
+          code0 {o->value(progdefaults.CW_noise == ' ');}
+        }
+      }
+    }
+    Fl_Group {} {
       label {Modem/CW/WinKeyer}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/WinKeyer"));}
@@ -3906,178 +4232,6 @@ progdefaults.changed = true;}
           tooltip {Activate for Mortty K3NG sketch} xywh {220 324 223 15} down_box DOWN_BOX
           code0 {o->value(progdefaults.WK_K3NGsketch);}
         }
-      }
-    }
-    Fl_Group {} {
-      label {Modem/CW/Extended Chars.}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Extended Chars."));}
-      code1 {config_pages.push_back(p);}
-      code2 {tab_tree->add(_("Modem/CW/Extended Chars."));}
-    } {
-      Fl_Group {} {
-        label {Check to enable character encode/decode
-Select one character from each group} open
-        xywh {205 30 590 286} box FLAT_BOX align 17
-      } {
-        Fl_Group {} {open
-          xywh {210 109 99 80} box ENGRAVED_FRAME
-        } {
-          Fl_Check_Button btn_A_aelig {
-            label {A aelig}
-            callback {progdefaults.A_aelig = o->value();
-if (progdefaults.A_aelig) {
-	progdefaults.A_umlaut = false;
-	btn_A_umlaut->value(0);
-}
-btn_A_umlaut->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;}
-            tooltip {Swap left/right keyer contacts} xywh {216 125 70 15} down_box DOWN_BOX
-            code0 {\#include "cw.h"}
-            code1 {o->value(progdefaults.A_aelig);}
-          }
-          Fl_Check_Button btn_A_umlaut {
-            label { A umlaut}
-            callback {progdefaults.A_umlaut = o->value();
-if (progdefaults.A_umlaut) {
-	progdefaults.A_aelig = false;
-	btn_A_aelig->value(0);
-}
-btn_A_aelig->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;}
-            tooltip {Swap left/right keyer contacts} xywh {216 162 70 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.A_umlaut);}
-          }
-        }
-        Fl_Check_Button btn_A_ring {
-          label { A ring}
-          callback {progdefaults.A_ring = o->value();
-progdefaults.changed = true;
-CW_table_changed = true;}
-          tooltip {Swap left/right keyer contacts} xywh {216 199 70 15} down_box DOWN_BOX
-          code0 {o->value(progdefaults.A_ring);}
-        }
-        Fl_Group {} {open
-          xywh {311 109 99 120} box ENGRAVED_FRAME
-        } {
-          Fl_Check_Button btn_O_acute {
-            label { O acute}
-            callback {progdefaults.O_acute = o->value();
-if (progdefaults.O_acute) {
-	progdefaults.O_umlaut = false;
-	btn_O_umlaut->value(0);
-	progdefaults.O_slash = false;
-	btn_O_slash->value(0);
-}
-btn_O_umlaut->redraw();
-btn_O_slash->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;}
-            tooltip {Swap left/right keyer contacts} xywh {316 125 70 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.O_acute);}
-          }
-          Fl_Check_Button btn_O_slash {
-            label { O slash}
-            callback {progdefaults.O_slash = o->value();
-if (progdefaults.O_slash) {
-	progdefaults.O_umlaut = false;
-	btn_O_umlaut->value(0);
-	progdefaults.O_acute = false;
-	btn_O_acute->value(0);
-}
-btn_O_umlaut->redraw();
-btn_O_acute->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;}
-            tooltip {Swap left/right keyer contacts} xywh {316 199 70 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.O_slash);}
-          }
-          Fl_Check_Button btn_O_umlaut {
-            label { O umlaut}
-            callback {progdefaults.O_umlaut = o->value();
-if (progdefaults.O_umlaut) {
-	progdefaults.O_acute = false;
-	btn_O_acute->value(0);
-	progdefaults.O_slash = false;
-	btn_O_slash->value(0);
-}
-btn_O_acute->redraw();
-btn_O_slash->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;}
-            tooltip {Swap left/right keyer contacts} xywh {316 162 70 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.O_umlaut);}
-          }
-        }
-        Fl_Check_Button btn_C_cedilla {
-          label { C cedilla}
-          callback {progdefaults.C_cedilla = o->value();
-progdefaults.changed = true;
-CW_table_changed = true;}
-          tooltip {Swap left/right keyer contacts} xywh {413 125 70 15} down_box DOWN_BOX
-          code0 {o->value(progdefaults.C_cedilla);}
-        }
-        Fl_Check_Button btn_E_grave {
-          label { E grave}
-          callback {progdefaults.E_grave = o->value();
-progdefaults.changed = true;
-CW_table_changed = true;}
-          tooltip {Swap left/right keyer contacts} xywh {511 125 70 15} down_box DOWN_BOX
-          code0 {o->value(progdefaults.E_grave);}
-        }
-        Fl_Check_Button btn_E_acute {
-          label { E acute}
-          callback {progdefaults.E_acute = o->value();
-progdefaults.changed = true;
-CW_table_changed = true;}
-          tooltip {Swap left/right keyer contacts} xywh {511 162 70 15} down_box DOWN_BOX
-          code0 {o->value(progdefaults.E_acute);}
-        }
-        Fl_Check_Button btn_N_tilde {
-          label { N tilde}
-          callback {progdefaults.N_tilde = o->value();
-progdefaults.changed = true;
-CW_table_changed = true;}
-          tooltip {Swap left/right keyer contacts} xywh {604 125 70 15} down_box DOWN_BOX
-          code0 {o->value(progdefaults.N_tilde);}
-        }
-        Fl_Group {} {open
-          xywh {690 109 99 80} box ENGRAVED_FRAME
-        } {
-          Fl_Check_Button btn_U_umlaut {
-            label { U umlaut}
-            callback {progdefaults.U_umlaut = o->value();
-if (progdefaults.U_umlaut) {
-	progdefaults.U_circ = false;
-	btn_U_circ->value(0);
-}
-btn_U_circ->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;}
-            tooltip {Swap left/right keyer contacts} xywh {695 125 70 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.U_umlaut);}
-          }
-          Fl_Check_Button btn_U_circ {
-            label { U circ}
-            callback {progdefaults.U_circ = o->value();
-if (progdefaults.U_circ) {
-	progdefaults.U_umlaut = false;
-	btn_U_umlaut->value(0);
-}
-btn_U_umlaut->redraw();
-progdefaults.changed = true;
-CW_table_changed = true;}
-            tooltip {Swap left/right keyer contacts} xywh {695 162 70 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.U_circ);}
-          }
-        }
-        Fl_Group {} {
-          label {See https://en.wikipedia.org/wiki/Morse_code
-for information regarding extended Morse characters.} open
-          xywh {310 249 403 45} align 17
-        } {}
       }
     }
     Fl_Group {} {
@@ -11119,7 +11273,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Waterfall/FFT Processing} selected
+      label {Waterfall/FFT Processing}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/FFT Processing"));}
       code1 {config_pages.push_back(p);}

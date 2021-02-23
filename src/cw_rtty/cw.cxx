@@ -201,12 +201,18 @@ std::string cw::find_winner (float *inbuf, int twodots)
 			}
 	}
 
+	std::string sc;
 	if (!som_table[winner].rpr.empty()) {
-		string sc = morse.rx_lookup(som_table[winner].rpr);
-		if (sc.empty()) return "*";
-		else return sc;
+		sc = morse.rx_lookup(som_table[winner].rpr);
+		if (sc.empty()) 
+			sc = (progdefaults.CW_noise == '*' ? "*" :
+				  progdefaults.CW_noise == '_' ? "_" :
+				  progdefaults.CW_noise == ' ' ? " " : "");
 	} else
-		return "*";
+		sc = (progdefaults.CW_noise == '*' ? "*" :
+			  progdefaults.CW_noise == '_' ? "_" :
+			  progdefaults.CW_noise == ' ' ? " " : "");
+	return sc;
 }
 
 void cw::tx_init()
@@ -300,7 +306,7 @@ cw::cw() : modem()
 	samplerate = CW_SAMPLERATE;
 	fragmentsize = CWMaxSymLen;
 
-	cw_speed  = progdefaults.CWspeed;
+	wpm = cw_speed  = progdefaults.CWspeed;
 	bandwidth = progdefaults.CWbandwidth;
 
 	cw_send_speed = cw_speed;
@@ -425,13 +431,13 @@ void cw::reset_rx_filter()
 
 void cw::sync_transmit_parameters()
 {
-	wpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWspeed;
+//	wpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWspeed;
 	fwpm = progdefaults.CWfarnsworth;
 
 	cw_send_dot_length = KWPM / progdefaults.CWspeed;
 	cw_send_dash_length = 3 * cw_send_dot_length;
 
-	nusymbollen = (int)round(samplerate * 1.2 / wpm);
+	nusymbollen = (int)round(samplerate * 1.2 / progdefaults.CWspeed);
 	nufsymlen = (int)round(samplerate * 1.2 / fwpm);
 
 	if (symbollen != nusymbollen ||
@@ -448,6 +454,8 @@ void cw::sync_transmit_parameters()
 
 void cw::sync_parameters()
 {
+	sync_transmit_parameters();
+
 	if (use_nanoIO) {
 		if (nano_wpm != progdefaults.CWspeed) {
 			nano_wpm = progdefaults.CWspeed;
@@ -458,8 +466,6 @@ void cw::sync_parameters()
 			set_nano_dash2dot(progdefaults.CWdash2dot);
 		}
 	}
-
-	sync_transmit_parameters();
 
 // check if user changed the tracking or the cw default speed
 	if ((cwTrack != progdefaults.CWtrack) ||
@@ -518,16 +524,10 @@ static int max_dash = 3 * KWPM / 5;
 	sync_parameters();
 }
 
-//=======================================================================
-//update_syncscope()
-//Routine called to update the display on the sync scope display.
-//For CW this is an o scope pattern that shows the cw data stream.
-//=======================================================================
-
 void cw::update_Status()
 {
 	put_MODEstatus("CW %s Rx %d", usedefaultWPM ? "*" : " ", cw_receive_speed);
-
+	REQ(set_CWwpm);
 }
 
 //=======================================================================
@@ -882,7 +882,10 @@ int cw::handle_event(int cw_event, string &sc)
 			sc = morse.rx_lookup(rx_rep_buf);
 			if (sc.empty()) {
 // invalid decode... let user see error
-				sc = "*";
+			sc = (progdefaults.CW_noise == '*' ? "*" :
+				  progdefaults.CW_noise == '_' ? "_" :
+				  progdefaults.CW_noise == ' ' ? " " : "");
+
 			}
 			rx_rep_buf.clear();
 			cw_receive_state = RS_IDLE;
@@ -1257,6 +1260,12 @@ void cw::decWPM()
 void cw::toggleWPM()
 {
 	usedefaultWPM = !usedefaultWPM;
+	if (usedefaultWPM) {
+		wpm = progdefaults.CWspeed;
+		progdefaults.CWspeed = progdefaults.defCWspeed;
+	} else {
+		progdefaults.CWspeed = wpm;
+	}
 	sync_parameters();
 	update_Status();
 }
