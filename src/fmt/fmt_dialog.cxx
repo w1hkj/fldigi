@@ -28,6 +28,7 @@
 #include "confdialog.h"
 #include "gettext.h"
 #include "fmt_dialog.h"
+#include "fmt.h"
 #include "fl_digi.h"
 #include "modem.h"
 #include "status.h"
@@ -118,6 +119,23 @@ void cb_ref_dn(void *)
 	if (f < 100) f = 100;
 	cnt_ref_freq->value (f);
 	cnt_ref_freq->callback ();
+}
+
+void cb_btn_fmt_record(void *)
+{
+	write_recs = btn_fmt_record->value();
+}
+
+void cb_btn_unk_enable(void *)
+{
+	set_unk_freq(NULL);
+	record_unk = btn_unk_enable->value();
+}
+
+void cb_btn_ref_enable(void *)
+{
+	set_ref_freq(NULL);
+	record_ref = btn_ref_enable->value();
 }
 
 void fmt_rec_interval_cb(void *)
@@ -232,6 +250,7 @@ Fl_Group* fmt_panel(int X, int Y, int W, int H) {
 			ref_group->x() + 2, ref_group->y() + 2,
 				50, 20, "Unk'");
 			btn_unk_enable->selection_color(progdefaults.default_btn_color);
+			btn_unk_enable->callback((Fl_Callback *)cb_btn_unk_enable);
 
 		unk_color = new Fl_Box(
 			btn_unk_enable->x() + btn_unk_enable->w() + 2, btn_unk_enable->y() + 4,
@@ -291,6 +310,8 @@ Fl_Group* fmt_panel(int X, int Y, int W, int H) {
 		btn_fmt_record = new Fl_Light_Button(
 			ref_group->x() + ref_group->w() - 84, dmy1->y(),
 			80, 20, "Record");
+			btn_fmt_record->callback((Fl_Callback *)cb_btn_fmt_record);
+
 		box_fmt_recording = new Fl_Box(
 			btn_fmt_record->x() - 20, btn_fmt_record->y() + 4,
 			12, 12, "");
@@ -326,6 +347,7 @@ Fl_Group* fmt_panel(int X, int Y, int W, int H) {
 			unk_group->x() + 2, unk_group->y() + 2,
 				50, 20, "Ref'");
 			btn_ref_enable->selection_color(progdefaults.default_btn_color);
+			btn_ref_enable->callback((Fl_Callback *)cb_btn_ref_enable);
 
 		ref_color = new Fl_Box(
 			btn_ref_enable->x() + btn_ref_enable->w() + 2, btn_ref_enable->y() + 4,
@@ -442,16 +464,14 @@ void put_ref_amp (const char *msg)
 	fmt_ref_db->value (msg);
 }
 
-void set_ref_freq (double f) {
-	f = cnt_ref_freq->value();
-	progStatus.FMT_ref_freq = f;
+void set_ref_freq (void *) {
+	progStatus.FMT_ref_freq = cnt_ref_freq->value();
 	wf->draw_fmt_marker();
 	active_modem->reset_reference();
 }
 
 void set_unk_freq (void *) {
-	double f = cnt_unk_freq->value();
-	progStatus.FMT_unk_freq = f;
+	progStatus.FMT_unk_freq = cnt_unk_freq->value();
 	wf->draw_fmt_marker();
 	active_modem->reset_unknown();
 }
