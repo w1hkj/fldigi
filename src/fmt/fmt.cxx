@@ -94,9 +94,10 @@ static pthread_t FMT_thread;
 
 static int rec_interval[] = { 10, 25, 50, 100, 200, 500, 1000 };
 
-static bool record_unk = false;
-static bool record_ref = false;
-static bool write_recs = false;
+bool record_unk = false;
+bool record_ref = false;
+bool write_recs = false;
+
 static bool FMT_exit = false;
 static bool FMT_enabled = false;
 static bool is_recording = false;
@@ -430,10 +431,6 @@ void fmt_write_file()
 			put_Status1 (s_clk_time);
 			record_ok = true;
 		}
-
-		record_unk = btn_unk_enable->value();
-		record_ref = btn_ref_enable->value();
-		write_recs = btn_fmt_record->value();
 
 		if (btn_fmt_autorecord->value()) {
 			if (fmt_auto_record == 1) {

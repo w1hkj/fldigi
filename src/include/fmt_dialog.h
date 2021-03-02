@@ -92,7 +92,7 @@ extern void put_ref_value (const char *msg);
 extern void put_unk_amp (const char *msg);
 extern void put_ref_amp (const char *msg);
 
-extern void set_ref_freq (double);
+extern void set_ref_freq (void *);
 extern void set_unk_freq (void *);
 extern void set_unk_freq_value(double f);
 extern void set_ref_freq_value(double f);

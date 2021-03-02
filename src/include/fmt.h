@@ -44,8 +44,11 @@ extern pthread_mutex_t scope_mutex;
 
 extern void fmt_write_file();
 extern void FMT_thread_close(void);
-
 extern void cb_fmt_record_wav(bool);
+
+extern bool write_recs;
+extern bool record_unk;
+extern bool record_ref;
 
 class fmt : public modem {
 
