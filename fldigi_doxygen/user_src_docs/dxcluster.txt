@@ -146,9 +146,14 @@ Where the [] values are those entered on the main "User" configuration tab.
 <br>
 
 Sending prepared (macro) commands or dx spot reports to the remote server is
-a two step process. Pressing any of the 4 macro buttons will transfer the macro string to the
-Cmd: control.  You can modify the command string before pressing the Submit
-button.
+either a single or two step process. 
+
+<ul>
+<li>Pressing any of the 8 macro buttons will transfer the macro string to the Cmd: control.  You can modify the command string 
+before pressing the Submit button.</li>
+<li>The command will be executed immediate upon pressing the macro button if the command text contains the exclamation mark \! as the first character.</li>
+</ul>
+
 \subsection s_dxc_spotting Submitting a spot
 You generate a spot report using the Spot button on the TelNet stream tab.
 Fldigi will generate a spot report that tries to provide the cluster with
