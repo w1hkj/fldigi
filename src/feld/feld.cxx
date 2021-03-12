@@ -254,7 +254,8 @@ std::cout <<
 "downsampleinc:      " << downsampleinc << "\n" <<
 "upsampleinc:        " << upsampleinc << "\n" <<
 "hell_bandwidth:     " << hell_bandwidth << "\n" <<
-"filter bandwidth:   " << filter_bandwidth << "\n";
+"filter bandwidth:   " << filter_bandwidth << "\n" <<
+"baud:               " << 0.5 * txpixrate << "\n";
 */
 
 }
