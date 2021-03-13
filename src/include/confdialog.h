@@ -993,7 +993,7 @@ extern Fl_Button *btnNotchColor;
 extern Fl_Check_Button *chkShowAudioScale;
 extern Fl_Button *btnWaterfallFont;
 extern Fl_Check_Button *btnViewXmtSignal;
-extern Fl_Value_Slider2 *valTxMonitorLevel;
+extern Fl_Counter *valTxMonitorLevel;
 extern Fl_Counter2 *cntLowFreqCutoff;
 extern Fl_Check_Button *btnWFaveraging;
 extern Fl_ListBox *listboxFFTPrefilter;
