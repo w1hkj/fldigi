@@ -8893,10 +8893,10 @@ static void cb_btnViewXmtSignal(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Value_Slider2 *valTxMonitorLevel=(Fl_Value_Slider2 *)0;
+Fl_Counter *valTxMonitorLevel=(Fl_Counter *)0;
 
-static void cb_valTxMonitorLevel(Fl_Value_Slider2* o, void*) {
-  progdefaults.TxMonitorLevel = o->value();
+static void cb_valTxMonitorLevel(Fl_Counter* o, void*) {
+  progdefaults.TxMonitorLevel = pow(10.0, o->value()/20);
 progdefaults.changed = true;
 }
 
@@ -17679,6 +17679,7 @@ ll with your audio device."));
         cnt_normal_signal_level2->maximum(0);
         cnt_normal_signal_level2->callback((Fl_Callback*)cb_cnt_normal_signal_level2);
         cnt_normal_signal_level2->align(Fl_Align(FL_ALIGN_TOP));
+        cnt_normal_signal_level2->hide();
         o->value(progdefaults.normal_signal_level);
         o->lstep(1.0);
       } // Fl_Counter* cnt_normal_signal_level2
@@ -18554,25 +18555,17 @@ i on a\ntouch screen device such as a tablet."));
           btnViewXmtSignal->callback((Fl_Callback*)cb_btnViewXmtSignal);
           o->value(progdefaults.viewXmtSignal);
         } // Fl_Check_Button* btnViewXmtSignal
-        { Fl_Value_Slider2* o = valTxMonitorLevel = new Fl_Value_Slider2(517, 305, 203, 20, _("Signal level"));
+        { Fl_Counter* o = valTxMonitorLevel = new Fl_Counter(537, 304, 114, 21, _("Signal Level (dB)"));
           valTxMonitorLevel->tooltip(_("Set level for good viewing"));
-          valTxMonitorLevel->type(1);
-          valTxMonitorLevel->box(FL_DOWN_BOX);
-          valTxMonitorLevel->color(FL_BACKGROUND_COLOR);
-          valTxMonitorLevel->selection_color(FL_BACKGROUND_COLOR);
-          valTxMonitorLevel->labeltype(FL_NORMAL_LABEL);
-          valTxMonitorLevel->labelfont(0);
-          valTxMonitorLevel->labelsize(14);
-          valTxMonitorLevel->labelcolor(FL_FOREGROUND_COLOR);
-          valTxMonitorLevel->step(0.05);
-          valTxMonitorLevel->value(0.5);
-          valTxMonitorLevel->textsize(14);
+          valTxMonitorLevel->minimum(-80);
+          valTxMonitorLevel->maximum(0);
+          valTxMonitorLevel->step(1);
+          valTxMonitorLevel->value(-20);
           valTxMonitorLevel->callback((Fl_Callback*)cb_valTxMonitorLevel);
           valTxMonitorLevel->align(Fl_Align(FL_ALIGN_TOP));
-          valTxMonitorLevel->when(FL_WHEN_CHANGED);
-          o->value(progdefaults.TxMonitorLevel);
-          o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
-        } // Fl_Value_Slider2* valTxMonitorLevel
+          o->value(20*log10(progdefaults.TxMonitorLevel));
+          o->lstep(10);
+        } // Fl_Counter* valTxMonitorLevel
         o->end();
       } // Fl_Group* o
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/Display"));
