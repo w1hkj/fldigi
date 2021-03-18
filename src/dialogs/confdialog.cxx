@@ -3942,6 +3942,13 @@ cntRIT->value(progdefaults.RIT);
 progdefaults.changed = true;
 }
 
+Fl_Counter *cnt_fmt_freq_err=(Fl_Counter *)0;
+
+static void cb_cnt_fmt_freq_err(Fl_Counter* o, void*) {
+  progdefaults.FMT_freq_err=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Counter *cnt_FMT_movavg_len=(Fl_Counter *)0;
 
 static void cb_cnt_FMT_movavg_len(Fl_Counter* o, void*) {
@@ -12841,39 +12848,39 @@ on\nwill be good over a 2:1 WPM range.  Calibration/Test is 1 minute of PARIS"))
       { Fl_Group* o = new Fl_Group(203, 99, 412, 90, _("Tracking"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { btnFMT_plot_background = new Fl_Button(213, 122, 70, 22, _("Bgnd"));
+        { btnFMT_plot_background = new Fl_Button(209, 122, 60, 22, _("Bgnd"));
           btnFMT_plot_background->tooltip(_("Change plot background color"));
           btnFMT_plot_background->callback((Fl_Callback*)cb_btnFMT_plot_background);
         } // Fl_Button* btnFMT_plot_background
-        { btnFMT_unk_color = new Fl_Button(213, 153, 70, 22, _("Unkn"));
+        { btnFMT_unk_color = new Fl_Button(209, 153, 60, 22, _("Unkn"));
           btnFMT_unk_color->tooltip(_("Change plot unknown track color"));
           btnFMT_unk_color->callback((Fl_Callback*)cb_btnFMT_unk_color);
         } // Fl_Button* btnFMT_unk_color
-        { btnFMT_plot_ref_color = new Fl_Button(292, 153, 70, 22, _("Ref"));
+        { btnFMT_plot_ref_color = new Fl_Button(274, 153, 60, 22, _("Ref"));
           btnFMT_plot_ref_color->tooltip(_("Change plot reference track color"));
           btnFMT_plot_ref_color->callback((Fl_Callback*)cb_btnFMT_plot_ref_color);
         } // Fl_Button* btnFMT_plot_ref_color
-        { btnFMT_plot_axis = new Fl_Button(292, 122, 70, 22, _("Axis"));
+        { btnFMT_plot_axis = new Fl_Button(274, 122, 60, 22, _("Axis"));
           btnFMT_plot_axis->tooltip(_("Change Axis\' color"));
           btnFMT_plot_axis->callback((Fl_Callback*)cb_btnFMT_plot_axis);
         } // Fl_Button* btnFMT_plot_axis
-        { btnFMT_legend_color = new Fl_Button(367, 122, 70, 22, _("Lgnd"));
+        { btnFMT_legend_color = new Fl_Button(339, 107, 60, 22, _("Lgnd"));
           btnFMT_legend_color->tooltip(_("Change legend color"));
           btnFMT_legend_color->callback((Fl_Callback*)cb_btnFMT_legend_color);
         } // Fl_Button* btnFMT_legend_color
-        { Fl_Check_Button* o = btn_fmt_plot_over_axis = new Fl_Check_Button(385, 155, 31, 18, _("Line/Axis"));
+        { Fl_Check_Button* o = btn_fmt_plot_over_axis = new Fl_Check_Button(341, 135, 31, 18, _("Line/Axis"));
           btn_fmt_plot_over_axis->tooltip(_("Enable to always plot data over axis"));
           btn_fmt_plot_over_axis->down_box(FL_DOWN_BOX);
           btn_fmt_plot_over_axis->callback((Fl_Callback*)cb_btn_fmt_plot_over_axis);
           o->value(progdefaults.FMT_plot_over_axis);
         } // Fl_Check_Button* btn_fmt_plot_over_axis
-        { Fl_Check_Button* o = btn_fmt_thick_lines = new Fl_Check_Button(481, 155, 31, 18, _("Thick lines"));
+        { Fl_Check_Button* o = btn_fmt_thick_lines = new Fl_Check_Button(341, 160, 31, 18, _("Thick lines"));
           btn_fmt_thick_lines->tooltip(_("Enable to plot track lines 3 pixels wide"));
           btn_fmt_thick_lines->down_box(FL_DOWN_BOX);
           btn_fmt_thick_lines->callback((Fl_Callback*)cb_btn_fmt_thick_lines);
           o->value(progdefaults.FMT_thick_lines);
         } // Fl_Check_Button* btn_fmt_thick_lines
-        { Fl_Counter* o = cnt_fmt_freq_corr = new Fl_Counter(465, 119, 123, 24, _("Freq Correction"));
+        { Fl_Counter* o = cnt_fmt_freq_corr = new Fl_Counter(465, 118, 123, 24, _("Freq Correction"));
           cnt_fmt_freq_corr->tooltip(_("Offset plot lines on vertical scale"));
           cnt_fmt_freq_corr->minimum(-5);
           cnt_fmt_freq_corr->maximum(5);
@@ -12891,6 +12898,16 @@ on\nwill be good over a 2:1 WPM range.  Calibration/Test is 1 minute of PARIS"))
           btn_FMT_incr_corr->labelsize(10);
           btn_FMT_incr_corr->callback((Fl_Callback*)cb_btn_FMT_incr_corr);
         } // Fl_Button* btn_FMT_incr_corr
+        { Fl_Counter* o = cnt_fmt_freq_err = new Fl_Counter(470, 160, 123, 24, _("Max Error"));
+          cnt_fmt_freq_err->tooltip(_("Limit freq estimate error to this value"));
+          cnt_fmt_freq_err->minimum(0.5);
+          cnt_fmt_freq_err->maximum(10);
+          cnt_fmt_freq_err->value(2);
+          cnt_fmt_freq_err->callback((Fl_Callback*)cb_cnt_fmt_freq_err);
+          cnt_fmt_freq_err->align(Fl_Align(FL_ALIGN_TOP));
+          o->value(progdefaults.FMT_freq_err);
+          o->lstep(1.0);
+        } // Fl_Counter* cnt_fmt_freq_err
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(203, 190, 207, 86, _("DFT Estimator"));

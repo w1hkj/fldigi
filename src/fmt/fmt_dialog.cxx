@@ -74,12 +74,16 @@ static const char *legend_p25 =
 	"-0.25|-0.2|-0.15|-0.10|-0.05|0|0.05|0.10|0.15|0.20|0.25";
 static const char *legend_p5 =
 	"-0.5|-0.4|-0.3|-0.2|-0.1|0|0.1|0.2|0.3|0.4|0.5";
-static const char *legend_1 =
+static const char *legend_1p =
 	"-1.0|-0.8|-0.6|-0.4|-0.2|0|0.2|0.4|0.6|0.8|1.0";
-static const char *legend_2 =
+static const char *legend_2p =
 	"-2.0|-1.5|-1.0|-0.5|0|0.5|1.0|1.5|2.0";
-static const char *legend_4 =
+static const char *legend_4p =
 	"-4.0|-3.5|-3.0|-2.5|-2.0|-1.5|-1.0|-0.5|0|0.5|1.0|1.5|2.0|2.5|3.0|3.5|4.0";
+static const char *legend_5p =
+	"5.0|-4.0|-3.0|-2.0|-1.0|0|1.0|2.0|3.0|4.0|5.0";
+static const char *legend_10p =
+	"-10.0|-8.0|-6.0|-4.0|-2.0|0|2.0|4.0|6.0|8.0|10.0";
 
 static const char *legend_5   = " |4|3|2|1| |";
 static const char *legend_15  = " |14|13|12|11|10|9|8|7|6|5|4|3|2|1| |";
@@ -191,19 +195,27 @@ void fmt_set_y_scale()
 			break;
 		case 5 :
 			fmt_plot->y_scale(-1.0, 1.0, 10);
-			fmt_plot->set_y_legend(legend_1);
+			fmt_plot->set_y_legend(legend_1p);
 			break;
 		case 6 :
 			fmt_plot->y_scale(-2.0, 2.0, 8);
-			fmt_plot->set_y_legend(legend_2);
+			fmt_plot->set_y_legend(legend_2p);
 			break;
 		case 7 :
 			fmt_plot->y_scale(-4.0, 4.0, 16);
-			fmt_plot->set_y_legend(legend_4);
+			fmt_plot->set_y_legend(legend_4p);
+			break;
+		case 8 :
+			fmt_plot->y_scale(-5.0, 5.0, 10);
+			fmt_plot->set_y_legend(legend_5p);
+			break;
+		case 9 :
+			fmt_plot->y_scale(-10.0, 10.0, 10);
+			fmt_plot->set_y_legend(legend_10p);
 			break;
 		default:
 			fmt_plot->y_scale(-1.0, 1.0, 10);
-			fmt_plot->set_y_legend(legend_1);
+			fmt_plot->set_y_legend(legend_1p);
 			break;
 	}
 	fmt_plot->redraw();
@@ -416,6 +428,8 @@ Fl_Group* fmt_panel(int X, int Y, int W, int H) {
 			fmt_scale->add("+/- 1");
 			fmt_scale->add("+/- 2");
 			fmt_scale->add("+/- 4");
+			fmt_scale->add("+/- 5");
+			fmt_scale->add("-/- 10");
 			fmt_scale->color(FL_WHITE);
 			fmt_scale->index(progStatus.FMT_trk_scale);
 			fmt_scale->callback((Fl_Callback *)fmt_scale_cb);
