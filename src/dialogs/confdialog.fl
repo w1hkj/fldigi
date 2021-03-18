@@ -4837,7 +4837,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/FMT}
+      label {Modem/FMT} selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {\#include "fmt_dialog.h"}
       code1 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/FMT"));}
@@ -4882,7 +4882,7 @@ progdefaults.changed = true;}
   fmt_plot->bk_color(progdefaults.FMT_background);
   fmt_plot->redraw();
   progdefaults.changed = true;}
-          tooltip {Change plot background color} xywh {213 122 70 22}
+          tooltip {Change plot background color} xywh {209 122 60 22}
         }
         Fl_Button btnFMT_unk_color {
           label Unkn
@@ -4898,7 +4898,7 @@ progdefaults.changed = true;}
   unk_color->redraw();
   
   progdefaults.changed = true;}
-          tooltip {Change plot unknown track color} xywh {213 153 70 22}
+          tooltip {Change plot unknown track color} xywh {209 153 60 22}
         }
         Fl_Button btnFMT_plot_ref_color {
           label Ref
@@ -4914,7 +4914,7 @@ progdefaults.changed = true;}
   ref_color->redraw();
   
   progdefaults.changed = true;}
-          tooltip {Change plot reference track color} xywh {292 153 70 22}
+          tooltip {Change plot reference track color} xywh {274 153 60 22}
         }
         Fl_Button btnFMT_plot_axis {
           label Axis
@@ -4928,7 +4928,7 @@ progdefaults.changed = true;}
   fmt_plot->redraw();
 
   progdefaults.changed = true;}
-          tooltip {Change Axis' color} xywh {292 122 70 22}
+          tooltip {Change Axis' color} xywh {274 122 60 22}
         }
         Fl_Button btnFMT_legend_color {
           label Lgnd
@@ -4942,14 +4942,14 @@ progdefaults.changed = true;}
   fmt_plot->redraw();
 
   progdefaults.changed = true;}
-          tooltip {Change legend color} xywh {367 122 70 22}
+          tooltip {Change legend color} xywh {339 107 60 22}
         }
         Fl_Check_Button btn_fmt_plot_over_axis {
           label {Line/Axis}
           callback {progdefaults.FMT_plot_over_axis = o->value();
 fmt_plot->plot_over_axis(progdefaults.FMT_plot_over_axis);
 progdefaults.changed = true;}
-          tooltip {Enable to always plot data over axis} xywh {385 155 31 18} down_box DOWN_BOX
+          tooltip {Enable to always plot data over axis} xywh {341 135 31 18} down_box DOWN_BOX
           code0 {o->value(progdefaults.FMT_plot_over_axis);}
         }
         Fl_Check_Button btn_fmt_thick_lines {
@@ -4957,7 +4957,7 @@ progdefaults.changed = true;}
           callback {progdefaults.FMT_thick_lines = o->value();
 fmt_plot->thick_lines(progdefaults.FMT_thick_lines);
 progdefaults.changed = true;}
-          tooltip {Enable to plot track lines 3 pixels wide} xywh {481 155 31 18} down_box DOWN_BOX
+          tooltip {Enable to plot track lines 3 pixels wide} xywh {341 160 31 18} down_box DOWN_BOX
           code0 {o->value(progdefaults.FMT_thick_lines);}
         }
         Fl_Counter cnt_fmt_freq_corr {
@@ -4966,7 +4966,7 @@ progdefaults.changed = true;}
 progdefaults.RIT=progdefaults.FMT_freq_corr;
 cntRIT->value(progdefaults.RIT);
 progdefaults.changed = true;}
-          tooltip {Offset plot lines on vertical scale} xywh {465 119 123 24} align 1 minimum -5 maximum 5 step 0.001
+          tooltip {Offset plot lines on vertical scale} xywh {465 118 123 24} align 1 minimum -5 maximum 5 step 0.001
           code0 {o->value(progdefaults.FMT_freq_corr);}
           code1 {o->lstep(0.01);}
         }
@@ -4987,6 +4987,14 @@ progdefaults.RIT=progdefaults.FMT_freq_corr;
 cntRIT->value(progdefaults.RIT);
 progdefaults.changed = true;}
           xywh {588 119 18 24} labelsize 10
+        }
+        Fl_Counter cnt_fmt_freq_err {
+          label {Max Error}
+          callback {progdefaults.FMT_freq_err=o->value();
+progdefaults.changed = true;}
+          tooltip {Limit freq estimate error to this value} xywh {470 160 123 24} align 1 minimum 0.5 maximum 10 value 2
+          code0 {o->value(progdefaults.FMT_freq_err);}
+          code1 {o->lstep(1.0);}
         }
       }
       Fl_Group {} {
@@ -11029,7 +11037,7 @@ WF_UI();}
       }
     }
     Fl_Group {} {
-      label {Waterfall/Display} selected
+      label {Waterfall/Display}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Waterfall/Display"));}
       code1 {config_pages.push_back(p);}
