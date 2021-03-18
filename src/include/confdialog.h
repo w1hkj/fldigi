@@ -446,6 +446,7 @@ extern Fl_Check_Button *btn_fmt_thick_lines;
 extern Fl_Counter *cnt_fmt_freq_corr;
 extern Fl_Button *bnt_FMT_dec_corr;
 extern Fl_Button *btn_FMT_incr_corr;
+extern Fl_Counter *cnt_fmt_freq_err;
 extern Fl_Counter *cnt_FMT_movavg_len;
 extern Fl_ListBox *listbox_fmt_dft_rate;
 extern Fl_Counter *cnt_FMT_bpf;

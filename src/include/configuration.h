@@ -2759,7 +2759,10 @@
              true)                                                                      \
         ELEM_(bool, fmt_sync_wav_file, "fmt_sync_wav_file",                             \
              "Sound wav file record sync'd to csv file",                                \
-             false)
+             false)                                                                     \
+        ELEM_(double, FMT_freq_err, "FMT_freq_err",                                     \
+             "limit to frequency error before automatic reset",                         \
+             2.0)
 
 // declare the struct
 #define ELEM_DECLARE_CONFIGURATION(type_, var_, tag_, ...) type_ var_;

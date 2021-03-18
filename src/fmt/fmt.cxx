@@ -817,14 +817,18 @@ int fmt::rx_process_dft()
 {
 	double amp;
 
-	if (unk_count == 0) {
+	if (unk_count == 0 || 
+		((fabs(dft_unk_base) > progdefaults.FMT_freq_err) && record_unk) ) {
 		unk_freq = progStatus.FMT_unk_freq;
 		unk_count = 1;
+		LOG_VERBOSE("FMT unknown freq reset to track @ %f Hz", progStatus.FMT_unk_freq);
 	}
 
-	if (ref_count == 0) {
+	if (ref_count == 0 || 
+		((fabs(dft_ref_base) > progdefaults.FMT_freq_err) && record_ref) ) {
 		ref_freq = progStatus.FMT_ref_freq;
 		ref_count = 1;
+		LOG_VERBOSE("FMT reference freq reset to track @ %f Hz", progStatus.FMT_ref_freq);
 	}
 
 // unknown tracking
