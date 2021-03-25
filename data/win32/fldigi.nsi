@@ -26,6 +26,9 @@
     !error "Either HAVE_FLDIGI or HAVE_FLARQ must be defined"
 !endif
 
+# unicode options
+UniCode True
+
 # Compression options
 SetCompressor /SOLID lzma
 
