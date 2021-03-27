@@ -9649,15 +9649,19 @@ int notch_frequency = 0;
 void notch_on(int freq)
 {
 	notch_frequency = freq;
-	set_flrig_notch();
-	rigCAT_set_notch(notch_frequency);
+	if (progdefaults.fldigi_client_to_flrig)
+		set_flrig_notch();
+	else
+		rigCAT_set_notch(notch_frequency);
 }
 
 void notch_off()
 {
 	notch_frequency = 0;
-	set_flrig_notch();
-	rigCAT_set_notch(notch_frequency);
+	if (progdefaults.fldigi_client_to_flrig)
+		set_flrig_notch();
+	else
+		rigCAT_set_notch(notch_frequency);
 }
 
 void enable_kiss(void)
