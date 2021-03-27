@@ -770,9 +770,7 @@ void flrig_get_vfo()
 //==============================================================================
 // transceiver set / get notch
 //==============================================================================
-static bool wait_notch = false; // wait for transceiver to respond
-static int  wait_notch_timeout = 5; // 5 polls and then disable wait
-static int  xcvr_notch = 0;
+static int  wait_notch_timeout = 0; // # polls and then disable wait
 
 void set_flrig_notch()
 {
@@ -782,16 +780,12 @@ void set_flrig_notch()
 
 	XmlRpcValue val, result;
 	try {
-		val = (double)(notch_frequency);
+		val = (int)(notch_frequency);
 		if (flrig_client->execute("rig.set_notch", val, result, timeout)) {
-			wait_notch = true;
-			wait_notch_timeout = 5;
-			xcvr_notch = notch_frequency;
+			wait_notch_timeout = 2;
 		} else {
 			LOG_ERROR("%s", "rig.set_notch failed");
-			wait_notch = 0;
 			wait_notch_timeout = 0;
-			xcvr_notch = 0;
 		}
 	} catch (...) {}
 }
@@ -799,30 +793,14 @@ void set_flrig_notch()
 void flrig_get_notch()
 {
 	guard_lock flrig_lock(&mutex_flrig);
+	if (wait_notch_timeout == 0)
 	try {
 		if (flrig_client->execute("rig.get_notch", XmlRpcValue(), notch_result, timeout) ) {
-			int nu_notch = (int)(notch_result);
-			if (nu_notch != notch_frequency) {
-				notch_frequency = nu_notch;
-			}
-
-			bool posted = (nu_notch == xcvr_notch);
-
-			if (!wait_notch && !posted) {
-				xcvr_notch = nu_notch;
-				notch_frequency = nu_notch;
-			} else if (wait_notch && posted) {
-				wait_notch = false;
-				wait_notch_timeout = 0;
-			} else if (wait_notch_timeout == 0) {
-				wait_notch = false;
-			} else if (wait_notch_timeout)
-				--wait_notch_timeout;
-		} else {
-			wait_notch = false;
-			wait_notch_timeout = 0;
+			notch_frequency = (int)(notch_result);
 		}
 	} catch (...) {}
+	else
+		wait_notch_timeout--;
 }
 
 //==============================================================================
@@ -1037,10 +1015,16 @@ void * flrig_thread_loop(void *d)
 							flrig_get_frequency();
 							flrig_get_smeter();
 							flrig_get_notch();
-							if (!modes_posted) flrig_get_modes();
-							if (modes_posted)  flrig_get_mode();
-							if (!bws_posted)   flrig_get_bws();
-							else if (bws_posted)    flrig_get_bw();
+
+							if (modes_posted) 
+								flrig_get_mode();
+							else
+								flrig_get_modes();
+
+							if (bws_posted)
+								flrig_get_bw();
+							else 
+								flrig_get_bws();
 						}
 						else
 							flrig_get_pwrmeter();
