@@ -1,11 +1,11 @@
 // ----------------------------------------------------------------------------
 // psk.cxx  --  psk modem
 //
-// Copyright (C) 2006-2015
+// Copyright (C) 2006-2021
 //		Dave Freese, W1HKJ
 // Copyright (C) 2009-2010
 //		John Douyere, VK2ETA
-// Copyright (C) 2014-2018
+// Copyright (C) 2014-2021
 //		John Phelps, KL4YFD
 //      Modified by Joe Counsil, K0OG - Flushlengths on 8PSKxF Modes
 //
@@ -266,7 +266,15 @@ psk::~psk()
 	if (Txinlv) delete Txinlv;
 
 	if (vestigial_sfft) delete vestigial_sfft;
-
+/*
+//disable freq-lock for all modes except OFDM 2000/2000F/3500
+	if (active_modem->get_mode() != MODE_OFDM_500F && \
+		active_modem->get_mode() != MODE_OFDM_750F && \
+		active_modem->get_mode() != MODE_OFDM_2000F && \
+		active_modem->get_mode() != MODE_OFDM_2000 && \
+		active_modem->get_mode() != MODE_OFDM_3500) \
+		set_freqlock(false);
+*/
 }
 
 psk::psk(trx_mode pskmode) : modem()
@@ -1385,74 +1393,95 @@ void psk::rx_symbol(cmplx symbol, int car)
 
 	dcdshreg = ( dcdshreg << (symbits+1) ) | bits;
 
-	int set_dcdON = -1; // 1 sets DCD on ; 0 sets DCD off ; -1 does neither (no-op)
-
+	int set_dcd = -1; // 1 sets DCD on ; 0 sets DCD off ; -1 does neither (no-op)
+	static int dcdOFFcounter=0; // to prevent a data loss bug... only set DCD-off when correct shreg bitpattern seen multiple times.
+	
 	switch (dcdshreg) {
-
-			// bpsk DCD on
+		
+		// bpsk DCD ON
 		case 0xAAAAAAAA:
-			if ( _xpsk || _8psk || _16psk) break;
+			if (_xpsk || _8psk || _16psk) break;
 			if (_pskr) break;
-			set_dcdON = 1;
+			set_dcd = 1;
 			break;
-
-			// pskr DCD on
+			
+			// pskr DCD ON
+			// the pskr FEC pipeline is flushed with an alternating 1/0 pattern, giving 4 possible DCD-ON sequences.
 		case 0x0A0A0A0A:
+		case 0x28282828:
+		case 0xA0A0A0A0:
+		case 0x82828282:
 			if (!_pskr) break;
-			set_dcdON = 1;
+			set_dcd = 1;
 			break;
-
-		case 0x92492492:	// xpsk DCD off (with FEC disabled)
+			
+			// xpsk DCD OFF
+		case 0x92492492:
+			if (_qpsk) break; // the QPSK preamble and postamble are identical... Since cant differentiate, QPSK modes do not use DCD
 			if (!_xpsk) break;
-			if (!_disablefec) break;
-			set_dcdON = 0;
+			if (!_disablefec) break; // xPSK with FEC-enabled does not use DCD-OFF
+			set_dcd = 0;
 			break;
-
-		case 0x10842108:	// 16psk DCD off (with FEC disabled)
-			if (!_16psk) break;
-			if (!_disablefec) break;
-			set_dcdON = 0;
-			break;
-
-		case 0x44444444:	// 8psk DCD off (with FEC disabled)
+			
+			// 8psk DCD OFF
+		case 0x44444444:	
 			if (!_8psk) break;
-			if (!_disablefec) break;
-			set_dcdON = 0;
+			if (!_disablefec) break; // 8psk with FEC-enabled does not use DCD-OFF
+			set_dcd = 0;
 			break;
-
-		case 0x00000000:	// bpsk DCD off.  8psk DCD on.
-			if (_pskr) break;
-			if (_xpsk || _16psk) break;
-			if (_8psk) {
-				set_dcdON = 1;
+			
+			// 16psk DCD OFF
+		case 0x10842108:
+			if (!_16psk) break;
+			if (!_disablefec) break; // 16psk with FEC-enabled does not use DCD-OFF
+			set_dcd = 0;
+			break;
+			
+			// bpsk DCD OFF
+			// 8psk & xpsk DCD ON
+		case 0x00000000:
+			if (_pskr) break; // pskr does not use DCD-OFF
+			if (_16psk) break; // TODO: 16psk dcd on/off unimplemented
+			if (_8psk || _xpsk) {
+				set_dcd = 1;
 				break;
 			}
-			set_dcdON = 0;
+			set_dcd = 0;
 			break;
-
+			
 		default:
 			if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
 				dcd = true;
-			} else {
+			} else if (!_xpsk) { // TEMP BUG FIX:unknown bug in xPSK squelch-detection causes cutoff of first characters (attack/decay??) TODO: KL4YFD FEB2021.
 				dcd = false;
 			}
+			dcdOFFcounter -= 1; // If no DCD-off sequence seen in bitshreg, then subtract 1 from counter (to prevent a accumulative-triggering bug)
+			if (dcdOFFcounter < 0)dcdOFFcounter = 0; // prevent wraparound to negative
+			break;
 	}
-
 	//printf("\n%08x", dcdshreg);
-	if ( 1 == set_dcdON ) {
+	
+	// Set DCD to ON 
+	if ( 1 == set_dcd ) {
+		dcdOFFcounter = 0;
 		dcd = true;
 		acquire = 0;
 		quality = cmplx (1.0, 0.0);
 		if (progdefaults.Pskmails2nreport && (mailserver || mailclient))
 			s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
-		//printf("\n DCD ON!!");
-	} else if ( 0 == set_dcdON ){
-		dcd = false;
-		acquire = 0;
-		quality = cmplx (0.0, 0.0);
-		//printf("\n DCD OFF!!!!!!!!!");
+		//printf("\t DCD ON!!");
+		
+	// Set DCD to OFF only if seen 6 bit-shifts in a row. (prevent false-triggers and data loss mid-stream)
+	} else if ( 0 == set_dcd ) {
+		if (++dcdOFFcounter > 5) {
+			dcdOFFcounter = 0;
+			dcd = false;
+			acquire = 0;
+			quality = cmplx (0.0, 0.0);
+			//printf("\t DCD OFF!!!!!!!!!");
+		}
 	}
-
+	
 	if (_pskr) {
 		rx_pskr(softbit);
 		set_phase(phase, norm(quality), dcd);
