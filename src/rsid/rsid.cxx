@@ -167,9 +167,11 @@ void cRsId::reset()
 	rsid_secondary_time_out = 0;
 
 	memset(aInputSamples, 0, (RSID_ARRAY_SIZE * 2) * sizeof(float));
-	memset(aFFTcmplx, 0, RSID_ARRAY_SIZE * sizeof(rs_cpx_type));
 	memset(aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(rs_fft_type));
 	memset(fft_buckets, 0, RSID_NTIMES * RSID_FFT_SIZE * sizeof(int));
+
+	for (int n = 0; n < RSID_ARRAY_SIZE; n++)
+		aFFTcmplx[n] = cmplx(0,0);
 
 	int error = src_reset(src_state);
 	if (error)
