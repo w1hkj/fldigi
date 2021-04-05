@@ -4855,7 +4855,7 @@ int MACROTEXT::loadMacros(const std::string& filename)
 	std::string mName;
 	std::string mDef;
 	int    mNumber = 0;
-	unsigned long int	   crlf; // 64 bit cpu's
+	size_t crlf, idx;
 	char   szLine[4096];
 	bool   convert = false;
 
@@ -4883,19 +4883,24 @@ int MACROTEXT::loadMacros(const std::string& filename)
 		while (!mFile.eof()) {
 			mFile.getline(szLine,4095);
 			mLine = szLine;
+			if (!mLine.length())
+				continue;
 			if (mLine.find("//") == 0) // skip over all comment lines
 				continue;
 			if (mLine.find("/$") == 0) {
-				int idx = mLine.find_first_not_of("0123456789", 3);
-				sscanf((mLine.substr(3, idx - 3)).c_str(), "%d", &mNumber);
-				if (mNumber < 0 || mNumber > (MAXMACROS - 1))
-					break;
-				if (convert && mNumber > 9) mNumber += 2;
-				name[mNumber] = mLine.substr(idx+1);
+				idx = mLine.find(" ", 3);
+				if (idx != std::string::npos) {
+					mNumber = atoi(&mLine[3]);
+					if (mNumber < 0 || mNumber > (MAXMACROS - 1))
+						break;
+					if (convert && mNumber > 9) mNumber += 2;
+					name[mNumber] = mLine.substr(idx+1);
+				}
 				continue;
 			}
-			while ((crlf = mLine.find("\\n")) != std::string::npos) {
-				mLine.erase(crlf, 2);
+			crlf = mLine.rfind("\\n");
+			if (crlf != std::string::npos) {
+				mLine.erase(crlf);
 				mLine.append("\n");
 			}
 			text[mNumber] = text[mNumber] + mLine;
