@@ -9112,12 +9112,9 @@ int get_tx_char(void)
 				} else
 					return(GET_TX_CHAR_NODATA);
 			} else {
-				if (TransmitText->eot()) {
-					REQ(&FTextTX::clear, TransmitText);
-					REQ(Rx_queue_execute);
-					return(GET_TX_CHAR_ETX);
-				} else
-					return(GET_TX_CHAR_NODATA);
+				REQ(&FTextTX::clear, TransmitText);
+				REQ(Rx_queue_execute);
+				return(GET_TX_CHAR_ETX);
 			}
 			break;
 		case 'L':
