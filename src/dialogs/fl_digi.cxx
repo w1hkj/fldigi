@@ -6722,6 +6722,8 @@ void cb_qso_opBrowser(Fl_Browser*, void*)
 
 void _show_frequency(long long freq)
 {
+	if (!qsoFreqDisp1 || !qsoFreqDisp2 || !qsoFreqDisp3)
+		return;
 	qsoFreqDisp1->value(freq);
 	qsoFreqDisp2->value(freq);
 	qsoFreqDisp3->value(freq);
@@ -6825,6 +6827,7 @@ LOG_INFO("%f WPM", progdefaults.CWspeed);
 	sync_cw_parameters();
 
 	if (progStatus.WK_online) WK_set_wpm();
+	flrig_set_wpm();
 
 	restoreFocus(25);
 }
@@ -8881,8 +8884,10 @@ void put_WARNstatus(double v)
 
 void set_CWwpm()
 {
-	sldrCWxmtWPM->value(progdefaults.CWspeed);
-	cntCW_WPM->value(progdefaults.CWspeed);
+	if (sldrCWxmtWPM)
+		sldrCWxmtWPM->value(progdefaults.CWspeed);
+	if (cntCW_WPM)
+		cntCW_WPM->value(progdefaults.CWspeed);
 	if (use_nanoIO) set_nanoWPM(progdefaults.CWspeed);
 }
 
