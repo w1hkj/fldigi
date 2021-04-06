@@ -278,6 +278,9 @@
               "most likely required for Windows operating system\n"                     \
               "compensation value in msec",                                             \
               0)                                                                        \
+        ELEM_(int, use_FLRIGkeying, "use_FLRIGkeying",                                  \
+              "flrig DTR/RTS keying",                                                   \
+              0)                                                                        \
         ELEM_(int, PTT_KEYLINE, "PTTKEYLINE",                                           \
               "0 - none, 1 - RTS, 2 - DTR",                                             \
               0)                                                                        \

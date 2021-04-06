@@ -100,6 +100,11 @@ extern void set_flrig_freq(unsigned long int fr);
 extern void set_flrig_mode(const char *md);
 extern void set_flrig_bw(int bw1, int bw2 = 0);
 extern void set_flrig_notch();
+extern void flrig_set_wpm();
+extern void flrig_get_wpm();
+
+extern void flrig_cwio_ptt(int);
+extern void flrig_cwio_send_text(std::string);
 
 // GPIO export/unexport pin #
 extern void export_gpio(int);

@@ -1154,6 +1154,17 @@ int cw::tx_process()
 		return 0;
 	}
 
+	if (progdefaults.use_FLRIGkeying) {
+		if (c == GET_TX_CHAR_ETX || stopflag) {
+			stopflag = false;
+			put_echo_char('\n');
+			return -1;
+		}
+		flrig_cwio_send(c);
+		put_echo_char(c);
+		return 0;
+	}
+
 	if (progStatus.WK_online) {
 		if (c == GET_TX_CHAR_ETX || stopflag) {
 			stopflag = false;
@@ -1271,7 +1282,7 @@ void cw::toggleWPM()
 }
 
 // ---------------------------------------------------------------------
-// TTY output on DTR/RTS signal lines
+// CW output on DTR/RTS signal lines
 //----------------------------------------------------------------------
 
 Cserial CW_KEYLINE_serial;
@@ -1341,6 +1352,46 @@ static int cwio_ch;
 static cMorse *cwio_morse = 0;
 static queue<int> fifo;
 static std::string cwio_prosigns;
+
+//----------------------------------------------------------------------
+// CW output using flrig cwio calls
+//----------------------------------------------------------------------
+static char lastcwiochar = 0;
+void flrig_cwio_send(char c)
+{
+	if (cwio_morse == 0) {
+		cwio_morse = new cMorse;
+		cwio_morse->init();
+	}
+
+	if (c == '[') {
+		flrig_cwio_ptt(1);
+		return;
+	}
+	if (c == ']') {
+		flrig_cwio_ptt(0);
+		return;
+	}
+	std::string s = " ";
+	s[0] = c;
+	flrig_cwio_send_text(s);
+
+	int tc = 1200 / progdefaults.CWspeed;
+	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth))
+		tc = 1200 / progdefaults.CWfarnsworth;
+
+	if (c == ' ') {
+		if (lastcwiochar == ' ')
+			tc *= 7;
+		else
+		tc *= 5;
+	} else
+		tc *= (cwio_morse->tx_length(c));
+	lastcwiochar = c;
+	MilliSleep(tc);
+}
+
+//----------------------------------------------------------------------
 
 void cwio_key(int on)
 {
@@ -1423,7 +1474,8 @@ void send_cwio(int c)
 	}
 
 	string code;
-	code = cwio_morse->tx_lookup(c);	if (!code.length()) {
+	code = cwio_morse->tx_lookup(c);
+	if (!code.length()) {
 		return;
 	}
 
