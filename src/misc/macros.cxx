@@ -214,7 +214,6 @@ static void setfwpm(double d)
 // following used for debugging and development
 void push_txcmd(CMDS cmd)
 {
-std::cout << "Push to Tx queu " << cmd.cmd << std::endl;
 	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)Tx_cmds.size());
 	Tx_cmds.push(cmd);
 }
@@ -3915,7 +3914,7 @@ static void pWX2(std::string &s, size_t &i, size_t endbracket)
 {
 	string wx;
 	getwx(wx, s.substr(i+4, endbracket - i - 4).c_str());
-	substitute(s, i, endbracket, "");
+	substitute(s, i, endbracket, wx);
 }
 
 
@@ -4570,7 +4569,6 @@ void queue_reset()
 // occurs during the Tx state
 void Tx_queue_execute()
 {
-std::cout << "Tx_queue size = " << Tx_cmds.size() << std::endl;
 	if (Tx_cmds.empty()) {
 		Qwait_time = 0;
 		Qidle_time = 0;
@@ -4579,7 +4577,6 @@ std::cout << "Tx_queue size = " << Tx_cmds.size() << std::endl;
 	}
 	CMDS cmd = Tx_cmds.front();
 	Tx_cmds.pop();
-std::cout << "Executing: " << cmd.cmd << std::endl;
 	LOG_INFO("%s", cmd.cmd.c_str());
 	REQ(postQueue, cmd.cmd);
 	cmd.fp(cmd.cmd);
@@ -4858,7 +4855,7 @@ int MACROTEXT::loadMacros(const std::string& filename)
 	std::string mName;
 	std::string mDef;
 	int    mNumber = 0;
-	unsigned long int	   crlf; // 64 bit cpu's
+	size_t crlf;
 	char   szLine[4096];
 	bool   convert = false;
 
@@ -4889,17 +4886,21 @@ int MACROTEXT::loadMacros(const std::string& filename)
 			if (mLine.find("//") == 0) // skip over all comment lines
 				continue;
 			if (mLine.find("/$") == 0) {
-				int idx = mLine.find_first_not_of("0123456789", 3);
-				sscanf((mLine.substr(3, idx - 3)).c_str(), "%d", &mNumber);
-				if (mNumber < 0 || mNumber > (MAXMACROS - 1))
-					break;
-				if (convert && mNumber > 9) mNumber += 2;
-				name[mNumber] = mLine.substr(idx+1);
+				size_t idx = mLine.find_first_not_of("0123456789", 3);
+				if (idx != std::string::npos) {
+					sscanf((mLine.substr(3, idx - 3)).c_str(), "%d", &mNumber);
+					if (mNumber < 0 || mNumber > (MAXMACROS - 1))
+						break;
+					if (convert && mNumber > 9) mNumber += 2;
+					name[mNumber] = mLine.substr(idx+1);
+				}
 				continue;
 			}
 			while ((crlf = mLine.find("\\n")) != std::string::npos) {
-				mLine.erase(crlf, 2);
-				mLine.append("\n");
+				if (crlf < mLine.length() - 1) {
+					mLine.erase(crlf, 2);
+					mLine.append("\n");
+				}
 			}
 			text[mNumber] = text[mNumber] + mLine;
 		}

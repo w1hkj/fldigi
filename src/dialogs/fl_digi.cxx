@@ -8724,7 +8724,7 @@ struct PSM_STRUCT {
 	Fl_Widget *w;
 	double timeout;
 	status_timeout action;
-	char msg[100];
+	std::string msg;
 };
 
 void put_status_msg(void *d)
@@ -8732,7 +8732,7 @@ void put_status_msg(void *d)
 	PSM_STRUCT *psm = (PSM_STRUCT *)d;
 
 	psm->w->activate();
-	psm->w->label(psm->msg);
+	psm->w->label(psm->msg.c_str());
 	if (psm->timeout > 0.0) {
 		Fl::remove_timeout(timeout_action[psm->action], psm->w);
 		Fl::add_timeout(psm->timeout, timeout_action[psm->action], psm->w);
@@ -8742,8 +8742,8 @@ void put_status_msg(void *d)
 void put_status(const char *msg, double timeout, status_timeout action)
 {
 	static PSM_STRUCT ps;
-	memset(ps.msg, 0, 100);
-	strcpy(ps.msg, msg);
+	ps.msg.clear();
+	ps.msg.assign(msg);
 	ps.timeout = timeout;
 	ps.action = action;
 	ps.w = StatusBar;
@@ -8753,8 +8753,8 @@ void put_status(const char *msg, double timeout, status_timeout action)
 void put_Status2(const char *msg, double timeout, status_timeout action)
 {
 	static PSM_STRUCT ps;
-	memset(ps.msg, 0, 100);
-	strcpy(ps.msg, msg);
+	ps.msg.clear();
+	ps.msg.assign(msg);
 	ps.timeout = timeout;
 	ps.action = action;
 	ps.w = Status2;
@@ -8767,8 +8767,8 @@ void put_Status2(const char *msg, double timeout, status_timeout action)
 void put_Status1(const char *msg, double timeout, status_timeout action)
 {
 	static PSM_STRUCT ps;
-	memset(ps.msg, 0, 100);
-	strcpy(ps.msg, msg);
+	ps.msg.clear();
+	ps.msg.assign(msg);
 	ps.timeout = timeout;
 	ps.action = action;
 	ps.w = Status1;
