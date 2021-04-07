@@ -422,25 +422,19 @@ See \ref configuration_page Page
 	data / control with the View/Hide Channel viewer</li>
 	<li>View/Hide 48 macros - toggle display of 4 rows of macros</li>
 	<li>DX Cluster - open DX cluster dialog</li>
-	<li>Floating Scope - Opens up a resizable, moveable scope display</li>
-	<li>Spectrum dialog - Opens a spectrum analysis dialog</li>
+	<li>Floating Scope - Opens a resizable, moveable scope display</li>
+	<li>Spectrum scope- Opens the spectrum analysis dialog</li>
 	<li>MFSK Image - Opens the MFSK picture image (if being received)</li>
 	<li>THOR Raw Image - Opens the THOR picture image (if being received)</li>
 	<li>IFKP Raw Image - Opens the IFKP picture image (if being received)</li>
 	<li>Weather Fax Image RX - Opens WEFAX receive dialog </li>
 	<li>Weather Fax Image TX - Opens WEFAX transmit dialog </li>
-	<li>Countries - DXCC entities</li>
+	<li>Countries - Opens DXCC entities dialog</li>
 	<li>Rig/Log Controls</li>
 	<ul>
 		<li>Full - show all logbook and rig controls</li>
-		<li>Rig control and logging - minimizes the logging panel for
-		normal QSO entries</li>
-		<li>Rig control and contest - minimizes the logging panel for
-		Contest entries</li>
-		<li>None - removes the Rig Control / Log panel from the main
-		User Interface</li>
-		<li>Contest fields - Display alternate 2nd line in qso logging
-		area; provides access to contest logging fields</li>
+		<li>Partial - reduce number of rig and logging controls to those essential for normal QSO or contest</li>
+		<li>None - removes the Rig Control / Log panel from the main User Interface</li>
 	</ul>
 	<li>Waterfall</li>
 	<ul>
