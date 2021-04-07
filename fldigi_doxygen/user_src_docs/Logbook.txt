@@ -167,8 +167,8 @@ either of these two:
 These are selectable from the View menu:
 <br>
 
-\image html menu-view.png "View menu"
-\image latex menu-view.png "View menu" width=1.5in
+\image html menu-view-controls.png "Log controls selection"
+\image latex menu-view-controls.png "Log controls selection" width=1.5in
 <br>
 
 These three buttons are associated with logbook entries.
