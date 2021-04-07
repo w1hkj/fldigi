@@ -1,5 +1,5 @@
 /**
-\page  spectrum_viewer_page Spectrum Viewer
+\page  spectrum_viewer_page Spectrum Scope
 
 \tableofcontents
 
@@ -7,9 +7,9 @@
 \image html spectrum-scope.png "Spectrum Scope Display"
 \image latex spectrum-scope.png "Spectrum Scope Display" width=6.0in
 <br>
-\section sv_description Spectrum Viewer Description
+\section sv_description Spectrum Scope Description
 
-The Spectrum Viewer is an analysis tool used to evaluate received signals.
+The Spectrum Scope is an analysis tool used to evaluate received signals.
 It can be used to measure signal integrity, audio-codec noise floor,
 transceiver passband characteristics, Rx signal spectrum, etc.  The time
 domain audio stream is converted to the frequency domain using a Fast
@@ -29,7 +29,7 @@ The display is signal magnitude in dB versus frequency.
 
 \section sv_controls Operating Controls
 
-The Spectrum Viewer operating controls are used to set:
+The Spectrum Scope operating controls are used to set:
 <br>
 \image html spectrum-scope-controls.png ""
 \image latex spectrum-scope-controls.png "" width=6.0in
@@ -143,7 +143,7 @@ decoration "X" button.
 \image html spectrum-scope-filter-eval.png ""
 \image latex spectrum-scope-filter-eval.png "" width=4.0in
 
-This illustrates using the Spectrum Viewer to view and evaluate a transceiver filter.
+This illustrates using the Spectrum Scope to view and evaluate a transceiver filter.
 This is 40 meter noise on an IC-7200 with the filter set to 3000 Hertz.
 
 \section wf_interaction Interaction with waterfall
@@ -151,7 +151,7 @@ This is 40 meter noise on an IC-7200 with the filter set to 3000 Hertz.
 The spectrum scope view and the waterfall tracking point can be coordinated in one of
 two ways
 <ul>
-<li>Pressing the "Goto" button the Spectrum Scope dialog</li>
+<li>Pressing the "Goto" button on the Spectrum Scope dialog</li>
 <li>Normal left-click selection of a waterfall signal.</li>
 </ul>
 In either case the waterfall tracking point will become the new center of the
