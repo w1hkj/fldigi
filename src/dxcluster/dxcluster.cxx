@@ -883,12 +883,12 @@ void freqstrings( string &khz, string &hz )
 {
 	string sfreq = inpFreq->value();
 
+	size_t p = sfreq.find_first_of(".,");
+	if (p != string::npos) sfreq.erase(p,1);
+
 	int phz = sfreq.length() - 2;
 	hz = sfreq.substr(phz, 2);
 	sfreq.erase(phz);
-
-	size_t p = sfreq.find(".");
-	if (p != string::npos) sfreq.erase(p,1);
 
 	long freq = atol(sfreq.c_str());
 
