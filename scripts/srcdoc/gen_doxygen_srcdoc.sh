@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# Copyright (C) KL4YFD 2013-2020
+# Copyright (C) KL4YFD 2013-2021
 # Released under GNU GPL
 #
 
@@ -87,7 +87,7 @@ function do_cppcheck
 {
     mkdir $CPPRESULTSDIR
 
-    cppcheck --template=cppcheck1 --inline-suppr --inconclusive --enable=all -I $INCLUDEDIR -j $THREADS --force --verbose $SRCDIR  2> $CPPRESULTSDIR/ALL.txt
+    cppcheck --template=cppcheck1 --inline-suppr --inconclusive --enable=all -i $SRCDIR/mbedtls -I $INCLUDEDIR -j $THREADS --force --verbose $SRCDIR  2> $CPPRESULTSDIR/ALL.txt
 
     cd $CPPRESULTSDIR
         touch error.txt warning.txt style.txt performance.txt portability.txt information.txt debug.txt 
