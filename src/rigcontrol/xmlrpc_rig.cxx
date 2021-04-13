@@ -811,7 +811,6 @@ void set_flrig_notch()
 	XmlRpcValue val, result;
 	try {
 		val = (int)notch_frequency;
-std::cout << "set notch " << val << std::endl;
 		bool ret;
 		{
 			guard_lock flrig_lock(&mutex_flrig);
@@ -863,7 +862,6 @@ static void xmlrpc_rig_set_smeter(void *data)
 			smeter->show();
 		}
 		int val = reinterpret_cast<intptr_t>(data);
-LOG_VERBOSE("xmlrpc_rig_set_smeter: %d", val);
 		smeter->value(val);
 	}
 }

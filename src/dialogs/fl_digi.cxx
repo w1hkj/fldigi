@@ -8961,46 +8961,6 @@ int get_tx_char(void)
 	if (Qidle_time) { return GET_TX_CHAR_NODATA; }
 	if (macro_idle_on) { return GET_TX_CHAR_NODATA; }
 
-	if (!macrochar.empty()) {
-		int ch = macrochar[0];
-		macrochar.erase(0,1);
-		start_deadman();
-		return ch;
-	}
-
-	if (xmltest_char_available) {
-		num_cps_chars++;
-		start_deadman();
-		return xmltest_char();
-	}
-
-	if (data_io_enabled == ARQ_IO && arq_text_available) {
-		start_deadman();
-		return arq_get_char();
-	} else if (data_io_enabled == KISS_IO && kiss_text_available) {
-		start_deadman();
-		return kiss_get_char();
-	}
-
-	if (active_modem == cw_modem && progdefaults.QSKadjust) {
-		start_deadman();
-		return szTestChar[2 * progdefaults.TestChar];
-	}
-
-	if ( (progStatus.repeatMacro > -1) && progStatus.repeatIdleTime > 0 &&
-		 !idling ) {
-		Fl::add_timeout(progStatus.repeatIdleTime, get_tx_char_idle);
-		idling = true;
-		return GET_TX_CHAR_NODATA;
-	}
-
-	int c;
-
-	if ((c = tx_encoder.pop()) != -1) {
-		start_deadman();
-		return(c);
-	}
-
 	if ((progStatus.repeatMacro > -1) && text2repeat.length()) {
 		string repeat_content;
 		int utf8size = fl_utf8len1(text2repeat[repeatchar]);
@@ -9016,13 +8976,57 @@ int get_tx_char(void)
 		goto transmit;
 	}
 
-	if (active_modem->get_mode() == MODE_IFKP)
+	int c;
+
+	if (!macrochar.empty()) {
+		c = macrochar[0];
+		macrochar.erase(0,1);
+		start_deadman();
+		return c;
+	}
+
+	if (data_io_enabled == ARQ_IO && arq_text_available) {
+		start_deadman();
+		c = arq_get_char();
+		return c;
+	} else if (data_io_enabled == KISS_IO && kiss_text_available) {
+		start_deadman();
+		c = kiss_get_char();
+		return c;
+	}
+
+	if (active_modem == cw_modem && progdefaults.QSKadjust) {
+		start_deadman();
+		c = szTestChar[2 * progdefaults.TestChar];
+		return c;
+	}
+
+	if ( (progStatus.repeatMacro > -1) && progStatus.repeatIdleTime > 0 &&
+		 !idling ) {
+		Fl::add_timeout(progStatus.repeatIdleTime, get_tx_char_idle);
+		idling = true;
+		return GET_TX_CHAR_NODATA;
+	}
+
+	if ((c = tx_encoder.pop()) != -1) {
+		start_deadman();
+		return(c);
+	}
+
+	if (xmltest_char_available) {
+		num_cps_chars++;
+		start_deadman();
+		c = xmltest_char();
+	}
+	else if (active_modem->get_mode() == MODE_IFKP) {
 		c = ifkp_tx_text->nextChar();
-	else 
-		if ((c = next_buffered_macro_char()) == 0) // preference given to buffered macro chars
-			c = TransmitText->nextChar();
+	}
+	else if ((c = next_buffered_macro_char()) == 0) { // preference given to buffered macro chars
+		c = TransmitText->nextChar();
+	}
 
 	if (c == GET_TX_CHAR_ETX) {
+		active_modem->set_CW_EOT();
 		return c;
 	}
 
