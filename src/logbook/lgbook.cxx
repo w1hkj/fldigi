@@ -575,6 +575,10 @@ Fl_Check_Button *btnCabXchgIn=(Fl_Check_Button *)0;
 
 Fl_Check_Button *btnCabMyXchg=(Fl_Check_Button *)0;
 
+Fl_Check_Button *btnCabState=(Fl_Check_Button *)0;
+
+Fl_Check_Button *btnCabCounty=(Fl_Check_Button *)0;
+
 Fl_Button *btnCabClearAllFields=(Fl_Button *)0;
 
 static void cb_btnCabClearAllFields(Fl_Button*, void*) {
@@ -1703,6 +1707,14 @@ void create_logbook_dialogs() {
         btnCabMyXchg->down_box(FL_DOWN_BOX);
         btnCabMyXchg->value(1);
       } // Fl_Check_Button* btnCabMyXchg
+      { btnCabState = new Fl_Check_Button(533, 196, 70, 15, _("State"));
+        btnCabState->down_box(FL_DOWN_BOX);
+        btnCabState->value(1);
+      } // Fl_Check_Button* btnCabState
+      { btnCabCounty = new Fl_Check_Button(533, 221, 70, 15, _("County"));
+        btnCabCounty->down_box(FL_DOWN_BOX);
+        btnCabCounty->value(1);
+      } // Fl_Check_Button* btnCabCounty
       { btnCabClearAllFields = new Fl_Button(409, 277, 110, 24, _("Clear All"));
         btnCabClearAllFields->callback((Fl_Callback*)cb_btnCabClearAllFields);
       } // Fl_Button* btnCabClearAllFields
