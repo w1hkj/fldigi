@@ -182,6 +182,8 @@ extern Fl_Check_Button *btnCabSerialIN;
 extern Fl_Check_Button *btnCabSerialOUT;
 extern Fl_Check_Button *btnCabXchgIn;
 extern Fl_Check_Button *btnCabMyXchg;
+extern Fl_Check_Button *btnCabState;
+extern Fl_Check_Button *btnCabCounty;
 extern Fl_Button *btnCabClearAllFields;
 extern Fl_Button *btnCabCheckAllFields;
 void create_logbook_dialogs();

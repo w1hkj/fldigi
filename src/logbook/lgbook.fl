@@ -36,8 +36,8 @@ decl {// Avoid 'nitems' macro collision between FreeBSD's sys/params.h and fltk'
 Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
-    label {Export Setup} open
-    xywh {489 51 805 440} type Double visible
+    label {Export Setup}
+    xywh {494 421 805 440} type Double hide
   } {
     Fl_Group {} {
       label {Select Records to Export}
@@ -380,7 +380,7 @@ btnSelect_cwss_serno->value(1);
 btnSelect_cwss_prec->value(1);
 btnSelect_cwss_check->value(1);
 btnSelect_cwss_section->value(1);
-btnSelect_1010->value(1);} selected
+btnSelect_1010->value(1);}
         xywh {507 373 85 20}
       }
       Fl_Button btnSetFieldDefaults {
@@ -901,7 +901,7 @@ wBrowser->gridEnabled (0);
 dlgLogbook->xclass(PACKAGE_TARNAME);} {}
   Fl_Window wCabrillo {
     label {Cabrillo Setup} open
-    xywh {131 224 675 340} type Double hide
+    xywh {495 31 675 340} type Double visible
   } {
     Fl_Group {} {
       label {Select Records to Export} open
@@ -933,7 +933,7 @@ WriteCabrillo();}
       xywh {414 312 100 24}
     }
     Fl_Group {} {
-      label {Select Cabrillo Contest & Fields}
+      label {Select Cabrillo Contest & Fields} open
       xywh {390 4 283 305} box ENGRAVED_FRAME align 21
     } {
       Fl_Group cboContest {
@@ -987,6 +987,14 @@ WriteCabrillo();}
       Fl_Check_Button btnCabMyXchg {
         label {Exchange Out}
         xywh {533 172 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabState {
+        label State selected
+        xywh {533 196 70 15} down_box DOWN_BOX value 1
+      }
+      Fl_Check_Button btnCabCounty {
+        label County
+        xywh {533 221 70 15} down_box DOWN_BOX value 1
       }
       Fl_Button btnCabClearAllFields {
         label {Clear All}
