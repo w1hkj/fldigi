@@ -2,10 +2,12 @@
 //
 //	fl_digi.cxx
 //
-// Copyright (C) 2006-2010
+// Copyright (C) 2006-2021
 //		Dave Freese, W1HKJ
 // Copyright (C) 2007-2010
 //		Stelios Bounanos, M0GLD
+// Copyright (C) 2020-2021
+//		John Phelps, KL4YFD
 //
 // This file is part of fldigi.
 //
@@ -869,6 +871,15 @@ static const Fl_Menu_Item quick_change_8psk[] = {
 	{ mode_info[MODE_8PSK500F].name, 0, cb_init_mode, (void *)MODE_8PSK500F },
 	{ mode_info[MODE_8PSK1000F].name, 0, cb_init_mode, (void *)MODE_8PSK1000F },
 	{ mode_info[MODE_8PSK1200F].name, 0, cb_init_mode, (void *)MODE_8PSK1200F },
+	{ 0 }
+};
+
+static const Fl_Menu_Item quick_change_ofdm[] = {
+	{ mode_info[MODE_OFDM_500F].name, 0, cb_init_mode, (void *)MODE_OFDM_500F },
+	{ mode_info[MODE_OFDM_750F].name, 0, cb_init_mode, (void *)MODE_OFDM_750F },
+//	{ mode_info[MODE_OFDM_2000F].name, 0, cb_init_mode, (void *)MODE_OFDM_2000F },
+//	{ mode_info[MODE_OFDM_2000].name, 0, cb_init_mode, (void *)MODE_OFDM_2000 },
+	{ mode_info[MODE_OFDM_3500].name, 0, cb_init_mode, (void *)MODE_OFDM_3500 },
 	{ 0 }
 };
 
@@ -1852,6 +1863,20 @@ void init_modem(trx_mode mode, int freq)
 		quick_change = quick_change_8psk;
 //		modem_config_tab = tabPSK;
 		break;
+		
+		
+	case MODE_OFDM_500F:
+	case MODE_OFDM_750F:
+	case MODE_OFDM_2000F:
+	case MODE_OFDM_2000:
+	case MODE_OFDM_3500:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+		*mode_info[mode].modem = new psk(mode), freq);
+		quick_change = quick_change_ofdm;
+		//		modem_config_tab = tabPSK;
+		break;
+		
+		
 	case MODE_PSK125R: case MODE_PSK250R: case MODE_PSK500R:
 	case MODE_PSK1000R:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -5948,6 +5973,14 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_MT63_2000L].name, 0,  cb_init_mode, (void *)MODE_MT63_2000L, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
+{"OFDM", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OFDM_500F].name, 0,  cb_init_mode, (void *)MODE_OFDM_500F, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OFDM_750F].name, 0,  cb_init_mode, (void *)MODE_OFDM_750F, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+//{ mode_info[MODE_OFDM_2000F].name, 0,  cb_init_mode, (void *)MODE_OFDM_2000F, 0, FL_NORMAL_LABEL, 0, 14, 0},
+//{ mode_info[MODE_OFDM_2000].name, 0,  cb_init_mode, (void *)MODE_OFDM_2000, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OFDM_3500].name, 0,  cb_init_mode, (void *)MODE_OFDM_3500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
 { OLIVIA_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_4_125].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_125, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_OLIVIA_4_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_250, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -7572,6 +7605,14 @@ static Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_MT63_1000L].name, 0,  cb_init_mode, (void *)MODE_MT63_1000L, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MT63_2000S].name, 0,  cb_init_mode, (void *)MODE_MT63_2000S, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_MT63_2000L].name, 0,  cb_init_mode, (void *)MODE_MT63_2000L, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"OFDM", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OFDM_500F].name, 0,  cb_init_mode, (void *)MODE_OFDM_500F, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OFDM_750F].name, 0,  cb_init_mode, (void *)MODE_OFDM_750F, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+//{ mode_info[MODE_OFDM_2000F].name, 0,  cb_init_mode, (void *)MODE_OFDM_2000F, 0, FL_NORMAL_LABEL, 0, 14, 0},
+//{ mode_info[MODE_OFDM_2000].name, 0,  cb_init_mode, (void *)MODE_OFDM_2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_OFDM_3500].name, 0,  cb_init_mode, (void *)MODE_OFDM_3500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"Olivia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
