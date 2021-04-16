@@ -84,6 +84,10 @@ extern waterfall *wf;
 #define K13_POLY1	016461 // 7473
 #define K13_POLY2	012767 // 5623
 
+#define	THOR_K15	15
+#define	K15_POLY1	044735
+#define	K15_POLY2	063057
+
 // df=19 : correct up to 9 bits
 #define	K16		16
 #define	K16_POLY1	0152711 // 54729
@@ -118,6 +122,73 @@ static unsigned char graymapped_8psk_softbits[8][3] =  {
 	{255,  25, 230}, // 5
 	{230,   0,  25}  // 4
 };
+
+// For Gray-mapped xPSK:
+// Even when the received phase is distorted by +- 1 phase-position:
+//  - Only up to 1 bit can be in error
+static cmplx graymapped_xpsk_pos[] = {
+	//				 Degrees  Bits In
+	cmplx (0.7071, 0.7071),   // 45  | 0b00
+	cmplx (-0.7071, 0.7071),  // 135 | 0b01
+	cmplx (0.7071, -0.7071),  // 315 | 0b10
+	cmplx (-0.7071, -0.7071)  // 225 | 0b11
+};
+
+// Associated soft-symbols to be used with graymapped_xpsk_pos[] constellation
+// Gray-coding of xPSK simply makes all probabilites equal.
+// Use of this table automatically Gray-decodes incoming symbols.
+static unsigned char graymapped_xpsk_softbits[4][2] = {
+	{0,0},		// 0
+	{0,255},	// 1
+	{255,255},	// 3
+	{255,0},	// 2
+};
+
+// For Gray-mapped 16PSK:
+// Even when the received phase is distorted by +- 1 phase-position:
+//  - Two of the bits are still known with 100% certianty.
+//  - Only up to 1 bit can be in error
+static cmplx graymapped_16psk_pos[] = {
+	cmplx (1.0, 0.0),         // 0 degrees		0b0000	| 025,000,000,025
+	cmplx (0.9238, 0.3826),   // 22.5 degrees	0b0001	| 000,000,025,230
+	cmplx (0.3826, 0.9238),   // 67.5 degrees	0b0010	| 000,025,255,025
+	cmplx (0.7071, 0.7071),   // 45 degrees		0b0011	| 000,000,230,230
+	cmplx (-0.9238, 0.3826),  // 157.5 degrees	0b0100	| 025,255,000,025
+	cmplx (-0.7071, 0.7071),  // 135 degrees	0b0101	| 000,255,025,230
+	cmplx (0.0, 1.0),         // 90 degrees		0b0110	| 000,230,255,025
+	cmplx (-0.3826, 0.9238),  // 112.5 degrees	0b0111	| 000,255,230,230
+	cmplx (0.9238, -0.3826),  // 337.5 degrees	0b1000	| 230,000,000,025
+	cmplx (0.7071, -0.7071),  // 315 degrees	0b1001	| 255,000,025,230
+	cmplx (0.0, -1.0),        // 270 degrees	0b1010	| 255,025,255,025
+	cmplx (0.3826, -0.9238),  // 292.5 degrees	0b1011	| 255,000,230,230
+	cmplx (-1.0, 0.0),        // 180 degrees	0b1100	| 230,255,000,025
+	cmplx (-0.9238, -0.3826), // 202.5 degrees	0b1101	| 255,255,025,230
+	cmplx (-0.3826, -0.9238), // 247.5 degrees	0b1110	| 255,230,255,000
+	cmplx (-0.7071, -0.7071)  // 225 degrees	0b1111	| 255,255,025,025
+};
+
+// Associated soft-symbols to be used with graymapped_16psk_pos[] constellation
+// These softbits have precalculated (a-priori) probabilities applied
+// Use of this table automatically Gray-decodes incoming symbols.
+static unsigned char graymapped_16psk_softbits[16][4] = {
+	{025,000,000,025}, // 0
+	{000,000,025,230}, // 1
+	{000,000,230,230}, // 3
+	{000,025,255,025}, // 2
+	{000,230,255,025}, // 6
+	{000,255,230,230}, // 7
+	{000,255,025,230}, // 5
+	{025,255,000,025}, // 4
+	{230,255,000,025}, // 12
+	{255,255,025,230}, // 13
+	{255,255,025,025}, // 15
+	{255,230,255,000}, // 14
+	{255,025,255,025}, // 10
+	{255,000,230,230}, // 11
+	{255,000,025,230}, // 9
+	{230,000,000,025}  // 8
+};
+
 
 
 char pskmsg[80];
@@ -154,6 +225,11 @@ void psk::tx_init()
 
 	vphase = 0;
 	maxamp = 0;
+
+	if (mode == MODE_OFDM_500F || mode == MODE_OFDM_750F || mode == MODE_OFDM_2000F) {
+		enc->init();
+		Txinlv->flush();
+	}
 
 }
 
@@ -222,7 +298,15 @@ void psk::init()
 	imdratio = 0.001;
 	rx_init();
 
-	if (progdefaults.StartAtSweetSpot)
+	set_freqlock(false); // re-lock modems after setting center-frequency.
+
+	if (mode == MODE_OFDM_2000F || mode == MODE_OFDM_2000)
+		set_freq(1325);
+	else if (mode == MODE_OFDM_3500)
+		set_freq(2250);
+	else if (mode == MODE_OFDM_500F || mode == MODE_OFDM_750F)
+		set_freq(1500);
+	else if (progdefaults.StartAtSweetSpot)
 		set_freq(progdefaults.PSKsweetspot);
 	else if (progStatus.carrier != 0) {
 		set_freq(progStatus.carrier);
@@ -231,6 +315,10 @@ void psk::init()
 #endif
 	} else
 		set_freq(wf->Carrier());
+
+	if (mode == MODE_OFDM_2000 || mode == MODE_OFDM_2000F || mode == MODE_OFDM_3500)
+		set_freqlock(true);
+
 }
 
 psk::~psk()
@@ -273,8 +361,8 @@ psk::~psk()
 		active_modem->get_mode() != MODE_OFDM_2000F && \
 		active_modem->get_mode() != MODE_OFDM_2000 && \
 		active_modem->get_mode() != MODE_OFDM_3500) \
-		set_freqlock(false);
 */
+	set_freqlock(false);
 }
 
 psk::psk(trx_mode pskmode) : modem()
@@ -371,6 +459,82 @@ FIR_TYPE fir_type = PSK_CORE;
 			dcdbits = 64;
 			fir_type = PSK_CORE;
 			break;
+
+	// OFDM modes
+		case MODE_OFDM_500F: // 62.5 baud xPSK | 4 carriers | 250 bits/sec @ 1/2 FEC
+			symbollen = 256;
+			samplerate = 16000;
+			_xpsk = true;
+			_disablefec = false;
+			_puncturing = false;
+			numcarriers = 4;
+			separation = 2.0f;
+			idepth = 2000; // 4000 milliseconds
+			flushlength = 200;
+			dcdbits = 192;
+			vestigial = true;
+			cap |= CAP_REV;
+			fir_type = SINC;
+			break;
+
+		case MODE_OFDM_750F: // 125 baud 8PSK | 3 carriers | 562 bits/sec @ 1/2 FEC
+			symbollen = 128;
+			samplerate = 16000;
+			_8psk = true;
+			_disablefec = false;
+			_puncturing = false;
+			numcarriers = 3;
+			separation = 2.0f;
+			idepth = 3600; // 3200 milliseconds
+			flushlength = 360;
+			dcdbits = 384;
+			vestigial = true;
+			cap |= CAP_REV;
+			fir_type = SINC;
+			break;
+
+		case MODE_OFDM_2000F: // 125 baud 8PSK | 8 carriers | 2000 bits/sec @ 2/3 FEC
+			symbollen = 128;
+			samplerate = 16000;
+			_8psk = true;
+			_disablefec = false;
+			_puncturing = true;
+			numcarriers = 8;
+			separation = 2.0f;
+			idepth = 4800; // 1600 milliseconds
+			flushlength = 480;
+			dcdbits = 1536;
+			vestigial = true;
+			cap |= CAP_REV;
+			fir_type = SINC;
+			break;
+
+		case MODE_OFDM_2000: // 250 baud 8PSK | 4 carriers | 3000 bits/sec NO FEC
+			symbollen = 64;
+			samplerate = 16000;
+			_8psk = true;
+			_disablefec = true;
+			numcarriers = 4;
+			separation = 2.0f;
+			dcdbits = 1536;
+			vestigial = true;
+			cap |= CAP_REV;
+			fir_type = SINC;
+			break;
+
+		case MODE_OFDM_3500: // 250 baud 8PSK | 7 carriers | 5250 bits/sec NO FEC
+			symbollen = 64;
+			samplerate = 16000;
+			_8psk = true;
+			_disablefec = true;
+			numcarriers = 7;
+			separation = 2.0f;
+			dcdbits = 1536;
+			vestigial = false;
+			cap |= CAP_REV;
+			fir_type = SINC;
+			break;
+	// End OFDM modes
 
 	// 8psk modes without FEC
 		case MODE_8PSK125: // 125 baud | 375 bits/sec No FEC
@@ -815,11 +979,12 @@ FIR_TYPE fir_type = PSK_CORE;
 	im_Gbin[2] = new goertzel(160, 62.5,   500.0);	// 4th harmonic (noise)
 	im_Gbin[3] = new goertzel(160, 46.875, 500.0);	// 3rd harmonic (imd)
 
-	if (_disablefec) {
-		enc = NULL;
-		dec = dec2 = NULL;
 
-	} else if (_qpsk) {
+	// If no FEC used, these just stay NULL
+	enc = NULL;
+	dec = dec2 = NULL;
+
+	if (_qpsk) {
 		enc = new encoder(K, POLY1, POLY2);
 		dec = new viterbi(K, POLY1, POLY2);
 
@@ -841,6 +1006,18 @@ FIR_TYPE fir_type = PSK_CORE;
 		dec2 = new viterbi(K16, K16_POLY1, K16_POLY2);
 		dec2->setchunksize(4);
 
+	} else if (mode == MODE_OFDM_500F) {
+		enc = new encoder(THOR_K15, K15_POLY1, K15_POLY2);
+		dec = new viterbi(THOR_K15, K15_POLY1, K15_POLY2);
+		dec->setchunksize(4);
+		dec->settraceback(THOR_K15 * 10);
+		
+	} else if (mode == MODE_OFDM_2000F) {
+		enc = new encoder(K11, K11_POLY1, K11_POLY2);
+		dec = new viterbi(K11, K11_POLY1, K11_POLY2);
+		dec->setchunksize(4);
+		dec->settraceback(K11 * 14); // OFDM-2000F is a punctured code
+
 	} else if (_xpsk || _8psk || _16psk) {
 		enc = new encoder(K13, K13_POLY1, K13_POLY2);
 		dec = new viterbi(K13, K13_POLY1, K13_POLY2);
@@ -853,6 +1030,9 @@ FIR_TYPE fir_type = PSK_CORE;
 		if (_puncturing) { // punctured codes benefit from a longer traceback
 			dec->settraceback(K13 * 16);
 			if (dec2) dec2->settraceback(K13 * 16);
+		} else {
+			dec->settraceback(K13 * 10);
+			if (dec2) dec2->settraceback(K13 * 10);
 		}
 	}
 
@@ -916,6 +1096,15 @@ FIR_TYPE fir_type = PSK_CORE;
 		for (int i = 0; i < 11; i++) sfft_bins[i] = cmplx(0,0);
 	}
 
+	if (mode == MODE_OFDM_2000 || mode == MODE_OFDM_2000F) {
+		set_freqlock(false);
+		set_freq(1325);
+		set_freqlock(true);
+	} else if (mode == MODE_OFDM_3500) {
+		set_freqlock(false);
+		set_freq(2250);
+		set_freqlock(true);
+	}
 }
 
 //=============================================================================
@@ -1205,7 +1394,7 @@ void psk::findsignal()
 //DHF: AFC based on vestigial carrier located at f0 - bandwidth
 void psk::vestigial_afc() {
 
-	if (!progdefaults.pskpilot) return;
+	if (!vestigial) return;
 	if (!vestigial_sfft->is_stable()) return;
 
 	double avg = 0;
@@ -1231,7 +1420,7 @@ void psk::phaseafc()
 	// Skip AFC for modes it does not work with
 
 	if (vestigial) return vestigial_afc();
-
+	
 	if (afcmetric < 0.05 ||
 		mode == MODE_PSK500 ||
 		mode == MODE_QPSK500 || numcarriers > 1) return;
@@ -1255,9 +1444,11 @@ void psk::phaseafc()
 
 void psk::afc()
 {
-	if (!progStatus.afconoff)
+	if (mode >= MODE_OFDM_500F && mode <= MODE_OFDM_2000)
+		return vestigial_afc();
+	else if (!progStatus.afconoff)
 		return;
-	if (dcd == true || acquire)
+	else if (dcd == true || acquire)
 		phaseafc();
 }
 
@@ -1313,30 +1504,31 @@ void psk::rx_symbol(cmplx symbol, int car)
 		softangle = 127.0 - 255.0 * alpha;
 		softbit = (unsigned char) ((softangle / ( 1.0 + softamp / 2.0)) + 128);
 	}
-	
-	
+
+
 	// Only update phase_quality once every dcdbits/4 function-calls
 	static int counter=0;
 	if (counter++ > dcdbits/4) {
 		counter = 0;
 
-		// Calculate how far the phase/constellation is off from perfect, on a scale of 0-100 
+		// Calculate how far the phase/constellation is off from perfect, on a scale of 0-100
 		double PhaseOffset = (phase * 180.0 / M_PI) / (360.0/n);
 		PhaseOffset -= (int)PhaseOffset; 	// cutoff integer, leave just the decimal part
+
+		if (_xpsk) PhaseOffset += 0.5; // xPSK constellation is offset by 45degrees. adjust calculations to compensate
+
 		if (PhaseOffset > 0.5) 				// fix the wraparound issue
 			PhaseOffset = 1.0 - PhaseOffset;
-				
+
 		int phase_quality= (int)(100 - PhaseOffset * 200); // Save the phase_quality to a global for later display
-		
+
 		// Adjust the phase-error for non 8psk modes
 		if (n == 2) 		// bpsk, pskr
 			phase_quality *= 1.25;
-		else if (n == 4) 	// qpsk, xpsk
-			phase_quality *= 1.05;
-		
+
 		if (phase_quality > 100) phase_quality = 100;
 		else if (phase_quality < 0) phase_quality = 0;
-		
+
 		update_quality(phase_quality);
 
 	}
@@ -1395,16 +1587,16 @@ void psk::rx_symbol(cmplx symbol, int car)
 
 	int set_dcd = -1; // 1 sets DCD on ; 0 sets DCD off ; -1 does neither (no-op)
 	static int dcdOFFcounter=0; // to prevent a data loss bug... only set DCD-off when correct shreg bitpattern seen multiple times.
-	
+
 	switch (dcdshreg) {
-		
+
 		// bpsk DCD ON
 		case 0xAAAAAAAA:
 			if (_xpsk || _8psk || _16psk) break;
 			if (_pskr) break;
 			set_dcd = 1;
 			break;
-			
+
 			// pskr DCD ON
 			// the pskr FEC pipeline is flushed with an alternating 1/0 pattern, giving 4 possible DCD-ON sequences.
 		case 0x0A0A0A0A:
@@ -1414,7 +1606,7 @@ void psk::rx_symbol(cmplx symbol, int car)
 			if (!_pskr) break;
 			set_dcd = 1;
 			break;
-			
+
 			// xpsk DCD OFF
 		case 0x92492492:
 			if (_qpsk) break; // the QPSK preamble and postamble are identical... Since cant differentiate, QPSK modes do not use DCD
@@ -1422,21 +1614,21 @@ void psk::rx_symbol(cmplx symbol, int car)
 			if (!_disablefec) break; // xPSK with FEC-enabled does not use DCD-OFF
 			set_dcd = 0;
 			break;
-			
+
 			// 8psk DCD OFF
-		case 0x44444444:	
+		case 0x44444444:
 			if (!_8psk) break;
 			if (!_disablefec) break; // 8psk with FEC-enabled does not use DCD-OFF
 			set_dcd = 0;
 			break;
-			
+
 			// 16psk DCD OFF
 		case 0x10842108:
 			if (!_16psk) break;
 			if (!_disablefec) break; // 16psk with FEC-enabled does not use DCD-OFF
 			set_dcd = 0;
 			break;
-			
+
 			// bpsk DCD OFF
 			// 8psk & xpsk DCD ON
 		case 0x00000000:
@@ -1448,20 +1640,21 @@ void psk::rx_symbol(cmplx symbol, int car)
 			}
 			set_dcd = 0;
 			break;
-			
+
 		default:
 			if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
 				dcd = true;
-			} else if (!_xpsk) { // TEMP BUG FIX:unknown bug in xPSK squelch-detection causes cutoff of first characters (attack/decay??) TODO: KL4YFD FEB2021.
+			// FIXME BUG OFDM FEC modes have NO DCD OFF yet. TODO KL4YFD MAR2021
+			} else if (mode != MODE_OFDM_500F && mode != MODE_OFDM_750F && mode != MODE_OFDM_2000F) {
 				dcd = false;
 			}
 			dcdOFFcounter -= 1; // If no DCD-off sequence seen in bitshreg, then subtract 1 from counter (to prevent a accumulative-triggering bug)
-			if (dcdOFFcounter < 0)dcdOFFcounter = 0; // prevent wraparound to negative
+			if (dcdOFFcounter < 0) dcdOFFcounter = 0; // prevent wraparound to negative
 			break;
 	}
 	//printf("\n%08x", dcdshreg);
-	
-	// Set DCD to ON 
+
+	// Set DCD to ON
 	if ( 1 == set_dcd ) {
 		dcdOFFcounter = 0;
 		dcd = true;
@@ -1470,7 +1663,7 @@ void psk::rx_symbol(cmplx symbol, int car)
 		if (progdefaults.Pskmails2nreport && (mailserver || mailclient))
 			s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
 		//printf("\t DCD ON!!");
-		
+
 	// Set DCD to OFF only if seen 6 bit-shifts in a row. (prevent false-triggers and data loss mid-stream)
 	} else if ( 0 == set_dcd ) {
 		if (++dcdOFFcounter > 5) {
@@ -1481,7 +1674,7 @@ void psk::rx_symbol(cmplx symbol, int car)
 			//printf("\t DCD OFF!!!!!!!!!");
 		}
 	}
-	
+
 	if (_pskr) {
 		rx_pskr(softbit);
 		set_phase(phase, norm(quality), dcd);
@@ -1494,7 +1687,8 @@ void psk::rx_symbol(cmplx symbol, int car)
 			int bitmask = 1;
 			unsigned char xsoftsymbols[symbits];
 
-			if ( (_puncturing && _16psk) ) rx_pskr(128); // 16psk: recover punctured low bit
+			if (_puncturing && _16psk) // 16psk: recover 3/4-rate punctured low-bit
+				rx_pskr(128);
 
 			// Soft-decode of Gray-mapped 8psk
 			if (_8psk) {
@@ -1526,6 +1720,64 @@ void psk::rx_symbol(cmplx symbol, int car)
 							rx_pskr( (graymapped_8psk_softbits[bitindex][i]) + soft_qualityerror  );
 					}
 				}
+
+			} else if (_xpsk) {
+				bool softpuncture = false;
+				static double lastphasequality=0;
+				double phasequality = fabs(cos( n/2 * phase));
+				phasequality = (phasequality + lastphasequality) / 2; // Differential modem: average probabilities between current and previous symbols
+				lastphasequality = phasequality;
+				int soft_qualityerror = static_cast<int>(128 * phasequality);
+
+				if (soft_qualityerror > 255-12) // Prevent soft-bit wrap-around (crossing of value 128)
+					softpuncture = true;
+				else if (soft_qualityerror < 128/3) // First 1/3 of phase delta is considered a perfect signal
+					soft_qualityerror = 0;
+				else if (soft_qualityerror > 128 - (128/8) ) // Last 1/8 of phase delta triggers a puncture
+					softpuncture = true;
+				else
+					soft_qualityerror /= 2; // Scale the FEC error to prevent premature cutoff
+
+				if (softpuncture) {
+					for(int i=0; i<symbits; i++) rx_pskr(128);
+				} else {
+					int bitindex = static_cast<int>(bits);
+					for(int i=symbits-1; i>=0; i--) { // Use predefined Gray-mapped softbits for soft-decoding
+						if (graymapped_xpsk_softbits[bitindex][i] > 128) // soft-one
+							rx_pskr(graymapped_xpsk_softbits[bitindex][i] - soft_qualityerror); // Feed to the PSKR FEC decoder, one bit at a time.
+						else // soft-zero
+							rx_pskr(graymapped_xpsk_softbits[bitindex][i] + soft_qualityerror); // Feed to the PSKR FEC decoder, one bit at a time.
+					}
+				}
+
+			} else if (_16psk) {
+				bool softpuncture = false;
+				static double lastphasequality=0;
+				double phasequality = fabs(cos( n/2 * phase));
+				phasequality = (phasequality + lastphasequality) / 2; // Differential modem: average probabilities between current and previous symbols
+				lastphasequality = phasequality;
+				int soft_qualityerror = static_cast<int>(128 * phasequality);
+
+				if (soft_qualityerror > 255-25) // Prevent soft-bit wrap-around (crossing of value 128)
+					softpuncture = true;
+				else if (soft_qualityerror < 128/3) // First 1/3 of phase delta is considered a perfect signal
+					soft_qualityerror = 0;
+				else if (soft_qualityerror > 128 - (128/14) ) // Last 1/14 of phase delta triggers a puncture
+					softpuncture = true;
+				else
+					soft_qualityerror /= 2; // Scale the FEC error to prevent premature cutoff
+
+				if (softpuncture) {
+					for(int i=0; i<symbits; i++) rx_pskr(128);
+				} else {
+					int bitindex = static_cast<int>(bits);
+					for(int i=symbits-1; i>=0; i--) { // Use predefined Gray-mapped softbits for soft-decoding
+						if (graymapped_16psk_softbits[bitindex][i] > 128) // soft-one
+							rx_pskr(graymapped_16psk_softbits[bitindex][i] - soft_qualityerror); // Feed to the PSKR FEC decoder, one bit at a time.
+						else // soft-zero
+							rx_pskr(graymapped_16psk_softbits[bitindex][i] + soft_qualityerror); // Feed to the PSKR FEC decoder, one bit at a time.
+						}
+					}
 
 			} else {
 				//Hard Decode Section
@@ -1647,21 +1899,53 @@ void psk::update_syncscope()
 			msg2,
 			progdefaults.StatusTimeout,
 			progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
-	
-	} else if (displaysn) {
-		
-		// Only update the GUI once every dcdbits/4 function calls 
+
+
+
+	} else if (_xpsk || _8psk || _16psk) {
+		// Only update the GUI once every dcdbits/4 function calls
 		// to prevent high CPU load from high-baudrate modes
 		static int counter=0;
 		if (counter++ < dcdbits/4)
 			return;
 		else counter = 0;
-		
+
 		memset(msg1, 0, sizeof(msg1));
 		memset(msg2, 0, sizeof(msg2));
 
 		s2n = 10.0*log10( snratio );
-		if (s2n < 6)
+		if (s2n < 0)
+			strcpy(msg1, "S/N ---");
+		else
+			snprintf(msg1, sizeof(msg1), "S/N %2.0f dB", s2n);
+
+		put_Status1(
+			msg1,
+			progdefaults.StatusTimeout,
+			progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
+
+		// Display the phase-error of the
+		snprintf(msg2, sizeof(msg2), "Phase: %d%%", get_quality() );
+
+		put_Status2(
+			msg2,
+			progdefaults.StatusTimeout,
+			progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
+
+	} else if (displaysn) {
+
+		// Only update the GUI once every dcdbits/4 function calls
+		// to prevent high CPU load from high-baudrate modes
+		static int counter=0;
+		if (counter++ < dcdbits/4)
+			return;
+		else counter = 0;
+
+		memset(msg1, 0, sizeof(msg1));
+		memset(msg2, 0, sizeof(msg2));
+
+		s2n = 10.0*log10( snratio );
+		if (s2n < 0)
 			strcpy(msg1, "S/N ---");
 		else
 			snprintf(msg1, sizeof(msg1), "S/N %2.0f dB", s2n);
@@ -1713,9 +1997,12 @@ int psk::rx_process(const double *buf, int len)
 			// Mix with the internal NCO
 			z = cmplx ( *buf * cos(phaseacc[car]), *buf * sin(phaseacc[car]) );
 
-// if we re-enable multi-carrier vestigial carrier
-//			if (vestigial && car == 0) vestigial_sfft->run(z, sfft_bins, 1);
-			if (vestigial && progdefaults.pskpilot) vestigial_sfft->run(z, sfft_bins, 1);
+			if (numcarriers == 1 && vestigial && progdefaults.pskpilot) {
+				vestigial_sfft->run(z, sfft_bins, 1);
+			} 
+			else if (numcarriers > 1 && vestigial && car == 0) {
+				vestigial_sfft->run(z, sfft_bins, 1);
+			}
 
 			phaseacc[car] += delta[car];
 			if (phaseacc[car] > TWOPI) phaseacc[car] -= TWOPI;
@@ -1882,22 +2169,22 @@ void psk::transmit(double *buf, int len)
 #define SVP_COUNT (SVP_MASK + 1)
 
 static cmplx sym_vec_pos[SVP_COUNT] = {
-	cmplx (-1.0, 0.0),        // 180 degrees
-	cmplx (-0.9238, -0.3826), // 202.5 degrees
-	cmplx (-0.7071, -0.7071), // 225 degrees
-	cmplx (-0.3826, -0.9238), // 247.5 degrees
-	cmplx (0.0, -1.0),        // 270 degrees
-	cmplx (0.3826, -0.9238),  // 292.5 degrees
-	cmplx (0.7071, -0.7071),  // 315 degrees
-	cmplx (0.9238, -0.3826),  // 337.5 degrees
-	cmplx (1.0, 0.0),         // 0 degrees
-	cmplx (0.9238, 0.3826),   // 22.5 degrees
-	cmplx (0.7071, 0.7071),   // 45 degrees
-	cmplx (0.3826, 0.9238),   // 67.5 degrees
-	cmplx (0.0, 1.0),         // 90 degrees
-	cmplx (-0.3826, 0.9238),  // 112.5 degrees
-	cmplx (-0.7071, 0.7071),  // 135 degrees
-	cmplx (-0.9238, 0.3826)   // 157.5 degrees
+	cmplx (-1.0, 0.0),				// 180 degrees
+	cmplx (-0.9238, -0.3826),		// 202.5 degrees
+	cmplx (-0.7071, -0.7071),		// 225 degrees
+	cmplx (-0.3826, -0.9238),		// 247.5 degrees
+	cmplx (0.0, -1.0),				// 270 degrees
+	cmplx (0.3826, -0.9238),		// 292.5 degrees
+	cmplx (0.7071, -0.7071),		// 315 degrees
+	cmplx (0.9238, -0.3826),		// 337.5 degrees
+	cmplx (1.0, 0.0),				// 0 degrees
+	cmplx (0.9238, 0.3826),			// 22.5 degrees
+	cmplx (0.7071, 0.7071),			// 45 degrees
+	cmplx (0.3826, 0.9238),			// 67.5 degrees
+	cmplx (0.0, 1.0),				// 90 degrees
+	cmplx (-0.3826, 0.9238),		// 112.5 degrees
+	cmplx (-0.7071, 0.7071),		// 135 degrees
+	cmplx (-0.9238, 0.3826) 		// 157.5 degrees
 };
 
 void psk::tx_carriers()
@@ -1920,16 +2207,26 @@ void psk::tx_carriers()
 	for (int car = 0; car < symbols; car++) {
 		sym = txsymbols[car];
 
-		if (_qpsk && !reverse)
-			sym = (4 - sym) & 3;
+		if (_xpsk && !_disablefec) { // Use Gray-mapped xpsk constellation
+			symbol = prevsymbol[car] * graymapped_xpsk_pos[(sym & 3)];	// complex multiplication
 
-		if (_8psk && !_disablefec) // Use Gray-mapped 8psk constellation
+		} else if (_8psk && !_disablefec) { // Use Gray-mapped 8psk constellation
 			symbol = prevsymbol[car] * graymapped_8psk_pos[(sym & 7)];	// complex multiplication
 
-		else { // Map the incoming symbols to the underlying 16psk constellation.
-			if (_xpsk) sym = sym * 4 + 2; // Give it the "X" constellation shape
-			else if (_8psk) sym *= 2; // Map 8psk to 16psk
-			else sym *= 4; // For BPSK and QPSK
+		} else if (_16psk && !_disablefec) { // Use Gray-mapped 16psk constellation
+				symbol = prevsymbol[car] * graymapped_16psk_pos[(sym & 15)];	// complex multiplication
+
+		} else { // Map the incoming symbols to the underlying 16psk constellation.
+			if (_xpsk) {
+				sym = sym * 4 + 2; // Give it the "X" constellation shape
+			} else if (_8psk) {
+				sym *= 2; // Map 8psk to 16psk
+			} else { // BPSK and QPSK
+				if (_qpsk && !reverse) {
+					sym = (4 - sym) & 3;
+				}
+				sym *= 4; // For BPSK and QPSK
+			}
 			symbol = prevsymbol[car] * sym_vec_pos[(sym & SVP_MASK)];	// complex multiplication
 		}
 
@@ -1941,16 +2238,7 @@ void psk::tx_carriers()
 			if (test_signal_window && test_signal_window->visible() && btn_imd_on->value()) {
 				double imd = pow(10, xmtimd->value()/20.0);
 				shapeA -= (imd * imd_shape[i]);
-//				shapeA = cos(i * M_PI/symbollen);
-//				shapeA -= imd * cos(3.0 * i * M_PI / symbollen);
-//				shapeA -= imd * (3.0 / 5.0) * cos(5.0 * i * M_PI / symbollen);
-//				shapeA -= imd * (3.0 / 7.0) * cos(7.0 * i * M_PI / symbollen);
-//				shapeA -= imd * (3.0 / 9.0) * cos(9.0 * i * M_PI / symbollen);
-//				shapeA *= 0.5;
-//				shapeA += 0.5;
 			}
-//			else
-//				shapeA = tx_shape[i];  //0.5 * cos(i * M_PI / symbollen) + 0.5;
 
 			shapeB = (1.0 - shapeA);
 
@@ -1970,7 +2258,13 @@ void psk::tx_carriers()
 		prevsymbol[car] = symbol;
 	}
 
+	bool tx_vestigial = false;
 	if (vestigial && progdefaults.pskpilot) {
+		tx_vestigial = true;
+	} else if (mode >= MODE_OFDM_500F && mode <= MODE_OFDM_2000){
+		tx_vestigial = true;
+	}
+	if (tx_vestigial) {
 		double dvp = TWOPI * (frequencies[0] - sc_bw) / samplerate;
 		double amp = pow(10, progdefaults.pilot_power / 20.0) * maxamp;
 		for (int i = 0; i < symbollen; i++) {
@@ -2260,6 +2554,18 @@ int psk::tx_process()
 			tx_char(0); // <NUL>
 			preamble = 0;
 			return 0;
+
+		} else if (mode == MODE_OFDM_500F || mode == MODE_OFDM_750F || mode == MODE_OFDM_2000F) {
+			// RSID is used for frequency-setting and AFC: no preamble needed or used. Just send a header.
+			clearbits();
+			sig_start = true;
+			sig_stop = false;
+			for (int i=0; i<5; i++)
+				tx_char(0); // Send 4 <NUL> characters as both sacrificial-header and pad-to-ramp-up-the-FEC.
+			tx_char(10); // <LF> newline as first character
+			preamble = 0;
+			return 0;
+
 		} else if (_8psk) {
 			if (!_disablefec) clearbits();
 			if(progStatus.psk8DCDShortFlag)
@@ -2289,8 +2595,9 @@ int psk::tx_process()
 				preamble = 0;
 				return 0;
 			}
+
 		} else {
-			// Standard BPSK/QPSK preamble
+			// Standard BPSK/QPSK/xPSK preamble
 			sig_start = true;
 			sig_stop = false;
 			for (int i = 0; i < preamble; i++) {
