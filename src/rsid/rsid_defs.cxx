@@ -295,6 +295,11 @@ const int cRsId::rsid_ids_size1 = sizeof(rsid_ids_1)/sizeof(*rsid_ids_1) - 1;
         ELEM2_(1239, PSK8P125FL, MODE_8PSK125FL)        \
         ELEM2_(2052, PSK8P250FL, MODE_8PSK250FL)        \
                                                         \
+        ELEM2_(2053, OFDM500F, MODE_OFDM_500F)          \
+        ELEM2_(2094, OFDM7F0F, MODE_OFDM_750F)          \
+        ELEM2_(2118, OFDM2000, MODE_OFDM_2000)          \
+        ELEM2_(2110, OFDM2000F, MODE_OFDM_2000F)        \
+                                                        \
         ELEM2_(1171, IFKP, MODE_IFKP)                   \
                                                         \
         ELEM2_(0, NONE2, NUM_MODES)

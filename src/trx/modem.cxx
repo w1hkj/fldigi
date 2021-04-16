@@ -103,7 +103,6 @@ modem *_8psk250_modem = 0;
 modem *_8psk500_modem = 0;
 modem *_8psk1000_modem = 0;
 modem *_8psk1200_modem = 0;
-modem *_8psk1333_modem = 0;
 
 modem *_8psk125fl_modem = 0;
 modem *_8psk125f_modem = 0;
@@ -112,7 +111,12 @@ modem *_8psk250f_modem = 0;
 modem *_8psk500f_modem = 0;
 modem *_8psk1000f_modem = 0;
 modem *_8psk1200f_modem = 0;
-modem *_8psk1333f_modem = 0;
+
+modem *ofdm_500f_modem = 0;
+modem *ofdm_750f_modem = 0;
+modem *ofdm_2000f_modem = 0;
+modem *ofdm_2000_modem = 0;
+modem *ofdm_3500_modem = 0;
 
 modem *psk125r_modem = 0;
 modem *psk250r_modem = 0;
@@ -292,6 +296,7 @@ void modem::init()
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;
+	
 }
 
 void modem::set_freq(double freq)
