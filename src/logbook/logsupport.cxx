@@ -2083,6 +2083,8 @@ void setContestType()
    	btnCabQSOdate->value(true); btnCabTimeOFF->value(true);	btnCabRSTsent->value(true);
    	btnCabRSTrcvd->value(true);	btnCabSerialIN->value(true);btnCabSerialOUT->value(true);
    	btnCabXchgIn->value(true);	btnCabMyXchg->value(true);
+   	btnCabCounty->value(true);
+   	btnCabState->value(true);
 
     switch (contestnbr) {
     	case ARRL_SS_CW :
@@ -2171,7 +2173,7 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 {
 	char freq[16] = "";
-	string rst_in, rst_out, exch_in, exch_out, date, time, mode, mycall, call, exch;
+	string rst_in, rst_out, exch_in, exch_out, date, time, mode, mycall, call, exch, state, county;
 	string qsoline = "QSO: ";
 	int ifreq = 0;
 	size_t len = 0;
@@ -2193,26 +2195,27 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 			mode.compare("FM") == 0 ||
 			mode.compare("SSB") == 0 || mode.compare("PH") == 0 ) mode = "PH";
 		else if (mode.compare("RTTY") == 0) mode = "RY";
-		qsoline.append(mode); qsoline.append(" ");
+		if (mode.length() < 10) mode.append(10 - mode.length(), ' ');
+		qsoline.append(mode).append(" ");
 	}
 
 	if (btnCabQSOdate->value()) {
 		date = rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE);
 		date.insert(4,"-");
 		date.insert(7,"-");
-		qsoline.append(date); qsoline.append(" ");
+		qsoline.append(date).append(" ");
 	}
 
 	if (btnCabTimeOFF->value()) {
 		time = rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON);
-		qsoline.append(time4(time.c_str())); qsoline.append(" ");
+		qsoline.append(time4(time.c_str())).append(" ");
 	}
 
 	mycall = progdefaults.myCall;
 	if (mycall.length() > 13) mycall = mycall.substr(0,13);
 	len = mycall.length();
 	if (len < 13) mycall.append(13 - len, ' ');
-	qsoline.append(mycall); qsoline.append("   ");
+	qsoline.append(mycall).append("   ");
 
 	if (btnCabRSTsent->value() || contestnbr == BARTG_RTTY) {
 		rst_out = rec->getField(RST_SENT);
@@ -2229,7 +2232,7 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	if (btnCabMyXchg->value()) {
 		exch = rec->getField(MYXCHG);
 		if (!exch.empty())
-			exch_out.append(rec->getField(MYXCHG)).append(" ");
+			exch_out.append(exch).append(" ");
 	}
 
 	if (contestnbr == BARTG_RTTY) {
@@ -2281,6 +2284,18 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	if (exch_in.length() > 14) exch_in = exch_in.substr(0,14);
 	len = exch_in.length();
 	if (len < 14) exch_in.append(14 - len, ' ');
+
+	if (btnCabState->value()) {
+		state = rec->getField(STATE);
+		if (!state.empty())
+			qsoline.append(state).append(" ");
+	}
+
+	if (btnCabCounty->value()) {
+		county = rec->getField(CNTY);
+		if (!county.empty())
+			qsoline.append(county).append(" ");
+	}
 
 	qsoline.append(exch_in);
 
