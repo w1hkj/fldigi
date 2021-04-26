@@ -38,7 +38,14 @@ SetCompressor /SOLID lzma
 Function .onInit
     ${IfNot} ${AtLeastWin2000}
         MessageBox MB_ICONSTOP "Sorry, your Windows version is too old.$\n${PRODUCT_NAME} requires Windows 2000 or later."
-	Abort
+        Abort
+    ${EndIf}
+    # The default installation directory
+    !include x64.nsh
+    ${If} ${RunningX64}
+        StrCpy $INSTDIR $PROGRAMFILES64\${PRODUCT_STRING}
+    ${Else}
+        StrCpy $INSTDIR $PROGRAMFILES\${PRODUCT_STRING}
     ${EndIf}
 FunctionEnd
 
@@ -47,9 +54,6 @@ Name "${PRODUCT_DESCRIPTION}"
 
 # The file to write
 OutFile ${INSTALLER_FILE}
-
-# The default installation directory
-InstallDir $PROGRAMFILES\${PRODUCT_STRING}
 
 # Registry key to check for directory (so if you install again, it will
 # overwrite the old one automatically)
