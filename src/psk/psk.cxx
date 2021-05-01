@@ -266,15 +266,6 @@ psk::~psk()
 	if (Txinlv) delete Txinlv;
 
 	if (vestigial_sfft) delete vestigial_sfft;
-/*
-//disable freq-lock for all modes except OFDM 2000/2000F/3500
-	if (active_modem->get_mode() != MODE_OFDM_500F && \
-		active_modem->get_mode() != MODE_OFDM_750F && \
-		active_modem->get_mode() != MODE_OFDM_2000F && \
-		active_modem->get_mode() != MODE_OFDM_2000 && \
-		active_modem->get_mode() != MODE_OFDM_3500) \
-		set_freqlock(false);
-*/
 }
 
 psk::psk(trx_mode pskmode) : modem()
@@ -910,7 +901,7 @@ FIR_TYPE fir_type = PSK_CORE;
 			sfft_size = 16384;
 		else
 			sfft_size = 8192;
-
+		
 		int bin = sc_bw * sfft_size / samplerate;
 		vestigial_sfft = new sfft(sfft_size, bin - 5, bin + 6); // 11 bins
 		for (int i = 0; i < 11; i++) sfft_bins[i] = cmplx(0,0);
@@ -1209,17 +1200,47 @@ void psk::vestigial_afc() {
 	if (!vestigial_sfft->is_stable()) return;
 
 	double avg = 0;
-	int i = 0;
+	double max = 0;
+	int i = -1;
+	static int previous1 = -1;
+	static int previous2 = -2;
+    
 	for (i = 0; i < 11; i++) avg += abs(sfft_bins[i]);
 	avg /= 11.0;
+	
+	// No real signal present: ignore AFC, reset, and return
+	if (avg == 0.0f) {
+		vestigial_sfft->reset();
+		return;
+	}
+	
 	std::setprecision(2); std::setw(5);
-	for (i = 0; i < 11; i++) if (abs(sfft_bins[i]) > 2.0*avg) break;
-	if (i < 11) {
+	for (int k = 0; k < 11; k++) {
+		if (abs(sfft_bins[k]) > max) {
+			max = abs(sfft_bins[k]);
+			i = k;
+		}
+	}
+	
+	// Validity-check the AFC: must see same tone twice in a row,
+	// and previous tones must be within 1Hz of each other.
+	// Operates with 1hz/sec drift-rates
+	if ( i != previous1 || abs(previous1-previous2) > 1 ) {
+		previous2 = previous1;
+		previous1 = i;
+		vestigial_sfft->reset();
+		return;
+	}
+	
+    if (i < 11 && i > -1) {
 		if (i != 5) {
 			frequency -= 1.0*(i-5)*samplerate/sfft_size;
 			set_freq (frequency);
 		}
 	}
+	
+	previous2 = previous1;
+	previous1 = i;
 	vestigial_sfft->reset();
 }
 
@@ -1970,9 +1991,14 @@ void psk::tx_carriers()
 		prevsymbol[car] = symbol;
 	}
 
+	double amp=0;
+	bool tx_vestigial = false;
 	if (vestigial && progdefaults.pskpilot) {
+		tx_vestigial = true;
+		amp = pow(10, progdefaults.pilot_power / 20.0) * maxamp;
+	}
+	if (tx_vestigial) {
 		double dvp = TWOPI * (frequencies[0] - sc_bw) / samplerate;
-		double amp = pow(10, progdefaults.pilot_power / 20.0) * maxamp;
 		for (int i = 0; i < symbollen; i++) {
 			outbuf[i] += amp * cos(vphase);
 			outbuf[i] /= (1 + amp);
