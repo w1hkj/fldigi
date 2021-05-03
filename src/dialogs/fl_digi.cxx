@@ -8946,6 +8946,7 @@ char szTestChar[] = "E|I|S|T|M|O|A|V";
 //char testbools[7];
 
 extern int get_fsq_tx_char();
+bool disable_lowercase = false;
 
 int get_tx_char(void)
 {
@@ -9013,10 +9014,12 @@ int get_tx_char(void)
 		return(c);
 	}
 
+	disable_lowercase = false;
 	if (xmltest_char_available) {
 		num_cps_chars++;
 		start_deadman();
 		c = xmltest_char();
+		disable_lowercase = true;
 	}
 	else if (active_modem->get_mode() == MODE_IFKP) {
 		c = ifkp_tx_text->nextChar();
@@ -9169,7 +9172,7 @@ int get_tx_char(void)
 		return(GET_TX_CHAR_NODATA);
 	}
 
-	if (progdefaults.tx_lowercase)
+	if (progdefaults.tx_lowercase && !disable_lowercase)
 		c = fl_tolower(c);
 
 	start_deadman();
