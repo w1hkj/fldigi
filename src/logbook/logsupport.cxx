@@ -1436,6 +1436,7 @@ void SearchLastQSO(const char *callsign)
 		inpCounty->position (0);
 		cboCountry->value(inpCountry_log->value ());
 		inpSearchString->value(callsign);
+		inpNotes->value(inpNotes_log->value ());
 		if (inpLoc->value()[0]) {
 			double lon1, lat1, lon2, lat2;
 			double azimuth, distance;
