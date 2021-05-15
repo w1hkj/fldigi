@@ -2578,6 +2578,7 @@ static void pLNW(std::string &s, size_t &i, size_t endbracket)
 		inpNotes->value(msg.c_str());
 	}
 	substitute(s, i, endbracket, "");
+	qsoSave_cb(0, 0);
 }
 
 static void pCLRLOG(std::string &s, size_t &i, size_t endbracket)
