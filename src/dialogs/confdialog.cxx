@@ -7303,6 +7303,7 @@ progdefaults.UseUHrouterPTT =
 progdefaults.RigCatRTSptt =
 progdefaults.RigCatDTRptt =
 progdefaults.RigCatCMDptt =
+progdefaults.cmedia_ptt =
 progdefaults.HamlibCMDptt = false;
 } else
 progdefaults.TTYptt = false;
@@ -7340,6 +7341,7 @@ progdefaults.UseUHrouterPTT =
 progdefaults.RigCatRTSptt =
 progdefaults.RigCatDTRptt =
 progdefaults.RigCatCMDptt =
+progdefaults.cmedia_ptt =
 progdefaults.HamlibCMDptt = false;
 } else
 progdefaults.UsePPortPTT = false;
@@ -7362,6 +7364,7 @@ progdefaults.UsePPortPTT =
 progdefaults.RigCatRTSptt =
 progdefaults.RigCatDTRptt =
 progdefaults.RigCatCMDptt =
+progdefaults.cmedia_ptt =
 progdefaults.HamlibCMDptt = false;
 } else
 progdefaults.UseUHrouterPTT = false;
@@ -7425,6 +7428,58 @@ Fl_Counter *cntPTT_off_delay=(Fl_Counter *)0;
 static void cb_cntPTT_off_delay(Fl_Counter* o, void*) {
   progdefaults.PTT_off_delay = o->value();
 progdefaults.changed = true;
+}
+
+Fl_Group *grp_cmedia_ptt=(Fl_Group *)0;
+
+Fl_Round_Button *btn_use_cmedia_PTT=(Fl_Round_Button *)0;
+
+static void cb_btn_use_cmedia_PTT(Fl_Round_Button* o, void*) {
+  if (o->value()) {
+progdefaults.cmedia_ptt = true;
+progdefaults.UsePPortPTT =
+progdefaults.UseUHrouterPTT =
+progdefaults.RigCatRTSptt =
+progdefaults.RigCatDTRptt =
+progdefaults.RigCatCMDptt =
+progdefaults.HamlibCMDptt = false;
+btn_init_cmedia_PTT->labelcolor(FL_RED);
+btn_init_cmedia_PTT->redraw();
+} else {
+progdefaults.cmedia_ptt = false;
+close_cmedia();
+}
+progdefaults.changed = true;
+}
+
+Fl_ComboBox *inp_cmedia_dev=(Fl_ComboBox *)0;
+
+static void cb_inp_cmedia_dev(Fl_ComboBox* o, void*) {
+  close_cmedia();
+progdefaults.cmedia_device = o->value();
+btn_init_cmedia_PTT->labelcolor(FL_RED);
+btn_init_cmedia_PTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_ComboBox *inp_cmedia_GPIO_line=(Fl_ComboBox *)0;
+
+static void cb_inp_cmedia_GPIO_line(Fl_ComboBox* o, void*) {
+  progdefaults.cmedia_gpio_line = o->value();
+}
+
+Fl_Button *btn_init_cmedia_PTT=(Fl_Button *)0;
+
+static void cb_btn_init_cmedia_PTT(Fl_Button* o, void*) {
+  progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_test_cmedia=(Fl_Button *)0;
+
+static void cb_btn_test_cmedia(Fl_Button*, void*) {
+  test_hid_ptt();
 }
 
 Fl_File_Input *inp_wav_fname_regex=(Fl_File_Input *)0;
@@ -17239,6 +17294,69 @@ i.e. localhost"));
       tab_tree->close(_("Rig Control"));
       grpRigHardware->end();
     } // Fl_Group* grpRigHardware
+    { Fl_Group* o = grp_cmedia_ptt = new Fl_Group(200, 0, 600, 350, _("C-Media PTT"));
+      grp_cmedia_ptt->box(FL_ENGRAVED_BOX);
+      grp_cmedia_ptt->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+      grp_cmedia_ptt->hide();
+      { Fl_Group* o = new Fl_Group(205, 30, 590, 173, _("C-Media audio codecs used in DRA Series have 8 user controllable GPIO pins. G\
+PIO signal line 3 (pin 13) is used for PTT control.\n\nFldigi accesses the GPI\
+O lines as a Human Interface Device (HID).  Discovered C-Media devices are enu\
+merated in the \'C-Media device\' list box.\n\nOn Linux: add a file named cmed\
+ia.rules to /etc/udev/rules.d/\nThe file should contain a single line\n\nKERNE\
+L==\"hidraw*\", SUBSYSTEM==\"hidraw\", MODE=\"0664\", GROUP=\"plugdev\""));
+        o->align(Fl_Align(132|FL_ALIGN_INSIDE));
+        o->end();
+      } // Fl_Group* o
+      { btn_use_cmedia_PTT = new Fl_Round_Button(235, 218, 220, 20, _("Use C-Media PTT"));
+        btn_use_cmedia_PTT->down_box(FL_DOWN_BOX);
+        btn_use_cmedia_PTT->selection_color((Fl_Color)1);
+        btn_use_cmedia_PTT->callback((Fl_Callback*)cb_btn_use_cmedia_PTT);
+      } // Fl_Round_Button* btn_use_cmedia_PTT
+      { Fl_ComboBox* o = inp_cmedia_dev = new Fl_ComboBox(235, 261, 350, 22, _("C-Media device"));
+        inp_cmedia_dev->box(FL_DOWN_BOX);
+        inp_cmedia_dev->color(FL_BACKGROUND2_COLOR);
+        inp_cmedia_dev->selection_color(FL_BACKGROUND_COLOR);
+        inp_cmedia_dev->labeltype(FL_NORMAL_LABEL);
+        inp_cmedia_dev->labelfont(0);
+        inp_cmedia_dev->labelsize(14);
+        inp_cmedia_dev->labelcolor(FL_FOREGROUND_COLOR);
+        inp_cmedia_dev->callback((Fl_Callback*)cb_inp_cmedia_dev);
+        inp_cmedia_dev->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+        inp_cmedia_dev->when(FL_WHEN_RELEASE);
+        o->labelsize(FL_NORMAL_SIZE);
+        o->value(progdefaults.cmedia_device.c_str());
+        inp_cmedia_dev->end();
+      } // Fl_ComboBox* inp_cmedia_dev
+      { Fl_ComboBox* o = inp_cmedia_GPIO_line = new Fl_ComboBox(235, 304, 114, 22, _("GPIO line"));
+        inp_cmedia_GPIO_line->box(FL_DOWN_BOX);
+        inp_cmedia_GPIO_line->color(FL_BACKGROUND2_COLOR);
+        inp_cmedia_GPIO_line->selection_color(FL_BACKGROUND_COLOR);
+        inp_cmedia_GPIO_line->labeltype(FL_NORMAL_LABEL);
+        inp_cmedia_GPIO_line->labelfont(0);
+        inp_cmedia_GPIO_line->labelsize(14);
+        inp_cmedia_GPIO_line->labelcolor(FL_FOREGROUND_COLOR);
+        inp_cmedia_GPIO_line->callback((Fl_Callback*)cb_inp_cmedia_GPIO_line);
+        inp_cmedia_GPIO_line->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+        inp_cmedia_GPIO_line->when(FL_WHEN_RELEASE);
+        o->labelsize(FL_NORMAL_SIZE);
+        o->value(progdefaults.cmedia_gpio_line);
+        o->add("GPIO-1|GPIO-2|GPIO-3|GPIO-4");
+        inp_cmedia_GPIO_line->end();
+      } // Fl_ComboBox* inp_cmedia_GPIO_line
+      { btn_init_cmedia_PTT = new Fl_Button(600, 261, 70, 22, _("Select"));
+        btn_init_cmedia_PTT->tooltip(_("Select device & Initialize the H/W PTT interface"));
+        btn_init_cmedia_PTT->callback((Fl_Callback*)cb_btn_init_cmedia_PTT);
+      } // Fl_Button* btn_init_cmedia_PTT
+      { btn_test_cmedia = new Fl_Button(695, 261, 70, 22, _("TEST"));
+        btn_test_cmedia->tooltip(_("Toggles PTT line 20x; check DRA-30 ptt LED"));
+        btn_test_cmedia->callback((Fl_Callback*)cb_btn_test_cmedia);
+      } // Fl_Button* btn_test_cmedia
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("C-Media PTT"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Rig Control/C-Media PTT"));
+      tab_tree->close(_("Rig Control"));
+      grp_cmedia_ptt->end();
+    } // Fl_Group* grp_cmedia_ptt
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Soundcard/Alerts"));
       o->box(FL_ENGRAVED_BOX);
       o->color(FL_LIGHT1);

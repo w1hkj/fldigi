@@ -1410,6 +1410,16 @@
         ELEM_(int, gpio_pulse_width, "GPIO_PULSE_WIDTH",                                \
               "GPIO pulse width setting for PiHpSDR PTT",                               \
               0)                                                                        \
+        /* cmedia parameters */                                                         \
+        ELEM_(std::string, cmedia_device, "CMEDIA_DEVICE",                              \
+              "DRA-xx device name",                                                     \
+              "NONE")  /* NONE */                                                       \
+        ELEM_(bool, cmedia_ptt, "CMEDIA-PTT",                                           \
+              "Use cmedia PTT",                                                         \
+              false)                                                                    \
+        ELEM_(std::string, cmedia_gpio_line, "CMEDIA_GPIO_LINE",                        \
+              "cmedia GPIO pin assignment for PTT",                                     \
+              "GPIO-3")  /* pin 13 on cmedia, default for DRA-30 */                     \
         /* RigCAT parameters */                                                         \
         ELEM_(bool, RigCatRTSplus, "RIGCATRTSPLUS",                                     \
               "Initial state of RTS",                                                   \

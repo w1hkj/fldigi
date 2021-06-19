@@ -69,11 +69,15 @@
 
 #include "n3fjp_logger.h"
 
+#include "cmedia.h"
+
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
 using namespace std;
 
 extern Cserial CW_KEYLINE_serial;
+
+int cmedia_fd = -1;
 
 PTT::PTT(ptt_t dev) : pttdev(PTT_INVALID), oldtio(0)
 {
@@ -112,6 +116,9 @@ void PTT::reset(ptt_t dev)
 	case PTT_TTY:
 		open_tty();
 		break;
+	case PTT_CMEDIA:
+		cmedia_fd = open_cmedia(progdefaults.cmedia_device);
+		break;
 	default:
 		break; // nothing to open
 	}
@@ -127,10 +134,10 @@ void PTT::set(bool ptt)
 		pttdev == PTT_RIGCAT ? "RIGCAT" :
 		pttdev == PTT_TTY ? "TTY" :
 		pttdev == PTT_GPIO ? "GPIO" :
+		pttdev == PTT_CMEDIA ? "CMEDIA" :
 		pttdev == PTT_PARPORT ? "PARPORT" :
 		pttdev == PTT_UHROUTER ? "UHROUTER" : "UNKNOWN";
-	LOG_VERBOSE("PTT via %s : %s", ptt_temp.c_str(), ptt ? "ON" : "OFF");
-	LOG_WARN("PTT via %s : %s", ptt_temp.c_str(), ptt ? "ON" : "OFF");
+	LOG_INFO("PTT via %s : %s", ptt_temp.c_str(), ptt ? "ON" : "OFF");
 
 // add milliseconds - no audio to clear virtual audio card used by Flex systems
 	if (!ptt && progdefaults.PTT_off_delay)
@@ -146,7 +153,7 @@ void PTT::set(bool ptt)
 	}
 
 	switch (pttdev) {
-	case PTT_NONE: default:
+	case PTT_NONE:
 		noCAT_setPTT(ptt);
 		break;
 #if USE_HAMLIB
@@ -172,14 +179,24 @@ void PTT::set(bool ptt)
 		set_uhrouter(ptt);
 		break;
 #endif
+	case PTT_CMEDIA:
+		if (cmedia_fd != -1) {
+			int bitnbr = 2;
+			if (progdefaults.cmedia_gpio_line == "GPIO-1") bitnbr = 0;
+			else if (progdefaults.cmedia_gpio_line == "GPIO-2") bitnbr = 1;
+			else if (progdefaults.cmedia_gpio_line == "GPIO-3") bitnbr = 2;
+			else if (progdefaults.cmedia_gpio_line == "GPIO-4") bitnbr = 3;
+			set_cmedia(bitnbr, ptt);
+		}
+		break;
+	default:
+		{
+			set_gpio(ptt);
+			nano_PTT(ptt);
+			if (n3fjp_connected)
+				n3fjp_set_ptt(ptt);
+		}
 	}
-
-	set_gpio(ptt);
-
-	nano_PTT(ptt);
-
-	if (n3fjp_connected)
-		n3fjp_set_ptt(ptt);
 
 	if (ptt && progdefaults.PTT_on_delay)
 		MilliSleep(progdefaults.PTT_on_delay);

@@ -533,6 +533,8 @@ int configuration::setDefaults()
 	btnUsePPortPTT->value(progdefaults.UsePPortPTT);
 	btnUseUHrouterPTT->value(progdefaults.UseUHrouterPTT);
 
+	btn_use_cmedia_PTT->value(progdefaults.cmedia_ptt);
+
 #if USE_HAMLIB
 	listbox_sideband->add(_("Rig mode"));
 	listbox_sideband->add(_("Always LSB"));
@@ -827,6 +829,8 @@ void configuration::initInterface()
 		push2talk->reset(PTT::PTT_PARPORT);
 	else if (UseUHrouterPTT)
 		push2talk->reset(PTT::PTT_UHROUTER);
+	else if (cmedia_ptt)
+		push2talk->reset(PTT::PTT_CMEDIA);
 	else
 		push2talk->reset(PTT::PTT_NONE);
 

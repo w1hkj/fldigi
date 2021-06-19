@@ -123,6 +123,8 @@ extern Fl_Scroll       *wefax_pic_rx_scroll;
 #include "contest.h"
 #include "counties.h"
 
+#include "cmedia.h"
+
 #if BENCHMARK_MODE
 	#include "benchmark.h"
 #endif
@@ -1163,6 +1165,7 @@ int main(int argc, char ** argv)
 	setTabColors();
 
 	progdefaults.testCommPorts();
+	init_hids();
 
 #if USE_HAMLIB
 	xcvr = new Rig();

@@ -4427,7 +4427,7 @@ chk_nanoIO_FSK_io->value(0);}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/DTR-RTS keying} open selected
+      label {Modem/CW/DTR-RTS keying}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/DTR-RTS keying"));}
       code1 {config_pages.push_back(p);}
@@ -9316,6 +9316,7 @@ progdefaults.UseUHrouterPTT =
 progdefaults.RigCatRTSptt =
 progdefaults.RigCatDTRptt =
 progdefaults.RigCatCMDptt =
+progdefaults.cmedia_ptt =
 progdefaults.HamlibCMDptt = false;
 } else
 progdefaults.TTYptt = false;
@@ -9353,6 +9354,7 @@ progdefaults.UseUHrouterPTT =
 progdefaults.RigCatRTSptt =
 progdefaults.RigCatDTRptt =
 progdefaults.RigCatCMDptt =
+progdefaults.cmedia_ptt =
 progdefaults.HamlibCMDptt = false;
 } else
 progdefaults.UsePPortPTT = false;
@@ -9374,6 +9376,7 @@ progdefaults.UsePPortPTT =
 progdefaults.RigCatRTSptt =
 progdefaults.RigCatDTRptt =
 progdefaults.RigCatCMDptt =
+progdefaults.cmedia_ptt =
 progdefaults.HamlibCMDptt = false;
 } else
 progdefaults.UseUHrouterPTT = false;
@@ -9439,6 +9442,79 @@ progdefaults.changed = true;}
           code0 {o->value(progdefaults.PTT_off_delay);}
           code1 {o->lstep(100);}
         }
+      }
+    }
+    Fl_Group grp_cmedia_ptt {
+      label {C-Media PTT} open selected
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("C-Media PTT"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Rig Control/C-Media PTT"));}
+      code3 {tab_tree->close(_("Rig Control"));}
+    } {
+      Fl_Group {} {
+        label {C-Media audio codecs used in DRA Series have 8 user controllable GPIO pins. GPIO signal line 3 (pin 13) is used for PTT control.
+
+Fldigi accesses the GPIO lines as a Human Interface Device (HID).  Discovered C-Media devices are enumerated in the 'C-Media device' list box.
+
+On Linux: add a file named cmedia.rules to /etc/udev/rules.d/
+The file should contain a single line
+
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0664", GROUP="plugdev"} open
+        xywh {205 30 590 173} align 148
+      } {}
+      Fl_Round_Button btn_use_cmedia_PTT {
+        label {Use C-Media PTT}
+        callback {if (o->value()) {
+progdefaults.cmedia_ptt = true;
+progdefaults.UsePPortPTT =
+progdefaults.UseUHrouterPTT =
+progdefaults.RigCatRTSptt =
+progdefaults.RigCatDTRptt =
+progdefaults.RigCatCMDptt =
+progdefaults.HamlibCMDptt = false;
+btn_init_cmedia_PTT->labelcolor(FL_RED);
+btn_init_cmedia_PTT->redraw();
+} else {
+progdefaults.cmedia_ptt = false;
+close_cmedia();
+}
+progdefaults.changed = true;}
+        xywh {235 218 220 20} down_box DOWN_BOX selection_color 1
+      }
+      Fl_Group inp_cmedia_dev {
+        label {C-Media device}
+        callback {close_cmedia();
+progdefaults.cmedia_device = o->value();
+btn_init_cmedia_PTT->labelcolor(FL_RED);
+btn_init_cmedia_PTT->redraw();
+progdefaults.changed = true;} open
+        xywh {235 261 350 22} box DOWN_BOX color 7 align 5
+        code0 {o->labelsize(FL_NORMAL_SIZE);}
+        code1 {o->value(progdefaults.cmedia_device.c_str());}
+        class Fl_ComboBox
+      } {}
+      Fl_Group inp_cmedia_GPIO_line {
+        label {GPIO line}
+        callback {progdefaults.cmedia_gpio_line = o->value();} open
+        xywh {235 304 114 22} box DOWN_BOX color 7 align 5
+        code0 {o->labelsize(FL_NORMAL_SIZE);}
+        code1 {o->value(progdefaults.cmedia_gpio_line);}
+        code2 {o->add("GPIO-1|GPIO-2|GPIO-3|GPIO-4");}
+        class Fl_ComboBox
+      } {}
+      Fl_Button btn_init_cmedia_PTT {
+        label Select
+        callback {progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
+progdefaults.changed = true;}
+        tooltip {Select device & Initialize the H/W PTT interface} xywh {600 261 70 22}
+      }
+      Fl_Button btn_test_cmedia {
+        label TEST
+        callback {test_hid_ptt();}
+        tooltip {Toggles PTT line 20x; check DRA-30 ptt LED} xywh {695 261 70 22}
+        code0 {\#include "cmedia.h"}
       }
     }
     Fl_Group {} {
