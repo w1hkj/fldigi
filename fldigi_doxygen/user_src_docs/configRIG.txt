@@ -347,6 +347,32 @@ command
 $ gpio readall
 \endverbatim
 
+\section cmedia_ptt C-Media GPIO PTT
+
+Sound card interface units such as the Masters Communications DRA series use C-Media
+audio codec chips.
+
+\image html dra30-top.jpg ""
+\image latex dra30-top.jpg "" width=3.0in
+<br>
+\image html dra80-top.jpg ""
+\image latex dra80-top.jpg "" width=3.0in
+
+These devices will be enumerated on the sound card devices configuration panel.  The C-Media device
+must be selected for both input and output audio or the GPIO PTT output will not be enabled.
+
+\image html audio-devices.png ""
+\image latex audio-devices.png "" width=5.0in
+
+The C-Media GPIO PTT is enabled on a separate rig control configuration panel:
+
+\image html cmedia-ptt-devices.png ""
+\image latex cmedia-ptt-devices.png "" width=5.0in
+
+If multiple C-Media devices are discovered they will enumerate as C-Media-A, C-Media-B, etc.  You must test the selected interface as
+ it is not possible to know which is the correct one for the DRA interface.  Pressing the TEST button will cause the PTT line
+ to rapidly toggle for a period of 2 seconds.  This will cause the RED PTT led to flash and the transceiver PTT to toggle on and off.
+
 \ref rig_config_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"

@@ -503,6 +503,8 @@ clean-local:
 
 # Sources that we build. It is OK to have headers here.
 fldigi_SOURCES += \
+	cmedia/cmedia.cxx \
+	cmedia/hid.cxx \
 	combo/combo.cxx \
 	config_script/create_default_script.cxx \
 	config_script/run_script.h \
@@ -705,6 +707,9 @@ fldigi_SOURCES += \
 EXTRA_fldigi_SOURCES += \
 	blank/blank.cxx \
 	blank/blank.h \
+	cmedia/hid_lin.cxx \
+	cmedia/hid_mac.cxx \
+	cmedia/hid_win.cxx \
 	dialogs/fl_digi_main.cxx \
 	dxcluster/arc-help.cxx \
 	dxcluster/CCC_Commands.cxx \
@@ -757,6 +762,7 @@ EXTRA_fldigi_SOURCES += \
 	include/calendar.h \
 	include/charsetdistiller.h \
 	include/charsetlist.h \
+	include/cmedia.h \
 	include/colorbox.h \
 	include/combo.h \
 	include/complex.h \
@@ -805,6 +811,10 @@ EXTRA_fldigi_SOURCES += \
 	include/gettext.h \
 	include/gfft.h \
 	include/globals.h \
+	include/hidapi.h \
+	include/hid_lin.h \
+	include/hid_mac.h \
+	include/hid_win.h \
 	include/htmlstrings.h \
 	include/https.h \
 	include/icons.h \

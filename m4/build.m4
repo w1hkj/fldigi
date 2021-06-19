@@ -54,7 +54,7 @@ $INTL_CFLAGS $PTW32_CFLAGS $BFD_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEB
 $PORTAUDIO_LIBS $FLTK_LIBS $X_LIBS \
 $SNDFILE_LIBS $SAMPLERATE_LIBS $PULSEAUDIO_LIBS \
 $HAMLIB_LIBS $PNG_LIBS $XMLRPC_LIBS $INTL_LIBS $PTW32_LIBS $BFD_LIBS \
-$EXTRA_LIBS $FLXMLRPC_LIBS $LIBMBEDTLS_LIBS"
+$EXTRA_LIBS $FLXMLRPC_LIBS $LIBMBEDTLS_LIBS $LIBUDEV_LIBS"
 
 # CPPFLAGS
   FLARQ_BUILD_CPPFLAGS="-I\$(srcdir) -I\$(srcdir)/include -I\$(srcdir)/fileselector \
@@ -86,6 +86,16 @@ $BFD_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEBUG_CFLAGS"
   if test "x$target_darwin" = "xyes"; then
     FLARQ_BUILD_CXXFLAGS="$FLARQ_BUILD_CXXFLAGS -fno-stack-check -mmacosx-version-min=10.11"
     FLARQ_BUILD_CPPFLAGS="$FLARQ_BUILD_CPPFLAGS -fno-stack-check -mmacosx-version-min=10.11"
+  fi
+
+# UDEV SUPPORT
+  if test "x$target_darwin" = "xyes"; then
+    FLDIGI_BUILD_LDADD="$FLDIGI_BUILD_LDADD -framework IOKit -framework CoreFoundation"
+  else if test "x$target_mingw32" = "xyes"; then
+      FLDIGI_BUILD_LDADD="$FLDIGI_BUILD_LDADD -lsetupapi -lhid"
+    else
+      FLDIGI_BUILD_LDADD="$FLDIGI_BUILD_LDADD -ludev"
+    fi
   fi
 
 # LDFLAGS

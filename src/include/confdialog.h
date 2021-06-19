@@ -831,6 +831,13 @@ extern Fl_Button *btnInitHWPTT;
 extern Fl_Group *grpPTTdelays;
 extern Fl_Counter *cntPTT_on_delay;
 extern Fl_Counter *cntPTT_off_delay;
+extern Fl_Group *grp_cmedia_ptt;
+extern Fl_Round_Button *btn_use_cmedia_PTT;
+extern Fl_ComboBox *inp_cmedia_dev;
+extern Fl_ComboBox *inp_cmedia_GPIO_line;
+extern Fl_Button *btn_init_cmedia_PTT;
+#include "cmedia.h"
+extern Fl_Button *btn_test_cmedia;
 extern Fl_File_Input *inp_wav_fname_regex;
 #include <FL/Fl_Native_File_Chooser.H>
 extern Fl_Button *btn_select_regex_wav;

@@ -147,6 +147,7 @@ AC_FLDIGI_PROGRAMS
 # Set DARWIN Makefile conditional
 # Substitute MAC_UNIVERSAL_CFLAGS and MAC_UNIVERSAL_LDFLAGS in Makefile
 AC_FLDIGI_MACOSX
+
 ### win32
 # Set WIN32 Makefile conditional
 # Set HAVE_WINDRES Makefile conditional
@@ -303,6 +304,16 @@ AC_FLDIGI_PKG_CHECK([libmbedtls], [libmbedtls >= 2.16.0],
 # Substitute INTL_LIBS in Makefile
 # (default to LIBINTL)
 AC_FLDIGI_INTL
+
+### libhid
+# Set ac_cv_udev to yes/no
+# Define USE_LIBHID in config.h
+# Substitute LIBHID_CFLAGS and LIBHID_LIBS in Makefile
+#if test "x$ac_cv_want_fldigi" = "xyes"; then
+#AC_FLDIGI_PKG_CHECK([libhid], [libhid], [no], [no],
+#  [use udev libraries @<:@autodetect@:>@],
+#  [ENABLE_LIBHID])
+#fi
 
 ### asciidoc
 # substitute ASCIIDOC and A2X in doc/Makefile

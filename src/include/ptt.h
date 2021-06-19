@@ -66,7 +66,7 @@ public:
 	// code is not compiled.  New tags go to the end of the list.
 	enum ptt_t {
 		PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB,
-		PTT_RIGCAT, PTT_TTY, PTT_PARPORT, PTT_UHROUTER, PTT_GPIO
+		PTT_RIGCAT, PTT_TTY, PTT_PARPORT, PTT_UHROUTER, PTT_GPIO, PTT_CMEDIA
 	};
 
 	PTT(ptt_t dev = PTT_NONE);
