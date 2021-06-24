@@ -10,13 +10,30 @@
 </ul>
 
 \ref configuration_page "Configuring Fldigi"
-<ul><li>\ref operator_configuration_page</li>
+
+<ul>
+	<li>\ref operator_configuration_page</li>
+
 	<li>\ref sound_card_configuration_page "Audio Sound Card"</li>
 	<ul><li>\ref audio_adjust_page</li>
 		<li>\ref tx_audio</li>
 		<li>\ref digiscope_display_wwv_mode "Audio Codec PPM adjustment"</li>
 		<li>\ref rx_win10</li>
 	</ul>
+
+	<li>\ref rig_control_page 
+	<ul><li>\ref rig_config_page</li>
+		<li>\ref flrig_io_config</li>
+		<li>\ref rig_cat_control</li>
+		<li>\ref hamlib_cat_control</li>
+		<li>\ref hardware_ptt</li>
+		<li>\ref audio_vox_ptt</li>
+		<li>\ref w5zit_rt_channel_page</li>
+		<li>\ref gpio_ptt</li>
+		<li>\ref cmedia_ptt</li>
+		<li>\ref xml_rpc_cat</li>
+	</ul>
+
 	<li>\ref autostart_configuration_page </li>
 	<ul><li>\ref autostart_program_selection</li>
 		<li>\ref autostart_test</li>
@@ -311,18 +328,6 @@
 \ref recognitions_page
 
 \ref psm_page
-
-\ref rig_control_page 
-<ul><li>\ref rig_config_page</li>
-	<li>\ref flrig_io_config</li>
-	<li>\ref rig_cat_control</li>
-	<li>\ref hamlib_cat_control</li>
-	<li>\ref hardware_ptt</li>
-	<li>\ref audio_vox_ptt</li>
-	<ul><li>\ref w5zit_rt_channel_page</li></ul>
-	<li>\ref gpio_ptt</li>
-	<li>\ref xml_rpc_cat</li>
-</ul>
 
 \ref rig_xml_page
 

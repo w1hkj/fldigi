@@ -11,7 +11,7 @@
 # input used in their production; they are not affected by this license.
 
 PROJECT_NAME         = "Fldigi Users Manual"
-PROJECT_NUMBER       = 4.1.18
+PROJECT_NUMBER       = 4.1.19
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = YES
@@ -38,6 +38,7 @@ IMAGE_PATH           = ../images ../images/w4tv
 
 INPUT                = \
 index.txt \
+table_of_contents.txt \
 New-Install.txt \
 Wizard.txt \
 Installing.txt \
@@ -149,8 +150,7 @@ parseUALR.txt \
 ualr-telnet.txt \
 map.txt License.txt \
 Recognitions.txt \
-kiss_host_prgs.txt \
-table_of_contents.txt
+kiss_host_prgs.txt
 
 INCLUDE_PATH         = .
 EXAMPLE_PATH         = .
