@@ -1399,6 +1399,9 @@
               "Use parallel port PTT",                                                  \
               false)                                                                    \
         /* GPIO parameters */                                                           \
+        ELEM_(bool, gpio_ptt, "USE_GPIO_PTT",                                           \
+              "use GPIO for ptt (pi3/4)",                                               \
+              false)                                                                    \
         ELEM_(long, enable_gpio, "ENABLE_GPIO",                                         \
               "GPIO enable\n"                                                           \
               "bits 0 - 16; bit 0 : gpio pin N",                                        \
