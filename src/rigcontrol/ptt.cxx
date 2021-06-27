@@ -162,6 +162,9 @@ void PTT::set(bool ptt)
 	case PTT_TTY:
 		set_tty(ptt);
 		break;
+	case PTT_GPIO:
+		set_gpio(ptt);
+		break;
 #if HAVE_PARPORT
 	case PTT_PARPORT:
 		set_parport(ptt);
@@ -186,7 +189,6 @@ void PTT::set(bool ptt)
 		break;
 	default:
 		{
-			set_gpio(ptt);
 			nano_PTT(ptt);
 			if (n3fjp_connected)
 				n3fjp_set_ptt(ptt);

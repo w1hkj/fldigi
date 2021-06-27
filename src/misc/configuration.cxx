@@ -831,6 +831,8 @@ void configuration::initInterface()
 		push2talk->reset(PTT::PTT_UHROUTER);
 	else if (cmedia_ptt)
 		push2talk->reset(PTT::PTT_CMEDIA);
+	else if (gpio_ptt)
+		push2talk->reset(PTT::PTT_GPIO);
 	else
 		push2talk->reset(PTT::PTT_NONE);
 
