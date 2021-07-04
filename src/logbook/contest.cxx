@@ -202,12 +202,30 @@ bool c1010_test(std::string s)
 static std::string nbrs0 = "1234567890";
 static std::string nbrs1 = "12345";
 static std::string nbrs2 = "123456789Nn";
+static std::string nbrs3 = "1234567890NnTt";
+
+std::string cut_to_numeric(std::string s)
+{
+	for (size_t n = 0; n < s.length(); n++) {
+		if (s[n] == 'N' || s[n] == 'n' ) s[n] = '9';
+		if (s[n] == 'T' || s[n] == 't' ) s[n] = '0';
+	}
+	return s;
+}
+
+bool cut_numeric_test(std::string s)
+{
+	if (s.empty()) return false;
+	for (size_t n = 0; n < s.length(); n++)
+		if (nbrs3.find(s[n]) == std::string::npos) return false;
+	return true;
+}
 
 bool numeric_test(std::string s)
 {
 	if (s.empty()) return false;
 	for (size_t n = 0; n < s.length(); n++)
-		if (nbrs0.find(s[0]) == std::string::npos) return false;
+		if (nbrs0.find(s[n]) == std::string::npos) return false;
 	return true;
 }
 
@@ -344,7 +362,7 @@ int check_field(std::string s, CONTEST_FIELD field, std::string s2)
 
 CONTESTS contests[] = {
 { "No Contest", "CALL if (RSTr), if (LOCATOR), NAME, QTH" },
-{ "Generic contest", "CALL RSTr, RSTs, EXCHANGE" },
+{ "Generic contest", "CALL EXCHANGE" },
 { "Africa All-Mode International", "CALL SERNO, COUNTRY, RSTr, RSTs" },
 { "ARRL Field Day", "CALL SECTION, CLASS, RSTr, RSTs" },
 { "ARRL International DX (cw)", "CALL COUNTRY, POWER, RSTr, RSTs" },

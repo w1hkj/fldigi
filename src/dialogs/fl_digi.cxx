@@ -7465,7 +7465,6 @@ void log_callback(Fl_Widget *w) {
 	}
 	if (w == inpXchgIn) {
 		XCHG_IN_callback((Fl_Input2 *)w);
-		DupCheck();
 		return;
 	}
 	if (w == inpState) {
