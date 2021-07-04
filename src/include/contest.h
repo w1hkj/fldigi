@@ -87,6 +87,8 @@ public:
 
 extern Ccontests QSOparties;
 
+extern bool cut_numeric_test(std::string s);
+extern std::string cut_to_numeric(std::string s);
 extern int check_field(std::string s1, CONTEST_FIELD, std::string s2="");
 
 extern void adjust_for_contest(void *);

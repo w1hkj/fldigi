@@ -596,7 +596,7 @@ void set_name(std::string nm)
 void set_rst_in(std::string rst)
 {
 	for (size_t n = 0; n < rst.length(); n++)
-		if (rst[n] == 'N') rst[n] = '9';
+		if (rst[n] == 'N' || rst[n] == 'n') rst[n] = '9';
 	inpRstIn->value(rst.c_str());
 	inpRTU_RSTin2->value(rst.c_str());
 	inpRstIn1->value(rst.c_str());
@@ -613,7 +613,7 @@ void set_rst_in(std::string rst)
 void set_rst_out(std::string rst)
 {
 	for (size_t n = 0; n < rst.length(); n++)
-		if (rst[n] == 'N') rst[n] = '9';
+		if (rst[n] == 'N' || rst[n] == 'n') rst[n] = '9';
 	inpRstOut->value(rst.c_str());
 	inpRstOut1->value(rst.c_str());
 	inpRstOut2->value(rst.c_str());
@@ -826,11 +826,13 @@ int FTextRX::handle_qso_data(int start, int end)
 							// or it will overwrite the call
 			inpXchgIn->position(inpXchgIn->size());
 			if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
-			if (progdefaults.logging == LOG_VHF)
-			inpLoc->value(s);
-			else {
+			if (progdefaults.logging == LOG_VHF) {
+				inpLoc->value(s);
+				DupCheck();
+			} else {
 				inpXchgIn->insert(s);
 				log_callback(inpXchgIn);
+				DupCheck();
 			}
 		} else if (call.match(s)) { // point p to substring
 			const regmatch_t& offsets = call.suboff()[1];
@@ -860,6 +862,8 @@ int FTextRX::handle_qso_data(int start, int end)
 
 		} else {
 			std::string str = ucasestr(s);
+			if (cut_numeric_test(str)) str = cut_to_numeric(str);
+
 			switch (progdefaults.logging) {
 			case LOG_FD:
 				if (check_field(str, cFD_SECTION) && !inpSection->value()[0]) {
@@ -870,8 +874,8 @@ int FTextRX::handle_qso_data(int start, int end)
 					inpClass->value(str.c_str());
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
 				break;
@@ -884,8 +888,8 @@ int FTextRX::handle_qso_data(int start, int end)
 					inpClass->value(str.c_str());
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
 				break;
@@ -895,20 +899,20 @@ int FTextRX::handle_qso_data(int start, int end)
 					break;
 				}
 				if (check_field(str, cNUMERIC) && !inp_CQzone->value()[0]) {
-					set_zone(s);
+					set_zone(str);
 					break;
 				}
-				if (check_field(s, cRST)) {
+				if (check_field(str, cRST)) {
 					if (!inpRstIn->value()[0])
-						set_rst_in(s);
+						set_rst_in(str);
 					else if (!inpRstOut->value()[0])
-						set_rst_out(s);
+						set_rst_out(str);
 				}
 				break;
 			case LOG_CQWW_RTTY :
 				if ( (check_field(str, cSTATE) || check_field(str, cVE_PROV)) &&
 					!inp_CQstate->value()[0] ) {
-					inp_CQstate->value(s);
+					inp_CQstate->value(str.c_str());
 					break;
 				}
 				if (check_field(str, cCOUNTRY)) {
@@ -916,7 +920,7 @@ int FTextRX::handle_qso_data(int start, int end)
 					break;
 				}
 				if (check_field(str, cNUMERIC) && !inp_CQzone->value()[0]) {
-					set_zone(s);
+					set_zone(str);
 					break;
 				}
 				if (check_field(str, cRST)) {
@@ -925,61 +929,61 @@ int FTextRX::handle_qso_data(int start, int end)
 				}
 				break;
 			case LOG_KD:
-				if (inpName->value()[0] == 0) {
+				if (!check_field(str, cNUMERIC) && inpName->value()[0] == 0) {
 					set_name(s);
 					break;
 				}
-				if (!check_field(s, cRST) &&
-					check_field(s, cNUMERIC) &&
+				if (!check_field(str, cRST) &&
+					check_field(str, cNUMERIC) &&
 					inp_KD_age->value()[0] == 0) {
-					inp_KD_age->value(s);
+					inp_KD_age->value(str.c_str());
 					break;
 				}
-				if (check_field(s, cSTATE) && !inpState->value()[0]) {
-					set_state(s);
+				if (check_field(str, cSTATE) && !inpState->value()[0]) {
+					set_state(str);
 					break;
 				}
-				if (check_field(s, cVE_PROV) && !inpVEprov->value()[0]) {
-					set_province(s);
+				if (check_field(str, cVE_PROV) && !inpVEprov->value()[0]) {
+					set_province(str);
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
 				if (!inpXchgIn->value()[0]) {
 					inpXchgIn->position(inpXchgIn->size());
 					if (inpXchgIn->size())
 						inpXchgIn->insert(" ", 1);
-					inpXchgIn->insert(s);
+					inpXchgIn->insert(str.c_str());
 				}
 				break;
 			case LOG_ASCR:
-				if (check_field(s, cASCR_CLASS) && !inpClass->value()[0]) {
-					inpClass->value(s);
+				if (check_field(str, cASCR_CLASS) && !inpClass->value()[0]) {
+					inpClass->value(str.c_str());
 					break;
 				}
-				if (check_field(ucasestr(s), cSTATE) && !inpXchgIn->value()[0]) {
-					inpXchgIn->value(ucasestr(s).c_str());
+				if (check_field(str, cSTATE) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(str.c_str());
 					break;
 				}
-				if (check_field(ucasestr(s), cVE_PROV) && !inpXchgIn->value()[0]) {
-					inpXchgIn->value(ucasestr(s).c_str());
+				if (check_field(str, cVE_PROV) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(str.c_str());
+					break;
+				}
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
 				if (!inpName->value()[0]) {
 					set_name(s);
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
-					break;
-				}
 				inpXchgIn->value(s);
 				break;
 			case LOG_ARR:						// rookie roundup
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
 				if (check_field(s, cROOKIE) && !inp_ARR_check->value()[0]) {
@@ -993,8 +997,8 @@ int FTextRX::handle_qso_data(int start, int end)
 					set_name(s);
 					break;
 				}
-				if (check_field(ucasestr(s), cCHECK) && !inpXchgIn->value()[0]) {
-					inpXchgIn->value(ucasestr(s).c_str());
+				if (check_field(str, cCHECK) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(str.c_str());
 					break;
 				}
 				if (!inpXchgIn->value()[0]) {
@@ -1003,34 +1007,34 @@ int FTextRX::handle_qso_data(int start, int end)
 				}
 				break;
 			case LOG_AICW:
-				if (check_field(s, cCOUNTRY)) {
+				if (check_field(str, cCOUNTRY)) {
 					set_cbo_Country(country_match);
 					break;
 				}
-				if (check_field(s, cNUMERIC) && !inpSPCnum->value()[0]) {
-					inpSPCnum->value(s);
+				if (check_field(str, cNUMERIC) && !inpSPCnum->value()[0]) {
+					inpSPCnum->value(str.c_str());
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
 				break;
 			case LOG_1010:
-				if (check_field(s, c1010) && !inp_1010_nr->value()[0]) {
-					inp_1010_nr->value(s);
+				if (check_field(str, c1010) && !inp_1010_nr->value()[0]) {
+					inp_1010_nr->value(str.c_str());
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
-				if (check_field(ucasestr(s), cSTATE) && !inpXchgIn->value()[0]) {
-					inpXchgIn->value(s);
+				if (check_field(str, cSTATE) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(str.c_str());
 					break;
 				}
-				if (check_field(ucasestr(s), cVE_PROV) && !inpXchgIn->value()[0]) {
-					inpXchgIn->value(ucasestr(s).c_str());
+				if (check_field(str, cVE_PROV) && !inpXchgIn->value()[0]) {
+					inpXchgIn->value(str.c_str());
 					break;
 				}
 				if (!inpName->value()[0]) {
@@ -1050,8 +1054,8 @@ int FTextRX::handle_qso_data(int start, int end)
 					inpXchgIn2->value(s);
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
 				break;
@@ -1060,7 +1064,7 @@ int FTextRX::handle_qso_data(int start, int end)
 					inp_SS_Section->value(str.c_str());
 					break;
 				}
-				if (check_field(str, cSS_SERNO) && !inpSerNo->value()[0]) {
+				if (cut_numeric_test(str) && !inpSerNo->value()[0]) {
 					set_serno_in(str);
 					break;
 				}
@@ -1072,22 +1076,22 @@ int FTextRX::handle_qso_data(int start, int end)
 					inp_SS_Check->value(str.c_str());
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
 				break;
 			case LOG_CQ_WPX:
-				if (check_field(str, cNUMERIC) && !inpSerNo->value()[0]) {
+				if (cut_numeric_test(str) && !inpSerNo->value()[0]) {
 					set_serno_in(str);
 					break;
 				}
-				if (check_field(s, cCOUNTRY)) {
+				if (check_field(str, cCOUNTRY)) {
 					set_cbo_Country(country_match);
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
 				break;
@@ -1100,17 +1104,17 @@ int FTextRX::handle_qso_data(int start, int end)
 					set_cbo_Country(country_match);
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
-				if (check_field(s, cNUMERIC) && !inpSerNo->value()[0]) {
+				if (cut_numeric_test(str) && !inpSerNo->value()[0]) {
 					set_serno_in(str);
 					break;
 				}
 				break;
 			case LOG_IARI:
-				if (check_field(ucasestr(str), cITALIAN)) {
+				if (check_field(str, cITALIAN)) {
 					inp_IARI_PR1->value(ucasestr(str).c_str());
 					inp_IARI_PR2->value(ucasestr(str).c_str());
 					break;
@@ -1119,17 +1123,17 @@ int FTextRX::handle_qso_data(int start, int end)
 					set_cbo_Country(country_match);
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
-				if (check_field(str, cNUMERIC)) {
+				if (cut_numeric_test(str) && !inpSerNo->value()[0]) {
 					set_serno_in(str);
 					break;
 				}
 				break;
 			case LOG_NAS:
-				if (check_field(str, cNUMERIC) && !inpSerNo->value()[0]) {
+				if (cut_numeric_test(str) && !inpSerNo->value()[0]) {
 					set_serno_in(str);
 					break;
 				}
@@ -1165,17 +1169,17 @@ int FTextRX::handle_qso_data(int start, int end)
 					inpXchgIn->value(str.c_str());
 					break;
 				}
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
 				break;
 			case LOG_JOTA:
-				if (check_field(s, cRST)) {
-					set_rst(s);
+				if (check_field(str, cRST)) {
+					set_rst(str);
 					break;
 				}
-				if (check_field(str, cNUMERIC) && !inp_JOTA_troop->value()[0]) {
+				if (cut_numeric_test(str) && !inp_JOTA_troop->value()[0]) {
 					inp_JOTA_troop->value(str.c_str());
 					break;
 				}
@@ -1210,25 +1214,34 @@ int FTextRX::handle_qso_data(int start, int end)
 //				}
 //				break;
 			case LOG_VHF:
-				if (check_field(s, cRST))
-					set_rst(s);
+				if (check_field(str, cRST))
+					set_rst(str);
 				break;
 			case LOG_SQSO:
 				parseSQSO(str);
 				break;
-			default:
-				if (check_field(s, cRST)) {
-					set_rst(s);
+			case LOG_BART:
+			// CALL, NAME, SERIAL, EXCHANGE
+				if (!cut_numeric_test(s) && !inpName->value()[0]) {
+					set_name(p);
+					break;
+				} else if (cut_numeric_test(str) && !inpSerNo->value()[0]) {
+					set_serno_in(str);
 					break;
 				}
+			case LOG_GENERIC:
+			default:
+			// EXCHANGE
 				inpXchgIn->position(inpXchgIn->size());
 				if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
-				inpXchgIn->insert(s);
+				if (cut_numeric_test(str))
+					inpXchgIn->insert(str.c_str());
+				else
+					inpXchgIn->insert(s);
 				log_callback(inpXchgIn);
 			}
 		}
 		DupCheck();
-
 		restoreFocus(91);
 		return 1;
 	} else {
@@ -1340,6 +1353,7 @@ void FTextRX::handle_context_menu(void)
 			show_item(RX_MENU_SS_PRE);
 			show_item(RX_MENU_SS_CHK);
 			show_item(RX_MENU_SS_SEC);
+			show_item(RX_MENU_RST_IN);
 			break;
 		case LOG_1010:
 			show_item(RX_MENU_NAME);
@@ -1421,12 +1435,17 @@ void FTextRX::handle_context_menu(void)
 //			show_item(RX_MENU_SERIAL);
 //			show_item(RX_MENU_COUNTRY);
 //			break;
-		case LOG_GENERIC:
 		case LOG_BART:
-		default:
 			show_item(RX_MENU_NAME);
 			show_item(RX_MENU_SERIAL);
 			show_item(RX_MENU_XCHG);
+			show_item(RX_MENU_RST_IN);
+			break;
+		case LOG_GENERIC:
+		default:
+			show_item(RX_MENU_SERIAL);
+			show_item(RX_MENU_XCHG);
+			show_item(RX_MENU_RST_IN);
 			break;
 		}
 	}
