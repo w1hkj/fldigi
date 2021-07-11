@@ -139,6 +139,11 @@ void PTT::set(bool ptt)
 		guard_lock lk(&cwio_ptt_mutex);
 	}
 
+	// When active, let WinKeyer handle PTT so we don't lose QSK.
+	if (active_modem == cw_modem && progStatus.WK_online) {
+		return;
+	}
+
 	switch (pttdev) {
 	case PTT_NONE: default:
 		noCAT_setPTT(ptt);
