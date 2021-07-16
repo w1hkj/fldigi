@@ -6368,14 +6368,24 @@ static void cb_inpMyCallsign(Fl_Input2*, void*) {
   const char *triggers = " !#$%&'()*+,-.;<=>?@[\\]^_{|}~";
 std::string mycall = inpMyCallsign->value();
 
+bool modified = false;
 for (size_t k = 0; k < mycall.length(); k++) {
   for (size_t n = 0; n < strlen(triggers); n++) {
     if (mycall[k] == triggers[n]) {
-      if ( fl_choice2("Replace FSQ trigger character with slash /", _("no"), _("yes"), NULL ) )
+      if ( fl_choice2("Replace FSQ trigger character with slash /", _("no"), _("yes"), NULL ) ) {
         mycall[k] = '/';
+        modified = true;
+      }
     }
   }
 }
+if (modified) {
+  int p = inpMyCallsign->position();
+  inpMyCallsign->value(mycall.c_str());
+  inpMyCallsign->position(p); // causes a redraw
+}
+
+progdefaults.myCall = mycall;
 
 if (progdefaults.THORsecText.empty()) {
 progdefaults.THORsecText = mycall;
@@ -6388,11 +6398,6 @@ progdefaults.secText = mycall;
 progdefaults.secText.append(" ");
 txtSecondary->value(progdefaults.secText.c_str());
 }
-
-progdefaults.myCall = mycall;
-
-inpMyCallsign->value(progdefaults.myCall.c_str());
-inpMyCallsign->redraw();
 
 update_main_title();
 notify_change_callsign();
