@@ -854,11 +854,10 @@ pthread_mutex_t mutex_flrig_smeter = PTHREAD_MUTEX_INITIALIZER;
 static void xmlrpc_rig_set_smeter(void *data)
 {
 	guard_lock flrig_lock(&mutex_flrig_smeter);
-	if (!smeter || !pwrmeter) return;
 
 	if (smeter && progStatus.meters) {
 		if (!smeter->visible()) {
-			pwrmeter->hide();
+			if (pwrmeter) pwrmeter->hide();
 			smeter->show();
 		}
 		int val = reinterpret_cast<intptr_t>(data);
@@ -868,18 +867,19 @@ static void xmlrpc_rig_set_smeter(void *data)
 
 void flrig_get_smeter()
 {
-	XmlRpcValue val, result;
+	XmlRpcValue result;
 	try {
 		bool ret;
 		{
 			guard_lock flrig_lock(&mutex_flrig);
-			ret = flrig_client->execute("rig.get_smeter", val, result, timeout);
+			ret = flrig_client->execute("rig.get_smeter", XmlRpcValue(), result, timeout);
 		}
 		if (ret) {
-			static int val = (int)result;
+			std::string smeter = (string)result;
+			int sm = atoll(smeter.c_str());
 			guard_lock lck(&mutex_flrig_smeter);
-			Fl::awake(xmlrpc_rig_set_smeter, reinterpret_cast<void*>(val));
-LOG_VERBOSE("rig.get_smeter: %d", val);
+			Fl::awake(xmlrpc_rig_set_smeter, reinterpret_cast<void*>(sm));
+LOG_VERBOSE("rig.get_smeter: %d", sm);
 		}
 	} catch (...) {
 LOG_ERROR("rig.get_smeter FAILED");
@@ -912,10 +912,10 @@ void flrig_get_pwrmeter()
 			ret = flrig_client->execute("rig.get_pwrmeter", val, result, timeout);
 		}
 		if (ret) {
-			int val = (int)result;
-			guard_lock flrig_lock(&mutex_flrig);
+			std::string meter = (string)result;
+			int sm = atoll(meter.c_str());
 			guard_lock lck(&mutex_flrig_pwrmeter);
-			Fl::awake(xmlrpc_rig_set_pwrmeter, reinterpret_cast<void*>(val));
+			Fl::awake(xmlrpc_rig_set_pwrmeter, reinterpret_cast<void*>(sm));
 		}
 	} catch (...) {
 LOG_ERROR("rig.get_pwrmeter FAILED");
