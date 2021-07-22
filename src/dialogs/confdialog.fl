@@ -3137,7 +3137,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/General}
+      label {Modem/CW/General} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/General"));}
       code1 {config_pages.push_back(p);}
@@ -3155,7 +3155,7 @@ progdefaults.changed = true;}
           code0 {o->value(progdefaults.CWuseSOMdecoding);}
         }
         Fl_Check_Button btnCWrcvTrack {
-          label Tracking
+          label {WPM Tracking}
           callback {progdefaults.CWtrack = o->value();
 progdefaults.changed = true;}
           tooltip {Automatic Rx speed tracking} xywh {450 72 80 20} down_box DOWN_BOX value 1
@@ -3213,14 +3213,14 @@ progdefaults.changed = true;}
           class Fl_Counter2
         }
         Fl_Group {} {
-          label Squelch open
-          xywh {625 74 135 95} box ENGRAVED_BOX align 17
+          label {Signal tracking} open
+          xywh {625 45 135 124} box ENGRAVED_BOX align 17
         } {
           Fl_Choice mnu_cwrx_attack {
             label Attack
             callback {progdefaults.cwrx_attack = o->value();
 progdefaults.changed = true;} open
-            xywh {680 104 72 20} down_box BORDER_BOX
+            xywh {680 70 72 20} down_box BORDER_BOX
             code0 {o->add("Slow|Med|Fast");}
             code1 {o->value(progdefaults.cwrx_attack);}
           } {}
@@ -3228,10 +3228,19 @@ progdefaults.changed = true;} open
             label Decay
             callback {progdefaults.cwrx_decay = o->value();
 progdefaults.changed = true;} open
-            xywh {680 139 72 20} down_box BORDER_BOX
+            xywh {680 105 72 20} down_box BORDER_BOX
             code0 {o->add("Slow|Med|Fast");}
             code1 {o->value(progdefaults.cwrx_decay);}
           } {}
+          Fl_Button btn_cw_tracking_defaults {
+            label Defaults
+            callback {progdefaults.cwrx_attack = 1;
+progdefaults.cwrx_decay = 0;
+mnu_cwrx_attack->value(progdefaults.cwrx_attack);
+mnu_cwrx_decay->value(progdefaults.cwrx_decay);
+progdefaults.changed = true;}
+            xywh {680 135 70 20}
+          }
         }
       }
       Fl_Group {} {
@@ -8168,7 +8177,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group grpOperator {
-      label {Operator-Station} open selected
+      label {Operator-Station}
       xywh {200 0 600 350} box ENGRAVED_BOX color 50 align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Operator-Station"));}
       code1 {config_pages.push_back(p);}
@@ -8596,7 +8605,7 @@ btnInitRIGCAT->redraw_label();}
       }
     }
     Fl_Group grpRigGPIO {
-      label {Rig Control/GPIO} open
+      label {Rig Control/GPIO}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/GPIO"));}
       code1 {config_pages.push_back(p);}
@@ -9309,7 +9318,7 @@ hamlib_get_defaults();
       }
     }
     Fl_Group grpRigHardware {
-      label {Rig Control/Hardware PTT} open
+      label {Rig Control/Hardware PTT}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/Hardware PTT"));}
       code1 {config_pages.push_back(p);}
