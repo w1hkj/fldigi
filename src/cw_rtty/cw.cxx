@@ -343,12 +343,13 @@ cw::cw() : modem()
 
 	bandwidth = progdefaults.CWbandwidth;
 	if (use_matched_filter)
-		progdefaults.CWbandwidth = bandwidth = 2.0 * progdefaults.CWspeed / 1.2;
+		progdefaults.CWbandwidth = bandwidth = 5.0 * progdefaults.CWspeed / 1.2;
 
-	cw_FFT_filter = new fftfilt(progdefaults.CWspeed/(1.2 * samplerate), CW_FFT_SIZE);
+	cw_FFT_filter = new fftfilt(1.0 * progdefaults.CWbandwidth / samplerate, CW_FFT_SIZE);
 
-	int bfv = symbollen / 32;
+	int bfv = symbollen / ( 2 * DEC_RATIO);
 	if (bfv < 1) bfv = 1;
+
 	bitfilter = new Cmovavg(bfv);
 
 	trackingfilter = new Cmovavg(TRACKING_FILTER_SIZE);
@@ -382,12 +383,11 @@ void cw::reset_rx_filter()
 		cw_send_speed = cw_speed = progdefaults.CWspeed;
 
 		if (use_matched_filter)
-			progdefaults.CWbandwidth = bandwidth = 2.0 * progdefaults.CWspeed / 1.2;
+			progdefaults.CWbandwidth = bandwidth = 5.0 * progdefaults.CWspeed / 1.2;
 		else
 			bandwidth = progdefaults.CWbandwidth;
 
-		double fbw = 0.5 * bandwidth / samplerate;
-		cw_FFT_filter->create_lpf(fbw);
+		cw_FFT_filter->create_lpf(1.0 * bandwidth / samplerate);
 		FFTphase = 0;
 
 		REQ(static_cast<void (waterfall::*)(int)>(&waterfall::Bandwidth),
@@ -415,8 +415,9 @@ void cw::reset_rx_filter()
 
 		rx_rep_buf.clear();
 
-	int bfv = symbollen / 32;
+	int bfv = symbollen / ( 2 * DEC_RATIO);
 	if (bfv < 1) bfv = 1;
+
 	bitfilter->setLength(bfv);
 
 	siglevel = 0;
@@ -587,14 +588,14 @@ void cw::decode_stream(double value)
 	int attack = 0;
 	int decay = 0;
 	switch (progdefaults.cwrx_attack) {
-		case 0: attack = 100; break;
-		case 1: default: attack = 50; break;
-		case 2: attack = 25;
+		case 0: attack = 400; break;//100; break;
+		case 1: default: attack = 200; break;//50; break;
+		case 2: attack = 100;//25;
 	}
 	switch (progdefaults.cwrx_decay) {
-		case 0: decay = 1000; break;
-		case 1: default : decay = 500; break;
-		case 2: decay = 250;
+		case 0: decay = 2000; break;//1000; break;
+		case 1: default : decay = 1000; break;//500; break;
+		case 2: decay = 500;//250;
 	}
 
 	sig_avg = decayavg(sig_avg, value, decay);

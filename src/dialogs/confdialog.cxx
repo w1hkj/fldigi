@@ -2600,6 +2600,16 @@ static void cb_mnu_cwrx_decay(Fl_Choice* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Button *btn_cw_tracking_defaults=(Fl_Button *)0;
+
+static void cb_btn_cw_tracking_defaults(Fl_Button*, void*) {
+  progdefaults.cwrx_attack = 1;
+progdefaults.cwrx_decay = 0;
+mnu_cwrx_attack->value(progdefaults.cwrx_attack);
+mnu_cwrx_decay->value(progdefaults.cwrx_decay);
+progdefaults.changed = true;
+}
+
 Fl_Value_Slider2 *sldrCWxmtWPM=(Fl_Value_Slider2 *)0;
 
 static void cb_sldrCWxmtWPM(Fl_Value_Slider2* o, void*) {
@@ -11223,7 +11233,7 @@ work!"));
           btnCWuseSOMdecoding->callback((Fl_Callback*)cb_btnCWuseSOMdecoding);
           o->value(progdefaults.CWuseSOMdecoding);
         } // Fl_Check_Button* btnCWuseSOMdecoding
-        { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(450, 72, 80, 20, _("Tracking"));
+        { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(450, 72, 80, 20, _("WPM Tracking"));
           btnCWrcvTrack->tooltip(_("Automatic Rx speed tracking"));
           btnCWrcvTrack->down_box(FL_DOWN_BOX);
           btnCWrcvTrack->value(1);
@@ -11331,21 +11341,24 @@ work!"));
           o->value(progdefaults.CWrange);
           o->labelsize(FL_NORMAL_SIZE);
         } // Fl_Counter2* cntCWrange
-        { Fl_Group* o = new Fl_Group(625, 74, 135, 95, _("Squelch"));
+        { Fl_Group* o = new Fl_Group(625, 45, 135, 124, _("Signal tracking"));
           o->box(FL_ENGRAVED_BOX);
           o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-          { Fl_Choice* o = mnu_cwrx_attack = new Fl_Choice(680, 104, 72, 20, _("Attack"));
+          { Fl_Choice* o = mnu_cwrx_attack = new Fl_Choice(680, 70, 72, 20, _("Attack"));
             mnu_cwrx_attack->down_box(FL_BORDER_BOX);
             mnu_cwrx_attack->callback((Fl_Callback*)cb_mnu_cwrx_attack);
             o->add("Slow|Med|Fast");
             o->value(progdefaults.cwrx_attack);
           } // Fl_Choice* mnu_cwrx_attack
-          { Fl_Choice* o = mnu_cwrx_decay = new Fl_Choice(680, 139, 72, 20, _("Decay"));
+          { Fl_Choice* o = mnu_cwrx_decay = new Fl_Choice(680, 105, 72, 20, _("Decay"));
             mnu_cwrx_decay->down_box(FL_BORDER_BOX);
             mnu_cwrx_decay->callback((Fl_Callback*)cb_mnu_cwrx_decay);
             o->add("Slow|Med|Fast");
             o->value(progdefaults.cwrx_decay);
           } // Fl_Choice* mnu_cwrx_decay
+          { btn_cw_tracking_defaults = new Fl_Button(680, 135, 70, 20, _("Defaults"));
+            btn_cw_tracking_defaults->callback((Fl_Callback*)cb_btn_cw_tracking_defaults);
+          } // Fl_Button* btn_cw_tracking_defaults
           o->end();
         } // Fl_Group* o
         o->end();

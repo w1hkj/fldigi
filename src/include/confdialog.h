@@ -285,6 +285,7 @@ extern Fl_Counter2 *cntCWrange;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *mnu_cwrx_attack;
 extern Fl_Choice *mnu_cwrx_decay;
+extern Fl_Button *btn_cw_tracking_defaults;
 extern Fl_Value_Slider2 *sldrCWxmtWPM;
 extern Fl_Counter2 *cntCWdefWPM;
 extern Fl_Counter *cntCWlowerlimit;
