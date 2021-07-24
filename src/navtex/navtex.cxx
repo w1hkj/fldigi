@@ -878,7 +878,7 @@ class navtex_implementation {
 	fftfilt					*m_space_lowpass;
 	double					m_mark_phase;
 	double					m_space_phase;
-	double                  m_bit_sample_count, m_half_bit_sample_count;
+	double                  m_bit_sample_count;
 	State                 m_state;
 	int                 m_sample_count;
 	double                  m_next_early_event;
@@ -924,7 +924,6 @@ public:
 		m_baud_rate = 100;
 		double m_bit_duration_seconds = 1.0 / m_baud_rate;
 		m_bit_sample_count = m_sample_rate * m_bit_duration_seconds;
-		m_half_bit_sample_count = m_bit_sample_count / 2;
 		// A narrower spread between signals allows the modem to
 		// center on the pulses better, but a wider spread makes
 		// more robust under noisy conditions. 1/5 seems to work.
@@ -952,12 +951,8 @@ public:
 private:
 
 	void set_filter_values() {
-		// carefully manage the parameters WRT the center frequency
-		// Q must change with frequency
-		// try to maintain a zero mixer output at the carrier frequency
-		double qv = m_center_frequency_f + (4.0 * 1000 / m_center_frequency_f);
-		m_mark_f = qv + deviation_f;
-		m_space_f = qv - deviation_f;
+		m_mark_f = m_center_frequency_f + deviation_f;
+		m_space_f = m_center_frequency_f - deviation_f;
 		m_mark_phase = 0;
 		m_space_phase = 0;
 	}
@@ -1057,18 +1052,35 @@ private:
 	// Flip the sign of the smallest (least certain) bit in a character;
 	// hopefully this will result in the right valid character.
 	void flip_smallest_bit(int *pos) {
-		int minimum = INT_MAX;
-		int smallest_bit = -1;
-		int i;
+		int min_zero = INT_MIN, min_one = INT_MAX;
+		int min_zero_pos = -1, min_one_pos = -1;
+		int count_zero = 0, count_one = 1;
+		int val, i;
 
 		for (i = 0; i < 7; i++) {
-			if (abs(pos[i]) < minimum) {
-				minimum = abs(pos[i]);
-				smallest_bit = i;
+			val = pos[i];
+			if (val < 0) {
+				count_zero++;
+				if (val > min_zero) {
+					min_zero = val;
+					min_zero_pos = i;
+				}
+			} else {
+				count_one++;
+				if (val < min_one) {
+					min_one = val;
+					min_one_pos = i;
+				}
 			}
 		}
 
-		pos[smallest_bit] = -pos[smallest_bit];
+		// A valid character has 3 zeroes and 4 ones, if we have
+		// 5 ones or 4 zeroes, flipping the smallest one would make
+		// this character valid.
+		if (count_zero == 4)
+			pos[min_zero_pos] = -pos[min_zero_pos];
+		else if (count_one == 5)
+			pos[min_one_pos] = -pos[min_one_pos];
 	}
 
 	// Try to find a position in the bit stream with:
@@ -1110,7 +1122,7 @@ private:
 						if (code == code_alpha ||
 						    code == code_rep) {
 							score = 0;
-							break;
+							continue;
 						}
 						reps++;
 					} else if (code == code_alpha) {
@@ -1126,7 +1138,7 @@ private:
 			}
 
 			// the most valid characters, with at least 3 FEC reps
-			if (reps > 3 && score + reps > best_score) {
+			if (reps >= 3 && score + reps > best_score) {
 				best_score = score + reps;
 				best_offset = offset;
 			}
@@ -1440,8 +1452,8 @@ private:
 		// to align the logic sampling with the received signal
 		double slope = m_average_late_signal - m_average_early_signal;
 
-		if (m_average_prompt_signal < m_average_early_signal &&
-		    m_average_prompt_signal < m_average_late_signal) {
+		if (m_average_prompt_signal * 1.05 < m_average_early_signal &&
+		    m_average_prompt_signal * 1.05 < m_average_late_signal) {
 			// At a signal minimum. Get out quickly.
 			if (m_average_early_signal > m_average_late_signal) {
 				// move prompt to where early is
@@ -1457,7 +1469,7 @@ private:
 				m_average_prompt_signal = m_average_late_signal;
 			}
 		} else
-			slope /= 64;
+			slope /= 1024;
 
 		if (slope) {
 			m_next_early_event += slope;
@@ -1577,11 +1589,16 @@ private:
 				0.5 * ( (mark_env - noise_floor) * (mark_env - noise_floor) -
 					 (space_env - noise_floor) * (space_env - noise_floor));
 
-			// the accumulator hits max when mark_state flips sign
-			bool mark_state = (logic_level > 0);
-			m_early_accumulator += (mark_state) ? 1 : -1;
-			m_prompt_accumulator += (mark_state) ? 1 : -1;
-			m_late_accumulator += (mark_state) ? 1 : -1;
+			// Using the logarithm of the logic_level tells the
+			// bit synchronization and character decoding which
+			// samples were decoded well, and which poorly.
+			// This helps fish signals out of the noise.
+			int mark_state = log(1 + abs(logic_level));
+			if (logic_level < 0)
+				mark_state = -mark_state;
+			m_early_accumulator += mark_state;
+			m_prompt_accumulator += mark_state;
+			m_late_accumulator += mark_state;
 
 			// An average of the magnitude of the accumulator
 			// is taken at the sample point, as well as a quarter
@@ -1872,7 +1889,6 @@ public:
 	{
 		m_center_frequency_f = freq;
 		set_filter_values();
-		configure_filters();
 	}
 
 }; // navtex_implementation
