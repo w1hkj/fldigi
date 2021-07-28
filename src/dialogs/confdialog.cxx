@@ -18252,7 +18252,7 @@ ll with your audio device."));
           listboxScheme->when(FL_WHEN_RELEASE);
           listboxScheme->add("base");
           listboxScheme->add("gtk+");
-          listboxScheme->add("plastic");
+          listboxScheme->add("plastic"); listboxScheme->add("gleam");
           listboxScheme->value(progdefaults.ui_scheme.c_str());
                        o->labelsize(FL_NORMAL_SIZE);
           listboxScheme->end();

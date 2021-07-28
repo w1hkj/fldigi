@@ -3137,7 +3137,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/General} open selected
+      label {Modem/CW/General}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/General"));}
       code1 {config_pages.push_back(p);}
@@ -10670,7 +10670,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {UI/General}
+      label {UI/General} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/General"));}
       code1 {config_pages.push_back(p);}
@@ -10704,7 +10704,7 @@ progdefaults.changed = true;}
           tooltip {Change application look and feel} xywh {394 63 80 20} box DOWN_BOX color 7 align 8
           code0 {listboxScheme->add("base");}
           code1 {listboxScheme->add("gtk+");}
-          code2 {listboxScheme->add("plastic");}
+          code2 {listboxScheme->add("plastic"); listboxScheme->add("gleam");}
           code3 {listboxScheme->value(progdefaults.ui_scheme.c_str());
                        o->labelsize(FL_NORMAL_SIZE);}
           class Fl_ListBox
