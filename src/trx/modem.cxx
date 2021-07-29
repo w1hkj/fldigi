@@ -801,24 +801,24 @@ void modem::videoText()
 		char idtxt[TLEN] = "";
 		switch(mode_info[mode].mode) {
 		case MODE_CONTESTIA:
-			snprintf(idtxt, TLEN, "%s-%d/%d", mode_info[mode].vid_name,
+			snprintf(idtxt, TLEN, "%s%d/%d", mode_info[mode].vid_name,
 				2*(1<<progdefaults.contestiatones),
 				125*(1<<progdefaults.contestiabw));
 			break;
 		case MODE_OLIVIA:
-			snprintf(idtxt, TLEN, "%s-%d/%d", mode_info[mode].vid_name,
+			snprintf(idtxt, TLEN, "%s%d/%d", mode_info[mode].vid_name,
 				2*(1<<progdefaults.oliviatones),
 				125*(1<<progdefaults.oliviabw));
 			break;
 		case MODE_RTTY:
-			snprintf(idtxt, TLEN, "%s-%d/%d", mode_info[mode].vid_name,
+			snprintf(idtxt, TLEN, "%s%d/%d", mode_info[mode].vid_name,
 				static_cast<int>(rtty::BAUD[progdefaults.rtty_baud]),
 				rtty::BITS[progdefaults.rtty_bits]);
 			break;
 		case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
 		case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
 			if (progdefaults.DOMINOEX_FEC)
-				snprintf(idtxt, TLEN, "%s-FEC", mode_info[mode].vid_name);
+				snprintf(idtxt, TLEN, "%s/FEC", mode_info[mode].vid_name);
 			else
 				strcpy(idtxt, mode_info[mode].vid_name);
 			break;

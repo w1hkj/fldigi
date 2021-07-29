@@ -1201,14 +1201,14 @@ static void pRxQuePUSH(std::string &s, size_t &i, size_t endbracket)
 static void pPUSH(std::string &s, size_t &i, size_t endbracket)
 {
 	STRpush psh;
-	if (s[5] == '>') {
+	if (s[i+5] == '>') {
 		psh.smode = mode_info[active_modem->get_mode()].sname;
 		psh.freq = active_modem->get_freq();
 	} else {
-		if (s[5] == ':') {
-			if (s[6] == 'm' || s[7] == 'm')
+		if (s[i+5] == ':') {
+			if (s[i+6] == 'm' || s[i+7] == 'm')
 				psh.smode = mode_info[active_modem->get_mode()].sname;
-			if (s[6] == 'f' || s[7] == 'f')
+			if (s[i+6] == 'f' || s[i+7] == 'f')
 				psh.freq = active_modem->get_freq();
 		}
 	}
@@ -4753,7 +4753,7 @@ static const MTAGS mtags[] = {
 	{"<GET>",		pGET},
 	{"<CLRRX>",		pCLRRX},
 	{"<CLRTX>",		pCLRTX},
-	{"<CLRQSO>",		pCLRQSO},
+	{"<CLRQSO>",	pCLRQSO},
 	{"<FOCUS>",		pFOCUS},
 	{"<QSY+:",		pQSYPLUS},
 	{"<FILE:",		pFILE},
