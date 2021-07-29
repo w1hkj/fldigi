@@ -13909,7 +13909,7 @@ on\nwill be good over a 2:1 WPM range.  Calibration/Test is 1 minute of PARIS"))
           btnEnablePSKbrowsing->callback((Fl_Callback*)cb_btnEnablePSKbrowsing);
           o->value(progdefaults.pskbrowser_on);
         } // Fl_Check_Button* btnEnablePSKbrowsing
-        { Fl_Box* o = new Fl_Box(265, 218, 440, 20, _("Disable on very slow CPUs of if signal browser is not used"));
+        { Fl_Box* o = new Fl_Box(265, 218, 440, 20, _("Disable on very slow CPUs or if signal browser is not used"));
           o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
         } // Fl_Box* o
         o->end();

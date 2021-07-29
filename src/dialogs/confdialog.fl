@@ -5936,7 +5936,7 @@ progdefaults.changed = true;}
           code0 {o->value(progdefaults.pskbrowser_on);}
         }
         Fl_Box {} {
-          label {Disable on very slow CPUs of if signal browser is not used}
+          label {Disable on very slow CPUs or if signal browser is not used}
           xywh {265 218 440 20} align 20
         }
       }
