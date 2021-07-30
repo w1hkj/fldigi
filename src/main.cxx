@@ -784,8 +784,17 @@ void delayed_startup(void *)
 
 }
 
-int main(int argc, char ** argv)
+std::string pname = "";
+
+int main (int argc, char *argv[])
 {
+	pname = argv[0];
+	size_t pn = pname.rfind("/");
+	if (pn != std::string::npos) pname.erase(0, pn + 1);
+	pn = pname.rfind("\\");
+	if (pn != std::string::npos) pname.erase(0, pn + 1);
+	XmlRpc::set_pname(pname);
+
 	// for KISS_IO status information
 	program_start_time = time(0);
 

@@ -1801,6 +1801,8 @@ void cb_arqwin(Fl_Widget *, void*)
 	arqCLOSE();
 }
 
+std::string pname;
+
 int main (int argc, char *argv[] )
 {
 	sscanf(VERSION, "%f", &version);
@@ -1811,7 +1813,7 @@ int main (int argc, char *argv[] )
 
 	NBEMS_dir.clear();
 	{
-		std::string appname = argv[0];
+		std::string appname = pname = argv[0];
 		std::string appdir = argv[0];
 
 #ifdef __WIN32__

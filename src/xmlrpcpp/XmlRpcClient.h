@@ -30,6 +30,10 @@
 
 namespace XmlRpc {
 
+  extern std::string pname;
+  
+  extern void set_pname(std::string pn);
+
   // Arguments and results are represented by XmlRpcValues
   class XmlRpcValue;
 
