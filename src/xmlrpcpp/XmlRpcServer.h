@@ -31,6 +31,8 @@
 
 namespace XmlRpc {
 
+	extern std::string request_str;
+	extern std::string client_id;
 
   // An abstract class supporting XML RPC methods
   class XmlRpcServerMethod;
@@ -112,7 +114,6 @@ namespace XmlRpc {
 
     static const std::string FAULTCODE;
     static const std::string FAULTSTRING;
-
 
     //! Accept a client connection request
     virtual void acceptConnection();

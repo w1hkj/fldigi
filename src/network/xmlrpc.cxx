@@ -437,7 +437,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("fldigi.version_string: %s", PACKAGE_VERSION);
+		LOG_INFO("[%s] fldigi.version_string: %s",
+			XmlRpc::client_id.c_str(),
+			PACKAGE_VERSION);
 		*retval = xmlrpc_c::value_string(PACKAGE_VERSION);
 	}
 };
@@ -452,7 +454,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("fldigi.name_version: %s", PACKAGE_STRING);
+		LOG_INFO("[%s] fldigi.name_version: %s",
+			XmlRpc::client_id.c_str(),
+			PACKAGE_STRING);
 		*retval = xmlrpc_c::value_string(PACKAGE_STRING);
 	}
 };
@@ -467,7 +471,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("fldigi.config_dir %s", HomeDir.c_str());
+		LOG_INFO("[%s] fldigi.config_dir %s",
+			XmlRpc::client_id.c_str(),
+			HomeDir.c_str());
 		*retval = xmlrpc_c::value_string(HomeDir);
 	}
 };
@@ -507,7 +513,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("fldigi.terminate: %d", int(params.getInt(0)));
+		LOG_INFO("[%s] fldigi.terminate: %d",
+			XmlRpc::client_id.c_str(),
+			int(params.getInt(0)));
 		REQ(terminate, params.getInt(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -526,7 +534,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		const char* cur = mode_info[active_modem->get_mode()].sname;
-LOG_VERBOSE("modem.get_name: %s", cur);
+		LOG_INFO("[%s] modem.get_name: %s",
+			XmlRpc::client_id.c_str(),
+			cur);
 		*retval = xmlrpc_c::value_string(cur);
 	}
 };
@@ -548,7 +558,9 @@ public:
 			names.push_back(xmlrpc_c::value_string(mode_info[i].sname));
 			snames.append("\n").append(mode_info[i].sname);
 		}
-LOG_VERBOSE("modem.get_names: %s", snames.c_str());
+		LOG_INFO("[%s] modem.get_names: %s",
+			XmlRpc::client_id.c_str(),
+			snames.c_str());
 		*retval = xmlrpc_c::value_array(names);
 	}
 };
@@ -564,7 +576,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		int md = active_modem->get_mode();
-LOG_VERBOSE("modem.get_id %d", md);
+		LOG_INFO("[%s] modem.get_id %d",
+			XmlRpc::client_id.c_str(),
+			md);
 		*retval = xmlrpc_c::value_int(md);
 	}
 };
@@ -579,7 +593,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("modem.get_max_id: %d", NUM_MODES -1);
+		LOG_INFO("[%s] modem.get_max_id: %d",
+			XmlRpc::client_id.c_str(),
+			NUM_MODES -1);
 		*retval = xmlrpc_c::value_int(NUM_MODES - 1);
 	}
 };
@@ -598,7 +614,9 @@ public:
 		const char* cur = mode_info[active_modem->get_mode()].sname;
 
 		string s = params.getString(0);
-LOG_VERBOSE("modem.set_by_name: %s", s.c_str());
+		LOG_INFO("[%s] modem.set_by_name: %s",
+			XmlRpc::client_id.c_str(),
+			s.c_str());
 		for (size_t i = 0; i < NUM_MODES; i++) {
 			if (s == mode_info[i].sname) {
 				REQ_SYNC(init_modem_sync, i, 0);
@@ -645,7 +663,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		int cur = active_modem->get_freq();
-LOG_VERBOSE("modem.set_carrier: %d", int(params.getInt(0,1)));
+		LOG_INFO("[%s] modem.set_carrier: %d",
+			XmlRpc::client_id.c_str(),
+			int(params.getInt(0,1)));
 		active_modem->set_freq(params.getInt(0, 1));
 		*retval = xmlrpc_c::value_int(cur);
 	}
@@ -663,7 +683,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		int cur = active_modem->get_freq();
-LOG_VERBOSE("modem.inc_carrier: %d", int(params.getInt(0)));
+		LOG_INFO("[%s] modem.inc_carrier: %d",
+			XmlRpc::client_id.c_str(),
+			int(params.getInt(0)));
 		active_modem->set_freq(cur + params.getInt(0));
 		*retval = xmlrpc_c::value_int(active_modem->get_freq());
 	}
@@ -679,7 +701,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("modem.get_carrier: %d", int(active_modem->get_freq()));
+		LOG_INFO("[%s] modem.get_carrier: %d",
+			XmlRpc::client_id.c_str(),
+			int(active_modem->get_freq()));
 		*retval = xmlrpc_c::value_int(active_modem->get_freq());
 	}
 };
@@ -697,10 +721,14 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		if (!(active_modem->get_cap() & modem::CAP_AFC_SR)) {
-LOG_VERBOSE("modem.get_afc_sr: %s", "Operation not supported by modem");
+			LOG_ERROR("[%s] modem.get_afc_sr: %s",
+				XmlRpc::client_id.c_str(),
+				"Operation not supported by modem");
 			*retval = "Operation not supported by modem";
 		} else {
-LOG_VERBOSE("modem.get_afc_sr: %d", int(cntSearchRange->value()));
+			LOG_INFO("[%s] modem.get_afc_sr: %d",
+				XmlRpc::client_id.c_str(),
+				int(cntSearchRange->value()));
 			*retval = xmlrpc_c::value_int((int)cntSearchRange->value());
 		}
 	}
@@ -718,13 +746,17 @@ public:
 	{
 		XMLRPC_LOCK;
 		if (!(active_modem->get_cap() & modem::CAP_AFC_SR)) {
-LOG_VERBOSE("modem.set_afc_sr %s", "Operation not supported by modem");
+			LOG_DEBUG("[%s] modem.set_afc_sr %s",
+				XmlRpc::client_id.c_str(),
+				"Operation not supported by modem");
 			*retval = "Operation not supported by modem";
 			return;
 		}
 
 		int v = (int)(cntSearchRange->value());
-LOG_VERBOSE("modem.set_afc_sr: %d", v);
+		LOG_INFO("[%s] modem.set_afc_sr: %d",
+			XmlRpc::client_id.c_str(),
+			v);
 		REQ(set_valuator, cntSearchRange, params.getInt(0, (int)cntSearchRange->minimum(), (int)cntSearchRange->maximum()));
 		*retval = xmlrpc_c::value_int(v);
 	}
@@ -742,13 +774,17 @@ public:
 	{
 		XMLRPC_LOCK;
 		if (!(active_modem->get_cap() & modem::CAP_AFC_SR)) {
-LOG_VERBOSE("modem.inc_afc_sr: %s", "Operation not supported by modem");
+			LOG_DEBUG("[%s] modem.inc_afc_sr: %s",
+				XmlRpc::client_id.c_str(),
+				"Operation not supported by modem");
 			*retval = "Operation not supported by modem";
 			return;
 		}
 
 		int v = (int)(cntSearchRange->value() + params.getInt(0));
-LOG_VERBOSE("modem.inc_afc_sr: %d", v);
+		LOG_INFO("[%s] modem.inc_afc_sr: %d",
+			XmlRpc::client_id.c_str(),
+			v);
 		REQ(set_valuator, cntSearchRange, v);
 		*retval = xmlrpc_c::value_int(v);
 	}
@@ -780,7 +816,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		Fl_Valuator* val = get_bw_val();
-LOG_VERBOSE("modem.get_bw: %d", int(get_bw_val()->value()));
+		LOG_INFO("[%s] modem.get_bw: %d",
+			XmlRpc::client_id.c_str(),
+			int(get_bw_val()->value()));
 		if (val)
 			*retval = xmlrpc_c::value_int((int)get_bw_val()->value());
 		else
@@ -802,7 +840,9 @@ public:
 		Fl_Valuator* val = get_bw_val();
 		if (val) {
 			int v = (int)(val->value());
-LOG_VERBOSE("modem.set_bw: %d", v);
+			LOG_INFO("[%s] modem.set_bw: %d",
+				XmlRpc::client_id.c_str(),
+				v);
 			REQ(set_valuator, val, params.getInt(0, (int)val->minimum(), (int)val->maximum()));
 			*retval = xmlrpc_c::value_int(v);
 		} else
@@ -824,7 +864,9 @@ public:
 		Fl_Valuator* val = get_bw_val();
 		if (val) {
 			int v = (int)(val->value() + params.getInt(0));
-LOG_VERBOSE("modem.inc_bw: %d", v);
+			LOG_INFO("[%s] modem.inc_bw: %d",
+				XmlRpc::client_id.c_str(),
+				v);
 			REQ(set_valuator, val, v);
 			*retval = xmlrpc_c::value_int(v);
 		} else
@@ -844,7 +886,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("modem.get_quality: %f", pgrsSquelch->value());
+		LOG_INFO("[%s] modem.get_quality: %f",
+			XmlRpc::client_id.c_str(),
+			pgrsSquelch->value());
 		*retval = xmlrpc_c::value_double(pgrsSquelch->value());
 	}
 };
@@ -860,7 +904,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("%s","modem.search_up");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"modem.search_up");
 		REQ(&modem::searchUp, active_modem);
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -877,7 +923,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("%s", "modem.search_down");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"modem.search_down");
 		REQ(&modem::searchDown, active_modem);
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -898,13 +946,17 @@ public:
 			case 125: case 250: case 500: case 1000: case 2000:
 			{
 				XMLRPC_LOCK;
-LOG_VERBOSE("modem.olivia_set_bandwidth: %d", bw);
+				LOG_INFO("[%s] modem.olivia_set_bandwidth: %d",
+					XmlRpc::client_id.c_str(),
+					bw);
 				REQ_SYNC(set_olivia_bw, bw);
 				*retval = xmlrpc_c::value_nil();
 			}
 				break;
 			default:
-LOG_VERBOSE("modem.olivia_set_bandiwidth: %s", "Invalid bandwidth");
+				LOG_INFO("[%s] modem.olivia_set_bandiwidth: %s",
+					XmlRpc::client_id.c_str(),
+					"Invalid bandwidth");
 				*retval = "Invalid Olivia bandwidth";
 		}
 	}
@@ -932,7 +984,9 @@ public:
 			bw = 1000;
 		else
 			bw = 2000;
-LOG_VERBOSE("modem.olivia_get_bandwidth: %d", bw);
+			LOG_INFO("[%s] modem.olivia_get_bandwidth: %d",
+				XmlRpc::client_id.c_str(),
+				bw);
 		*retval = xmlrpc_c::value_int(bw);
 	}
 };
@@ -950,12 +1004,16 @@ public:
 		int tones = params.getInt(0, 2, 256);
 		if (powerof2(tones)) {
 			XMLRPC_LOCK;
-LOG_VERBOSE("modem.olivia_set_tones: %d", tones);
+			LOG_INFO("[%s] modem.olivia_set_tones: %d",
+				XmlRpc::client_id.c_str(),
+				tones);
 			REQ_SYNC(set_olivia_tones, tones);
 			*retval = xmlrpc_c::value_nil();
 		}
 		else {
-LOG_VERBOSE("modem.olivia_set_tones: %s", "Invalid olivia tones");
+			LOG_INFO("[%s] modem.olivia_set_tones: %s",
+				XmlRpc::client_id.c_str(),
+				"Invalid olivia tones");
 			*retval = "Invalid Olivia tones";
 		}
 	}
@@ -971,7 +1029,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("modem.olivia_get_tones: %d", int(1 << (i_listbox_olivia_tones->index() + 1)));
+		LOG_INFO("[%s] modem.olivia_get_tones: %d",
+			XmlRpc::client_id.c_str(),
+			int(1 << (i_listbox_olivia_tones->index() + 1)));
 		*retval = xmlrpc_c::value_int(1 << (i_listbox_olivia_tones->index() + 1));
 	}
 };
@@ -988,7 +1048,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_status1: %s", Status1->label());
+		LOG_INFO("[%s] main.get_status1: %s",
+			XmlRpc::client_id.c_str(),
+			Status1->label());
 		*retval = xmlrpc_c::value_string(Status1->label());
 	}
 };
@@ -1003,7 +1065,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_status2: %s", Status2->label());
+		LOG_INFO("[%s] main.get_status2: %s",
+			XmlRpc::client_id.c_str(),
+			Status2->label());
 		*retval = xmlrpc_c::value_string(Status2->label());
 	}
 };
@@ -1018,7 +1082,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_sb (DEPRECATED): %s", wf->USB() ? "USB" : "LSB");
+		LOG_INFO("[%s] main.get_sb (DEPRECATED): %s",
+			XmlRpc::client_id.c_str(),
+			wf->USB() ? "USB" : "LSB");
 		*retval = xmlrpc_c::value_string(wf->USB() ? "USB" : "LSB");
 	}
 };
@@ -1039,7 +1105,9 @@ public:
 			*retval = "Invalid argument";
 			return;
 		}
-LOG_VERBOSE("main.set_sb (DEPRECATED): %s", s.c_str());
+		LOG_INFO("[%s] main.set_sb (DEPRECATED): %s",
+			XmlRpc::client_id.c_str(),
+			s.c_str());
 		REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
 
 		*retval = xmlrpc_c::value_nil();
@@ -1056,7 +1124,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_wf_sideband: %s", wf->USB() ? "USB" : "LSB");
+		LOG_INFO("[%s] main.get_wf_sideband: %s",
+			 XmlRpc::client_id.c_str(),
+			 wf->USB() ? "USB" : "LSB");
 		*retval = xmlrpc_c::value_string(wf->USB() ? "USB" : "LSB");
 	}
 };
@@ -1077,7 +1147,9 @@ public:
 			*retval = "Invalid argument";
 		else
 			REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
-LOG_VERBOSE("main.set_wf_sideband %s", s.c_str());
+			LOG_INFO("[%s] main.set_wf_sideband %s",
+				 XmlRpc::client_id.c_str(),
+				 s.c_str());
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1102,7 +1174,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		double rfc = wf->rfcarrier();
-		LOG_VERBOSE("main.set_freq: %f", rfc);
+		LOG_INFO("[%s] main.set_freq: %f",
+			XmlRpc::client_id.c_str(),
+			rfc);
 		qsy((long long int)params.getDouble(0, 0.0));
 		*retval = xmlrpc_c::value_double(rfc);
 	}
@@ -1121,7 +1195,9 @@ public:
 		XMLRPC_LOCK;
 		double rfc = wf->rfcarrier() + params.getDouble(0);
 		qsy((long long int)rfc);
-LOG_VERBOSE("main.inc_freq: %f", rfc);
+		LOG_INFO("[%s] main.inc_freq: %f",
+			XmlRpc::client_id.c_str(),
+			rfc);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -1138,7 +1214,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_afc: %s", (btnAFC->value() ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.get_afc: %s",
+			 XmlRpc::client_id.c_str(),
+			 (btnAFC->value() ? "ON" : "OFF"));
 		*retval = xmlrpc_c::value_boolean(btnAFC->value());
 	}
 };
@@ -1155,7 +1233,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = btnAFC->value();
-LOG_VERBOSE("main.set_afc: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.set_afc: %s",
+			XmlRpc::client_id.c_str(),
+			(v ? "ON" : "OFF"));
 		REQ(set_button, btnAFC, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1173,7 +1253,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = !btnAFC->value();
-LOG_VERBOSE("main.toggle_afc: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.toggle_afc: %s",
+			XmlRpc::client_id.c_str(),
+			(v ? "ON" : "OFF"));
 		REQ(set_button, btnAFC, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1191,7 +1273,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_sql: %s", (btnSQL->value() ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.get_sql: %s",
+			 XmlRpc::client_id.c_str(),
+			 (btnSQL->value() ? "ON" : "OFF"));
 		*retval = xmlrpc_c::value_boolean(btnSQL->value());
 	}
 };
@@ -1208,7 +1292,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = btnSQL->value();
-LOG_VERBOSE("main.set_sql: %s", (btnSQL->value() ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.set_sql: %s",
+			 XmlRpc::client_id.c_str(),
+			 (btnSQL->value() ? "ON" : "OFF"));
 		REQ(set_button, btnSQL, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1226,7 +1312,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = !btnSQL->value();
-LOG_VERBOSE("main.toggle_sql: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.toggle_sql: %s",
+			 XmlRpc::client_id.c_str(),
+			 (v ? "ON" : "OFF"));
 		REQ(set_button, btnSQL, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1244,7 +1332,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_sql_level: %f", sldrSquelch->value());
+		LOG_INFO("[%s] main.get_sql_level: %f",
+			 XmlRpc::client_id.c_str(),
+			 sldrSquelch->value());
 		*retval = xmlrpc_c::value_double(sldrSquelch->value());
 	}
 };
@@ -1261,7 +1351,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		double v = sldrSquelch->value();
-LOG_VERBOSE("main.set_sql_level: %f", v);
+		LOG_INFO("[%s] main.set_sql_level: %f",
+			XmlRpc::client_id.c_str(),
+			v);
 		REQ(set_valuator, sldrSquelch, params.getDouble(0, sldrSquelch->maximum(), sldrSquelch->minimum()));
 		*retval = xmlrpc_c::value_double(v);
 	}
@@ -1279,7 +1371,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		double v = sldrSquelch->value();
-LOG_VERBOSE("main.inc_sql_level: %f", v);
+		LOG_INFO("[%s] main.inc_sql_level: %f",
+			XmlRpc::client_id.c_str(),
+			v);
 		REQ(set_valuator, sldrSquelch, v + params.getDouble(0)); // FIXME: check range
 		*retval = xmlrpc_c::value_double(sldrSquelch->value());
 	}
@@ -1297,7 +1391,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_rev: %s", (wf->btnRev->value() ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.get_rev: %s",
+			 XmlRpc::client_id.c_str(),
+			 (wf->btnRev->value() ? "ON" : "OFF"));
 		*retval = xmlrpc_c::value_boolean(wf->btnRev->value());
 	}
 };
@@ -1314,7 +1410,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = wf->btnRev->value();
-LOG_VERBOSE("main.set_rev: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.set_rev: %s",
+			 XmlRpc::client_id.c_str(),
+			 (v ? "ON" : "OFF"));
 		REQ(set_button, wf->btnRev, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1332,7 +1430,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = !wf->btnRev->value();
-LOG_VERBOSE("main.toggle_rev: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.toggle_rev: %s",
+			 XmlRpc::client_id.c_str(),
+			 (v ? "ON" : "OFF"));
 		REQ(set_button, wf->btnRev, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1350,7 +1450,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_lock: %s", (wf->xmtlock->value() ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.get_lock: %s",
+			 XmlRpc::client_id.c_str(),
+			 (wf->xmtlock->value() ? "ON" : "OFF"));
 		*retval = xmlrpc_c::value_boolean(wf->xmtlock->value());
 	}
 };
@@ -1367,7 +1469,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = wf->xmtlock->value();
-LOG_VERBOSE("main.set_lock: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.set_lock: %s",
+			 XmlRpc::client_id.c_str(),
+			 (v ? "ON" : "OFF"));
 		REQ(set_button, wf->xmtlock, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1385,7 +1489,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = !wf->xmtlock->value();
-LOG_VERBOSE("main.toggle_lock: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.toggle_lock: %s",
+			 XmlRpc::client_id.c_str(),
+			 (v ? "ON" : "OFF"));
 		REQ(set_button, wf->xmtlock, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1402,7 +1508,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_txid: %s", (btnTxRSID->value() ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.get_txid: %s",
+			 XmlRpc::client_id.c_str(),
+			 (btnTxRSID->value() ? "ON" : "OFF"));
 		*retval = xmlrpc_c::value_boolean(btnTxRSID->value());
 	}
 };
@@ -1419,7 +1527,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = btnTxRSID->value();
-LOG_VERBOSE("main.set_txid: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.set_txid: %s",
+			 XmlRpc::client_id.c_str(),
+			 (v ? "ON" : "OFF"));
 		REQ(set_button, btnTxRSID, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1437,7 +1547,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = !btnTxRSID->value();
-LOG_VERBOSE("main.toggle_txid: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.toggle_txid: %s",
+			 XmlRpc::client_id.c_str(),
+			 (v ? "ON" : "OFF"));
 		REQ(set_button, btnTxRSID, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1453,7 +1565,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_rsid: %s", (btnRSID->value() ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.get_rsid: %s",
+			 XmlRpc::client_id.c_str(),
+			 (btnRSID->value() ? "ON" : "OFF"));
 		*retval = xmlrpc_c::value_boolean(btnRSID->value());
 	}
 };
@@ -1470,7 +1584,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = btnRSID->value();
-LOG_VERBOSE("main.set_rsid: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.set_rsid: %s",
+			 XmlRpc::client_id.c_str(),
+			 (v ? "ON" : "OFF"));
 		REQ(set_button, btnRSID, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1488,7 +1604,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = !btnRSID->value();
-LOG_VERBOSE("main.toggle_rsid: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] main.toggle_rsid: %s",
+			 XmlRpc::client_id.c_str(),
+			 (v ? "ON" : "OFF"));
 		REQ(set_button, btnRSID, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -1513,7 +1631,9 @@ public:
 			st = "tx";
 		else
 			st = "rx";
-LOG_VERBOSE("main.get_trx_status: %s", st.c_str());
+		LOG_INFO("[%s] main.get_trx_status: %s",
+			 XmlRpc::client_id.c_str(),
+			 st.c_str());
 		*retval = xmlrpc_c::value_string(st.c_str());
 	}
 };
@@ -1530,7 +1650,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		if (!wf->xmtrcv->value()) {
-LOG_VERBOSE("%s", "main.tx");
+			LOG_INFO("[%s] %s",
+				XmlRpc::client_id.c_str(),
+				"main.tx");
 			REQ(set_button, wf->xmtrcv, true);
 		}
 		*retval = xmlrpc_c::value_nil();
@@ -1549,7 +1671,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		if (!btnTune->value()) {
-LOG_VERBOSE("%s", "main.tune");
+			LOG_INFO("[%s] %s",
+				XmlRpc::client_id.c_str(),
+				"main.tune");
 			REQ(set_button, btnTune, !btnTune->value());
 		}
 		*retval = xmlrpc_c::value_nil();
@@ -1568,7 +1692,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		if (wf->xmtrcv->value()) {
-LOG_VERBOSE("%s", "main.rx");
+			LOG_INFO("[%s] %s",
+				XmlRpc::client_id.c_str(),
+				"main.rx");
 			REQ(set_button, wf->xmtrcv, false);
 		}
 		*retval = xmlrpc_c::value_nil();
@@ -1590,7 +1716,9 @@ public:
 			REQ(abort_tx);
 			REQ(AbortARQ);
 		}
-LOG_VERBOSE("%s", "main.abort");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"main.abort");
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1610,7 +1738,9 @@ public:
 			REQ(abort_tx);
 			REQ(AbortARQ);
 		}
-LOG_VERBOSE("%s", "main.rx_tx");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"main.rx_tx");
 		REQ(set_rx_tx);
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -1631,7 +1761,9 @@ public:
 			REQ(abort_tx);
 			REQ(AbortARQ);
 		}
-LOG_VERBOSE("%s", "main.rx_only");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"main.rx_only");
 		REQ(set_rx_only);
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -1665,7 +1797,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		reset_flmsg();
-LOG_VERBOSE("main.flmsg_online: %s", "true");
+		LOG_INFO("[%s] main.flmsg_online: %s",
+			XmlRpc::client_id.c_str(),
+			"true");
 	}
 };
 
@@ -1696,7 +1830,9 @@ public:
 			memcpy(&bytes[0], text, size);
 		}
 		reset_flmsg();
-LOG_VERBOSE("flmsg_get_data: %s", text);
+		LOG_INFO("[%s] flmsg_get_data: %s",
+			XmlRpc::client_id.c_str(),
+			text);
 		*retval = xmlrpc_c::value_bytestring(bytes);
 	}
 };
@@ -1716,7 +1852,9 @@ public:
 		XMLRPC_LOCK;
 		int data_ready = (int)flmsg_data.size();
 		reset_flmsg();
-LOG_VERBOSE("main.flmsg_available: %d", data_ready);
+		LOG_INFO("[%s] main.flmsg_available: %d",
+			 XmlRpc::client_id.c_str(),
+			 data_ready);
 		*retval = xmlrpc_c::value_int(data_ready);
 	}
 };
@@ -1734,7 +1872,9 @@ public:
 		XMLRPC_LOCK;
 		string tempstr = flmsg_data;
 		reset_flmsg();
-LOG_VERBOSE("main.flmsg_transfer:\n%s", tempstr.c_str());
+		LOG_INFO("[%s] main.flmsg_transfer:\n%s",
+			 XmlRpc::client_id.c_str(),
+			 tempstr.c_str());
 		*retval = xmlrpc_c::value_string(tempstr);
 		flmsg_data.clear();
 	}
@@ -1751,8 +1891,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		reset_flmsg();
-LOG_VERBOSE("main.flmsg_squelch: %s",
-(active_modem->get_metric() > progStatus.sldrSquelchValue ? "ACTIVE" : "NOT ACTIVE"));
+		LOG_INFO("[%s] main.flmsg_squelch: %s",
+			XmlRpc::client_id.c_str(),
+			(active_modem->get_metric() > progStatus.sldrSquelchValue ? "ACTIVE" : "NOT ACTIVE"));
 		*retval = xmlrpc_c::value_boolean(active_modem->get_metric() > progStatus.sldrSquelchValue);
 	}
 };
@@ -1772,7 +1913,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		reset_flmsg();
-LOG_VERBOSE("main.flmsg_online: %s", "true");
+		LOG_INFO("[%s] main.flmsg_online: %s",
+			XmlRpc::client_id.c_str(),
+			"true");
 	}
 };
 
@@ -1789,7 +1932,9 @@ public:
 		XMLRPC_LOCK;
 		int data_ready = (int)flmsg_data.size();
 		reset_flmsg();
-LOG_VERBOSE("main.flmsg_available: %d", data_ready);
+		LOG_INFO("[%s] main.flmsg_available: %d",
+			 XmlRpc::client_id.c_str(),
+			 data_ready);
 		*retval = xmlrpc_c::value_int(data_ready);
 	}
 };
@@ -1807,7 +1952,9 @@ public:
 		XMLRPC_LOCK;
 		string tempstr = flmsg_data;
 		reset_flmsg();
-LOG_VERBOSE("main.flmsg_transfer:\n%s", tempstr.c_str());
+		LOG_INFO("[%s] main.flmsg_transfer:\n%s",
+			 XmlRpc::client_id.c_str(),
+			 tempstr.c_str());
 		*retval = xmlrpc_c::value_string(tempstr);
 		flmsg_data.clear();
 	}
@@ -1824,8 +1971,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		reset_flmsg();
-LOG_VERBOSE("main.flmsg_squelch: %s",
-(active_modem->get_metric() > progStatus.sldrSquelchValue ? "ACTIVE" : "NOT ACTIVE"));
+		LOG_INFO("[%s] main.flmsg_squelch: %s",
+			XmlRpc::client_id.c_str(),
+			(active_modem->get_metric() > progStatus.sldrSquelchValue ? "ACTIVE" : "NOT ACTIVE"));
 		*retval = xmlrpc_c::value_boolean(active_modem->get_metric() > progStatus.sldrSquelchValue);
 	}
 };
@@ -1843,7 +1991,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("main.run_macro: %d", int(params.getInt(0,0,MAXMACROS-1)));
+		LOG_INFO("[%s] main.run_macro: %d",
+			XmlRpc::client_id.c_str(),
+			int(params.getInt(0,0,MAXMACROS-1)));
 		REQ(&Main_run_macro::run_macro, params.getInt(0, 0, MAXMACROS-1));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -1860,7 +2010,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("main.get_max_macro_id: %d", MAXMACROS - 1);
+		LOG_INFO("[%s] main.get_max_macro_id: %d",
+			XmlRpc::client_id.c_str(),
+			MAXMACROS - 1);
 		*retval = xmlrpc_c::value_int(MAXMACROS - 1);
 	}
 };
@@ -1877,7 +2029,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		if (!(wf->xmtrcv->value() || btnTune->value() || btnRSID->value())) {
-LOG_VERBOSE("main.rsid: %s", "ENABLE");
+			LOG_INFO("[%s] main.rsid: %s",
+				XmlRpc::client_id.c_str(),
+				"ENABLE");
 			REQ(set_button, btnRSID, true);
 		}
 		*retval = xmlrpc_c::value_nil();
@@ -1906,7 +2060,9 @@ public:
 			st = "RX";
 		else
 			st = "OTHER";
-LOG_VERBOSE("main.get_trx_state: %s", st.c_str());
+			LOG_INFO("[%s] main.get_trx_state: %s",
+				XmlRpc::client_id.c_str(),
+				st.c_str());
 		*retval = xmlrpc_c::value_string(st.c_str());
 	}
 };
@@ -2015,7 +2171,9 @@ public:
 			}
 			xmlbuf.append(line);
 		}
-LOG_VERBOSE("main.get_char_rates:\n%s", xmlbuf.c_str());
+		LOG_INFO("[%s] main.get_char_rates:\n%s",
+			XmlRpc::client_id.c_str(),
+			xmlbuf.c_str());
 		*retval = xmlrpc_c::value_string(xmlbuf);
 	}
 };
@@ -2115,7 +2273,9 @@ public:
 				 over_head);
 		xmlbuf.assign(result);
 
-LOG_VERBOSE("main.get_char_timing:\n%s", xmlbuf.c_str());
+		LOG_INFO("[%s] main.get_char_timing:\n%s",
+			XmlRpc::client_id.c_str(),
+			xmlbuf.c_str());
 		*retval = xmlrpc_c::value_string(xmlbuf);
 	}
 };
@@ -2156,7 +2316,9 @@ public:
 				 1.0 * chsamples / active_modem->tx_sample_rate);
 		xmlbuf.assign(buf);
 
-		LOG_VERBOSE("main.get_tx_timing:\n%s", xmlbuf.c_str());
+		LOG_INFO("[%s] main.get_tx_timing:\n%s",
+			XmlRpc::client_id.c_str(),
+			xmlbuf.c_str());
 		*retval = xmlrpc_c::value_string(xmlbuf);
 	}
 };
@@ -2178,7 +2340,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		LOG_VERBOSE("main.set_name: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] main.set_name: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ(set_rig_name, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2194,7 +2358,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		LOG_VERBOSE("rig.get_name: %s", windowTitle.c_str());
+		LOG_INFO("[%s] rig.get_name: %s",
+			XmlRpc::client_id.c_str(),
+			windowTitle.c_str());
 		*retval = xmlrpc_c::value_string(windowTitle);
 	}
 };
@@ -2212,7 +2378,9 @@ public:
 		XMLRPC_LOCK;
 		double rfc = wf->rfcarrier();
 		unsigned long int f = (long int)(params.getDouble(0,0.0));
-		LOG_VERBOSE("rig.set_frequency: %lu", f);
+		LOG_INFO("[%s] rig.set_frequency %lu",
+			XmlRpc::client_id.c_str(),
+			f);
 		qsy(f);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
@@ -2229,7 +2397,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		double rfc = wf->rfcarrier();
-LOG_INFO("rig.get_freq: %f", rfc);
+		LOG_INFO("[%s] rig.get_frequency %f",
+			XmlRpc::client_id.c_str(),
+			rfc);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -2253,7 +2423,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("rig.set_smeter: %d", int(params.getInt(0)));
+		LOG_INFO("[%s] rig.set_smeter: %d",
+			XmlRpc::client_id.c_str(),
+			int(params.getInt(0)));
 		REQ(set_smeter, params.getInt(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2278,7 +2450,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("rig.set_pwrmeter: %d", int(params.getInt(0)));
+		LOG_INFO("[%s] rig.set_pwrmeter: %d",
+			XmlRpc::client_id.c_str(),
+			int(params.getInt(0)));
 		REQ(set_pwrmeter, params.getInt(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2305,7 +2479,9 @@ public:
 			modes.push_back(static_cast<string>(xmlrpc_c::value_string(*i)));
 			smodes.append("\n").append(static_cast<string>(xmlrpc_c::value_string(*i)));
 		}
-LOG_VERBOSE("rig.set_modes:%s", smodes.c_str());
+		LOG_INFO("[%s] rig.set_modes:%s",
+			XmlRpc::client_id.c_str(),
+			smodes.c_str());
 		REQ_SYNC(set_combo_contents, qso_opMODE, &modes);
 
 		*retval = xmlrpc_c::value_nil();
@@ -2323,7 +2499,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("rig_set_mode: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] rig_set_mode: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ(set_combo_value, qso_opMODE, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2346,7 +2524,10 @@ public:
 		string smodes;
 		for (size_t n = 0; n < modes.size(); n++)
 			smodes.append("\n").append(string(modes[n]));
-LOG_VERBOSE("rig.get_modes:%s", smodes.c_str());
+
+		LOG_INFO("[%s] rig.get_modes:%s",
+			XmlRpc::client_id.c_str(),
+			smodes.c_str());
 
 		*retval = xmlrpc_c::value_array(modes);
 	}
@@ -2362,7 +2543,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("rig.get_mode: %s", qso_opMODE->value());
+		LOG_INFO("[%s] rig.get_mode: %s",
+			XmlRpc::client_id.c_str(),
+			qso_opMODE->value());
 		*retval = xmlrpc_c::value_string(qso_opMODE->value());
 	}
 };
@@ -2388,7 +2571,9 @@ public:
 			bws.push_back(static_cast<string>(xmlrpc_c::value_string(*i)));
 			s_bws.append("\n").append(static_cast<string>(xmlrpc_c::value_string(*i)));
 		}
-LOG_VERBOSE("rig.set_bandwidths:%s", s_bws.c_str());
+		LOG_INFO("[%s] rig.set_bandwidths:%s",
+			XmlRpc::client_id.c_str(),
+			s_bws.c_str());
 
 		REQ_SYNC(set_combo_contents, qso_opBW, &bws);
 
@@ -2407,7 +2592,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("rig.set_bandwidth: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] rig.set_bandwidth: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ(set_combo_value, qso_opBW, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2431,7 +2618,10 @@ public:
 		string sbws;
 		for (size_t n = 0; n < bws.size(); n++)
 			sbws.append("\n").append(string(bws[n]));
-LOG_VERBOSE("rig.get_modes:%s", sbws.c_str());
+
+		LOG_INFO("[%s] rig.get_modes:%s",
+			XmlRpc::client_id.c_str(),
+			sbws.c_str());
 
 		*retval = xmlrpc_c::value_array(bws);
 	}
@@ -2447,7 +2637,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("rig.get_bandwidth: %s", string(qso_opBW->value()).c_str());
+		LOG_INFO("[%s] rig.get_bandwidth: %s",
+			XmlRpc::client_id.c_str(),
+			string(qso_opBW->value()).c_str());
 		*retval = xmlrpc_c::value_string(qso_opBW->value());
 	}
 };
@@ -2462,7 +2654,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("rig.get_notch: %d", notch_frequency);
+		LOG_INFO("[%s] rig.get_notch: %d",
+			XmlRpc::client_id.c_str(),
+			notch_frequency);
 		*retval = xmlrpc_c::value_int(notch_frequency);
 	}
 };
@@ -2484,7 +2678,9 @@ public:
 		XMLRPC_LOCK;
 		int notch = notch_frequency;
 		REQ(set_notch, params.getInt(0));
-LOG_VERBOSE("rig.set_notch: %d", notch);
+		LOG_INFO("[%s] rig.set_notch: %d",
+			XmlRpc::client_id.c_str(),
+			notch);
 		*retval = xmlrpc_c::value_int(notch);
 	}
 };
@@ -2559,7 +2755,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_freq: %s", inpFreq->value());
+		LOG_INFO("[%s] log.get_freq: %s",
+			XmlRpc::client_id.c_str(),
+			inpFreq->value());
 		*retval = xmlrpc_c::value_string(inpFreq->value());
 	}
 };
@@ -2574,7 +2772,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_time_on: %s", inpTimeOn->value());
+		LOG_INFO("[%s] log.get_time_on: %s",
+			XmlRpc::client_id.c_str(),
+			inpTimeOn->value());
 		*retval = xmlrpc_c::value_string(inpTimeOn->value());
 	}
 };
@@ -2589,7 +2789,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_time_off: %s", inpTimeOff->value());
+		LOG_INFO("[%s] log.get_time_off: %s",
+			XmlRpc::client_id.c_str(),
+			inpTimeOff->value());
 		*retval = xmlrpc_c::value_string(inpTimeOff->value());
 	}
 };
@@ -2604,7 +2806,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_call: %s", inpCall->value());
+		LOG_INFO("[%s] log.get_call: %s",
+			XmlRpc::client_id.c_str(),
+			inpCall->value());
 		*retval = xmlrpc_c::value_string(inpCall->value());
 	}
 };
@@ -2620,7 +2824,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("log.set_call: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] log.set_call: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 
 		REQ(set_text, inpCall, params.getString(0));
 
@@ -2638,7 +2844,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_Name: %s", inpName->value());
+		LOG_INFO("[%s] log.get_Name: %s",
+			XmlRpc::client_id.c_str(),
+			inpName->value());
 		*retval = xmlrpc_c::value_string(inpName->value());
 	}
 };
@@ -2654,7 +2862,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("log.set_name: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] log.set_name: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ(set_text, inpName, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
@@ -2672,7 +2882,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("log.set_qth: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] log.set_qth: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ(set_text, inpQth, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
@@ -2690,7 +2902,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("log.set_locator: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] log.set_locator: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ(set_text, inpLoc, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
@@ -2707,7 +2921,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_rst_in: %s", inpRstIn->value());
+		LOG_INFO("[%s] log.get_rst_in: %s",
+			XmlRpc::client_id.c_str(),
+			inpRstIn->value());
 		*retval = xmlrpc_c::value_string(inpRstIn->value());
 	}
 };
@@ -2723,7 +2939,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("log.set_rst_in: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] log.set_rst_in: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ(set_text2, inpRstIn, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
@@ -2740,7 +2958,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_rst_out: %s", inpRstOut->value());
+		LOG_INFO("[%s] log.get_rst_out: %s",
+			XmlRpc::client_id.c_str(),
+			inpRstOut->value());
 		*retval = xmlrpc_c::value_string(inpRstOut->value());
 	}
 };
@@ -2756,7 +2976,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("log.set_rst_out: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] log.set_rst_out: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ(set_text2, inpRstOut, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
@@ -2773,7 +2995,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_serial_number: %s", inpSerNo->value());
+		LOG_INFO("[%s] log.get_serial_number: %s",
+			XmlRpc::client_id.c_str(),
+			inpSerNo->value());
 		*retval = xmlrpc_c::value_string(inpSerNo->value());
 	}
 };
@@ -2789,7 +3013,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("log.set_serial_number: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] log.set_serial_number: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ(set_text, inpSerNo, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2805,7 +3031,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_serial_number_sent: %s", outSerNo->value());
+		LOG_INFO("[%s] log.get_serial_number_sent: %s",
+			XmlRpc::client_id.c_str(),
+			outSerNo->value());
 		*retval = xmlrpc_c::value_string(outSerNo->value());
 	}
 };
@@ -2820,7 +3048,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_exchange: %s", inpXchgIn->value());
+		LOG_INFO("[%s] log.get_exchange: %s",
+			XmlRpc::client_id.c_str(),
+			inpXchgIn->value());
 		*retval = xmlrpc_c::value_string(inpXchgIn->value());
 	}
 };
@@ -2836,7 +3066,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("log.set_exchange: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] log.set_exchange: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ(set_text, inpXchgIn, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2852,7 +3084,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_state: %s", inpState->value());
+		LOG_INFO("[%s] log.get_state: %s",
+			XmlRpc::client_id.c_str(),
+			inpState->value());
 		*retval = xmlrpc_c::value_string(inpState->value());
 	}
 };
@@ -2867,7 +3101,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_province: %s", inpVEprov->value());
+		LOG_INFO("[%s] log.get_province: %s",
+			XmlRpc::client_id.c_str(),
+			inpVEprov->value());
 		*retval = xmlrpc_c::value_string(inpVEprov->value());
 	}
 };
@@ -2882,7 +3118,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_country: %s", cboCountry->value());
+		LOG_INFO("[%s] log.get_country: %s",
+			XmlRpc::client_id.c_str(),
+			cboCountry->value());
 		*retval = xmlrpc_c::value_string(cboCountry->value());
 	}
 };
@@ -2897,7 +3135,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_qth: %s", inpQTH->value());
+		LOG_INFO("[%s] log.get_qth: %s",
+			XmlRpc::client_id.c_str(),
+			inpQTH->value());
 		*retval = xmlrpc_c::value_string(inpQth->value());
 	}
 };
@@ -2912,7 +3152,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_band: %s", band_name(band(wf->rfcarrier())));
+		LOG_INFO("[%s] log.get_band: %s",
+			XmlRpc::client_id.c_str(),
+			band_name(band(wf->rfcarrier())));
 		*retval = xmlrpc_c::value_string(band_name(band(wf->rfcarrier())));
 	}
 };
@@ -2933,7 +3175,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_notes: %s", inpNotes->value());
+		LOG_INFO("[%s] log.get_notes: %s",
+			XmlRpc::client_id.c_str(),
+			inpNotes->value());
 		*retval = xmlrpc_c::value_string(inpNotes->value());
 	}
 };
@@ -2948,7 +3192,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_locator: %s", inpLoc->value());
+		LOG_INFO("[%s] log.get_locator: %s",
+			XmlRpc::client_id.c_str(),
+			inpLoc->value());
 		*retval = xmlrpc_c::value_string(inpLoc->value());
 	}
 };
@@ -2963,7 +3209,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("log.get_az: %s", inpAZ->value());
+		LOG_INFO("[%s] log.get_az: %s",
+			XmlRpc::client_id.c_str(),
+			inpAZ->value());
 		*retval = xmlrpc_c::value_string(inpAZ->value());
 	}
 };
@@ -2979,7 +3227,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("%s", "log.clear");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"log.clear");
 		REQ(clearQSO);
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -3004,7 +3254,9 @@ public:
 			s = "ARQ";
 		else
 			s = "";
-LOG_VERBOSE("Io.in_use: %s", s.c_str());
+		LOG_INFO("[%s] Io.in_use: %s",
+			XmlRpc::client_id.c_str(),
+			s.c_str());
 		*retval = xmlrpc_c::value_string(s.c_str());
 	}
 };
@@ -3020,7 +3272,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("%s", "Io.enable_kiss");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"Io.enable_kiss");
 		REQ(enable_kiss);
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -3037,7 +3291,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("%s", "Io.enable_arq");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"Io.enable_arq");
 		REQ(enable_arq);
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -3055,7 +3311,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("Text.get_rx_length: %d", (int)(ReceiveText->buffer()->length()));
+		LOG_INFO("[%s] Text.get_rx_length: %d",
+			XmlRpc::client_id.c_str(),
+			(int)(ReceiveText->buffer()->length()));
 		*retval = xmlrpc_c::value_int(ReceiveText->buffer()->length());
 	}
 };
@@ -3111,8 +3369,10 @@ public:
 			bytes.resize(size, 0);
 			memcpy(&bytes[0], text, size);
 		}
-			*retval = xmlrpc_c::value_bytestring(bytes);
-LOG_VERBOSE("Text.get_rx: %s", text);
+		*retval = xmlrpc_c::value_bytestring(bytes);
+		LOG_INFO("[%s] Text.get_rx: %s",
+			XmlRpc::client_id.c_str(),
+			text);
 		free(text);
 	}
 };
@@ -3129,7 +3389,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		REQ(&FTextBase::clear, ReceiveText);
-LOG_VERBOSE("%s", "Text.clear_rx");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"Text.clear_rx");
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -3155,7 +3417,9 @@ public:
 		else {
 			xmlchars.append(txt2send);
 		}
-LOG_VERBOSE("Text.add_tx_queue: %s", txt2send.c_str());
+		LOG_INFO("[%s] Text.add_tx_queue: %s",
+			XmlRpc::client_id.c_str(),
+			txt2send.c_str());
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -3172,7 +3436,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-LOG_VERBOSE("Text.add_tx: %s", string(params.getString(0)).c_str());
+		LOG_INFO("[%s] Text.add_tx: %s",
+			XmlRpc::client_id.c_str(),
+			string(params.getString(0)).c_str());
 		REQ_SYNC(&FTextTX::add_text, TransmitText, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -3191,7 +3457,9 @@ public:
 		XMLRPC_LOCK;
 		vector<unsigned char> bytes = params.getBytestring(0);
 		bytes.push_back(0);
-LOG_VERBOSE("Text.add_tx_bytes: %s", string((const char*)&bytes[0]).c_str());
+		LOG_INFO("[%s] Text.add_tx_bytes: %s",
+			XmlRpc::client_id.c_str(),
+			string((const char*)&bytes[0]).c_str());
 		REQ_SYNC(&FTextTX::add_text, TransmitText, string((const char*)&bytes[0]));
 
 		*retval = xmlrpc_c::value_nil();
@@ -3210,7 +3478,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		REQ(&FTextBase::clear, TransmitText);
-LOG_VERBOSE("%s", "Text.clear_tx");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"Text.clear_tx");
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -3243,7 +3513,9 @@ public:
 			bytes.resize(size, 0);
 			memcpy(&bytes[0], text, size);
 		}
-LOG_VERBOSE("RXTX.get_data: %s", text);
+		LOG_INFO("[%s] RXTX.get_data: %s",
+			XmlRpc::client_id.c_str(),
+			text);
 		*retval = xmlrpc_c::value_bytestring(bytes);
 	}
 };
@@ -3276,7 +3548,9 @@ public:
 			bytes.resize(size, 0);
 			memcpy(&bytes[0], text, size);
 		}
-LOG_VERBOSE("RX.get_data: %s", text);
+		LOG_INFO("[%s] RX.get_data: %s",
+			XmlRpc::client_id.c_str(),
+			text);
 		*retval = xmlrpc_c::value_bytestring(bytes);
 	}
 };
@@ -3309,7 +3583,9 @@ public:
 			bytes.resize(size, 0);
 			memcpy(&bytes[0], text, size);
 		}
-LOG_VERBOSE("TX.get_data: %s", text);
+		LOG_INFO("[%s] TX.get_data: %s",
+			XmlRpc::client_id.c_str(),
+			text);
 		*retval = xmlrpc_c::value_bytestring(bytes);
 	}
 };
@@ -3326,7 +3602,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-LOG_VERBOSE("Spot.get_auto: %s", (btnAutoSpot->value() ? "ON" : "OFF"));
+		LOG_INFO("[%s] Spot.get_auto: %s",
+			XmlRpc::client_id.c_str(),
+			(btnAutoSpot->value() ? "ON" : "OFF"));
 		*retval = xmlrpc_c::value_boolean(btnAutoSpot->value());
 	}
 };
@@ -3344,7 +3622,9 @@ public:
 		XMLRPC_LOCK;
 		bool v = btnAutoSpot->value();
 		REQ(set_button, (Fl_Button *) btnAutoSpot, params.getBoolean(0));
-LOG_VERBOSE("Spot.set_auto: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] Spot.set_auto: %s",
+			XmlRpc::client_id.c_str(),
+			(v ? "ON" : "OFF"));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -3361,7 +3641,9 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = !btnAutoSpot->value();
-LOG_VERBOSE("Spot.toggle_auto: %s", (v ? "ON" : "OFF"));
+		LOG_INFO("[%s] Spot.toggle_auto: %s",
+			XmlRpc::client_id.c_str(),
+			(v ? "ON" : "OFF"));
 		REQ(set_button, (Fl_Button *) btnAutoSpot, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
@@ -3378,7 +3660,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		int cnt = static_cast<int>(pskrep_count());
-LOG_VERBOSE("Spot.pskrep_get_count: %d", cnt);
+		LOG_INFO("[%s] Spot.pskrep_get_count: %d",
+			XmlRpc::client_id.c_str(),
+			cnt);
 		*retval = xmlrpc_c::value_int(cnt);
 	}
 };
@@ -3408,12 +3692,16 @@ struct Wefax_state_string : public xmlrpc_c::method
 	try
 	{
 		string wfs = get_wefax()->state_string();
-LOG_VERBOSE("wefax.state_string: %s", wfs.c_str());
+		LOG_INFO("[%s] wefax.state_string: %s",
+			XmlRpc::client_id.c_str(),
+			wfs.c_str());
 		*retval = xmlrpc_c::value_string( wfs.c_str() );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("wefax.state_string: %s", e.what());
+		LOG_ERROR("[%s] wefax.state_string: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what());
 	}
 };
@@ -3428,12 +3716,16 @@ struct Wefax_skip_apt : public xmlrpc_c::method
 	try
 	{
 		get_wefax()->skip_apt();
-LOG_VERBOSE("%s", "wefax.skip_apt");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"wefax.skip_apt");
 		*retval = xmlrpc_c::value_string( "" );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("wefax.skip_apt: %s", e.what());
+		LOG_ERROR("[%s] wefax.skip_apt: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
@@ -3449,12 +3741,16 @@ struct Wefax_skip_phasing : public xmlrpc_c::method
 	try
 	{
 		get_wefax()->skip_phasing(true);
-LOG_VERBOSE("%s", "wefax.skip_phasing");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"wefax.skip_phasing");
 		*retval = xmlrpc_c::value_string( "" );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("wefax.skip_phasing: %s", e.what());
+		LOG_ERROR("[%s] wefax.skip_phasing: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
@@ -3470,12 +3766,16 @@ struct Wefax_set_tx_abort_flag : public xmlrpc_c::method
 	try
 	{
 		get_wefax()->set_tx_abort_flag();
-LOG_VERBOSE("%s","wefax.set_tx_abort_flag");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"wefax.set_tx_abort_flag");
 		*retval = xmlrpc_c::value_string( "" );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("wefax.set_tx_abort_flag: %s", e.what());
+		LOG_ERROR("[%s] wefax.set_tx_abort_flag: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
@@ -3490,12 +3790,16 @@ struct Wefax_end_reception : public xmlrpc_c::method
 	try
 	{
 		get_wefax()->end_reception();
-LOG_VERBOSE("%s","wefax.end_reception");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"wefax.end_reception");
 		*retval = xmlrpc_c::value_string( "" );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("wefax.end_reception: %s", e.what());
+		LOG_ERROR("[%s] wefax.end_reception: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
@@ -3512,12 +3816,16 @@ struct Wefax_start_manual_reception : public xmlrpc_c::method
 		get_wefax()->set_rx_manual_mode(true);
 		get_wefax()->skip_apt();
 		get_wefax()->skip_phasing(true);
-LOG_VERBOSE("%s", "wefax.start_manual_reception");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"wefax.start_manual_reception");
 		*retval = xmlrpc_c::value_string( "" );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("wefax.start_manual_reception: %s", e.what());
+		LOG_ERROR("[%s] wefax.start_manual_reception: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
@@ -3532,12 +3840,16 @@ struct Wefax_set_adif_log : public xmlrpc_c::method
 	try
 	{
 		progdefaults.WEFAX_AdifLog = params.getBoolean(0);
-LOG_VERBOSE("%s", "wefax.set_adif_log");
+		LOG_INFO("[%s] %s",
+			XmlRpc::client_id.c_str(),
+			"wefax.set_adif_log");
 		*retval = xmlrpc_c::value_string( "" );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("wefax.set_adif_log: %s", e.what());
+		LOG_ERROR("[%s] wefax.set_adif_log: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
@@ -3553,12 +3865,16 @@ struct Wefax_set_max_lines : public xmlrpc_c::method
 	{
 		progdefaults.WEFAX_MaxRows = params.getInt(0);
 		/// This updates the GUI.
-LOG_VERBOSE("wefax.set_max_lines: %d", progdefaults.WEFAX_MaxRows);
+		LOG_INFO("[%s] wefax.set_max_lines: %d",
+			XmlRpc::client_id.c_str(),
+			progdefaults.WEFAX_MaxRows);
 		*retval = xmlrpc_c::value_string( "" );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("wefax.set_max_lines: %s", e.what());
+		LOG_ERROR("[%s] wefax.set_max_lines: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
@@ -3573,12 +3889,16 @@ struct Wefax_get_received_file : public xmlrpc_c::method
 	try
 	{
 		std::string filename = get_wefax()->get_received_file( params.getInt(0));
-LOG_VERBOSE("wefax.get_received_file: %s", filename.c_str());
+		LOG_INFO("[%s] wefax.get_received_file: %s",
+			XmlRpc::client_id.c_str(),
+			filename.c_str());
 		*retval = xmlrpc_c::value_string( filename );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("wefax.get_received_file: %s", e.what());
+		LOG_ERROR("[%s] wefax.get_received_file: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
@@ -3593,12 +3913,16 @@ struct Wefax_send_file : public xmlrpc_c::method
 	try
 	{
 		std::string status = get_wefax()->send_file( params.getString(0), params.getInt(1) );
-LOG_VERBOSE("wefax.send_file: %s", status.c_str());
+		LOG_INFO("[%s] wefax.send_file: %s",
+			XmlRpc::client_id.c_str(),
+			status.c_str());
 		*retval = xmlrpc_c::value_string( status );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("wefax.send_file: %s", e.what());
+		LOG_ERROR("[%s] wefax.send_file: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
@@ -3627,12 +3951,16 @@ struct Navtex_get_message : public xmlrpc_c::method
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	try
 	{
-LOG_VERBOSE("navtex.get_message: %s", string( get_navtex()->get_message( params.getInt(0))).c_str());
+		LOG_INFO("[%s] navtex.get_message: %s",
+			XmlRpc::client_id.c_str(),
+			string( get_navtex()->get_message( params.getInt(0))).c_str());
 		*retval = xmlrpc_c::value_string( get_navtex()->get_message( params.getInt(0)) );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("navtex.get_message: %s", e.what());
+		LOG_ERROR("[%s] navtex.get_message: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what());
 	}
 };
@@ -3647,12 +3975,16 @@ struct Navtex_send_message : public xmlrpc_c::method
 	try
 	{
 		std::string status = get_navtex()->send_message( params.getString(0) );
-LOG_VERBOSE("navtex.send_message: %s", status.c_str());
+		LOG_INFO("[%s] navtex.send_message: %s",
+			XmlRpc::client_id.c_str(),
+			status.c_str());
 		*retval = xmlrpc_c::value_string( status );
 	}
 	catch( const exception & e )
 	{
-LOG_VERBOSE("navtex.send_message: %s", e.what());
+		LOG_ERROR("[%s] navtex.send_message: %s",
+			XmlRpc::client_id.c_str(),
+			e.what());
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
