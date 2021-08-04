@@ -1,14 +1,30 @@
-2021-06-24  dave-w1hkj  <w1hkj@bellsouth.net>
+2021-08-04  dave-w1hkj  <w1hkj@bellsouth.net>
 
-	4032048a8: Version 4.1.19
-	887420331: C-Media PTT support
+	5e5a5ba1d: Version 4.1.20
+	fe8262fca: Cosmetic changes
+	0fdaa3870: xmlrpc id
+	8caa7f8e0: Gleam scheme
+
+2021-07-24  Rik van Riel  <riel@surriel.com>
+
+	0ecef62bf: Navtex modem
+
+2021-07-22  dave-w1hkj  <w1hkj@bellsouth.net>
+
+	f6e2ee4ff: cw tracking
+	984ab440b: Smeter Pwr_meter
+	5b038873c: My Callsign
+	e1cda4024: Contest fields
+	5c09ac9b8: gpio ptt
+	c38d1c153: Version 4.1.19
+	ecc64ee20: C-Media PTT support
 	8cdda8274: LNW macro tag
 	439cc2c9c: Notes
 	d396d4970: lower case tx
 
 2021-05-01  John Phelps  <kl4yfd@gmail.com>
 
-	d2efc4f77: Vestigial AFC fixes  * Fix OFDM and 8PSK AFC jumping randomly to noise-signals
+	59d790c76: Vestigial AFC fixes  * Fix OFDM and 8PSK AFC jumping randomly to noise-signals
 
 2021-04-26  Richard Shaw  <hobbes1069@gmail.com>
 
@@ -16,6 +32,7 @@
 
 2021-04-16  dave-w1hkj  <w1hkj@bellsouth.net>
 
+	ea4702e33: Add OFDM modes for NBEMS  * OFDM-500F for HF SSB    - survives HF NVIS/long path    - 4-carriers of 62.5-baud 4PSK = 250 bps    - 1/2 rate K=15 FEC with 4sec interleaver  * OFDM-750F for HF SSB    - survives HF NVIS/long path    - 3-carriers of 125-baud 8PSK = 562 bps    - 1/2 rate K=13 FEC with 3.2sec interleaver  * OFDM-2000F for HF-SSB/FM    - 8 carriers of 125-baud 8PSK = 2000bps    - 2/3 rate K=13 FEC with 3.2sec interleaver  * OFDM-2000 for HF-SSB/FM    - 4 carriers of 250-baud 8PSK = 3000bps    - NO FEC, meant for line-of-sight  * OFDM-3500 for FM 9600-port    - 7 carriers of 250-baud 8PSK = 5250bps    - NO FEC, meant for line-of-sight    - Requires Signalink made-after 2018 connected to the 9600-jack  * OFDM-2000F CPU-load fix    - FEC of previous mode too heavy for some CPUs      . Reduced to: K=11 FEC with 1600msec interleaver      . Other mode parameters unchanged  * Added Vestigial-carrier based AFC to OFDM modes    - Increases robustness and tolerance to drift   * OFDM 2000F hold    - commented out OFDM 2000 and 2000F modes for bugfixes    - OFDM 500F, 750F, and 3500 are complete
 	51af69688: Qso Party Cabrillo
 	9c035e809: cwid
 
