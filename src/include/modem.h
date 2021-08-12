@@ -53,7 +53,7 @@ public:
 	static unsigned int tx_sample_rate;
 	static bool XMLRPC_CPS_TEST;
 protected:
-	cMorse	morse;
+	cMorse	*morse;
 	trx_mode mode;
 	SoundBase	*scard;
 
@@ -107,7 +107,9 @@ protected:
 	bool CW_EOT;
 public:
 	modem();
-	virtual ~modem(){}
+	virtual ~modem(){
+		delete morse;
+	}
 
 // these processes must be declared in the derived class
 	virtual void init();

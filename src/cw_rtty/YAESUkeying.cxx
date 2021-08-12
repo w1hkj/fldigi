@@ -36,7 +36,7 @@
 
 int FTwpm = 0;
 bool use_FTkeyer = false;
-static cMorse FTmorse;
+static cMorse *FTmorse = 0;
 static char lastFTchar = 0;
 
 void set_FTkeyer()
@@ -58,6 +58,8 @@ void set_FTkeyer()
 
 void FTkeyer_send_char(int c)
 {
+	if (FTmorse == 0) FTmorse = new cMorse;
+
 	if (FTwpm != progdefaults.CWspeed) {
 		set_FTkeyer();
 	}
@@ -81,7 +83,7 @@ void FTkeyer_send_char(int c)
 		else
 			tc *= 5;
 	} else {
-		tc *= FTmorse.tx_length(c);
+		tc *= FTmorse->tx_length(c);
 		char cmd[20];
 		memset(cmd, 0, 20);
 		snprintf(cmd, sizeof(cmd), "KM2%c;KY7;", (char)c);

@@ -201,7 +201,7 @@ std::string cw::find_winner (float *inbuf, int twodots)
 
 	std::string sc;
 	if (!som_table[winner].rpr.empty()) {
-		sc = morse.rx_lookup(som_table[winner].rpr);
+		sc = morse->rx_lookup(som_table[winner].rpr);
 		if (sc.empty()) 
 			sc = (progdefaults.CW_noise == '*' ? "*" :
 				  progdefaults.CW_noise == '_' ? "_" :
@@ -266,7 +266,7 @@ void cw::init()
 	memset(outbuf, 0, OUTBUFSIZE*sizeof(*outbuf));
 	memset(qskbuf, 0, OUTBUFSIZE*sizeof(*qskbuf));
 
-	morse.init();
+	morse->init();
 	use_paren = progdefaults.CW_use_paren;
 	prosigns = progdefaults.CW_prosigns;
 
@@ -711,7 +711,7 @@ int cw::rx_process(const double *buf, int len)
 		prosigns != progdefaults.CW_prosigns) {
 		use_paren = progdefaults.CW_use_paren;
 		prosigns = progdefaults.CW_prosigns;
-		morse.init();
+		morse->init();
 	}
 
 	if (cwprocessing)
@@ -878,7 +878,7 @@ int cw::handle_event(int cw_event, std::string &sc)
 			element_usec <= (4 * cw_receive_dot_length) &&
 			cw_receive_state == RS_AFTER_TONE) {
 // Look up the representation
-			sc = morse.rx_lookup(rx_rep_buf);
+			sc = morse->rx_lookup(rx_rep_buf);
 			if (sc.empty()) {
 // invalid decode... let user see error
 			sc = (progdefaults.CW_noise == '*' ? "*" :
@@ -1095,7 +1095,7 @@ void cw::send_ch(int ch)
 		return;
 	}
 
-	code = morse.tx_lookup(ch);
+	code = morse->tx_lookup(ch);
 	if (!code.length()) {
 		return;
 	}
