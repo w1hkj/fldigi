@@ -37,7 +37,7 @@ bool use_KYkeyer = false;
 static std::string KYcmd = "KY  ;";
 static std::string KNWDcmd = "KY                         ;";
 static std::string cmd;
-static cMorse KYmorse;
+static cMorse *KYmorse = 0;
 static char lastKYchar = 0;
 
 void set_KYkeyer()
@@ -59,6 +59,8 @@ void set_KYkeyer()
 
 void KYkeyer_send_char(int c)
 {
+	if (KYmorse == 0) KYmorse = new cMorse;
+
 	if (KYwpm != progdefaults.CWspeed) {
 		set_KYkeyer();
 	}
@@ -82,7 +84,7 @@ void KYkeyer_send_char(int c)
 		else
 			tc *= 5;
 	} else {
-		tc *= KYmorse.tx_length(c);
+		tc *= KYmorse->tx_length(c);
 		if (progdefaults.use_KNWDkeying) {
 			KNWDcmd[3] = (char)c;
 			cmd = KNWDcmd;

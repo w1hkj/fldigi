@@ -36,7 +36,7 @@
 int ICOMwpm = 0;
 bool use_ICOMkeyer = false;
 static std::string ICOMcmd;
-static cMorse ICOMmorse;
+static cMorse *ICOMmorse = 0;
 char lastICOMchar = 0;
 
 static std::string hexvals = "0123456789ABCDEF";
@@ -93,6 +93,8 @@ void set_ICOMkeyer() {
 
 void ICOMkeyer_send_char(int c)
 {
+	if (ICOMmorse == 0) ICOMmorse = new cMorse;
+
 	if (ICOMwpm != progdefaults.CWspeed) {
 		set_ICOMkeyer();
 	}
@@ -118,7 +120,7 @@ void ICOMkeyer_send_char(int c)
 		else
 			tc *= 5;
 	} else {
-		tc *= (ICOMmorse.tx_length(c));
+		tc *= (ICOMmorse->tx_length(c));
 
 		ICOMcmd.assign(ICOMheader());
 		ICOMcmd.append("\x17");
