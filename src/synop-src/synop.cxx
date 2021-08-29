@@ -255,7 +255,7 @@ public:
 	/// This garantees an unique name.
 	const std::string & station_name() const { return m_name; }
 	void rename_station( const std::string & nam ) {
-		LOG_INFO("Renaming %s to %s", m_name.c_str(), nam.c_str() );
+		LOG_VERBOSE("Renaming %s to %s", m_name.c_str(), nam.c_str() );
 		m_name = nam;
 	}
 
@@ -539,7 +539,7 @@ protected:
 			return false ;
 		}
 		else {
-			LOG_INFO("record=%s nb_recs=%d", typeid(Record).name(), nbRec );
+			LOG_VERBOSE("record=%s nb_recs=%d", typeid(Record).name(), nbRec );
 			return true ;
 		}
 	}
@@ -590,7 +590,7 @@ public:
 		HashT allNames ;
 
 		// First take the names
-		LOG_INFO("Eliminating duplicates out of %d elements",
+		LOG_VERBOSE("Eliminating duplicates out of %d elements",
 			static_cast<int>(m_catalog.size()));
 		for( IteratorType it = m_catalog.begin(), en = m_catalog.end(); it != en; ++it )
 		{
@@ -603,7 +603,7 @@ public:
 		// Iterates on all names, take only the duplicates.
 		for( HashT::iterator itH = allNames.begin(), itNextH = itH, enH = allNames.end(); itH != enH; itH = itNextH )
 		{
-			LOG_INFO("Name=%s", itH->first.c_str() );
+			LOG_VERBOSE("Name=%s", itH->first.c_str() );
 			size_t nbKeys = 1 ;
 			for(;;) {
 				++itNextH;
@@ -611,7 +611,7 @@ public:
 				if( itNextH->first != itH->first ) break ;
 				++nbKeys;
 			}
-			LOG_INFO("Name=%s nb=%d", 
+			LOG_VERBOSE("Name=%s nb=%d", 
 				itH->first.c_str(),
 				static_cast<int>(nbKeys) );
 
@@ -619,7 +619,7 @@ public:
 			if( nbKeys == 1 ) continue ;
 
 			++nbDupl ;
-			LOG_INFO("%d: Name %s %d occurrences", 
+			LOG_VERBOSE("%d: Name %s %d occurrences", 
 				static_cast<int>(nbDupl),
 				itH->first.c_str(),
 				static_cast<int>(nbKeys) );
@@ -630,7 +630,7 @@ public:
 			// Check that all countries are different.
 			for( HashT::iterator itSubH = itH; itSubH != itNextH; ++itSubH ) {
 				RecordWmoStation & refWmo = itSubH->second->second ;
-				LOG_INFO("Trying %s", refWmo.station_name().c_str() );
+				LOG_VERBOSE("Trying %s", refWmo.station_name().c_str() );
 				// Appends the country.
 				refWmo.rename_station( refWmo.station_name() + "," + refWmo.country() );
 				std::pair< DiffNamesT::iterator, bool > tmpPair = differentNames.insert( refWmo.station_name() );
@@ -645,7 +645,7 @@ public:
 		}
 
 		if(nbDupl) {
-			LOG_INFO("Eliminated %d duplicates out of %d elements",
+			LOG_VERBOSE("Eliminated %d duplicates out of %d elements",
 				(int)nbDupl, (int)m_catalog.size());
 		}
 		return true ;
@@ -677,7 +677,7 @@ public:
 		typedef std::multimap< std::string, IteratorType > HashT ;
 		HashT allNames ;
 
-		LOG_INFO("Eliminating duplicates out of %d elements",
+		LOG_VERBOSE("Eliminating duplicates out of %d elements",
 			static_cast<int>(m_catalog.size()));
 
 		/// First take the names
@@ -692,7 +692,7 @@ public:
 		/// Iterates on all names, take only the duplicates.
 		for( HashT::iterator itH = allNames.begin(), itNextH = itH, enH = allNames.end(); itH != enH; itH = itNextH )
 		{
-			LOG_INFO("Name=%s", itH->first.c_str() );
+			LOG_VERBOSE("Name=%s", itH->first.c_str() );
 			size_t nbKeys = 1 ;
 			for(;;) {
 				++itNextH;
@@ -700,7 +700,7 @@ public:
 				if( itNextH->first != itH->first ) break ;
 				++nbKeys;
 			}
-			LOG_INFO("Name=%s nb=%d",
+			LOG_VERBOSE("Name=%s nb=%d",
 				itH->first.c_str(),
 				static_cast<int>(nbKeys) );
 
@@ -708,7 +708,7 @@ public:
 			if( nbKeys == 1 ) continue ;
 
 			++nbDupl ;
-			LOG_INFO("%d: Buoy name %s %d occurrences",
+			LOG_VERBOSE("%d: Buoy name %s %d occurrences",
 					static_cast<int>(nbDupl),
 					itH->first.c_str(),
 					static_cast<int>(nbKeys) );
@@ -725,7 +725,7 @@ public:
 				else
 					refBuoy.rename_buoy( strformat( "%s-%s", refBuoy.buoy_name().c_str(), refBuoy.id().c_str() ) );
 				std::pair< DiffNamesT::iterator, bool > tmpPair = differentNames.insert( refBuoy.buoy_name() );
-				LOG_INFO("Buoy set to %s", refBuoy.buoy_name().c_str() );
+				LOG_VERBOSE("Buoy set to %s", refBuoy.buoy_name().c_str() );
 				if( tmpPair.second ) continue ;
 				LOG_ERROR("This should never happen because buoy id is unique");
 				return false ;
@@ -733,7 +733,7 @@ public:
 		}
 
 		if(nbDupl) {
-			LOG_INFO("Eliminated %d duplicates out of %d elements",
+			LOG_VERBOSE("Eliminated %d duplicates out of %d elements",
 				(int)nbDupl, (int)m_catalog.size());
 		}
 		return true ;
@@ -5238,7 +5238,7 @@ class synop_impl
 			&&  ( it1            != end()            )
 			&&  ( it1->section() == SECTION_IDENTLOC ) ) {
 				if( m_nbTokens <= 3 ) {
-					LOG_INFO("No publish3 %s", TstToStr().c_str() );
+					LOG_VERBOSE("No publish3 %s", TstToStr().c_str() );
 					return ;
 				}
 				// TODO: Store these for next run if their are missing.
@@ -5248,7 +5248,7 @@ class synop_impl
 				// For example, receiving only the following line makes no sense:
 				// Climatological data=6RRRt#69907+8NChh#81822+9SSss#91113+9SSss#96480;+;
 				if( it0->section() != SECTION_LAND_OBS ) {
-					LOG_INFO("No publish2 %s", TstToStr().c_str() );
+					LOG_VERBOSE("No publish2 %s", TstToStr().c_str() );
 					return ;
 				}
 				// TODO: We should use the header SECTION_IDENTLOC of the previous message:
@@ -5325,7 +5325,7 @@ class synop_impl
 									<< " IIiii:" << newCoo
 									<< " Against:" << tmpCoo
 									<< " Dist:" << dist ;
-								LOG_INFO("%s", strm.str().c_str() );
+								LOG_VERBOSE("%s", strm.str().c_str() );
 							}
 						} else {
 							foundCoo = true ;
@@ -5362,7 +5362,7 @@ class synop_impl
 									<< " IIiii:" << newCoo
 									<< " Against:" << tmpCoo
 									<< " Dist:" << dist ;
-								LOG_INFO("%s", strm.str().c_str() );
+								LOG_VERBOSE("%s", strm.str().c_str() );
 							}
 						} else {
 							foundCoo = true ;
@@ -5377,7 +5377,7 @@ class synop_impl
 							ptrJComm_Tok->SetJCommFields( kmlNam, iconNam );
 							if( stationCountry.empty() ) stationCountry = ptrJComm_Tok->country();
 						} else {
-							LOG_INFO("Cannot find WMO station:%s", wmoIndicStr.c_str() );
+							LOG_VERBOSE("Cannot find WMO station:%s", wmoIndicStr.c_str() );
 							kmlNam = "WMO:" + wmoIndicStr ;
 						}
 					}
