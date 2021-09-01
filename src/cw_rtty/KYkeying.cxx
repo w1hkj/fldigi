@@ -36,6 +36,8 @@ int KYwpm = 0;
 bool use_KYkeyer = false;
 static std::string KYcmd = "KY  ;";
 static std::string KNWDcmd = "KY                         ;";
+//                            0123456789012345678901234567
+//                            0         1         2
 static std::string cmd;
 static cMorse *KYmorse = 0;
 static char lastKYchar = 0;
@@ -86,11 +88,11 @@ void KYkeyer_send_char(int c)
 	} else {
 		tc *= KYmorse->tx_length(c);
 		if (progdefaults.use_KNWDkeying) {
-			KNWDcmd[3] = (char)c;
 			cmd = KNWDcmd;
+			cmd[3] = (char)c;
 		} else {
-			KYcmd[3] = (char)c;
 			cmd = KYcmd;
+			cmd[3] = (char)c;
 		}
 		if (progdefaults.fldigi_client_to_flrig) {
 			xmlrpc_priority(cmd);
