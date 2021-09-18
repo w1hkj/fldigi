@@ -4330,6 +4330,11 @@ static void MAPIT(int how)
 		url.append(lookup_state).append(",").append(lookup_country);
 	} else {
 		if (how > 0 && (!lookup_latd.empty() && !lookup_lond.empty())) {
+			size_t p = std::string::npos;
+			if ((p = lookup_latd.find(',')) !=std::string::npos)
+				lookup_latd[p] = '.';
+			if ((p = lookup_lond.find(',')) !=std::string::npos)
+				lookup_lond[p] = '.';
 			url.append(lookup_latd).append(",");
 			url.append(lookup_lond);
 		} else {
@@ -4349,16 +4354,33 @@ static void MAPIT(int how)
 			(sLOC[3] - '0') +
 			(sLOC[5] - 'A' + 0.5) / 24;
 			char sdata[20];
+			size_t p = std::string::npos;
 			snprintf(sdata, sizeof(sdata),"%10.6f", lat);
-			url.append(sdata).append(",");
+
+			std::string temp = sdata;
+			if ((p = temp.find(',')) !=std::string::npos)
+				temp[p] = '.';
+			url.append(temp).append(",");
+
 			snprintf(sdata, sizeof(sdata),"%10.6f", lon);
-			url.append(sdata);
+			temp = sdata;
+			if ((p = temp.find(',')) !=std::string::npos)
+				temp[p] = '.';
+			url.append(temp);
 		}
 	}
 	if (!sCALL.empty()) url.append("(").append(sCALL).append(")");
 	else url.append("(nocall)");
 	url.append("&t=p&z=10");
+
 	cb_mnuVisitURL(NULL, (void*)url.c_str());
+
+// examples
+// <MAPIT>        URL: http://maps.google.com/maps?q=30 Paradisou str.,Marousi,,Greece(SV1GRB)&t=p&z=10
+// <MAPIT:adr>    URL: http://maps.google.com/maps?q=30 Paradisou str.,Marousi,,Greece(SV1GRB)&t=p&z=10
+// <MAPIT:latlon> URL: http://maps.google.com/maps?q=38.020000,23.790000(SV1GRB)&t=p&z=10
+// <MAPIT:loc>    URL: http://maps.google.com/maps?q= 38.020832, 23.791666(SV1GRB)&t=p&z=10
+
 }
 
 static void pMAPIT(std::string &s, size_t &i, size_t endbracket)
