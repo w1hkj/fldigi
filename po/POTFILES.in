@@ -12,7 +12,6 @@ src/logbook/logsupport.cxx
 src/logger/rx_extract.cxx
 src/logger/speak.cxx
 src/misc/configuration.cxx
-src/misc/status.cxx
 src/misc/macroedit.cxx
 src/misc/macros.cxx
 src/network/network.cxx
@@ -25,6 +24,8 @@ src/rigcontrol/rigxml.cxx
 src/soundcard/sound.cxx
 src/soundcard/soundconf.cxx
 src/spot/notify.cxx
+src/status/status.cxx
+src/status/squelch_status.cxx
 src/waterfall/colorbox.cxx
 src/widgets/FTextRXTX.cxx
 src/widgets/FTextView.cxx
