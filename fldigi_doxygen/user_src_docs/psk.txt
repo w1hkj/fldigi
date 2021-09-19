@@ -87,15 +87,38 @@ high data rate suitable for use with both flmsg and flamp and the transfer of
 digital data.
 <br>
 
+FM Modes - There are five modes specifically intended for usage on FM:
 <center>
-Mode      | Baud  | WPM  | Mode-FEC  | Baud  | WPM
-:--------:|:-----:|:----:|:---------:|:-----:|:----
-8PSK125   | 125   | 635  | 8PSK125F  | 125   | 317
-8PSK250   | 250   | 1270 | 8PSK250F  | 250   | 635
-8PSK500   | 500   | 2540 | 8PSK500F  | 500   | 1690
-8PSK1000  | 1000  | 5080 | 8PSK1000F | 1000  | 3386
-----------|-------|------| 8PSK1200F | 1200  | 4170
+Mode        | WPM  | Baud | Bitrate  | Datarate | FEC
+:-----------|:----:|:----:|:--------:|:--------:|:------:
+8-PSK 500   | 2540 |  500 | 1500 bps | 1500 bps | None
+8-PSK 1000  | 5080 | 1000 | 3000 bps | 3000 bps | None
+8-PSK 500F  | 1690 |  500 | 1500 bps | 1000 bps | 2/3 Rate K=13
+8-PSK 1000F | 3386 | 1000 | 3000 bps | 2000 bps | 2/3 Rate K=7
+8-PSK 1200F | 4170 | 1200 | 3600 bps | 2400 bps | 2/3 Rate K=7
 </center>
+<ul>
+<li>8-PSK 500F works with nearly all radios and FM repeater systems. </li>
+<li>Center-frequencies of 1500Hz and 1750Hz have been reported to work best.</li>
+</ul>
+
+SSB Modes - There are six modes which can be used for weak signal 10m/6m+ SSB or FM VHF/UHF.
+<center>
+Mode        | WPM  | Baud | Bitrate  | Datarate | FEC
+:-----------|:----:|:----:|:--------:|:--------:|:------:
+8-PSK 125   | 635  | 125  | 375 bps  | 375 bps  | None
+8-PSK 250   | 1270 | 250  | 750 bps  | 750 bps  | None
+8-PSK 125F  | 317  | 125  | 375 bps  | 187 bps  | 1/2 Rate K=16
+8-PSK 250F  | 635  | 250  | 750 bps  | 375 bps  | 1/2 Rate K=16
+8-PSK 125FL | 312  | 125  | 375 bps  | 187 bps  | 1/2 Rate K=13
+8-PSK 250FL | 635  | 250  | 750 bps  | 375 bps  | 1/2 Rate K=13
+8-PSK 500F  | 1690 | 500  | 1500 bps | 1000 bps | 2/3 Rate K=13
+</center>
+
+These modes can be used on HF SSB like PSK-31, but do require a high-degree of frequency accuracy ( ± 10Hz ).
+
+The heavy forward error correction allows these signals to be decoded even when quite weak.
+This also helps overcome their sensitivity to transmitter / amplifier distortions and non-linearities.
 <br>
 
 The FEC modes do not all use the same Viterbi polynomials to achieve the forward 
@@ -155,6 +178,20 @@ frequency.  The loss of signal power is more than offset by the decoder improvem
 Field testing has shown that the pilot tone needs to be at -40 dB or greater 
 (less negative).
 <br>
+
+The 8-PSK pilot carrier is a continuous-phase & continuous-frequency tone transmitted 
+slightly lower in frequency than the 8-PSK data signal. Since 8-PSK cannot use the 
+same auto-frequency controls (AFC) as BPSK or PSK31 can, this tone is used to provide 
+a frequency/phase reference. 
+
+The addition of a pilot carrier to the 8-PSK modes allows for expanded usage 
+of 8-PSK over HF Single-Sideband, even with older radios that experience 
+frequency drift. This carrier helps improve decode by:
+<ul>
+<li>Compensating for frequency drift, common with older radios</li>
+<li>Providing a stable frequency reference with +- 1/2 Hz accuracy<li>
+<li>Providing information on the RF channel quality, by measuring the RF channel real-time</li>
+</ul>
 
 Pilot tone detection does require a bit more cpu power.  The pilot tone is detected 
 using a sliding fast Fourier transform, sfft, which computes the frequency of 

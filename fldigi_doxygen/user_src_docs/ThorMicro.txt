@@ -27,6 +27,21 @@ receive filters.<br>
 This mode is also a great tool for low-power digital operation, or in 
 place of QRSS.<br>
 
+<center>
+<table>
+<tr>
+<td>
+\image html ThorMicroWaterfall.png "Signal 36 Hz wide"
+\image latex ThorMicroWaterfall.png "Signal 36 Hz wide" width=2.5in
+</td>
+<td>
+\image html Olivia-vs-thormicro.png "Compared to Olivia 8/250"
+\image latex Olivia-vs-thormicro.png "Compared to Olivia 8/250" width=2.5in
+</td>
+</tr>
+</table>
+</center>
+
 Thor Micro emits a distinctive double rising tone sequence at the
 beginning of each transmission.  It is used to flush the receive
 decoder and also provides a visual and audible clue to its being used.<br>
