@@ -11,7 +11,7 @@
 # input used in their production; they are not affected by this license.
 
 PROJECT_NAME         = "Fldigi Users Manual"
-PROJECT_NUMBER       = 4.1.19
+PROJECT_NUMBER       = 4.1.20
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = YES
@@ -106,6 +106,7 @@ MFSK.txt MT63.txt \
 FSQ.txt IFKP.txt \
 Navtex.txt \
 psk.txt \
+OFDM.txt \
 Olivia.txt \
 RTTYFSK.txt \
 Thor.txt \

@@ -28,6 +28,21 @@ receive filters.<br>
 This mode is also a great tool for low-power digital operation, or in 
 place of QRSS.<br>
 
+<center>
+<table>
+<tr>
+<td>
+\image html DomExMicroWaterfall.png "Signal 36 Hz wide"
+\image latex DomExMicroWaterfall.png "Signal 36 Hz wide" width=2.5in
+</td>
+<td>
+\image html Olivia-vs-domexmicro.png "Compared to Olivia 8/250"
+\image latex Olivia-vs-domexmicro.png "Compared to Olivia 8/250" width=2.5in
+</td>
+</tr>
+</table>
+</center>
+
 The modem code for DominoEX uses a wide band multiple frequency
 detector that can lock on and detect the incoming signal even when
 badly mistuned.  Frequency domain oversampling is used to allow
