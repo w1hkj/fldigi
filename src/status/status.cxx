@@ -146,6 +146,8 @@ status progStatus = {
 	500,				// int		int_sldrPwrSquelchValue
 	true,				// bool afconoff
 	true,				// bool sqlonoff
+	false,				// bool reverse
+	-3.0,				// double txlevel
 	50,					// int	scopeX;
 	50,					// int	scopeY;
 	false,				// bool	scopeVisible;
@@ -494,11 +496,14 @@ void status::saveLastState()
 	spref.set("dual_channels", "YES");
 
 	spref.set("mode_name", mode_info[lastmode].sname);
-	spref.set("squelch_enabled", sqlonoff);
 
+	spref.set("squelch_enabled", sqlonoff);
 	spref.set("int_squelch_level", (int)round(sldrSquelchValue * 100));
+
 	spref.set("int_pwr_squelch_level", (int)round(sldrPwrSquelchValue * 100));
 	spref.set("afc_enabled", afconoff);
+
+	spref.set("reverse", reverse);
 
 	spref.set("psk8DCDShortFlag", psk8DCDShortFlag);
 
@@ -743,6 +748,8 @@ if (!bWF_only) {
 	spref.set("debug_level", debug_level);
 //----------------------------------------------------------------------
 	spref.set("vumeter_shown", vumeter_shown);
+
+	save_mode_state();
 }
 
 void status::loadLastState()
@@ -777,10 +784,13 @@ void status::loadLastState()
 	spref.get("squelch_enabled", i, sqlonoff); sqlonoff = i;
 	spref.get("int_squelch_level", i, int_sldrSquelchValue); int_sldrSquelchValue = i;
 	sldrSquelchValue = int_sldrSquelchValue / 100.0;
+
 	spref.get("int_pwr_squelch_level", i, int_sldrPwrSquelchValue); int_sldrPwrSquelchValue = i;
 	sldrPwrSquelchValue = int_sldrPwrSquelchValue / 100.0;
 
 	spref.get("afc_enabled", i, afconoff); afconoff = i;
+
+	spref.get("reverse", i, reverse); reverse = i;
 
 //	spref.get("rx_text_height", RxTextHeight, RxTextHeight);
 	spref.get("tiled_group_x", tiled_group_x, tiled_group_x);
@@ -1023,70 +1033,72 @@ void status::loadLastState()
 // WinKeyer prefs get
 //----------------------------------------------------------------------
 
-		spref.get("WK_serial_port_name", strbuff, "NONE", 199);
-		WK_serial_port_name = strbuff;
-		if (WK_serial_port_name.find("tty") == 0) 
-			WK_serial_port_name.insert(0, "/dev/");
+	spref.get("WK_serial_port_name", strbuff, "NONE", 199);
+	WK_serial_port_name = strbuff;
+	if (WK_serial_port_name.find("tty") == 0) 
+		WK_serial_port_name.insert(0, "/dev/");
 
-		spref.get("WK_mode_register", i, WK_mode_register); WK_mode_register = i;
-		spref.get("WK_speed_wpm", i, WK_speed_wpm); WK_speed_wpm = i;
-		spref.get("WK_cmd_wpm", i, WK_cmd_wpm); WK_cmd_wpm = i;
-		spref.get("WK_cut_zeronine", i, WK_cut_zeronine); WK_cut_zeronine = i;
-		spref.get("WK_sidetone", i, WK_sidetone); WK_sidetone = i;
-		spref.get("WK_weight", i, WK_weight); WK_weight = i;
-		spref.get("WK_lead_in_time", i, WK_lead_in_time); WK_lead_in_time = i;
-		spref.get("WK_tail_time", i, WK_tail_time); WK_tail_time = i;
-		spref.get("WK_min_wpm", i, WK_min_wpm); WK_min_wpm = i;
-		spref.get("WK_rng_wpm", i, WK_rng_wpm); WK_rng_wpm = i;
-		spref.get("WK_1st_ext", i, WK_first_extension); WK_first_extension = i;
-		spref.get("WK_key_comp", i, WK_key_compensation); WK_key_compensation = i;
-		spref.get("WK_farnsworth", i, WK_farnsworth_wpm); WK_farnsworth_wpm = i;
-		spref.get("WK_paddle_set", i, WK_paddle_setpoint); WK_paddle_setpoint = i;
-		spref.get("WK_dit_dah_ratio", i, WK_dit_dah_ratio); WK_dit_dah_ratio = i;
-		spref.get("WK_pin_config", i, WK_pin_configuration); WK_pin_configuration = i;
-		spref.get("WK_use_pot", i, WK_use_pot); WK_use_pot = i;
+	spref.get("WK_mode_register", i, WK_mode_register); WK_mode_register = i;
+	spref.get("WK_speed_wpm", i, WK_speed_wpm); WK_speed_wpm = i;
+	spref.get("WK_cmd_wpm", i, WK_cmd_wpm); WK_cmd_wpm = i;
+	spref.get("WK_cut_zeronine", i, WK_cut_zeronine); WK_cut_zeronine = i;
+	spref.get("WK_sidetone", i, WK_sidetone); WK_sidetone = i;
+	spref.get("WK_weight", i, WK_weight); WK_weight = i;
+	spref.get("WK_lead_in_time", i, WK_lead_in_time); WK_lead_in_time = i;
+	spref.get("WK_tail_time", i, WK_tail_time); WK_tail_time = i;
+	spref.get("WK_min_wpm", i, WK_min_wpm); WK_min_wpm = i;
+	spref.get("WK_rng_wpm", i, WK_rng_wpm); WK_rng_wpm = i;
+	spref.get("WK_1st_ext", i, WK_first_extension); WK_first_extension = i;
+	spref.get("WK_key_comp", i, WK_key_compensation); WK_key_compensation = i;
+	spref.get("WK_farnsworth", i, WK_farnsworth_wpm); WK_farnsworth_wpm = i;
+	spref.get("WK_paddle_set", i, WK_paddle_setpoint); WK_paddle_setpoint = i;
+	spref.get("WK_dit_dah_ratio", i, WK_dit_dah_ratio); WK_dit_dah_ratio = i;
+	spref.get("WK_pin_config", i, WK_pin_configuration); WK_pin_configuration = i;
+	spref.get("WK_use_pot", i, WK_use_pot); WK_use_pot = i;
 
-		spref.get("WK_online", i, WK_online); WK_online = i;
-		spref.get("WK_version", WK_version, WK_version);
+	spref.get("WK_online", i, WK_online); WK_online = i;
+	spref.get("WK_version", WK_version, WK_version);
 
-		spref.get("WKFSK_mode", WKFSK_mode, WKFSK_mode);
-		spref.get("WKFSK_baud", WKFSK_baud, WKFSK_baud);
-		spref.get("WKFSK_stopbits", WKFSK_stopbits, WKFSK_stopbits);
-		spref.get("WKFSK_ptt", WKFSK_ptt, WKFSK_ptt);
-		spref.get("WKFSK_polarity", WKFSK_polarity, WKFSK_polarity);
-		spref.get("WKFSK_sidetone", WKFSK_sidetone, WKFSK_sidetone);
-		spref.get("WKFSK_auto_crlf", WKFSK_auto_crlf, WKFSK_auto_crlf);
-		spref.get("WKFSK_diddle", WKFSK_diddle, WKFSK_diddle);
-		spref.get("WKFSK_diddle_char", WKFSK_diddle_char, WKFSK_diddle_char);
-		spref.get("WKFSK_diddle_char", WKFSK_diddle_char, WKFSK_diddle_char);
-		spref.get("WKFSK_monitor", WKFSK_monitor, WKFSK_monitor);
+	spref.get("WKFSK_mode", WKFSK_mode, WKFSK_mode);
+	spref.get("WKFSK_baud", WKFSK_baud, WKFSK_baud);
+	spref.get("WKFSK_stopbits", WKFSK_stopbits, WKFSK_stopbits);
+	spref.get("WKFSK_ptt", WKFSK_ptt, WKFSK_ptt);
+	spref.get("WKFSK_polarity", WKFSK_polarity, WKFSK_polarity);
+	spref.get("WKFSK_sidetone", WKFSK_sidetone, WKFSK_sidetone);
+	spref.get("WKFSK_auto_crlf", WKFSK_auto_crlf, WKFSK_auto_crlf);
+	spref.get("WKFSK_diddle", WKFSK_diddle, WKFSK_diddle);
+	spref.get("WKFSK_diddle_char", WKFSK_diddle_char, WKFSK_diddle_char);
+	spref.get("WKFSK_diddle_char", WKFSK_diddle_char, WKFSK_diddle_char);
+	spref.get("WKFSK_monitor", WKFSK_monitor, WKFSK_monitor);
 
-		spref.get("Nav_online", i, Nav_online); Nav_online = i;
-		spref.get("Nav_config_online", i, Nav_config_online); Nav_config_online = i;
+	spref.get("Nav_online", i, Nav_online); Nav_online = i;
+	spref.get("Nav_config_online", i, Nav_config_online); Nav_config_online = i;
 
-		spref.get("nanoCW_online", i, nanoCW_online); nanoCW_online = i;
-		spref.get("nanoFSK_online", i, nanoFSK_online); nanoFSK_online = i;
+	spref.get("nanoCW_online", i, nanoCW_online); nanoCW_online = i;
+	spref.get("nanoFSK_online", i, nanoFSK_online); nanoFSK_online = i;
 
-		spref.get("useCW_KEYLINE", i, useCW_KEYLINE); useCW_KEYLINE = i;
+	spref.get("useCW_KEYLINE", i, useCW_KEYLINE); useCW_KEYLINE = i;
 
 //----------------------------------------------------------------------
 // FMT saved controls
-		spref.get("int_FMT_ref_freq", int_FMT_ref_freq, int_FMT_ref_freq);
-		FMT_ref_freq = int_FMT_ref_freq / 1000.0;
-		spref.get("int_FMT_unk_freq", int_FMT_unk_freq, int_FMT_unk_freq);
-		FMT_unk_freq = int_FMT_unk_freq / 1000.0;
+	spref.get("int_FMT_ref_freq", int_FMT_ref_freq, int_FMT_ref_freq);
+	FMT_ref_freq = int_FMT_ref_freq / 1000.0;
+	spref.get("int_FMT_unk_freq", int_FMT_unk_freq, int_FMT_unk_freq);
+	FMT_unk_freq = int_FMT_unk_freq / 1000.0;
 
-		spref.get("FMT_rec_interval", FMT_rec_interval, FMT_rec_interval);
-		spref.get("FMT_trk_scale", FMT_trk_scale, FMT_trk_scale);
-		spref.get("FMT_minutes", FMT_minutes, FMT_minutes);
+	spref.get("FMT_rec_interval", FMT_rec_interval, FMT_rec_interval);
+	spref.get("FMT_trk_scale", FMT_trk_scale, FMT_trk_scale);
+	spref.get("FMT_minutes", FMT_minutes, FMT_minutes);
 //----------------------------------------------------------------------
-		spref.get("debug_level", debug_level, debug_level);
-		spref.get("debug_mask", debug_mask, debug_mask);
+	spref.get("debug_level", debug_level, debug_level);
+	spref.get("debug_mask", debug_mask, debug_mask);
 //----------------------------------------------------------------------
-		spref.get("vumeter_shown", vumeter_shown, vumeter_shown);
+	spref.get("vumeter_shown", vumeter_shown, vumeter_shown);
 //----------------------------------------------------------------------
 
-		set_debug_mask(debug_mask);
+	load_mode_state();
+
+	set_debug_mask(debug_mask);
 }
 
 void status::initLastState()

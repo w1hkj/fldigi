@@ -2201,7 +2201,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {IDs/RsID} open selected
+      label {IDs/RsID}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("IDs/RsID"));}
       code1 {config_pages.push_back(p);}
@@ -4698,7 +4698,7 @@ e.g. TS-480} xywh {273 240 70 15} down_box DOWN_BOX
       }
     }
     Fl_Group {} {
-      label {CW CAT & WinKeyer Compensation} open selected
+      label {CW CAT & WinKeyer Compensation}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/CAT comp'"));}
       code1 {config_pages.push_back(p);}
@@ -6900,7 +6900,6 @@ progdefaults.changed = true;}
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Wefax"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Modem/Wefax"));}
-      code3 {tab_tree->close(_("Modem"));}
     } {
       Fl_Counter cntrWEFAX_Shift {
         label {Frequency shift}
@@ -7228,12 +7227,632 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {TCP-IP sessions}
+      label {Misc/DTMF}
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/DTMF"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/DTMF"));}
+    } {
+      Fl_Check_Button chkDTMFdecode {
+        label {Decode DTMF tones}
+        callback {progdefaults.DTMFdecode = o->value();}
+        tooltip {Decode received DTMF tones} xywh {372 79 175 20} down_box DOWN_BOX
+        code0 {o->value(progdefaults.DTMFdecode);}
+      }
+    }
+    Fl_Group {} {
+      label {Misc/KML}
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/KML"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/KML"));}
+    } {
+      Fl_Input btnKmlSaveDir {
+        label {KML files directory}
+        callback {progdefaults.kml_save_dir=o->value();
+progdefaults.changed = true;
+kml_init();}
+        tooltip {Where generated KML documents are stored.} xywh {232 47 390 24} align 69
+        code0 {o->value(progdefaults.kml_save_dir.c_str());}
+      }
+      Fl_Input inputKmlRootFile {
+        label {KML root file}
+        xywh {231 91 300 24} align 5
+        code0 {o->value("fldigi.kml");}
+      }
+      Fl_Counter cntKmlMergeDistance {
+        label {Minimum distance for splitting aliases (Meters)}
+        callback {progdefaults.kml_merge_distance = o->value();
+progdefaults.changed = true;
+kml_init();}
+        tooltip {Minimum distance for splitting alias nodes (Meters)} xywh {232 127 100 24} align 8 minimum 0 maximum 100000 step 10 value 1000
+        code0 {o->value(progdefaults.kml_merge_distance);}
+        code1 {o->lstep(1000);}
+      }
+      Fl_Counter cntKmlRetentionTime {
+        label {Data retention time, in hours (0 for no limit)}
+        callback {progdefaults.kml_retention_time = o->value();
+progdefaults.changed = true;
+kml_init();}
+        tooltip {Number of hours data is kept for each node. Zero means keeping everything.} xywh {231 163 100 24} align 8 minimum 0 maximum 500 step 1
+        code0 {o->value(progdefaults.kml_retention_time);}
+        code1 {o->lstep(24);}
+      }
+      Fl_Spinner cntKmlRefreshInterval {
+        label {KML refresh interval (seconds)}
+        callback {progdefaults.kml_refresh_interval = (int)(o->value());
+progdefaults.changed = true;
+kml_init();}
+        tooltip {Refresh time interval written in KML file (Seconds)} xywh {230 199 50 24} align 8 value 10
+        code0 {o->minimum(1); o->maximum(3600); o->step(1);}
+        code1 {o->value(progdefaults.kml_refresh_interval);}
+        code2 {o->labelsize(FL_NORMAL_SIZE);}
+        class Fl_Spinner2
+      }
+      Fl_Group listbox_kml_balloon_style {
+        label {KML balloon display style}
+        callback {progdefaults.kml_balloon_style = o->index();
+progdefaults.changed = true;
+kml_init();}
+        tooltip {KML balloon in plain text, or HTML, in plain tables or matrices.} xywh {230 235 201 24} box DOWN_BOX color 7 align 8 when 1
+        code0 {o->add("Plain text|HTML tables|Single HTML matrix");o->index(progdefaults.kml_balloon_style);}
+        code1 {o->labelsize(FL_NORMAL_SIZE);}
+        class Fl_ListBox
+      } {}
+      Fl_Input btnKmlCommand {
+        label {Command run on KML creation}
+        callback {progdefaults.kml_command=o->value();
+progdefaults.changed = true;
+kml_init();}
+        tooltip {Command started when KML files are generated. Subprocesses are started once, and restarted if needed.} xywh {230 271 246 24} align 72
+        code0 {o->value(progdefaults.kml_command.c_str());}
+      }
+      Fl_Button btlTestKmlCommand {
+        label {Test command}
+        callback {KmlServer::SpawnProcess();}
+        tooltip {Execute command on KML files.} xywh {230 307 191 24}
+      }
+      Fl_Button btnSelectKmlDestDir {
+        label {Change dir...}
+        callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
+fc->callback(KmlDestDirSet);
+fc->show();}
+        tooltip {Choose directory to store KML documents} xywh {631 47 101 24}
+      }
+      Fl_Button btlPurge {
+        label {Cleanup KML data now !}
+        callback {KmlServer::GetInstance()->Reset();}
+        tooltip {Cleanups KML documents, empties Google Earth display.} xywh {542 91 190 24}
+      }
+      Fl_Check_Button btnKmlPurgeOnStartup {
+        label {Cleanup on startup}
+        callback {progdefaults.kml_purge_on_startup = o->value();
+progdefaults.changed = true;}
+        tooltip {Empties KML documents when starting program.} xywh {528 203 172 15} down_box DOWN_BOX
+        code0 {o->value(progdefaults.kml_purge_on_startup);}
+      }
+      Fl_Group {} {open
+        xywh {475 301 310 40} box ENGRAVED_FRAME
+      } {
+        Fl_Check_Button btn_kml_enabled {
+          label {KML server enabled (On / Off)}
+          callback {progdefaults.kml_enabled = o->value();
+if (progdefaults.kml_enabled) {
+  kml_init(true);
+  progdefaults.changed = true;
+} else {
+  KmlServer::Exit();
+}}
+          tooltip {Uncheck if KML is never used} xywh {497 311 242 19} down_box DOWN_BOX
+          code0 {o->value(progdefaults.kml_enabled);}
+        }
+      }
+    }
+    Fl_Group {} {
+      label {Misc/NBEMS interface}
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/NBEMS interface"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/NBEMS interface"));}
+    } {
+      Fl_Group {} {
+        label {NBEMS data file interface} open
+        xywh {251 35 500 75} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Check_Button chkAutoExtract {
+          label Enable
+          callback {progdefaults.autoextract = o->value();
+progdefaults.changed = true;}
+          tooltip {Extract files for use with external "wrap / flmsg" program} xywh {305 66 75 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.autoextract);}
+        }
+        Fl_Check_Button chk_open_wrap_folder {
+          label {Open message folder}
+          callback {progdefaults.open_nbems_folder = o->value();
+progdefaults.changed = true;}
+          tooltip {Opens NBEMS file folder upon successful capture} xywh {511 66 146 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.open_nbems_folder);}
+        }
+      }
+      Fl_Group {} {
+        label {Reception of flmsg files} open
+        xywh {251 111 500 199} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Check_Button chk_open_flmsg {
+          label {Open with flmsg}
+          callback {progdefaults.open_flmsg = o->value();
+progdefaults.changed = true;}
+          tooltip {Open message with flmsg} xywh {305 211 136 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.open_flmsg);}
+        }
+        Fl_Check_Button chk_open_flmsg_print {
+          label {Open in browser}
+          callback {progdefaults.open_flmsg_print = o->value();
+progdefaults.changed = true;}
+          tooltip {Open file with default browser} xywh {511 211 136 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.open_flmsg_print);}
+        }
+        Fl_Input txt_flmsg_pathname {
+          label {flmsg:}
+          callback {progdefaults.flmsg_pathname = o->value();
+progdefaults.changed = true;}
+          tooltip {Enter full path-filename for flmsg} xywh {305 241 330 24} when 1
+          code0 {o->value(progdefaults.flmsg_pathname.c_str());}
+          class Fl_Input2
+        }
+        Fl_Button btn_select_flmsg {
+          label {Locate flmsg}
+          callback {select_flmsg_pathname();}
+          tooltip {Locate flmsg executable} xywh {642 241 100 24}
+        }
+        Fl_Value_Slider sldr_extract_timeout {
+          label {Timeout (secs)}
+          callback {progdefaults.extract_timeout=o->value();
+progdefaults.changed=true;}
+          tooltip {Extract times out after NN seconds of inactivity.} xywh {271 279 364 21} type {Horz Knob} color 54 selection_color 0 align 8 minimum 1 maximum 20 step 0.5 value 10 textsize 14
+          code0 {o->value(progdefaults.extract_timeout);}
+        }
+        Fl_Group {} {
+          label {Selection of transfer direct takes precedence
+over all other flmsg reception settings} open
+          xywh {256 130 490 76} box ENGRAVED_FRAME align 17
+        } {
+          Fl_Check_Button chk_transfer__to_open_flmsg {
+            label {Transfer direct to executing flmsg}
+            callback {progdefaults.flmsg_transfer_direct = o->value();
+progdefaults.changed = true;}
+            tooltip {Send data stream directly to executing flmsg} xywh {361 174 271 20} down_box DOWN_BOX
+            code0 {o->value(progdefaults.flmsg_transfer_direct);}
+          }
+        }
+      }
+    }
+    Fl_Group {} {
+      label {Misc/PSK reporter}
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/PSK reporter"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/PSK reporter"));}
+    } {
+      Fl_Check_Button btnPSKRepAuto {
+        label {Automatically spot callsigns in decoded text}
+        callback {progdefaults.pskrep_auto = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+        tooltip {Parse all incoming text} xywh {252 65 324 20} down_box DOWN_BOX
+        code0 {btnPSKRepAuto->value(progdefaults.pskrep_auto);}
+      }
+      Fl_Check_Button btnPSKRepLog {
+        label {Send reception report when logging a QSO}
+        callback {progdefaults.pskrep_log = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+        tooltip {Send report only when QSO is logged} xywh {252 96 327 20} down_box DOWN_BOX
+        code0 {btnPSKRepLog->value(progdefaults.pskrep_log);}
+      }
+      Fl_Check_Button btnPSKRepQRG {
+        label {Report rig frequency (enable only if you have rig control!)}
+        callback {progdefaults.pskrep_qrg = o->value();
+progdefaults.changed = true;}
+        tooltip {Include the transmit frequency} xywh {252 128 416 20} down_box DOWN_BOX
+        code0 {btnPSKRepQRG->value(progdefaults.pskrep_qrg);}
+      }
+      Fl_Check_Button btn_report_when_visible {
+        label {Disable spotting when signal browser(s) are not visible.}
+        callback {progdefaults.report_when_visible = o->value();
+progdefaults.changed = true;}
+        tooltip {Check to reduce CPU load in PSK and RTTY modes.} xywh {252 160 416 20} down_box DOWN_BOX value 1
+        code0 {o->value(progdefaults.report_when_visible);}
+      }
+      Fl_Check_Button btn_pskrep_autostart {
+        label {Log on to pskrep when starting fldigi}
+        callback {progdefaults.pskrep_autostart = o->value();
+progdefaults.changed = true;}
+        tooltip {Automatically start psk reporter socket connection} xywh {252 192 291 20} down_box DOWN_BOX
+        code0 {o->value(progdefaults.pskrep_autostart);}
+      }
+      Fl_Box box_connected_to_pskrep {
+        label Connected
+        xywh {562 193 18 18} box DIAMOND_DOWN_BOX color 7 align 8
+      }
+      Fl_Input inpPSKRepHost {
+        label {Host:}
+        callback {progdefaults.pskrep_host = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+        tooltip {To whom the connection is made} xywh {295 230 220 24} when 1
+        code0 {inpPSKRepHost->value(progdefaults.pskrep_host.c_str());}
+        code1 {inpPSKRepHost->labelsize(FL_NORMAL_SIZE);}
+        class Fl_Input2
+      }
+      Fl_Input inpPSKRepPort {
+        label {Port:}
+        callback {progdefaults.pskrep_port = o->value();
+btnPSKRepInit->labelcolor(FL_RED);
+btnPSKRepInit->redraw_label();
+progdefaults.changed = true;}
+        tooltip {Using UDP port \#} xywh {664 230 60 24} when 1
+        code0 {inpPSKRepPort->value(progdefaults.pskrep_port.c_str());}
+        code1 {inpPSKRepPort->labelsize(FL_NORMAL_SIZE);}
+        class Fl_Input2
+      }
+      Fl_Button btnPSKRepInit {
+        label Initialize
+        callback {pskrep_stop();
+if (!pskrep_start()) {
+    boxPSKRepMsg->copy_label(pskrep_error());
+    progdefaults.usepskrep = false;
+    box_connected_to_pskrep->color(FL_WHITE);
+    box_connected_to_pskrep->redraw();
+} else {
+    boxPSKRepMsg->label(0);
+    o->labelcolor(FL_FOREGROUND_COLOR);
+    progdefaults.usepskrep = true;
+    box_connected_to_pskrep->color(FL_GREEN);
+    box_connected_to_pskrep->redraw();
+}}
+        tooltip {Initialize the socket client} xywh {644 275 80 24}
+      }
+      Fl_Box boxPSKRepMsg {
+        label {<PSK Reporter error message>}
+        xywh {254 259 300 48} labelfont 2
+        code0 {boxPSKRepMsg->label(0);}
+      }
+    }
+    Fl_Group {} {
+      label {Misc/PSM}
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/PSM"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/PSM"));}
+    } {
+      Fl_Group {} {open
+        xywh {204 32 590 108} box ENGRAVED_BOX align 21
+      } {
+        Fl_Counter cntBusyChannelSeconds {
+          label {Allow TX After Signal Detection (Secs)}
+          callback {progStatus.busyChannelSeconds = (int) o->value();
+progdefaults.busyChannelSeconds = (int) o->value();
+progdefaults.changed = true;}
+          tooltip {Allow transmits after 'N' seconds of a signal detection.} xywh {380 38 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+          code0 {o->value(progdefaults.busyChannelSeconds);}
+          code1 {o->step(1,10);}
+        }
+        Fl_Check_Button btnEnableBusyChannel {
+          label {Enable Busy Channel}
+          callback {if(o->value()) {
+	progStatus.enableBusyChannel = true;
+	progdefaults.enableBusyChannel = true;
+}
+else {
+	progStatus.enableBusyChannel = false;
+	progdefaults.enableBusyChannel = false;
+}
+progdefaults.changed = true;}
+          tooltip {Enable to inhibit TX on signal Detections} xywh {210 40 115 20} down_box DOWN_BOX
+          code0 {if(progdefaults.enableBusyChannel) o->value(true);}
+          code1 {else o->value(false);}
+        }
+        Fl_Counter cntPSMTXBufferFlushTimer {
+          label {TX Buffer Flush Timer (Mins, 0=Disable)}
+          callback {progStatus.psm_flush_buffer_timeout = (int) o->value();
+progdefaults.psm_flush_buffer_timeout = (int) o->value();
+progdefaults.changed = true;}
+          tooltip {Flushes the TX buffer after x period when Busy Channel remains on (TX inhibited)} xywh {380 63 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+          code0 {o->value(progdefaults.psm_flush_buffer_timeout);}
+          code1 {o->step(1,10); o->minimum(0); o->maximum(999);}
+        }
+        Fl_Counter cntPSMBandwidthMargins {
+          label {Modem Bandwidth Margins }
+          callback {progStatus.psm_minimum_bandwidth_margin   = (int) o->value();
+progdefaults.psm_minimum_bandwidth_margin = (int) o->value();
+progdefaults.changed = true;}
+          tooltip {Monitor signals in modem bandwitdh plus margins.} xywh {380 88 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+          code0 {o->value(progdefaults.psm_minimum_bandwidth_margin);}
+          code1 {o->step(1,10);}
+        }
+        Fl_Counter cntPSMValidSamplePeriod {
+          label {Valid Signal Sample Period (msecs)}
+          callback {progStatus.psm_hit_time_window   = (int) o->value();
+progdefaults.psm_hit_time_window = (int) o->value();
+progdefaults.changed = true;}
+          tooltip {Valid signal sample period in Milliseconds} xywh {380 114 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+          code0 {o->value(progdefaults.psm_hit_time_window);}
+          code1 {o->step(1,10);}
+        }
+      }
+      Fl_Group {} {open
+        xywh {204 140 590 84} box ENGRAVED_BOX align 21
+      } {
+        Fl_Check_Button btnEnable_csma {
+          label {Enable CSMA}
+          callback {if(o->value()) {
+	progStatus.csma_enabled = true;
+	progdefaults.csma_enabled = true;
+} else {
+	progStatus.csma_enabled = false;
+	progdefaults.csma_enabled = false;
+}
+progdefaults.changed = true;}
+          tooltip {Carrier Sense Mulitiple Access} xywh {214 148 114 20} down_box DOWN_BOX
+          code0 {if(progdefaults.csma_enabled) o->value(true);}
+        }
+        Fl_Counter cntPersistance {
+          label Persistance
+          callback {progStatus.csma_persistance = (int) o->value();
+progdefaults.csma_persistance = (int) o->value();
+progdefaults.changed = true;
+update_csma_io_config(CSMA_PERSISTANCE);}
+          tooltip {Used to adjust the aggressiveness of TX} xywh {333 148 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+          code0 {o->value(progdefaults.csma_persistance);}
+          code1 {o->step(1,10); o->minimum(0); o->maximum(255);}
+        }
+        Fl_Counter cntSlotTime {
+          label {Slot Time}
+          callback {progStatus.csma_slot_time = (int) o->value();
+progdefaults.csma_slot_time = (int) o->value();
+progdefaults.changed = true;
+update_csma_io_config(CSMA_SLOT_TIME);}
+          tooltip {Non transmit window after a transmit period} xywh {333 173 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+          code0 {o->value(progdefaults.csma_slot_time);}
+          code1 {o->step(1,10); o->minimum(1); o->maximum(255);}
+        }
+        Fl_Counter cntTransmitDelay {
+          label {Transmit Data Delay}
+          callback {progStatus.csma_transmit_delay = (int) o->value();
+progdefaults.csma_transmit_delay = (int) o->value();
+progdefaults.changed = true;
+update_csma_io_config(CSMA_TX_DELAY);}
+          tooltip {Idle transmit before data sent} xywh {333 198 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+          code0 {o->value(progdefaults.csma_transmit_delay);}
+          code1 {o->step(1,10); o->minimum(1); o->maximum(255);}
+        }
+        Fl_Output OutputSlotTimeMS {
+          label MilliSeconds
+          tooltip {Displays the Slot Time in Milliseconds} xywh {599 173 95 20} align 8
+        }
+        Fl_Output OutputTransmitDelayMS {
+          label MilliSeconds
+          tooltip {Displays the Transmit Delay in Milliseconds} xywh {599 198 95 20} align 8
+        }
+        Fl_Output OutputPersistancePercent {
+          label {Percent (%)}
+          tooltip {Displays the Slot Time in Milliseconds} xywh {599 147 95 20} align 8
+        }
+      }
+      Fl_Group {} {open
+        xywh {204 223 590 31} box ENGRAVED_BOX align 21
+      } {
+        Fl_Check_Button btnEnable_histogram {
+          label {Enable Histogram}
+          callback {if(o->value()) {
+	progStatus.psm_use_histogram = true;
+	progdefaults.psm_use_histogram = true;
+} else {
+	progStatus.psm_use_histogram = false;
+	progdefaults.psm_use_histogram = false;
+}
+progdefaults.changed = true;}
+          tooltip {Enable Histogram threshold signal monitoring} xywh {216 230 139 20} down_box DOWN_BOX
+          code0 {if(progdefaults.psm_use_histogram) o->value(true);}
+        }
+        Fl_Counter cntPSMThreshold {
+          label {PSM Histogram Threshold}
+          callback {progStatus.psm_histogram_offset_threshold = (int) o->value();
+progdefaults.psm_histogram_offset_threshold = (int) o->value();
+progdefaults.changed = true;}
+          tooltip {Sets the theshold level to x value above the noise level} xywh {380 230 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+          code0 {o->value(progdefaults.psm_histogram_offset_threshold);}
+          code1 {o->step(1,10); o->minimum(1); o->maximum(20);}
+        }
+      }
+      Fl_Group {} {open
+        xywh {204 254 590 34} box ENGRAVED_BOX align 21
+      } {
+        Fl_Counter cntKPSQLAttenuation {
+          label {PSM Attenuate}
+          callback {progStatus.kpsql_attenuation = (int) o->value();
+progdefaults.kpsql_attenuation = (int) o->value();
+update_kpsql_fractional_gain(progStatus.kpsql_attenuation);
+progdefaults.changed = true;}
+          tooltip {Adjust sensitivity by 1/N fractional values.} xywh {380 261 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+          code0 {o->value(progdefaults.kpsql_attenuation);}
+          code1 {o->step(1,10); o->minimum(1); o->maximum(999);}
+          code2 {update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);}
+        }
+      }
+      Fl_Group {} {open
+        xywh {204 287 590 28} box ENGRAVED_BOX align 21
+      } {
+        Fl_Check_Button btn_show_psm_button {
+          label {Show and enable Power Signal Monitor button (PSM)}
+          callback {progdefaults.show_psm_btn = o->value();
+UI_select();
+progdefaults.changed = true;}
+          tooltip {display PSM button on main dialog} xywh {214 291 150 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.show_psm_btn);}
+        }
+      }
+      Fl_Button btnBuyChannelDefaults {
+        label {Default Settings}
+        callback {psm_set_defaults();}
+        xywh {669 320 126 22}
+      }
+    }
+    Fl_Group {} {
+      label {Misc/Rx text capture}
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Rx text capture"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/Rx text capture"));}
+    } {
+      Fl_Group grpTalker {
+        label {Talker Socket (MS only)} open
+        xywh {252 107 490 73} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Light_Button btnConnectTalker {
+          label Talker
+          callback {if (o->value()) open_talker();
+else close_talker();}
+          xywh {278 127 74 20} selection_color 60
+          code0 {extern void open_talker();}
+          code1 {extern void close_talker();}
+        }
+        Fl_Box {} {
+          label {Connect/disconnect to Talker socket server}
+          xywh {357 127 345 20} align 20
+        }
+        Fl_Check_Button btn_auto_talk {
+          label {Auto connect when fldigi opens (server must be up)}
+          callback {progdefaults.auto_talk = o->value();}
+          xywh {278 155 391 15} down_box DOWN_BOX
+          code0 {o->value(progdefaults.auto_talk);}
+        }
+      }
+      Fl_Group {} {
+        label {Capture rx text to external file} open
+        xywh {252 47 490 56} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Check_Button chkRxStream {
+          label {Enable rx text stream}
+          callback {progdefaults.speak = o->value();
+progdefaults.changed = true;}
+          tooltip {Send rx text to file: textout.txt} xywh {278 74 175 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.speak);}
+        }
+      }
+    }
+    Fl_Group {} {
+      label {Misc/Save Parameters} selected
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Save Parameters"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/Save Parameters"));}
+    } {
+      Fl_Check_Button btnTXLEVEL_by_mode {
+        label {Transmit level control}
+        callback {progdefaults.txlevel_by_mode=o->value();
+progdefaults.changed = true;}
+        tooltip {Save transmit level control by mode} xywh {360 96 235 30} down_box DOWN_BOX
+        code0 {o->value(progdefaults.txlevel_by_mode);}
+      }
+      Fl_Check_Button btnSQLCH_by_mode {
+        label {Squelch level/activated control(s)}
+        callback {progdefaults.sqlch_by_mode=o->value();
+progdefaults.changed = true;}
+        tooltip {Save Squelch level and state by mode} xywh {360 140 270 30} down_box DOWN_BOX
+        code0 {o->value(progdefaults.sqlch_by_mode);}
+      }
+      Fl_Box {} {
+        label {Enable specific parameter to Save & Restore on a per mode basis.}
+        xywh {211 28 575 39} box ENGRAVED_BOX color 53 labelsize 13 align 16
+      }
+      Fl_Check_Button btnAFC_by_mode {
+        label {AFC control}
+        callback {progdefaults.afc_by_mode=o->value();
+progdefaults.changed = true;}
+        tooltip {Save AFC state by mode} xywh {360 184 270 30} down_box DOWN_BOX
+        code0 {o->value(progdefaults.afc_by_mode);}
+      }
+      Fl_Check_Button btnREVERSE_by_mode {
+        label {Reverse (Rv) control}
+        callback {progdefaults.reverse_by_mode=o->value();
+progdefaults.changed = true;}
+        tooltip {Save Reverse state by mode} xywh {360 228 270 30} down_box DOWN_BOX
+        code0 {o->value(progdefaults.reverse_by_mode);}
+      }
+    }
+    Fl_Group {} {
+      label {Misc/Sweet Spot}
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Sweet Spot"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Misc/Sweet Spot"));}
+    } {
+      Fl_Group {} {open
+        xywh {253 70 490 75} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Value_Input valCWsweetspot {
+          label CW
+          callback {progdefaults.CWsweetspot=o->value();
+progdefaults.changed = true;}
+          tooltip {Default CW tracking point} xywh {290 81 65 20} minimum 200 maximum 4000 step 1 value 1000
+          code0 {o->value(progdefaults.CWsweetspot);}
+          code1 {o->labelsize(FL_NORMAL_SIZE);}
+          class Fl_Value_Input2
+        }
+        Fl_Value_Input valRTTYsweetspot {
+          label RTTY
+          callback {progdefaults.RTTYsweetspot=o->value();
+progdefaults.changed = true;}
+          tooltip {Default RTTY tracking point} xywh {468 81 65 20} minimum 200 maximum 4000 step 1 value 1000
+          code0 {o->value(progdefaults.RTTYsweetspot);}
+          code1 {o->labelsize(FL_NORMAL_SIZE);}
+          class Fl_Value_Input2
+        }
+        Fl_Value_Input valPSKsweetspot {
+          label {PSK et al.}
+          callback {progdefaults.PSKsweetspot=o->value();
+progdefaults.changed = true;}
+          tooltip {Default for all other modems} xywh {668 81 65 20} minimum 200 maximum 4000 step 1 value 1000
+          code0 {o->value(progdefaults.PSKsweetspot);}
+          code1 {o->labelsize(FL_NORMAL_SIZE);}
+          class Fl_Value_Input2
+        }
+        Fl_Check_Button btnStartAtSweetSpot {
+          label {Always start new modems at these frequencies}
+          callback {progdefaults.StartAtSweetSpot = o->value();
+progdefaults.changed = true;}
+          tooltip {ON - start at default
+OFF - keep current wf cursor position} xywh {263 111 348 20} down_box DOWN_BOX value 1
+          code0 {o->value(progdefaults.StartAtSweetSpot);}
+        }
+      }
+      Fl_Group {} {
+        label {K3 A1A configuation} open
+        xywh {253 150 490 60} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Check_Button btnCWIsLSB {
+          label {CW is LSB}
+          callback {progdefaults.CWIsLSB=o->value();
+progdefaults.changed=true;}
+          tooltip {Select this for Elecraft K3
+Other radios should not need it.} xywh {468 171 70 15} down_box DOWN_BOX
+          code0 {o->value(progdefaults.CWIsLSB);}
+        }
+      }
+    }
+    Fl_Group {} {
+      label {Misc/TCP-IP sessions}
       callback {btnDisable_p2p_io_widgets->value(1);}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/TCP-IP sessions"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Misc/TCP-IP sessions"));}
+      code3 {tab_tree->close(_("Misc"));}
     } {
       Fl_Group {} {open
         xywh {205 18 588 102} box ENGRAVED_BOX align 21
@@ -7606,586 +8225,6 @@ progdefaults.changed = true;}
 number to the default value.} xywh {624 313 73 22}
           code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
         }
-      }
-    }
-    Fl_Group {} {
-      label {NBEMS interface}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/NBEMS interface"));}
-      code1 {config_pages.push_back(p);}
-      code2 {tab_tree->add(_("Misc/NBEMS interface"));}
-    } {
-      Fl_Group {} {
-        label {NBEMS data file interface} open
-        xywh {251 35 500 75} box ENGRAVED_FRAME align 21
-      } {
-        Fl_Check_Button chkAutoExtract {
-          label Enable
-          callback {progdefaults.autoextract = o->value();
-progdefaults.changed = true;}
-          tooltip {Extract files for use with external "wrap / flmsg" program} xywh {305 66 75 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.autoextract);}
-        }
-        Fl_Check_Button chk_open_wrap_folder {
-          label {Open message folder}
-          callback {progdefaults.open_nbems_folder = o->value();
-progdefaults.changed = true;}
-          tooltip {Opens NBEMS file folder upon successful capture} xywh {511 66 146 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.open_nbems_folder);}
-        }
-      }
-      Fl_Group {} {
-        label {Reception of flmsg files} open
-        xywh {251 111 500 199} box ENGRAVED_FRAME align 21
-      } {
-        Fl_Check_Button chk_open_flmsg {
-          label {Open with flmsg}
-          callback {progdefaults.open_flmsg = o->value();
-progdefaults.changed = true;}
-          tooltip {Open message with flmsg} xywh {305 211 136 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.open_flmsg);}
-        }
-        Fl_Check_Button chk_open_flmsg_print {
-          label {Open in browser}
-          callback {progdefaults.open_flmsg_print = o->value();
-progdefaults.changed = true;}
-          tooltip {Open file with default browser} xywh {511 211 136 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.open_flmsg_print);}
-        }
-        Fl_Input txt_flmsg_pathname {
-          label {flmsg:}
-          callback {progdefaults.flmsg_pathname = o->value();
-progdefaults.changed = true;}
-          tooltip {Enter full path-filename for flmsg} xywh {305 241 330 24} when 1
-          code0 {o->value(progdefaults.flmsg_pathname.c_str());}
-          class Fl_Input2
-        }
-        Fl_Button btn_select_flmsg {
-          label {Locate flmsg}
-          callback {select_flmsg_pathname();}
-          tooltip {Locate flmsg executable} xywh {642 241 100 24}
-        }
-        Fl_Value_Slider sldr_extract_timeout {
-          label {Timeout (secs)}
-          callback {progdefaults.extract_timeout=o->value();
-progdefaults.changed=true;}
-          tooltip {Extract times out after NN seconds of inactivity.} xywh {271 279 364 21} type {Horz Knob} color 54 selection_color 0 align 8 minimum 1 maximum 20 step 0.5 value 10 textsize 14
-          code0 {o->value(progdefaults.extract_timeout);}
-        }
-        Fl_Group {} {
-          label {Selection of transfer direct takes precedence
-over all other flmsg reception settings} open
-          xywh {256 130 490 76} box ENGRAVED_FRAME align 17
-        } {
-          Fl_Check_Button chk_transfer__to_open_flmsg {
-            label {Transfer direct to executing flmsg}
-            callback {progdefaults.flmsg_transfer_direct = o->value();
-progdefaults.changed = true;}
-            tooltip {Send data stream directly to executing flmsg} xywh {361 174 271 20} down_box DOWN_BOX
-            code0 {o->value(progdefaults.flmsg_transfer_direct);}
-          }
-        }
-      }
-    }
-    Fl_Group {} {
-      label {Misc/Sweet Spot}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Sweet Spot"));}
-      code1 {config_pages.push_back(p);}
-      code2 {tab_tree->add(_("Misc/Sweet Spot"));}
-    } {
-      Fl_Group {} {open
-        xywh {253 70 490 75} box ENGRAVED_FRAME align 21
-      } {
-        Fl_Value_Input valCWsweetspot {
-          label CW
-          callback {progdefaults.CWsweetspot=o->value();
-progdefaults.changed = true;}
-          tooltip {Default CW tracking point} xywh {290 81 65 20} minimum 200 maximum 4000 step 1 value 1000
-          code0 {o->value(progdefaults.CWsweetspot);}
-          code1 {o->labelsize(FL_NORMAL_SIZE);}
-          class Fl_Value_Input2
-        }
-        Fl_Value_Input valRTTYsweetspot {
-          label RTTY
-          callback {progdefaults.RTTYsweetspot=o->value();
-progdefaults.changed = true;}
-          tooltip {Default RTTY tracking point} xywh {468 81 65 20} minimum 200 maximum 4000 step 1 value 1000
-          code0 {o->value(progdefaults.RTTYsweetspot);}
-          code1 {o->labelsize(FL_NORMAL_SIZE);}
-          class Fl_Value_Input2
-        }
-        Fl_Value_Input valPSKsweetspot {
-          label {PSK et al.}
-          callback {progdefaults.PSKsweetspot=o->value();
-progdefaults.changed = true;}
-          tooltip {Default for all other modems} xywh {668 81 65 20} minimum 200 maximum 4000 step 1 value 1000
-          code0 {o->value(progdefaults.PSKsweetspot);}
-          code1 {o->labelsize(FL_NORMAL_SIZE);}
-          class Fl_Value_Input2
-        }
-        Fl_Check_Button btnStartAtSweetSpot {
-          label {Always start new modems at these frequencies}
-          callback {progdefaults.StartAtSweetSpot = o->value();
-progdefaults.changed = true;}
-          tooltip {ON - start at default
-OFF - keep current wf cursor position} xywh {263 111 348 20} down_box DOWN_BOX value 1
-          code0 {o->value(progdefaults.StartAtSweetSpot);}
-        }
-      }
-      Fl_Group {} {
-        label {K3 A1A configuation} open
-        xywh {253 150 490 60} box ENGRAVED_FRAME align 21
-      } {
-        Fl_Check_Button btnCWIsLSB {
-          label {CW is LSB}
-          callback {progdefaults.CWIsLSB=o->value();
-progdefaults.changed=true;}
-          tooltip {Select this for Elecraft K3
-Other radios should not need it.} xywh {468 171 70 15} down_box DOWN_BOX
-          code0 {o->value(progdefaults.CWIsLSB);}
-        }
-      }
-    }
-    Fl_Group {} {
-      label {Misc/Rx text capture}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/Rx text capture"));}
-      code1 {config_pages.push_back(p);}
-      code2 {tab_tree->add(_("Misc/Rx text capture"));}
-    } {
-      Fl_Group grpTalker {
-        label {Talker Socket (MS only)} open
-        xywh {252 107 490 73} box ENGRAVED_FRAME align 21
-      } {
-        Fl_Light_Button btnConnectTalker {
-          label Talker
-          callback {if (o->value()) open_talker();
-else close_talker();}
-          xywh {278 127 74 20} selection_color 60
-          code0 {extern void open_talker();}
-          code1 {extern void close_talker();}
-        }
-        Fl_Box {} {
-          label {Connect/disconnect to Talker socket server}
-          xywh {357 127 345 20} align 20
-        }
-        Fl_Check_Button btn_auto_talk {
-          label {Auto connect when fldigi opens (server must be up)}
-          callback {progdefaults.auto_talk = o->value();}
-          xywh {278 155 391 15} down_box DOWN_BOX
-          code0 {o->value(progdefaults.auto_talk);}
-        }
-      }
-      Fl_Group {} {
-        label {Capture rx text to external file} open
-        xywh {252 47 490 56} box ENGRAVED_FRAME align 21
-      } {
-        Fl_Check_Button chkRxStream {
-          label {Enable rx text stream}
-          callback {progdefaults.speak = o->value();
-progdefaults.changed = true;}
-          tooltip {Send rx text to file: textout.txt} xywh {278 74 175 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.speak);}
-        }
-      }
-    }
-    Fl_Group {} {
-      label {Misc/PSK reporter}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/PSK reporter"));}
-      code1 {config_pages.push_back(p);}
-      code2 {tab_tree->add(_("Misc/PSK reporter"));}
-    } {
-      Fl_Check_Button btnPSKRepAuto {
-        label {Automatically spot callsigns in decoded text}
-        callback {progdefaults.pskrep_auto = o->value();
-btnPSKRepInit->labelcolor(FL_RED);
-btnPSKRepInit->redraw_label();
-progdefaults.changed = true;}
-        tooltip {Parse all incoming text} xywh {252 65 324 20} down_box DOWN_BOX
-        code0 {btnPSKRepAuto->value(progdefaults.pskrep_auto);}
-      }
-      Fl_Check_Button btnPSKRepLog {
-        label {Send reception report when logging a QSO}
-        callback {progdefaults.pskrep_log = o->value();
-btnPSKRepInit->labelcolor(FL_RED);
-btnPSKRepInit->redraw_label();
-progdefaults.changed = true;}
-        tooltip {Send report only when QSO is logged} xywh {252 96 327 20} down_box DOWN_BOX
-        code0 {btnPSKRepLog->value(progdefaults.pskrep_log);}
-      }
-      Fl_Check_Button btnPSKRepQRG {
-        label {Report rig frequency (enable only if you have rig control!)}
-        callback {progdefaults.pskrep_qrg = o->value();
-progdefaults.changed = true;}
-        tooltip {Include the transmit frequency} xywh {252 128 416 20} down_box DOWN_BOX
-        code0 {btnPSKRepQRG->value(progdefaults.pskrep_qrg);}
-      }
-      Fl_Check_Button btn_report_when_visible {
-        label {Disable spotting when signal browser(s) are not visible.}
-        callback {progdefaults.report_when_visible = o->value();
-progdefaults.changed = true;}
-        tooltip {Check to reduce CPU load in PSK and RTTY modes.} xywh {252 160 416 20} down_box DOWN_BOX value 1
-        code0 {o->value(progdefaults.report_when_visible);}
-      }
-      Fl_Check_Button btn_pskrep_autostart {
-        label {Log on to pskrep when starting fldigi}
-        callback {progdefaults.pskrep_autostart = o->value();
-progdefaults.changed = true;}
-        tooltip {Automatically start psk reporter socket connection} xywh {252 192 291 20} down_box DOWN_BOX
-        code0 {o->value(progdefaults.pskrep_autostart);}
-      }
-      Fl_Box box_connected_to_pskrep {
-        label Connected
-        xywh {562 193 18 18} box DIAMOND_DOWN_BOX color 7 align 8
-      }
-      Fl_Input inpPSKRepHost {
-        label {Host:}
-        callback {progdefaults.pskrep_host = o->value();
-btnPSKRepInit->labelcolor(FL_RED);
-btnPSKRepInit->redraw_label();
-progdefaults.changed = true;}
-        tooltip {To whom the connection is made} xywh {295 230 220 24} when 1
-        code0 {inpPSKRepHost->value(progdefaults.pskrep_host.c_str());}
-        code1 {inpPSKRepHost->labelsize(FL_NORMAL_SIZE);}
-        class Fl_Input2
-      }
-      Fl_Input inpPSKRepPort {
-        label {Port:}
-        callback {progdefaults.pskrep_port = o->value();
-btnPSKRepInit->labelcolor(FL_RED);
-btnPSKRepInit->redraw_label();
-progdefaults.changed = true;}
-        tooltip {Using UDP port \#} xywh {664 230 60 24} when 1
-        code0 {inpPSKRepPort->value(progdefaults.pskrep_port.c_str());}
-        code1 {inpPSKRepPort->labelsize(FL_NORMAL_SIZE);}
-        class Fl_Input2
-      }
-      Fl_Button btnPSKRepInit {
-        label Initialize
-        callback {pskrep_stop();
-if (!pskrep_start()) {
-    boxPSKRepMsg->copy_label(pskrep_error());
-    progdefaults.usepskrep = false;
-    box_connected_to_pskrep->color(FL_WHITE);
-    box_connected_to_pskrep->redraw();
-} else {
-    boxPSKRepMsg->label(0);
-    o->labelcolor(FL_FOREGROUND_COLOR);
-    progdefaults.usepskrep = true;
-    box_connected_to_pskrep->color(FL_GREEN);
-    box_connected_to_pskrep->redraw();
-}}
-        tooltip {Initialize the socket client} xywh {644 275 80 24}
-      }
-      Fl_Box boxPSKRepMsg {
-        label {<PSK Reporter error message>}
-        xywh {254 259 300 48} labelfont 2
-        code0 {boxPSKRepMsg->label(0);}
-      }
-    }
-    Fl_Group {} {
-      label {Misc/DTMF}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/DTMF"));}
-      code1 {config_pages.push_back(p);}
-      code2 {tab_tree->add(_("Misc/DTMF"));}
-    } {
-      Fl_Check_Button chkDTMFdecode {
-        label {Decode DTMF tones}
-        callback {progdefaults.DTMFdecode = o->value();}
-        tooltip {Decode received DTMF tones} xywh {372 79 175 20} down_box DOWN_BOX
-        code0 {o->value(progdefaults.DTMFdecode);}
-      }
-    }
-    Fl_Group {} {
-      label {Misc/KML}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/KML"));}
-      code1 {config_pages.push_back(p);}
-      code2 {tab_tree->add(_("Misc/KML"));}
-    } {
-      Fl_Input btnKmlSaveDir {
-        label {KML files directory}
-        callback {progdefaults.kml_save_dir=o->value();
-progdefaults.changed = true;
-kml_init();}
-        tooltip {Where generated KML documents are stored.} xywh {232 47 390 24} align 69
-        code0 {o->value(progdefaults.kml_save_dir.c_str());}
-      }
-      Fl_Input inputKmlRootFile {
-        label {KML root file}
-        xywh {231 91 300 24} align 5
-        code0 {o->value("fldigi.kml");}
-      }
-      Fl_Counter cntKmlMergeDistance {
-        label {Minimum distance for splitting aliases (Meters)}
-        callback {progdefaults.kml_merge_distance = o->value();
-progdefaults.changed = true;
-kml_init();}
-        tooltip {Minimum distance for splitting alias nodes (Meters)} xywh {232 127 100 24} align 8 minimum 0 maximum 100000 step 10 value 1000
-        code0 {o->value(progdefaults.kml_merge_distance);}
-        code1 {o->lstep(1000);}
-      }
-      Fl_Counter cntKmlRetentionTime {
-        label {Data retention time, in hours (0 for no limit)}
-        callback {progdefaults.kml_retention_time = o->value();
-progdefaults.changed = true;
-kml_init();}
-        tooltip {Number of hours data is kept for each node. Zero means keeping everything.} xywh {231 163 100 24} align 8 minimum 0 maximum 500 step 1
-        code0 {o->value(progdefaults.kml_retention_time);}
-        code1 {o->lstep(24);}
-      }
-      Fl_Spinner cntKmlRefreshInterval {
-        label {KML refresh interval (seconds)}
-        callback {progdefaults.kml_refresh_interval = (int)(o->value());
-progdefaults.changed = true;
-kml_init();}
-        tooltip {Refresh time interval written in KML file (Seconds)} xywh {230 199 50 24} align 8 value 10
-        code0 {o->minimum(1); o->maximum(3600); o->step(1);}
-        code1 {o->value(progdefaults.kml_refresh_interval);}
-        code2 {o->labelsize(FL_NORMAL_SIZE);}
-        class Fl_Spinner2
-      }
-      Fl_Group listbox_kml_balloon_style {
-        label {KML balloon display style}
-        callback {progdefaults.kml_balloon_style = o->index();
-progdefaults.changed = true;
-kml_init();}
-        tooltip {KML balloon in plain text, or HTML, in plain tables or matrices.} xywh {230 235 201 24} box DOWN_BOX color 7 align 8 when 1
-        code0 {o->add("Plain text|HTML tables|Single HTML matrix");o->index(progdefaults.kml_balloon_style);}
-        code1 {o->labelsize(FL_NORMAL_SIZE);}
-        class Fl_ListBox
-      } {}
-      Fl_Input btnKmlCommand {
-        label {Command run on KML creation}
-        callback {progdefaults.kml_command=o->value();
-progdefaults.changed = true;
-kml_init();}
-        tooltip {Command started when KML files are generated. Subprocesses are started once, and restarted if needed.} xywh {230 271 246 24} align 72
-        code0 {o->value(progdefaults.kml_command.c_str());}
-      }
-      Fl_Button btlTestKmlCommand {
-        label {Test command}
-        callback {KmlServer::SpawnProcess();}
-        tooltip {Execute command on KML files.} xywh {230 307 191 24}
-      }
-      Fl_Button btnSelectKmlDestDir {
-        label {Change dir...}
-        callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
-fc->callback(KmlDestDirSet);
-fc->show();}
-        tooltip {Choose directory to store KML documents} xywh {631 47 101 24}
-      }
-      Fl_Button btlPurge {
-        label {Cleanup KML data now !}
-        callback {KmlServer::GetInstance()->Reset();}
-        tooltip {Cleanups KML documents, empties Google Earth display.} xywh {542 91 190 24}
-      }
-      Fl_Check_Button btnKmlPurgeOnStartup {
-        label {Cleanup on startup}
-        callback {progdefaults.kml_purge_on_startup = o->value();
-progdefaults.changed = true;}
-        tooltip {Empties KML documents when starting program.} xywh {528 203 172 15} down_box DOWN_BOX
-        code0 {o->value(progdefaults.kml_purge_on_startup);}
-      }
-      Fl_Group {} {open
-        xywh {475 301 310 40} box ENGRAVED_FRAME
-      } {
-        Fl_Check_Button btn_kml_enabled {
-          label {KML server enabled (On / Off)}
-          callback {progdefaults.kml_enabled = o->value();
-if (progdefaults.kml_enabled) {
-  kml_init(true);
-  progdefaults.changed = true;
-} else {
-  KmlServer::Exit();
-}}
-          tooltip {Uncheck if KML is never used} xywh {497 311 242 19} down_box DOWN_BOX
-          code0 {o->value(progdefaults.kml_enabled);}
-        }
-      }
-    }
-    Fl_Group {} {
-      label {Misc/PSM}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Misc/PSM"));}
-      code1 {config_pages.push_back(p);}
-      code2 {tab_tree->add(_("Misc/PSM"));}
-      code3 {tab_tree->close(_("Misc"));}
-    } {
-      Fl_Group {} {open
-        xywh {204 32 590 108} box ENGRAVED_BOX align 21
-      } {
-        Fl_Counter cntBusyChannelSeconds {
-          label {Allow TX After Signal Detection (Secs)}
-          callback {progStatus.busyChannelSeconds = (int) o->value();
-progdefaults.busyChannelSeconds = (int) o->value();
-progdefaults.changed = true;}
-          tooltip {Allow transmits after 'N' seconds of a signal detection.} xywh {380 38 110 20} align 8 minimum 1 maximum 999 step 1 value 1
-          code0 {o->value(progdefaults.busyChannelSeconds);}
-          code1 {o->step(1,10);}
-        }
-        Fl_Check_Button btnEnableBusyChannel {
-          label {Enable Busy Channel}
-          callback {if(o->value()) {
-	progStatus.enableBusyChannel = true;
-	progdefaults.enableBusyChannel = true;
-}
-else {
-	progStatus.enableBusyChannel = false;
-	progdefaults.enableBusyChannel = false;
-}
-progdefaults.changed = true;}
-          tooltip {Enable to inhibit TX on signal Detections} xywh {210 40 115 20} down_box DOWN_BOX
-          code0 {if(progdefaults.enableBusyChannel) o->value(true);}
-          code1 {else o->value(false);}
-        }
-        Fl_Counter cntPSMTXBufferFlushTimer {
-          label {TX Buffer Flush Timer (Mins, 0=Disable)}
-          callback {progStatus.psm_flush_buffer_timeout = (int) o->value();
-progdefaults.psm_flush_buffer_timeout = (int) o->value();
-progdefaults.changed = true;}
-          tooltip {Flushes the TX buffer after x period when Busy Channel remains on (TX inhibited)} xywh {380 63 110 20} align 8 minimum 1 maximum 999 step 1 value 1
-          code0 {o->value(progdefaults.psm_flush_buffer_timeout);}
-          code1 {o->step(1,10); o->minimum(0); o->maximum(999);}
-        }
-        Fl_Counter cntPSMBandwidthMargins {
-          label {Modem Bandwidth Margins }
-          callback {progStatus.psm_minimum_bandwidth_margin   = (int) o->value();
-progdefaults.psm_minimum_bandwidth_margin = (int) o->value();
-progdefaults.changed = true;}
-          tooltip {Monitor signals in modem bandwitdh plus margins.} xywh {380 88 110 20} align 8 minimum 1 maximum 999 step 1 value 1
-          code0 {o->value(progdefaults.psm_minimum_bandwidth_margin);}
-          code1 {o->step(1,10);}
-        }
-        Fl_Counter cntPSMValidSamplePeriod {
-          label {Valid Signal Sample Period (msecs)}
-          callback {progStatus.psm_hit_time_window   = (int) o->value();
-progdefaults.psm_hit_time_window = (int) o->value();
-progdefaults.changed = true;}
-          tooltip {Valid signal sample period in Milliseconds} xywh {380 114 110 20} align 8 minimum 1 maximum 999 step 1 value 1
-          code0 {o->value(progdefaults.psm_hit_time_window);}
-          code1 {o->step(1,10);}
-        }
-      }
-      Fl_Group {} {open
-        xywh {204 140 590 84} box ENGRAVED_BOX align 21
-      } {
-        Fl_Check_Button btnEnable_csma {
-          label {Enable CSMA}
-          callback {if(o->value()) {
-	progStatus.csma_enabled = true;
-	progdefaults.csma_enabled = true;
-} else {
-	progStatus.csma_enabled = false;
-	progdefaults.csma_enabled = false;
-}
-progdefaults.changed = true;}
-          tooltip {Carrier Sense Mulitiple Access} xywh {214 148 114 20} down_box DOWN_BOX
-          code0 {if(progdefaults.csma_enabled) o->value(true);}
-        }
-        Fl_Counter cntPersistance {
-          label Persistance
-          callback {progStatus.csma_persistance = (int) o->value();
-progdefaults.csma_persistance = (int) o->value();
-progdefaults.changed = true;
-update_csma_io_config(CSMA_PERSISTANCE);}
-          tooltip {Used to adjust the aggressiveness of TX} xywh {333 148 110 20} align 8 minimum 1 maximum 999 step 1 value 1
-          code0 {o->value(progdefaults.csma_persistance);}
-          code1 {o->step(1,10); o->minimum(0); o->maximum(255);}
-        }
-        Fl_Counter cntSlotTime {
-          label {Slot Time}
-          callback {progStatus.csma_slot_time = (int) o->value();
-progdefaults.csma_slot_time = (int) o->value();
-progdefaults.changed = true;
-update_csma_io_config(CSMA_SLOT_TIME);}
-          tooltip {Non transmit window after a transmit period} xywh {333 173 110 20} align 8 minimum 1 maximum 999 step 1 value 1
-          code0 {o->value(progdefaults.csma_slot_time);}
-          code1 {o->step(1,10); o->minimum(1); o->maximum(255);}
-        }
-        Fl_Counter cntTransmitDelay {
-          label {Transmit Data Delay}
-          callback {progStatus.csma_transmit_delay = (int) o->value();
-progdefaults.csma_transmit_delay = (int) o->value();
-progdefaults.changed = true;
-update_csma_io_config(CSMA_TX_DELAY);}
-          tooltip {Idle transmit before data sent} xywh {333 198 110 20} align 8 minimum 1 maximum 999 step 1 value 1
-          code0 {o->value(progdefaults.csma_transmit_delay);}
-          code1 {o->step(1,10); o->minimum(1); o->maximum(255);}
-        }
-        Fl_Output OutputSlotTimeMS {
-          label MilliSeconds
-          tooltip {Displays the Slot Time in Milliseconds} xywh {599 173 95 20} align 8
-        }
-        Fl_Output OutputTransmitDelayMS {
-          label MilliSeconds
-          tooltip {Displays the Transmit Delay in Milliseconds} xywh {599 198 95 20} align 8
-        }
-        Fl_Output OutputPersistancePercent {
-          label {Percent (%)}
-          tooltip {Displays the Slot Time in Milliseconds} xywh {599 147 95 20} align 8
-        }
-      }
-      Fl_Group {} {open
-        xywh {204 223 590 31} box ENGRAVED_BOX align 21
-      } {
-        Fl_Check_Button btnEnable_histogram {
-          label {Enable Histogram}
-          callback {if(o->value()) {
-	progStatus.psm_use_histogram = true;
-	progdefaults.psm_use_histogram = true;
-} else {
-	progStatus.psm_use_histogram = false;
-	progdefaults.psm_use_histogram = false;
-}
-progdefaults.changed = true;}
-          tooltip {Enable Histogram threshold signal monitoring} xywh {216 230 139 20} down_box DOWN_BOX
-          code0 {if(progdefaults.psm_use_histogram) o->value(true);}
-        }
-        Fl_Counter cntPSMThreshold {
-          label {PSM Histogram Threshold}
-          callback {progStatus.psm_histogram_offset_threshold = (int) o->value();
-progdefaults.psm_histogram_offset_threshold = (int) o->value();
-progdefaults.changed = true;}
-          tooltip {Sets the theshold level to x value above the noise level} xywh {380 230 110 20} align 8 minimum 1 maximum 999 step 1 value 1
-          code0 {o->value(progdefaults.psm_histogram_offset_threshold);}
-          code1 {o->step(1,10); o->minimum(1); o->maximum(20);}
-        }
-      }
-      Fl_Group {} {open
-        xywh {204 254 590 34} box ENGRAVED_BOX align 21
-      } {
-        Fl_Counter cntKPSQLAttenuation {
-          label {PSM Attenuate}
-          callback {progStatus.kpsql_attenuation = (int) o->value();
-progdefaults.kpsql_attenuation = (int) o->value();
-update_kpsql_fractional_gain(progStatus.kpsql_attenuation);
-progdefaults.changed = true;}
-          tooltip {Adjust sensitivity by 1/N fractional values.} xywh {380 261 110 20} align 8 minimum 1 maximum 999 step 1 value 1
-          code0 {o->value(progdefaults.kpsql_attenuation);}
-          code1 {o->step(1,10); o->minimum(1); o->maximum(999);}
-          code2 {update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);}
-        }
-      }
-      Fl_Group {} {open
-        xywh {204 287 590 28} box ENGRAVED_BOX align 21
-      } {
-        Fl_Check_Button btn_show_psm_button {
-          label {Show and enable Power Signal Monitor button (PSM)}
-          callback {progdefaults.show_psm_btn = o->value();
-UI_select();
-progdefaults.changed = true;}
-          tooltip {display PSM button on main dialog} xywh {214 291 150 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.show_psm_btn);}
-        }
-      }
-      Fl_Button btnBuyChannelDefaults {
-        label {Default Settings}
-        callback {psm_set_defaults();}
-        xywh {669 320 126 22}
       }
     }
     Fl_Group grpOperator {

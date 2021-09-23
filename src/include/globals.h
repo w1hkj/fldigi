@@ -260,7 +260,7 @@ enum {
 
 	MODE_EOT,  // a dummy mode used to invoke transmission of RsID-EOT code
 	NUM_MODES,
-	NUM_RXTX_MODES = NUM_MODES - 2
+	NUM_RXTX_MODES = NUM_MODES - 3
 };
 
 typedef intptr_t trx_mode;

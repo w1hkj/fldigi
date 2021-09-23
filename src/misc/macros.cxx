@@ -57,6 +57,7 @@
 #include "rigio.h"
 #include "strutil.h"
 #include "threads.h"
+#include "squelch_status.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -1343,8 +1344,9 @@ static void setTXATTEN(float v)
 	int d = (int)(v * 10);
 	v = d / 10.0;
 	v = clamp(v, -30.0, 0.0);
-	progdefaults.txlevel = v;
-	cntTxLevel->value(progdefaults.txlevel);;
+	progStatus.txlevel = v;
+	cntTxLevel->value(progStatus.txlevel);
+	set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
 	que_ok = true;
 }
 

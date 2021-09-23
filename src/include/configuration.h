@@ -2784,7 +2784,20 @@
              false)                                                                     \
         ELEM_(double, FMT_freq_err, "FMT_freq_err",                                     \
              "limit to frequency error before automatic reset",                         \
-             2.0)
+             2.0)                                                                       \
+    /* save operating parameters by mode */                                             \
+        ELEM_(bool, sqlch_by_mode, "SQLCH_BY_MODE",                                     \
+              "Save/restore SQUELCH on per mode basis",                                 \
+              false)                                                                    \
+        ELEM_(bool, txlevel_by_mode, "TXLEVEL_BY_MODE",                                 \
+              "Save/restore TXLEVEL on per mode basis",                                 \
+              false)                                                                    \
+        ELEM_(bool, afc_by_mode, "AFC_BY_MODE",                                         \
+              "Save/restore AFC on per mode basis",                                     \
+              false)                                                                    \
+        ELEM_(bool, reverse_by_mode, "REVERSE_BY_MODE",                                 \
+              "Save/restore REVERSE on per mode basis",                                 \
+              false)                                                                    \
 
 // declare the struct
 #define ELEM_DECLARE_CONFIGURATION(type_, var_, tag_, ...) type_ var_;

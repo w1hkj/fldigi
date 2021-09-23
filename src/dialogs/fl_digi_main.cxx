@@ -3017,7 +3017,7 @@ Logging_frame->resizable(NFtabs);
 			cntTxLevel->maximum(0);
 			cntTxLevel->value(-6);
 			cntTxLevel->callback((Fl_Callback*)cb_cntTxLevel);
-			cntTxLevel->value(progdefaults.txlevel);
+			cntTxLevel->value(progStatus.txlevel);
 			cntTxLevel->lstep(1.0);
 			cntTxLevel->tooltip(_("Tx level attenuator (dB)"));
 
