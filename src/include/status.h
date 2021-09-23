@@ -24,6 +24,7 @@
 #include <string>
 
 #include "globals.h"
+#include "squelch_status.h"
 
 struct status {
 	trx_mode	lastmode;
@@ -91,6 +92,8 @@ struct status {
 	int		int_sldrPwrSquelchValue;
 	bool	afconoff;
 	bool	sqlonoff;
+	bool	reverse;
+	double	txlevel;
 	int		scopeX;
 	int		scopeY;
 	bool	scopeVisible;

@@ -185,6 +185,8 @@ extern Fl_Scroll       *wefax_pic_rx_scroll;
 #include "record_loader.h"
 #include "record_browse.h"
 
+#include "squelch_status.h"
+
 #include "winkeyer.h"
 #include "nanoIO.h"
 
@@ -1550,13 +1552,27 @@ void startup_modem(modem* m, int f)
 
 	restoreFocus(1);
 
-	trx_mode id = m->get_mode();
+	trx_mode mode = m->get_mode();
 
-	set_mode_controls(id);
+	set_mode_controls(mode);
 
-	if (id >= MODE_PSK_FIRST && id <= MODE_PSK_LAST) {
+	if (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST) {
 		m->set_sigsearch(SIGSEARCH);
 	}
+
+	if (progdefaults.sqlch_by_mode) {
+		progStatus.sldrSquelchValue = get_mode_squelch(mode);
+		progStatus.sqlonoff = get_mode_squelch_onoff(mode);
+		sldrSquelch->value(progStatus.sldrSquelchValue);
+		btnSQL->value(progStatus.sqlonoff);
+	}
+
+	if (progdefaults.txlevel_by_mode)
+		progStatus.txlevel = get_mode_txlevel(mode);
+	cntTxLevel->value(progStatus.txlevel);
+
+	if (progdefaults.afc_by_mode)
+		progStatus.afconoff = get_mode_afc(mode);
 
 	if (m->get_cap() & modem::CAP_AFC) {
 		btnAFC->value(progStatus.afconoff);
@@ -1567,14 +1583,21 @@ void startup_modem(modem* m, int f)
 		btnAFC->deactivate();
 	}
 
+	if (progdefaults.reverse_by_mode)
+		progStatus.reverse = get_mode_reverse(mode);
+	else
+		progStatus.reverse = wf->Reverse();
+
 	if (m->get_cap() & modem::CAP_REV) {
-		wf->btnRev->value(wf->Reverse());
+		wf->btnRev->value(progStatus.reverse);
 		wf->btnRev->activate();
 	}
 	else {
 		wf->btnRev->value(0);
 		wf->btnRev->deactivate();
 	}
+	
+
 }
 
 void cb_mnuOpenMacro(Fl_Menu_*, void*) {
@@ -1670,8 +1693,10 @@ static int squelch_val;
 void rsid_squelch_timer(void*)
 {
 	progStatus.sqlonoff = squelch_val;
-	if (progStatus.sqlonoff)
+	set_mode_squelch_onoff(active_modem->get_mode(), squelch_val);
+	if (progStatus.sqlonoff) {
 		btnSQL->value(1);
+	}
 }
 
 void init_modem_squelch(trx_mode mode, int freq)
@@ -1687,6 +1712,7 @@ void init_modem_squelch(trx_mode mode, int freq)
 void rsid_eot_squelch()
 {
 	progStatus.sqlonoff = squelch_val;
+	set_mode_squelch_onoff(active_modem->get_mode(), squelch_val);
 	if (progStatus.sqlonoff)
 		btnSQL->value(1);
 	Fl::remove_timeout(rsid_squelch_timer);
@@ -3103,6 +3129,7 @@ void cb_sldrSquelch(Fl_Slider* o, void*) {
 		progStatus.sldrPwrSquelchValue = o->value();
 	} else {
 		progStatus.sldrSquelchValue = o->value();
+		set_mode_squelch( active_modem->get_mode(), progStatus.sldrSquelchValue );
 	}
 
 	restoreFocus(13);
@@ -4197,6 +4224,7 @@ void cbSQL(Fl_Widget *w, void *vi)
 	Fl_Button *b = (Fl_Button *)w;
 	int v = b->value();
 	progStatus.sqlonoff = v ? true : false;
+	set_mode_squelch_onoff(active_modem->get_mode(), progStatus.sqlonoff);
 }
 
 extern void set_wf_mode(void);
@@ -4403,9 +4431,10 @@ int default_handler(int event)
 		if (key == '=' && Fl::event_alt())
 #endif
 		{
-			progdefaults.txlevel += 0.1;
-			if (progdefaults.txlevel > 0) progdefaults.txlevel = 0;
-			cntTxLevel->value(progdefaults.txlevel);
+			progStatus.txlevel += 0.1;
+			if (progStatus.txlevel > 0) progStatus.txlevel = 0;
+			cntTxLevel->value(progStatus.txlevel);
+			set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
 			return 1;
 		}
 #ifdef __APPLE__
@@ -4414,9 +4443,10 @@ int default_handler(int event)
 		if (key == '-' && Fl::event_alt())
 #endif
 		{
-			progdefaults.txlevel -= 0.1;
-			if (progdefaults.txlevel < -30) progdefaults.txlevel = -30;
-			cntTxLevel->value(progdefaults.txlevel);
+			progStatus.txlevel -= 0.1;
+			if (progStatus.txlevel < -30) progStatus.txlevel = -30;
+			cntTxLevel->value(progStatus.txlevel);
+			set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
 			return 1;
 		}
 	}
@@ -4460,9 +4490,10 @@ int wo_default_handler(int event)
 		if (key == '=' && Fl::event_alt())
 #endif
 		{
-			progdefaults.txlevel += 0.1;
-			if (progdefaults.txlevel > 0) progdefaults.txlevel = 0;
-			cntTxLevel->value(progdefaults.txlevel);
+			progStatus.txlevel += 0.1;
+			if (progStatus.txlevel > 0) progStatus.txlevel = 0;
+			cntTxLevel->value(progStatus.txlevel);
+			set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
 			return 1;
 		}
 #ifdef __APPLE__
@@ -4471,9 +4502,9 @@ int wo_default_handler(int event)
 		if (key == '-' && Fl::event_alt())
 #endif
 		{
-			progdefaults.txlevel -= 0.1;
-			if (progdefaults.txlevel < -30) progdefaults.txlevel = -30;
-			cntTxLevel->value(progdefaults.txlevel);
+			progStatus.txlevel -= 0.1;
+			if (progStatus.txlevel < -30) progStatus.txlevel = -30;
+			cntTxLevel->value(progStatus.txlevel);
 			return 1;
 		}
 	}
@@ -6860,7 +6891,8 @@ static void cb_mainViewer_Seek(Fl_Input *, void *)
 }
 
 static void cb_cntTxLevel(Fl_Counter2* o, void*) {
-  progdefaults.txlevel = o->value();
+	progStatus.txlevel = o->value();
+	set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
 }
 
 static void cb_mainViewer(Fl_Hold_Browser*, void*) {
@@ -8240,7 +8272,7 @@ void create_fl_digi_main_WF_only() {
 			cntTxLevel->maximum(0);
 			cntTxLevel->value(-6);
 			cntTxLevel->callback((Fl_Callback*)cb_cntTxLevel);
-			cntTxLevel->value(progdefaults.txlevel);
+			cntTxLevel->value(progStatus.txlevel);
 			cntTxLevel->lstep(1.0);
 			cntTxLevel->tooltip(_("Tx level attenuator (dB)"));
 

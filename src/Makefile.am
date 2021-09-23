@@ -617,7 +617,6 @@ fldigi_SOURCES += \
 	misc/record_loader.cxx \
 	misc/re.cxx \
 	misc/stacktrace.cxx \
-	misc/status.cxx \
 	misc/strutil.cxx \
 	misc/threads.cxx \
 	misc/timeops.cxx \
@@ -666,6 +665,8 @@ fldigi_SOURCES += \
 	spot/pskrep.cxx \
 	spot/spot.cxx \
 	ssb/ssb.cxx \
+	status/squelch_status.cxx \
+	status/status.cxx \
 	synop-src/synop.cxx \
 	thor/thor.cxx \
 	thor/thorvaricode.cxx \
@@ -900,6 +901,7 @@ EXTRA_fldigi_SOURCES += \
 	include/rxmon.h \
 	include/serial.h \
 	include/smeter.h \
+	include/squelch_status.h \
 	include/vumeter.h \
 	include/socket.h \
 	include/soundconf.h \

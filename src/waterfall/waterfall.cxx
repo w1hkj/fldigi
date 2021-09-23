@@ -62,6 +62,7 @@
 #include "fldigi-config.h"
 #include "configuration.h"
 #include "status.h"
+#include "squelch_status.h"
 #include "Viewer.h"
 #include "macros.h"
 #include "arq_io.h"
@@ -1707,6 +1708,7 @@ void btnRev_cb(Fl_Widget *w, void *v)
 	wf->Reverse(b->value());
 	active_modem->set_reverse(wf->Reverse());
 	progdefaults.rtty_reverse = b->value();
+	set_mode_reverse(active_modem->get_mode(), progdefaults.rtty_reverse);
 	progdefaults.changed = true;
 	restoreFocus();
 }

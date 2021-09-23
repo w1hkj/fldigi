@@ -615,7 +615,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
 
-	double mult = pow(10, progdefaults.txlevel / 20.0);
+	double mult = pow(10, progStatus.txlevel / 20.0);
 	if (mult > SIGLIMIT) mult = SIGLIMIT;
 	for (int i = 0; i < len; i++) {
 		buffer[i] *= mult;
@@ -652,7 +652,7 @@ void modem::ModulateStereo(double *left, double *right, int len, bool sample_fla
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
 
-	double mult = pow(10, progdefaults.txlevel / 20.0);
+	double mult = pow(10, progStatus.txlevel / 20.0);
 	if (mult > SIGLIMIT) mult = SIGLIMIT;
 
 	for (int i = 0; i < len; i++) {
@@ -712,7 +712,7 @@ void modem::ModulateVideoStereo(double *left, double *right, int len, bool sampl
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
 
-	double mult = SIGLIMIT * pow(10, progdefaults.txlevel / 20.0);
+	double mult = SIGLIMIT * pow(10, progStatus.txlevel / 20.0);
 
 	for (int i = 0; i < len; i++) {
 		if (right[i] < -SIGLIMIT) right[i] = -SIGLIMIT;
@@ -755,7 +755,7 @@ void modem::ModulateVideo(double *buffer, int len)
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
 
-	double mult = SIGLIMIT * pow(10, progdefaults.txlevel / 20.0);
+	double mult = SIGLIMIT * pow(10, progStatus.txlevel / 20.0);
 	for (int i = 0; i < len; i++) {
 		buffer[i] *= mult;
 		if (buffer[i] < -SIGLIMIT) buffer[i] = -SIGLIMIT;
