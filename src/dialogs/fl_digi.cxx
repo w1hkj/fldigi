@@ -8352,8 +8352,8 @@ void create_fl_digi_main_WF_only() {
 	progdefaults.WF_UIrev =
 	progdefaults.WF_UIwfstore =
 	progdefaults.WF_UIxmtlock =
-	progdefaults.WF_UIwfdrop = true;
-	progdefaults.WF_UIqsy = false;
+	progdefaults.WF_UIwfdrop =
+	progdefaults.WF_UIqsy = true;
 	wf->UI_select(true);
 
 	load_counties();
@@ -8391,9 +8391,10 @@ void create_fl_digi_main(int argc, char** argv)
 
 	fl_digi_main->xclass(PACKAGE_NAME);
 
-	if (bWF_only)
+	if (bWF_only) {
 		fl_digi_main->size_range(WMIN, WF_only_height, 0, WF_only_height);
-	else
+		wf->setQSY(false);
+	} else
 		fl_digi_main->size_range(WMIN, main_hmin, 0, 0);
 
 	set_colors();

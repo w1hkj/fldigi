@@ -2684,6 +2684,27 @@ public:
 	}
 };
 
+class Rig_enable_qsy : public xmlrpc_c::method
+{
+public:
+	Rig_enable_qsy()
+	{
+		_signature = "n:i";
+		_help = "Enable/disable (1/0) QSY for xmlrpc transceiver control";
+	}
+	static void enable_qsy(int on)
+	{
+		if (!wf) return;
+		wf->setQSY(on);
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		REQ(enable_qsy, params.getInt(0));
+		*retval = xmlrpc_c::value_int(params.getInt(0));
+	}
+};
+
 // =============================================================================
 
 class Main_set_rig_name : public Rig_set_name
@@ -4114,6 +4135,7 @@ ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")                          \
 ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")                        \
 ELEM_(Rig_get_notch, "rig.get_notch")                                  \
 ELEM_(Rig_set_notch, "rig.set_notch")                                  \
+ELEM_(Rig_enable_qsy, "rig.enable_qsy")                                \
 \
 ELEM_(Log_get_freq, "log.get_frequency")                               \
 ELEM_(Log_get_time_on, "log.get_time_on")                              \
