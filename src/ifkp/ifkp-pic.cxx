@@ -961,9 +961,10 @@ void cb_ifkp_send_avatar( Fl_Widget *w, void *)
 			mycall[n] = tolower(mycall[n]);
 		std::string fname = AvatarDir;
 		fname.append(mycall).append(".png");
-
 		my_avatar_img = Fl_Shared_Image::get(fname.c_str(), 59, 74);
-		if (!my_avatar_img) return;
+		if (!my_avatar_img) {
+			return;
+		}
 		unsigned char *img_data = (unsigned char *)my_avatar_img->data()[0];
 		memset(avatar, 0, sizeof(avatar));
 		int D = my_avatar_img->d();
@@ -986,6 +987,7 @@ void cb_ifkp_send_avatar( Fl_Widget *w, void *)
 			}
 		} else
 			return;
+		if (!ifkppicTxWin) ifkp_createTxViewer();
 
 		active_modem->ifkp_send_avatar();
 		return;

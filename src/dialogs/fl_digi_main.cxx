@@ -1102,7 +1102,7 @@ void create_fl_digi_main_primary() {
 {  // NFtabs groups // Logging frame 2
 				int nfx = rightof(Logging_frame_1) + pad;
 				int nfy = Logging_frame_1->y();
-				int nfw = W - nfx - pad;
+				int nfw = W - nfx - pad - 59 - pad;
 				int nfh = Logging_frame_1->h();
 
 				NFtabs = new Fl_Tabs(nfx, nfy, nfw, nfh, "");

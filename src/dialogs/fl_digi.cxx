@@ -1509,30 +1509,38 @@ void set_mode_controls(trx_mode id)
 		thor_avatar->hide();
 		std::string call = inpCall->value();
 		if (id == MODE_IFKP) {
+			ifkp_avatar->resize(fl_digi_main->w() - 59 - pad, NFtabs->y(), 59, 74);
+			thor_avatar->resize(fl_digi_main->w() - pad - 1, NFtabs->y(), 1, 74);
 			NFtabs->resize(
 				NFtabs->x(), NFtabs->y(),
-				fl_digi_main->w() - NFtabs->x() - 59 - pad, NFtabs->h());
-			ifkp_avatar->resize(fl_digi_main->w() - 59 - pad, NFtabs->y(), 59, 74);
+				fl_digi_main->w() - NFtabs->x() - ifkp_avatar->w() - 2 * pad, NFtabs->h());
 			ifkp_avatar->show();
+			thor_avatar->hide();
 			if (!call.empty())
 				ifkp_load_avatar(inpCall->value());
 			else
 				ifkp_load_avatar();
 		} else if ( ((id >= MODE_THOR11) && (id <= MODE_THOR22))) {
+			thor_avatar->resize(fl_digi_main->w() - 59 - pad, NFtabs->y(), 59, 74);
+			ifkp_avatar->resize(fl_digi_main->w() - pad - 1, NFtabs->y(), 1, 74);
 			NFtabs->resize(
 				NFtabs->x(), NFtabs->y(),
-				fl_digi_main->w() - NFtabs->x() - 59 - pad, NFtabs->h());
-			thor_avatar->resize(fl_digi_main->w() - 59 - pad, NFtabs->y(), 59, 74);
+				fl_digi_main->w() - NFtabs->x() - thor_avatar->w() - 2 * pad, NFtabs->h());
 			thor_avatar->show();
+			ifkp_avatar->hide();
 			if (!call.empty())
 				thor_load_avatar(inpCall->value());
 			else
 				thor_load_avatar();
 		}
 		else {
+			ifkp_avatar->resize(fl_digi_main->w() - pad - 1, NFtabs->y(), 1, 74);
+			thor_avatar->resize(fl_digi_main->w() - pad - 1, NFtabs->y(), 1, 74);
 			NFtabs->resize(
 				NFtabs->x(), NFtabs->y(),
-				fl_digi_main->w() - NFtabs->x() - 2*pad, NFtabs->h());
+				fl_digi_main->w() - NFtabs->x() - pad - 1, NFtabs->h());
+			ifkp_avatar->hide();
+			thor_avatar->hide();
 		}
 		ifkp_avatar->redraw();
 		thor_avatar->redraw();
