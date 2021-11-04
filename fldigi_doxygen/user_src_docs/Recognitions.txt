@@ -41,7 +41,7 @@ Localization files:
                         Christian W. Correa HK4QWC
    Deutsch    German    Marc Richter        DF2MR
    Français   French    Stéphane Fillod     F8CFE
-   Italiano   Italian   Pierfrancesco Caci  IK5PVX
+   Italiano   Italian   Emanuele Repetto    IZ1UKX
    Język      Polish    Roman Bagiński      SP4JEU
    Nederlands Dutch     Peter van der Post  PA1POS
 
