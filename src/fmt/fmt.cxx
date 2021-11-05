@@ -116,8 +116,12 @@ static double rfreq = 0, ramp = 0;
 // formatting std::strings used by csv export method
 static std::string csv_string;
 static std::string buffered_csv_string;
-// debugging data std::string
+
+// uncomment next line to enable debugging data file
+//#define DEBUG_CSV
+#ifdef DEBUG_CSV
 static std::string debug_csv_string;
+#endif
 
 static char comma_format[] = "\
 \"T %02d:%02d:%02d.%02d\",\
@@ -287,9 +291,9 @@ csv_string.append("\
 			is_recording = true;
 		}
 	}
-
-//	debug_csv_string = csv_string;
-
+#ifdef DEBUG_CSV
+	debug_csv_string = csv_string;
+#endif
 	put_status (file_datetime_name);
 }
 
@@ -351,6 +355,7 @@ void stop_auto_recording(void *)
 
 static char sz_temp[512];
 
+#ifdef DEBUG_CSV
 // debugging
 void write_debug_string()
 {
@@ -363,6 +368,7 @@ void write_debug_string()
 	fclose(csv_debug);
 	debug_csv_string.clear();
 }
+#endif
 
 void fmt_write_file()
 {
@@ -446,8 +452,10 @@ void fmt_write_file()
 				csv_file << buffered_csv_string;
 				csv_file.flush();
 				csv_file.close();
+#ifdef DEBUG_CSV
 				debug_csv_string.append(csv_string);
 				write_debug_string();
+#endif
 				csv_string.clear();
 			}
 			Fl::awake (fmt_show_recording, (void *)0);
@@ -469,8 +477,10 @@ void fmt_write_file()
 			csv_file << buffered_csv_string;
 			csv_file.flush();
 			csv_file.close();
+#ifdef DEBUG_CSV
 			debug_csv_string.append(csv_string);
 			write_debug_string();
+#endif
 			csv_string.clear();
 			put_Status1 ("");
 			put_status ("");
@@ -528,9 +538,9 @@ void fmt_write_file()
 				buffered_csv_string.assign(csv_string);
 				csv_file << buffered_csv_string;
 				csv_file.flush();
-
+#ifdef DEBUG_CSV
 				debug_csv_string.append(csv_string);
-
+#endif
 				csv_string.clear();
 			}
 		}
