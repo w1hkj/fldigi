@@ -40,6 +40,8 @@
 #include "view_rtty.h"
 #include "serial.h"
 
+#include "fsk.h"
+
 #define	RTTY_SampleRate	8000
 //#define RTTY_SampleRate 11025
 //#define RTTY_SampleRate 12000
@@ -207,7 +209,7 @@ private:
 	unsigned char lastchar;
 
 	int rxmode;
-	int txmode;
+	int shift_state;
 	bool preamble;
 
 	void Clear_syncscope();
@@ -237,12 +239,10 @@ private:
 	bool is_mark();
 
 //----------------------------------------------------------------------
-// experimental FSK generator
-//	bool   useFSK;
-//	double bitlen;
-//	Cserial *fsk_serial;
-//	inline void send_FSK(int c);
+// FSK via signal control line [serial DTR or RTS pin]
 //----------------------------------------------------------------------
+	FSK  *fsk_tty;
+	void send_FSK(int);
 
 public:
 	rtty(trx_mode mode);
@@ -263,6 +263,7 @@ public:
 	void searchDown();
 	void searchUp();
 
+	void resetFSK();
 };
 
 int rttyparity(unsigned int, int);

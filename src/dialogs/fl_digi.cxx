@@ -2019,7 +2019,7 @@ void init_modem(trx_mode mode, int freq)
 				  *mode_info[mode].modem = new rtty(mode), freq);
 //		modem_config_tab = tabRTTY;
 
-		if (progStatus.nanoFSK_online || progStatus.Nav_online)
+		if (progStatus.nanoFSK_online || progStatus.Nav_online || progdefaults.useFSK)
 			quick_change = 0;
 		else
 			quick_change = quick_change_rtty;
@@ -9327,6 +9327,11 @@ void put_echo_char(unsigned int data, int style)
 void resetRTTY() {
 	if (active_modem->get_mode() == MODE_RTTY)
 		trx_start_modem(active_modem);
+}
+
+void resetFSK() {
+	if (active_modem->get_mode() == MODE_RTTY)
+	active_modem->resetFSK();
 }
 
 void resetOLIVIA() {

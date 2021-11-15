@@ -513,6 +513,7 @@ fldigi_SOURCES += \
 	config_script/script_parsing.h \
 	contestia/contestia.cxx \
 	cw_rtty/cw.cxx \
+	cw_rtty/fsk.cxx \
 	cw_rtty/morse.cxx \
 	cw_rtty/nanoIO.cxx \
 	cw_rtty/ICOMkeying.cxx \
@@ -806,6 +807,7 @@ EXTRA_fldigi_SOURCES += \
 	include/font_browser.h \
 	include/fontdef.h \
 	include/FreqControl.h \
+	include/fsk.h \
 	include/fsq.h \
 	include/FTextRXTX.h \
 	include/FTextView.h \

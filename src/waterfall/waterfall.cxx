@@ -970,8 +970,13 @@ void WFdisp::drawScale() {
 		mdoffset = progdefaults.CWsweetspot;
 
 	if (xcvr_useFSK) {
-		if (usb) mdoffset = progdefaults.xcvr_FSK_MARK + rtty::SHIFT[progdefaults.rtty_baud] * 2;
-		else mdoffset = progdefaults.xcvr_FSK_MARK;
+		if (progdefaults.useFSK) {
+			if (usb) mdoffset = progdefaults.RTTYsweetspot + 170 / 2; // 45.45 baud 170 Hz shift
+			else     mdoffset = progdefaults.RTTYsweetspot - 170 / 2;
+		} else {
+			if (usb) mdoffset = progdefaults.xcvr_FSK_MARK + rtty::SHIFT[progdefaults.rtty_baud] * 2;
+			else mdoffset = progdefaults.xcvr_FSK_MARK;
+		}
 	}
 
 	if (usb)

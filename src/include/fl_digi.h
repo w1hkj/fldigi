@@ -485,6 +485,7 @@ extern char *get_rx_data();
 extern char *get_tx_data();
 
 extern void resetRTTY();
+extern void resetFSK();
 extern void resetOLIVIA();
 extern void resetCONTESTIA();
 extern void resetTHOR();

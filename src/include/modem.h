@@ -240,6 +240,9 @@ public:
 	double  calWPM() {return 20;}
 	void    calWPM(double) {};
 
+// for FSK keyline
+	void	resetFSK() {};
+
 // for fft scan modem
 public:
 	virtual void	refresh_scope() {}
