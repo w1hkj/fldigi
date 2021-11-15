@@ -4944,10 +4944,90 @@ static void cb_cnt_TTY_LTRS(Fl_Counter* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnFSKenabled=(Fl_Check_Button *)0;
+
+static void cb_btnFSKenabled(Fl_Check_Button* o, void*) {
+  progdefaults.useFSK = o->value();
+
+resetRTTY();
+resetFSK();
+
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnFSKshared=(Fl_Check_Button *)0;
+
+static void cb_btnFSKshared(Fl_Check_Button* o, void*) {
+  progdefaults.fsk_shares_port = o->value();
+
+if (progdefaults.useFSK) {
+  resetRTTY();
+  resetFSK();
+}
+
+progdefaults.changed = true;
+}
+
+Fl_ComboBox *select_FSK_CommPort=(Fl_ComboBox *)0;
+
+static void cb_select_FSK_CommPort(Fl_ComboBox* o, void*) {
+  progdefaults.fsk_port = o->value();
+
+if (progdefaults.useFSK) {
+  resetRTTY();
+  resetFSK();
+}
+
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnFSKreverse=(Fl_Check_Button *)0;
+
+static void cb_btnFSKreverse(Fl_Check_Button* o, void*) {
+  progdefaults.fsk_reverse = o->value();
+
+if (progdefaults.useFSK) {
+  resetRTTY();
+  resetFSK();
+}
+
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnFSKuseDTR=(Fl_Check_Button *)0;
+
+static void cb_btnFSKuseDTR(Fl_Check_Button* o, void*) {
+  progdefaults.fsk_on_dtr = o->value();
+
+if (progdefaults.useFSK) {
+  resetRTTY();
+  resetFSK();
+}
+
+progdefaults.changed = true;
+}
+
+Fl_Button *btnFSKreset=(Fl_Button *)0;
+
+static void cb_btnFSKreset(Fl_Button*, void*) {
+  resetRTTY();
+resetFSK();
+}
+
 Fl_Counter *cntr_xcvr_FSK_MARK=(Fl_Counter *)0;
 
 static void cb_cntr_xcvr_FSK_MARK(Fl_Counter* o, void*) {
   progdefaults.xcvr_FSK_MARK = o->value();
+
+progdefaults.RTTYsweetspot = progdefaults.xcvr_FSK_MARK + rtty::SHIFT[progdefaults.rtty_shift] / 2;
+valRTTYsweetspot->value(progdefaults.RTTYsweetspot);
+
+if (progdefaults.useFSK) {
+  resetRTTY();
+  resetFSK();
+}
+
+progdefaults.changed = true;
 }
 
 Fl_ListBox *sel_xcvr_FSK_shift=(Fl_ListBox *)0;
@@ -4955,7 +5035,31 @@ Fl_ListBox *sel_xcvr_FSK_shift=(Fl_ListBox *)0;
 static void cb_sel_xcvr_FSK_shift(Fl_ListBox* o, void*) {
   progdefaults.rtty_shift = o->index();
 selShift->index(progdefaults.rtty_shift);
-resetRTTY();
+
+progdefaults.RTTYsweetspot = progdefaults.xcvr_FSK_MARK + rtty::SHIFT[progdefaults.rtty_shift] / 2;
+valRTTYsweetspot->value(progdefaults.RTTYsweetspot);
+
+if (progdefaults.useFSK) {
+  resetRTTY();
+  resetFSK();
+}
+
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnFSK_STOPBITS=(Fl_Check_Button *)0;
+
+static void cb_btnFSK_STOPBITS(Fl_Check_Button* o, void*) {
+  progdefaults.fsk_STOPBITS = o->value();
+
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_FSK_KEYLINE_flrig=(Fl_Check_Button *)0;
+
+static void cb_btn_FSK_KEYLINE_flrig(Fl_Check_Button* o, void*) {
+  int val = o->value();
+progdefaults.use_FLRIG_FSK = val;
 progdefaults.changed = true;
 }
 
@@ -6095,6 +6199,11 @@ Fl_Value_Input2 *valRTTYsweetspot=(Fl_Value_Input2 *)0;
 
 static void cb_valRTTYsweetspot(Fl_Value_Input2* o, void*) {
   progdefaults.RTTYsweetspot=o->value();
+
+cntr_xcvr_FSK_MARK->value(progdefaults.RTTYsweetspot - rtty::SHIFT[progdefaults.rtty_shift] / 2);
+
+resetRTTY();
+
 progdefaults.changed = true;
 }
 
@@ -14148,10 +14257,10 @@ ency"));
       o->box(FL_FLAT_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
-      { Fl_Group* o = new Fl_Group(205, 32, 590, 229, _("Sound Card FSK"));
+      { Fl_Group* o = new Fl_Group(205, 21, 590, 200, _("Sound Card FSK"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { Fl_ListBox* o = selShift = new Fl_ListBox(281, 65, 100, 22, _("Carrier shift"));
+        { Fl_ListBox* o = selShift = new Fl_ListBox(281, 43, 100, 22, _("Carrier shift"));
           selShift->tooltip(_("Select carrier shift"));
           selShift->box(FL_DOWN_BOX);
           selShift->color(FL_BACKGROUND2_COLOR);
@@ -14167,7 +14276,7 @@ ency"));
                        o->labelsize(FL_NORMAL_SIZE);
           selShift->end();
         } // Fl_ListBox* selShift
-        { Fl_Counter2* o = selCustomShift = new Fl_Counter2(281, 98, 100, 22, _("Custom shift"));
+        { Fl_Counter2* o = selCustomShift = new Fl_Counter2(281, 73, 100, 22, _("Custom shift"));
           selCustomShift->tooltip(_("Input carrier shift"));
           selCustomShift->box(FL_UP_BOX);
           selCustomShift->color(FL_BACKGROUND_COLOR);
@@ -14186,7 +14295,7 @@ ency"));
           o->lstep(100.0);
           o->labelsize(FL_NORMAL_SIZE);
         } // Fl_Counter2* selCustomShift
-        { Fl_ListBox* o = selBaud = new Fl_ListBox(281, 131, 100, 22, _("Baud rate"));
+        { Fl_ListBox* o = selBaud = new Fl_ListBox(281, 103, 100, 22, _("Baud rate"));
           selBaud->tooltip(_("Select carrier baudrate"));
           selBaud->box(FL_DOWN_BOX);
           selBaud->color(FL_BACKGROUND2_COLOR);
@@ -14203,7 +14312,7 @@ ency"));
           o->labelsize(FL_NORMAL_SIZE);
           selBaud->end();
         } // Fl_ListBox* selBaud
-        { Fl_ListBox* o = selBits = new Fl_ListBox(281, 164, 100, 22, _("Bits per character"));
+        { Fl_ListBox* o = selBits = new Fl_ListBox(281, 133, 100, 22, _("Bits per character"));
           selBits->tooltip(_("Select # bits / char"));
           selBits->box(FL_DOWN_BOX);
           selBits->color(FL_BACKGROUND2_COLOR);
@@ -14219,7 +14328,7 @@ ency"));
                        o->labelsize(FL_NORMAL_SIZE);
           selBits->end();
         } // Fl_ListBox* selBits
-        { Fl_ListBox* o = selParity = new Fl_ListBox(281, 197, 100, 22, _("Parity"));
+        { Fl_ListBox* o = selParity = new Fl_ListBox(281, 163, 100, 22, _("Parity"));
           selParity->tooltip(_("Select parity"));
           selParity->box(FL_DOWN_BOX);
           selParity->color(FL_BACKGROUND2_COLOR);
@@ -14235,7 +14344,7 @@ ency"));
                        o->labelsize(FL_NORMAL_SIZE);
           selParity->end();
         } // Fl_ListBox* selParity
-        { Fl_ListBox* o = selStopBits = new Fl_ListBox(281, 231, 100, 22, _("Stop bits"));
+        { Fl_ListBox* o = selStopBits = new Fl_ListBox(281, 193, 100, 22, _("Stop bits"));
           selStopBits->tooltip(_("Select # stop bits"));
           selStopBits->box(FL_DOWN_BOX);
           selStopBits->color(FL_BACKGROUND2_COLOR);
@@ -14251,13 +14360,13 @@ ency"));
                        o->labelsize(FL_NORMAL_SIZE);
           selStopBits->end();
         } // Fl_ListBox* selStopBits
-        { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(532, 65, 90, 22, _("AutoCRLF"));
+        { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(532, 43, 90, 22, _("AutoCRLF"));
           btnAUTOCRLF->tooltip(_("Add CRLF after page width characters"));
           btnAUTOCRLF->down_box(FL_DOWN_BOX);
           btnAUTOCRLF->callback((Fl_Callback*)cb_btnAUTOCRLF);
           o->value(progdefaults.rtty_autocrlf);
         } // Fl_Check_Button* btnAUTOCRLF
-        { Fl_Counter2* o = cntrAUTOCRLF = new Fl_Counter2(643, 65, 75, 22, _("chars"));
+        { Fl_Counter2* o = cntrAUTOCRLF = new Fl_Counter2(643, 43, 75, 22, _("chars"));
           cntrAUTOCRLF->tooltip(_("Auto CRLF line length"));
           cntrAUTOCRLF->type(1);
           cntrAUTOCRLF->box(FL_UP_BOX);
@@ -14276,33 +14385,33 @@ ency"));
           cntrAUTOCRLF->when(FL_WHEN_CHANGED);
           o->labelsize(FL_NORMAL_SIZE);
         } // Fl_Counter2* cntrAUTOCRLF
-        { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(532, 98, 90, 22, _("CR-CR-LF"));
+        { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(532, 73, 90, 22, _("CR-CR-LF"));
           btnCRCRLF->tooltip(_("Use \"cr cr lf\" for \"cr lf\""));
           btnCRCRLF->down_box(FL_DOWN_BOX);
           btnCRCRLF->callback((Fl_Callback*)cb_btnCRCRLF);
           btnCRCRLF->when(FL_WHEN_RELEASE_ALWAYS);
           o->value(progdefaults.rtty_crcrlf);
         } // Fl_Check_Button* btnCRCRLF
-        { Fl_Check_Button* o = chkUOStx = new Fl_Check_Button(532, 131, 63, 22, _("TX - unshift on space"));
+        { Fl_Check_Button* o = chkUOStx = new Fl_Check_Button(532, 103, 63, 22, _("TX - unshift on space"));
           chkUOStx->tooltip(_("Revert to Unsifted char\'s on a space"));
           chkUOStx->down_box(FL_DOWN_BOX);
           chkUOStx->callback((Fl_Callback*)cb_chkUOStx);
           o->value(progdefaults.UOStx);
         } // Fl_Check_Button* chkUOStx
-        { Fl_Check_Button* o = chk_shaped_rtty = new Fl_Check_Button(532, 197, 212, 22, _("Shaped Tx"));
+        { Fl_Check_Button* o = chk_shaped_rtty = new Fl_Check_Button(532, 133, 212, 22, _("Shaped Tx"));
           chk_shaped_rtty->tooltip(_("Use wave shaping on Tx signal"));
           chk_shaped_rtty->down_box(FL_DOWN_BOX);
           chk_shaped_rtty->value(1);
           chk_shaped_rtty->callback((Fl_Callback*)cb_chk_shaped_rtty);
           o->value(progStatus.shaped_rtty);
         } // Fl_Check_Button* chk_shaped_rtty
-        { Fl_Check_Button* o = chkPseudoFSK = new Fl_Check_Button(532, 164, 212, 22, _("Pseudo-FSK - right channel"));
+        { Fl_Check_Button* o = chkPseudoFSK = new Fl_Check_Button(532, 163, 212, 22, _("Pseudo-FSK - right channel"));
           chkPseudoFSK->tooltip(_("Create keyed square wave on right audio channel"));
           chkPseudoFSK->down_box(FL_DOWN_BOX);
           chkPseudoFSK->callback((Fl_Callback*)cb_chkPseudoFSK);
           o->value(progdefaults.PseudoFSK);
         } // Fl_Check_Button* chkPseudoFSK
-        { Fl_Counter* o = cnt_TTY_LTRS = new Fl_Counter(532, 231, 75, 22, _("LTRS at start"));
+        { Fl_Counter* o = cnt_TTY_LTRS = new Fl_Counter(532, 193, 75, 22, _("LTRS at start"));
           cnt_TTY_LTRS->tooltip(_("Insert NN LTRS bytes at start of each transmission"));
           cnt_TTY_LTRS->type(1);
           cnt_TTY_LTRS->minimum(0);
@@ -14315,22 +14424,78 @@ ency"));
         } // Fl_Counter* cnt_TTY_LTRS
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(205, 262, 590, 77, _("Transceiver FSK"));
-        o->box(FL_ENGRAVED_FRAME);
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Tx"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/TTY/Tx"));
+      o->end();
+    } // Fl_Group* o
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/TTY/FSK"));
+      o->box(FL_FLAT_BOX);
+      o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+      o->hide();
+      { Fl_Group* o = new Fl_Group(205, 21, 590, 165, _("DTR/RTS signal line FSK"));
+        o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        o->hide();
-        { Fl_Counter* o = cntr_xcvr_FSK_MARK = new Fl_Counter(221, 297, 126, 23, _("Mark"));
+        { Fl_Check_Button* o = btnFSKenabled = new Fl_Check_Button(224, 56, 90, 22, _("Enabled"));
+          btnFSKenabled->tooltip(_("Enable FSK on serial port"));
+          btnFSKenabled->down_box(FL_DOWN_BOX);
+          btnFSKenabled->callback((Fl_Callback*)cb_btnFSKenabled);
+          btnFSKenabled->when(FL_WHEN_RELEASE_ALWAYS);
+          o->value(progdefaults.useFSK);
+        } // Fl_Check_Button* btnFSKenabled
+        { Fl_Check_Button* o = btnFSKshared = new Fl_Check_Button(333, 56, 90, 22, _("Shares RIGIO serial port, or uses"));
+          btnFSKshared->tooltip(_("Share the RIGIO port"));
+          btnFSKshared->down_box(FL_DOWN_BOX);
+          btnFSKshared->callback((Fl_Callback*)cb_btnFSKshared);
+          btnFSKshared->when(FL_WHEN_RELEASE_ALWAYS);
+          o->value(progdefaults.fsk_shares_port);
+        } // Fl_Check_Button* btnFSKshared
+        { Fl_ComboBox* o = select_FSK_CommPort = new Fl_ComboBox(314, 88, 470, 24, _("Serial Port"));
+          select_FSK_CommPort->tooltip(_("FSK independent serial port"));
+          select_FSK_CommPort->box(FL_DOWN_BOX);
+          select_FSK_CommPort->color((Fl_Color)55);
+          select_FSK_CommPort->selection_color(FL_BACKGROUND_COLOR);
+          select_FSK_CommPort->labeltype(FL_NORMAL_LABEL);
+          select_FSK_CommPort->labelfont(0);
+          select_FSK_CommPort->labelsize(14);
+          select_FSK_CommPort->labelcolor(FL_FOREGROUND_COLOR);
+          select_FSK_CommPort->callback((Fl_Callback*)cb_select_FSK_CommPort);
+          select_FSK_CommPort->align(Fl_Align(FL_ALIGN_LEFT));
+          select_FSK_CommPort->when(FL_WHEN_RELEASE);
+          o->value(progdefaults.fsk_port.c_str());
+          select_FSK_CommPort->end();
+        } // Fl_ComboBox* select_FSK_CommPort
+        { Fl_Check_Button* o = btnFSKreverse = new Fl_Check_Button(225, 120, 90, 22, _("MARK/SPACE reversed"));
+          btnFSKreverse->tooltip(_("Reverse Mark/Space"));
+          btnFSKreverse->down_box(FL_DOWN_BOX);
+          btnFSKreverse->callback((Fl_Callback*)cb_btnFSKreverse);
+          btnFSKreverse->when(FL_WHEN_RELEASE_ALWAYS);
+          o->value(progdefaults.fsk_reverse);
+        } // Fl_Check_Button* btnFSKreverse
+        { Fl_Check_Button* o = btnFSKuseDTR = new Fl_Check_Button(460, 120, 90, 22, _("Use DTR"));
+          btnFSKuseDTR->tooltip(_("Enable DTR signal line, default is RTS"));
+          btnFSKuseDTR->down_box(FL_DOWN_BOX);
+          btnFSKuseDTR->callback((Fl_Callback*)cb_btnFSKuseDTR);
+          btnFSKuseDTR->when(FL_WHEN_RELEASE_ALWAYS);
+          o->value(progdefaults.fsk_on_dtr);
+        } // Fl_Check_Button* btnFSKuseDTR
+        { btnFSKreset = new Fl_Button(714, 152, 70, 24, _("Reset"));
+          btnFSKreset->tooltip(_("Restart the FSK interface\nNecessary if changes made to configuration"));
+          btnFSKreset->callback((Fl_Callback*)cb_btnFSKreset);
+          btnFSKreset->hide();
+        } // Fl_Button* btnFSKreset
+        { Fl_Counter* o = cntr_xcvr_FSK_MARK = new Fl_Counter(225, 152, 126, 24, _("Mark"));
           cntr_xcvr_FSK_MARK->tooltip(_("Mark frequency in Hertz"));
           cntr_xcvr_FSK_MARK->minimum(500);
           cntr_xcvr_FSK_MARK->maximum(3000);
           cntr_xcvr_FSK_MARK->step(1);
-          cntr_xcvr_FSK_MARK->value(2115);
+          cntr_xcvr_FSK_MARK->value(1275);
           cntr_xcvr_FSK_MARK->callback((Fl_Callback*)cb_cntr_xcvr_FSK_MARK);
           cntr_xcvr_FSK_MARK->align(Fl_Align(FL_ALIGN_RIGHT));
           o->value(progdefaults.xcvr_FSK_MARK);
           o->lstep(10);
         } // Fl_Counter* cntr_xcvr_FSK_MARK
-        { Fl_ListBox* o = sel_xcvr_FSK_shift = new Fl_ListBox(404, 297, 100, 23, _("Carrier shift"));
+        { Fl_ListBox* o = sel_xcvr_FSK_shift = new Fl_ListBox(460, 152, 100, 24, _("Carrier shift"));
           sel_xcvr_FSK_shift->tooltip(_("Carrier shift in Hertz"));
           sel_xcvr_FSK_shift->box(FL_DOWN_BOX);
           sel_xcvr_FSK_shift->color(FL_BACKGROUND2_COLOR);
@@ -14346,11 +14511,29 @@ ency"));
           o->index(progdefaults.rtty_shift);
           sel_xcvr_FSK_shift->end();
         } // Fl_ListBox* sel_xcvr_FSK_shift
+        { Fl_Check_Button* o = btnFSK_STOPBITS = new Fl_Check_Button(640, 120, 111, 22, _("1.5 stop bits"));
+          btnFSK_STOPBITS->tooltip(_("Enabled - 1.5 stop bits\nDisabled - 2 stop bits"));
+          btnFSK_STOPBITS->down_box(FL_DOWN_BOX);
+          btnFSK_STOPBITS->callback((Fl_Callback*)cb_btnFSK_STOPBITS);
+          btnFSK_STOPBITS->when(FL_WHEN_RELEASE_ALWAYS);
+          o->value(progdefaults.fsk_STOPBITS);
+        } // Fl_Check_Button* btnFSK_STOPBITS
         o->end();
       } // Fl_Group* o
-      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/Tx"));
+      { Fl_Group* o = new Fl_Group(205, 193, 590, 39);
+        o->box(FL_ENGRAVED_FRAME);
+        { Fl_Check_Button* o = btn_FSK_KEYLINE_flrig = new Fl_Check_Button(225, 205, 23, 15, _("Use flrig FSK keying"));
+          btn_FSK_KEYLINE_flrig->tooltip(_("Enable to use flrig FSK keyer"));
+          btn_FSK_KEYLINE_flrig->down_box(FL_DOWN_BOX);
+          btn_FSK_KEYLINE_flrig->callback((Fl_Callback*)cb_btn_FSK_KEYLINE_flrig);
+          btn_FSK_KEYLINE_flrig->align(Fl_Align(FL_ALIGN_RIGHT));
+          o->value(progdefaults.use_FLRIG_FSK);
+        } // Fl_Check_Button* btn_FSK_KEYLINE_flrig
+        o->end();
+      } // Fl_Group* o
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/FSK"));
       config_pages.push_back(p);
-      tab_tree->add(_("Modem/TTY/Tx"));
+      tab_tree->add(_("Modem/TTY/FSK"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/TTY/nanoIO"));

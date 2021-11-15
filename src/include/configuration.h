@@ -442,18 +442,38 @@
               "AFC tracking speed. Values are as follows:\n"                            \
               "  0: slow; 1: normal; 2: fast",                                          \
               1)   /* normal */                                                         \
-        ELEM_(bool, useFSK, "USEFSK",                                                   \
-              "TRUE if DTR/RTS keying for RTTY EXPERIMENTAL - NOT USED",                \
-              false)                                                                    \
-        ELEM_(std::string, FSK_serial_port_name, "RTTY_SERIAL_PORT_NAME",               \
-              "Independent serial port EXPERIMENTAL - NOT USED",                        \
-              "")                                                                       \
         ELEM_(bool, PreferXhairScope, "PREFERXHAIRSCOPE",                               \
               "Default to crosshair digiscope",                                         \
               false)                                                                    \
         ELEM_(bool, PseudoFSK, "PSEUDOFSK",                                             \
               "Generate Pseudo-FSK signal on right audio channel",                      \
               false)                                                                    \
+/* FSK interface elements */                                                            \
+        ELEM_(bool, useFSK, "USEFSK",                                                   \
+              "TRUE if DTR/RTS keying for RTTY",                                        \
+              false)                                                                    \
+        ELEM_(bool, fsk_shares_port, "FSK_SHARES_PORT",                                 \
+              "FSK signal generator shares rigio serial port for DTR/RTS control",      \
+              false)                                                                    \
+        ELEM_(std::string, fsk_port, "FSK_PORT",                                        \
+              "FSK serial port device name",                                            \
+              "")                                                                       \
+        ELEM_(bool, fsk_reverse, "FSK_REVERSE",                                         \
+              "Reverse Mark/Space signaling",                                           \
+              false)                                                                    \
+        ELEM_(bool, fsk_on_dtr, "FSK_ON_DTR",                                           \
+              "Use DTR signal line for FSK control",                                    \
+              false)                                                                    \
+        ELEM_(bool, fsk_shift_on_space, "FSK_SHIFT_ON_SPACE",                           \
+              "Always send shift char before space",                                    \
+              false)                                                                    \
+        ELEM_(bool, fsk_STOPBITS, "FSK_STOPBITS",                                       \
+              "True - 1.5 stop bits; False - 2 stop bits",                              \
+              true)                                                                     \
+        ELEM_(bool, use_FLRIG_FSK, "FLRIG_FSK",                                         \
+              "True - enable; False - disable",                                         \
+              false)                                                                    \
+/* end of FSK elements */                                                               \
         ELEM_(bool, kml_enabled, "KMLSERVER_ENABLED",                                   \
               "Enable kml server threads",                                              \
               true)                                                                     \

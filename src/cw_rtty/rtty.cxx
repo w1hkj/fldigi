@@ -30,7 +30,6 @@
 #include <iostream>
 #include <fstream>
 
-//#include "rtty.h"
 #include "view_rtty.h"
 #include "fl_digi.h"
 #include "digiscope.h"
@@ -50,12 +49,11 @@
 
 #include "rtty.h"
 
+#include "fsk.h"
+
 #define FILTER_DEBUG 0
 
 #define SHAPER_BAUD 150
-
-//void start_fsk_thread();
-//void stop_fsk_thread();
 
 //=====================================================================
 // Baudot support
@@ -99,6 +97,7 @@ void rtty::tx_init()
 	symbols = 0;
 	acc_symbols = 0;
 	ovhd_symbols = 0;
+
 }
 
 // Customizes output of Synop decoded data.
@@ -201,8 +200,10 @@ rtty::~rtty()
 	delete m_SymShaper1;
 	delete m_SymShaper2;
 
-// EXPERIMENTAL FSK DTR/RTS
-//	stop_fsk_thread();
+	if (fsk_tty) {
+		delete fsk_tty;
+		fsk_tty = 0;
+	}
 }
 
 void rtty::reset_filters()
@@ -237,13 +238,11 @@ void rtty::restart()
 			case 4 : rtty_parity = RTTY_PARITY_ONE; break;
 			default : rtty_parity = RTTY_PARITY_NONE; break;
 		}
-	// (exists below already)  rtty_stop = progdefaults.rtty_stop;
 
-	txmode = LETTERS;
+	shift_state = LETTERS;
 	rxmode = LETTERS;
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
-// part of an EXPERIMENTAL FSK implementation
-//	bitlen = 1000.0 / rtty_baud;  // bit length in milliseconds
+
 	set_bandwidth(shift);
 
 	rtty_BW = progdefaults.RTTY_BW = rtty_baud * 2;
@@ -304,11 +303,31 @@ void rtty::restart()
 
 	for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = cmplx(0,0);
 
-//	if (::rttyviewer) ::rttyviewer->restart();
 	if (rttyviewer) rttyviewer->restart();
 
 	progStatus.rtty_filter_changed = false;
 
+}
+
+void rtty::resetFSK() {
+	delete fsk_tty;
+	fsk_tty = 0;
+
+	if (progdefaults.useFSK) {
+		fsk_tty = new FSK;
+		if (progdefaults.fsk_shares_port) {
+			fsk_tty->fsk_shares_port(&rigio);
+		} else if (!progdefaults.fsk_port.empty()) {
+			fsk_tty->open_port(progdefaults.fsk_port);
+		}
+		fsk_tty->shift_on_space(progdefaults.fsk_shift_on_space);
+		fsk_tty->reverse(progdefaults.fsk_reverse);
+		if (progdefaults.fsk_on_dtr)
+			fsk_tty->dtr(true);
+		else
+			fsk_tty->rts(true);
+		sig_start = true;
+	}
 }
 
 rtty::rtty(trx_mode tty_mode)
@@ -327,8 +346,6 @@ rtty::rtty(trx_mode tty_mode)
 	pipe = new double[MAXPIPE];
 	dsppipe = new double [MAXPIPE];
 
-//	if (::rttyviewer == 0) ::rttyviewer = new view_rtty(mode);
-
 	rttyviewer = new view_rtty(mode);
 
 	m_Osc1 = new Oscillator( samplerate );
@@ -337,10 +354,12 @@ rtty::rtty(trx_mode tty_mode)
 	m_SymShaper1 = new SymbolShaper( 45, samplerate );
 	m_SymShaper2 = new SymbolShaper( 45, samplerate );
 
+	fsk_tty = 0;
+
+	resetFSK();
+
 	restart();
 
-// EXPERIMENT FSK on DTR/RTS
-//	start_fsk_thread();
 }
 
 void rtty::Update_syncscope()
@@ -1023,12 +1042,6 @@ void rtty::flush_stream()
 
 void rtty::send_char(int c)
 {
-// experimental code that fails to perform well on Windows, poorly on OS-X
-// and perfectly on Linux!
-//	if (progdefaults.useFSK && (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)) {
-//		send_FSK(c);
-//	}
-
 	int i;
 	if (nbits == 5) {
 		if (c == LETTERS)
@@ -1052,7 +1065,7 @@ void rtty::send_char(int c)
 	if (nbits == 5) {
 		if (c == 0x1F || c == 0x1B)
 			return;
-		if (txmode == LETTERS)
+		if (shift_state == LETTERS)
 			c = letters[c];
 		else
 			c = figures[c];
@@ -1068,7 +1081,7 @@ void rtty::send_idle()
 {
 	if (nbits == 5) {
 		send_char(LETTERS);
-		txmode = LETTERS;
+		shift_state = LETTERS;
 	} else
 		send_char(0);
 }
@@ -1083,6 +1096,29 @@ int rtty::tx_process()
 	modem::tx_process();
 
 	int c = get_tx_char();
+
+	if (progdefaults.useFSK) {
+
+		if (c == GET_TX_CHAR_ETX || stopflag) {
+			stopflag = false;
+			stop_deadman();
+			sig_start = true;
+			return -1;
+		}
+
+		if (c != GET_TX_CHAR_NODATA) {
+			if (sig_start) {
+				int cltrs = 0x1F;
+				send_FSK(cltrs);
+				send_FSK(cltrs);
+				sig_start = false;
+			}
+			send_FSK(c);
+			put_echo_char(toupper(c));
+		} else
+			MilliSleep(22); // time of one bit
+		return 0;
+	}
 
 	if (progStatus.nanoFSK_online) {
 		if (preamble) {
@@ -1243,7 +1279,7 @@ int rtty::tx_process()
 		if (progdefaults.UOStx) {
 			send_char(LETTERS);
 			send_char(0x04); // coded value for a space
-			txmode = LETTERS;
+			shift_state = LETTERS;
 		} else
 			send_char(0x04);
 		return 0;
@@ -1254,13 +1290,13 @@ int rtty::tx_process()
 
 // switch case if necessary
 
-	if ((c & 0x300) != txmode) {
-		if (txmode == FIGURES) {
+	if ((c & 0x300) != shift_state) {
+		if (shift_state == FIGURES) {
 			send_char(LETTERS);
-			txmode = LETTERS;
+			shift_state = LETTERS;
 		} else {
 			send_char(FIGURES);
-			txmode = FIGURES;
+			shift_state = FIGURES;
 		}
 	}
 ///
@@ -1327,140 +1363,15 @@ char rtty::baudot_dec(unsigned char data)
 // ---------------------------------------------------------------------
 // TTY output on DTR/RTS signal lines
 //----------------------------------------------------------------------
-// experimental code that performs perfect on Linux, OK on OS-X and
-// fails on Windows-10 !!!
-/*
-static pthread_t       fsk_pthread;
-static pthread_cond_t  fsk_cond;
-static pthread_mutex_t fsk_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-static bool fsk_thread_running   = false;
-static bool fsk_terminate_flag   = false;
-
-#define fskbit(bit, len) {if (progdefaults.FSK_keyline == 2) ser->SetDTR(bit);\
-else ser->SetRTS(bit);\
-MilliSleep((len));}
-
-static int fsk_ch;
-static int fsk_nbits;
-static int fsk_parity;
-static bool fsk_sending = false;
-
-void send_fsk(int c)
-{
-	fsk_sending = true;
-	int bitlen = 1000.0 / rtty::BAUD[progdefaults.rtty_baud];
-	int stoplen = bitlen * (progdefaults.rtty_stop == 0 ? 1.0 : progdefaults.rtty_stop == 1 ? 1.5 : 2.0);
-
-	Cserial *ser = &CW_KEYLINE_serial;
-	if (progdefaults.CW_KEYLINE_on_cat_port)
-		ser = &rigio;
-
-	if (fsk_nbits == 5) {
-		if (c == LETTERS) c = 0x1F;
-		else if (c == FIGURES) c = 0x1B;
-	}
-
-// start bit
-	fskbit(1, bitlen);
-// data bits
-	for (int i = 0; i < fsk_nbits; i++)
-		fskbit(!((c >> i) & 1), bitlen);
-
-// parity bit
-	if (fsk_parity != rtty::RTTY_PARITY_NONE)
-		fskbit(!rttyparity(c, fsk_nbits), bitlen);
-
-// stop bits
-	fskbit(0, stoplen);
-	fsk_sending = false;
-}
-
-static void * fsk_loop(void *args)
-{
-//	SET_THREAD_ID(AUDIO_ALERT_TID);
-
-	fsk_thread_running   = true;
-	fsk_terminate_flag   = false;
-
-	while(1) {
-		pthread_mutex_lock(&fsk_mutex);
-		pthread_cond_wait(&fsk_cond, &fsk_mutex);
-		pthread_mutex_unlock(&fsk_mutex);
-
-		if (fsk_terminate_flag)
-			break;
-		send_fsk(fsk_ch);
-	}
-	return (void *)0;
-}
-
-void stop_fsk_thread(void)
-{
-	if(!fsk_thread_running) return;
-
-	fsk_terminate_flag = true;
-	pthread_cond_signal(&fsk_cond);
-
-	MilliSleep(10);
-
-	pthread_join(fsk_pthread, NULL);
-
-	pthread_mutex_destroy(&fsk_mutex);
-	pthread_cond_destroy(&fsk_cond);
-
-	memset((void *) &fsk_pthread, 0, sizeof(fsk_pthread));
-	memset((void *) &fsk_mutex,   0, sizeof(fsk_mutex));
-
-	fsk_thread_running   = false;
-	fsk_terminate_flag   = false;
-}
-
-void start_fsk_thread(void)
-{
-	if (fsk_thread_running) return;
-
-	memset((void *) &fsk_pthread, 0, sizeof(fsk_pthread));
-	memset((void *) &fsk_mutex,   0, sizeof(fsk_mutex));
-	memset((void *) &fsk_cond,    0, sizeof(fsk_cond));
-
-	if(pthread_cond_init(&fsk_cond, NULL)) {
-		LOG_ERROR("Alert thread create fail (pthread_cond_init)");
-		return;
-	}
-
-	if(pthread_mutex_init(&fsk_mutex, NULL)) {
-		LOG_ERROR("AUDIO_ALERT thread create fail (pthread_mutex_init)");
-		return;
-	}
-
-	if (pthread_create(&fsk_pthread, NULL, fsk_loop, NULL) < 0) {
-		pthread_mutex_destroy(&fsk_mutex);
-		LOG_ERROR("AUDIO_ALERT thread create fail (pthread_create)");
-	}
-
-	LOG_VERBOSE("started audio fsk thread");
-
-	MilliSleep(10); // Give the CPU time to set 'fsk_thread_running'
-}
 
 void rtty::send_FSK(int c)
 {
-	if (!fsk_thread_running)
-		start_fsk_thread();
-
-	int count = 100;
-	while (fsk_sending) {
-		MilliSleep(1);
-		if (--count <= 0) return;
-	}
-	fsk_ch = c;
-	fsk_nbits = nbits;
-	fsk_parity = rtty_parity;
-
-	pthread_cond_signal(&fsk_cond);
+	if (!fsk_tty) return;
+	int timeout = 1000;
+	fsk_tty->append( (char)c );
+	while (fsk_tty->sending() && timeout--) MilliSleep(1);
 }
-*/
+
 //======================================================================
 // methods for class Oscillator and class SymbolShaper
 //======================================================================

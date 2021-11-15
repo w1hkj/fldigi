@@ -219,6 +219,13 @@ const char * create_directory( const char * dir );
 
 int directory_is_created( const char * dir );
 
+// return current tick time in seconds
+extern double fsk_now();
+
+// sub millisecond accurate sleep function
+// sleep_time in seconds
+extern int accu_sleep (double sleep_time);
+
 #endif /* UTIL_H */
 
 /*
