@@ -48,7 +48,15 @@
 extern waterfall *wf;
 
 #define CH_SPACING 50
-#define VCW_FFT_SIZE 2048 // must be a factor of 2
+
+#define	VCW_DEC_RATIO	4 //4, 8, 16
+#define VCW_SAMPLERATE	8000
+
+// VKWPM conversion factor 
+// # samples per dot = VKWPM / wpm
+// 30 samples @ 20 wpm
+// 15 samples @ 40 wpm
+#define VKWPM			(12.0 / 10.0) * ( VCW_SAMPLERATE / VCW_DEC_RATIO)
 
 enum {READY, NOT_READY};
 
@@ -56,11 +64,11 @@ cMorse *CW_CHANNEL::morse = 0;
 
 CW_CHANNEL::CW_CHANNEL() {
 	bitfilter.setLength(10);
-	trackingfilter.setLength(16);
+	trackingfilter.setLength(64);
 
 	if (!morse) morse = new cMorse;
 
-	VCW_filter = new fftfilt ((CH_SPACING * 0.4) / VCW_SAMPLERATE, VCW_FFT_SIZE);
+	VCW_filter = new C_FIR_filter ();
 
 	smpl_ctr = dec_ctr = 0;
 	phi1 = phi2 = 0;
@@ -77,10 +85,15 @@ CW_CHANNEL::~CW_CHANNEL() {
 
 void CW_CHANNEL::init(int _ch, double _freq)
 {
+	VCW_filter->init_bandpass(
+					2048, //2048 : 1024 : 512 : 256 : 128 : 64
+					VCW_DEC_RATIO,
+					(_freq - 0.5 * CH_SPACING) / VCW_SAMPLERATE,
+					(_freq + 0.5 * CH_SPACING) / VCW_SAMPLERATE);
+
 	ch_freq = _freq;
 	ch = _ch;
 	phase = 0.0;
-	phase_increment = TWOPI * ch_freq / VCW_SAMPLERATE;
 	agc_peak = 0.0;
 	sig_avg = 0.5;
 	timeout = 0;
@@ -208,10 +221,7 @@ int CW_CHANNEL::decode_state(int cw_state)
 			if (curr_element < two_dots)
 				return NOT_READY;
 // MEDIUM time since keyup... check for character space
-// one shot through this code via receive state logic
-			if ((curr_element > two_dots)
-				&& (curr_element < 2 * two_dots) ) {
-//				&& cw_receive_state == POST_TONE) {
+			if (curr_element < 3 * two_dots) {
 
 				std::string code = morse->rx_lookup(rx_rep_buf);
 				if (code.empty()) {
@@ -242,27 +252,46 @@ int CW_CHANNEL::decode_state(int cw_state)
 
 void CW_CHANNEL::detect_tone()
 {
-	norm_sig = 0;
-	CWupper = 0;
-	CWlower = 0;
+	norm_sig = CWupper = CWlower = 0;
+	int attack = 0;
+	int decay = 0;
+	int symbollen = (int)round(VCW_SAMPLERATE * 1.2 / progdefaults.CWspeed);
 
-	sig_avg = decayavg(sig_avg, value, 1000);
-
-	if (value > sig_avg)  {
-		if (value > agc_peak)
-			agc_peak = decayavg(agc_peak, value, 100);
-		else
-			agc_peak = decayavg(agc_peak, value, 1000); 
+	switch (progdefaults.cwrx_attack) {
+		case 0: attack = symbollen / 2; break;
+		case 1: default: attack = symbollen / 4; break;
+		case 2: attack = symbollen / 2;
+	}
+	switch (progdefaults.cwrx_decay) {
+		case 0: decay = symbollen * 8; break;
+		case 1: default: decay = symbollen * 4; break;
+		case 2: decay = symbollen * 2;
 	}
 
-	if (!agc_peak) return;
+	sig_avg = decayavg(sig_avg, value, decay);
 
-	value /= agc_peak;
+	if (value < sig_avg) {
+		if (value < noise_floor)
+			noise_floor = decayavg(noise_floor, value, attack);
+		else 
+			noise_floor = decayavg(noise_floor, value, decay);
+	}
+	if (value > sig_avg)  {
+		if (value > agc_peak)
+			agc_peak = decayavg(agc_peak, value, attack);
+		else
+			agc_peak = decayavg(agc_peak, value, decay); 
+	}
+
 	norm_sig = sig_avg / agc_peak;
 
-//	metric = 0.8 * metric;
-//	metric += 0.2 * clamp(20*log10(sig_avg / noise_floor) , 0, 40);
-	metric = clamp(20*log10(sig_avg / noise_floor) , 0, 40);
+	if (agc_peak)
+		value /= agc_peak;
+	else
+		value = 0;
+
+	metric = 0.8 * metric;
+	metric += 0.2 * clamp(20*log10(sig_avg / noise_floor) , 0, 40);
 
 	CWupper = norm_sig + 0.1;
 	CWlower = norm_sig - 0.1;
@@ -286,30 +315,31 @@ void CW_CHANNEL::detect_tone()
 	}
 }
 
-void CW_CHANNEL::rx_process(const double *buf, int len)
+//#include "spectrum_viewer.h"
+//#include "fft-monitor.h"
+//extern fftmon *fft_modem;
+//static double filtered[512];
+//static int out_n = 0;
+
+void CW_CHANNEL::rx_process(int who, const double *buf, int len)
 {
-	cmplx z, *zp;
-	int n = 0;
-
+	double out;
 	while (len-- > 0) {
+		if (VCW_filter->Irun(*buf, out)) {
+			smpl_ctr++;
+			value = bitfilter.run(fabs(out));
+			detect_tone();
 
-		z = cmplx ( *buf * cos(phase), *buf * sin(phase) );
-		buf++;
+//if (who == 4) {
+//filtered[out_n] = out;
+//out_n++;
+//if (out_n == 512 && fft_modem && spectrum_viewer->visible())
+//					fft_modem->rx_process(filtered, 512);
+//if (out_n >= 512) out_n = 0;
+//}
 
-		phase += phase_increment;
-		if (phase > TWOPI) phase -= TWOPI;
-
-		n = VCW_filter->run(z, &zp);
-
-		if (n) {
-			for (int i = 0; i < n; i++) {
-				if (++dec_ctr < VCW_DEC_RATIO) continue;
-				dec_ctr = 0;
-				smpl_ctr++;
-				value = bitfilter.run(abs(zp[i]));
-				detect_tone();
-			}
 		}
+		buf++;
 	}
 }
 
@@ -330,13 +360,11 @@ view_cw::~view_cw()
 
 void view_cw::init()
 {
-	nchannels = progdefaults.VIEWERchannels;
-
 	for (int i = 0; i < VCW_MAXCH; i++) {
 		channel[i].init(i, 400.0 + CH_SPACING * i);
+		if (i < progdefaults.VIEWERchannels)
+			REQ(&viewclearchannel, i);
 	}
-	for (int i = 0; i < nchannels; i++)
-		REQ(&viewclearchannel, i);
 }
 
 void view_cw::restart()
@@ -346,12 +374,20 @@ void view_cw::restart()
 		channel[i].last_element = 0;
 		channel[i].curr_element = 0;
 		channel[i].two_dots = 2 * VKWPM / progdefaults.CWspeed;
+		channel[i].init(i, 400.0 + CH_SPACING * i);
+		if (i < progdefaults.VIEWERchannels)
+			REQ(&viewclearchannel, i);
 	}
-	init();
 }
 
 void view_cw::clearch(int n)
 {
+	if (n >= progdefaults.VIEWERchannels) return;
+	channel[n].space_sent = true;
+	channel[n].last_element = 0;
+	channel[n].curr_element = 0;
+	channel[n].two_dots = 2 * VKWPM / progdefaults.CWspeed;
+	channel[n].init(n, 400.0 + CH_SPACING * n);
 	REQ( &viewclearchannel, n);
 	REQ( &viewaddchr, n, (int)NULLFREQ, 0, viewmode);
 }
@@ -364,10 +400,9 @@ void view_cw::clear()
 int view_cw::rx_process(const double *buf, int len)
 {
 	double nf = 1e8;
-	if (nchannels != progdefaults.VIEWERchannels) init();
 
-	for (int n = 0; n < nchannels; n++) {
-		channel[n].rx_process(buf, len);
+	for (int n = 0; n < VCW_MAXCH; n++) {
+		channel[n].rx_process(n, buf, len);
 
 		if (nf > channel[n].avg_signal() &&
 			channel[n].avg_signal() > 1e-3) nf = channel[n].avg_signal();
@@ -377,7 +412,7 @@ int view_cw::rx_process(const double *buf, int len)
 				clearch(n);
 	}
 	if (nf <= 1e-3) nf = 1e-3;
-	for (int n = 0; n < nchannels; n++) channel[n].set_noise_floor(nf);
+	for (int n = 0; n < VCW_MAXCH; n++) channel[n].set_noise_floor(nf);
 
 	return 0;
 }
