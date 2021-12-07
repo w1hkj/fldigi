@@ -36,15 +36,7 @@
 
 #include "morse.h"
 
-#define VCW_MAXCH		30
-#define	VCW_DEC_RATIO	16
-#define VCW_SAMPLERATE	 8000
-
-// VKWPM conversion factor 
-// # samples per dot = VKWPM / wpm
-// 30 samples @ 20 wpm
-// 15 samples @ 40 wpm
-#define VKWPM			600 // ((12 * VCW_SAMPLERATE/10) / VCW_DEC_RATIO)
+#define VCW_MAXCH		20
 
 class view_cw;
 
@@ -52,7 +44,8 @@ struct CW_CHANNEL {
 
 	static cMorse	*morse;
 
-	fftfilt			*VCW_filter; // linear phase finite impulse response bpf
+//	fftfilt			*VCW_filter; // sinc / matched filter
+	C_FIR_filter	*VCW_filter;
 	Cmovavg			bitfilter;
 	Cmovavg			trackingfilter;
 
@@ -114,7 +107,7 @@ struct CW_CHANNEL {
 
 	int		decode_state(int cw_event);
 	void	detect_tone();
-	void 	rx_process(const double *value, int len);
+	void 	rx_process(int who, const double *value, int len);
 
 	double	avg_signal() { return sig_avg; }
 	double	get_metric() { return metric; }
@@ -140,7 +133,7 @@ private:
 
 	double		bandwidth;
 
-	int			nchannels;
+//	int			nchannels;
 
 	unsigned int	smpl_ctr;
 
