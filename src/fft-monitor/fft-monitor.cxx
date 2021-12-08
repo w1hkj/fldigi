@@ -83,6 +83,7 @@ fftmon::~fftmon()
 	delete [] fftbuff;
 	delete [] dftbuff;
 	delete [] buffer;
+	delete [] cmplxbuf;
 	delete scanfft;
 }
 
@@ -90,8 +91,14 @@ void fftmon::restart()
 {
 	fftmon_sr = active_modem->get_samplerate();
 
-	memset(dftbuff, 0, fftmonFFT_LEN * sizeof(*dftbuff));
-	memset(fftbuff, 0, fftmonFFT_LEN * sizeof(*fftbuff));
+	for (int i = 0; i < fftmonFFT_LEN; i++) {
+		bshape[i] = blackman(1.0 * i / fftmonFFT_LEN);
+		fftbuff[i] = dftbuff[i] = 0;
+		cmplxbuf[i] = std::complex<double>(0, 0);
+	}
+
+	for (int i = 0; i < fftmonFFT_LEN / 2; i++)
+		buffer[i] = 0;
 
 	for (int i = 0; i < LENdiv2; i++)
 		fftfilt[i]->setLength(progdefaults.fftviewer_scans);
@@ -105,6 +112,8 @@ fftmon::fftmon()
 {
 	fftbuff = new double[fftmonFFT_LEN];
 	dftbuff = new double[fftmonFFT_LEN];
+	cmplxbuf = new cmplx[fftmonFFT_LEN];
+
 	buffer  = new double[fftmonFFT_LEN / 2];
 
 	for (int i = 0; i < LENdiv2; i++) {
@@ -112,8 +121,14 @@ fftmon::fftmon()
 		fftfilt[i]->setLength(progdefaults.fftviewer_scans);
 	}
 
-	for (int i = 0; i < fftmonFFT_LEN; i++)
+	for (int i = 0; i < fftmonFFT_LEN; i++) {
 		bshape[i] = blackman(1.0 * i / fftmonFFT_LEN);
+		fftbuff[i] = dftbuff[i] = 0;
+		cmplxbuf[i] = std::complex<double>(0, 0);
+	}
+
+	for (int i = 0; i < fftmonFFT_LEN / 2; i++)
+		buffer[i] = 0;
 
 	scanfft = new g_fft<double>(fftmonFFT_LEN);
 
@@ -298,6 +313,40 @@ int fftmon::rx_process(const double *buf, int len)
 	for (int i = 0; i < fftmonFFT_LEN; i++) {
 		val = dftbuff[i] * bshape[i];
 		fftmon_temp[i] = std::complex<double>(val, 0);//val);
+	}
+
+	scanfft->ComplexFFT(fftmon_temp);
+
+	for (int i = 0; i < fftmonFFT_LEN/2; i++)
+		fftbuff[i] = fftfilt[i]->run(abs(fftmon_temp[i]));
+
+	update_fftscope();
+
+	if (!scans_stable) {
+		if (numscans++ >= progdefaults.fftviewer_scans) {
+			scans_stable = true;
+			Fl::awake(toggle_scans, this);
+		}
+	}
+
+	return 0;
+}
+
+int fftmon::cmplx_process(const cmplx *buf, int len)
+{
+	if (len > fftmonFFT_LEN) return 0; // if audio playback
+
+	if (fftmon_sr != active_modem->get_samplerate())
+		restart();
+
+	for (int i = 0; i < fftmonFFT_LEN - len; i++)
+		cmplxbuf[i] = cmplxbuf[i + len];
+	for (int i = 0; i < len; i++) {
+		cmplxbuf[fftmonFFT_LEN - len + i] = buf[i];
+	}
+
+	for (int i = 0; i < fftmonFFT_LEN; i++) {
+		fftmon_temp[i] = bshape[i] * cmplxbuf[i];
 	}
 
 	scanfft->ComplexFFT(fftmon_temp);

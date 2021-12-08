@@ -49,6 +49,8 @@ private:
 	double *fftbuff;
 	double *dftbuff;
 	double *buffer;
+	cmplx *cmplxbuf;
+
 	Cmovavg *fftfilt[LENdiv2];
 
 	double bshape[fftmonFFT_LEN];
@@ -74,6 +76,7 @@ public:
 	void restart();
 
 	int  rx_process(const double *buf, int len);
+	int  cmplx_process(const cmplx *buf, int len);
 
 	int tx_process() { return -1; }
 
