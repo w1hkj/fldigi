@@ -18,7 +18,7 @@ web site for information on building for
 Linux, Windows and OS X.
 <br>
 
-<a href="https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO#Buildingfromsource">Fldigi WIKI - build instructions</a>
+<a href="https://sourceforge.net/p/fldigi/wiki/build_howto/">Building fldigi, flrig, and other NBEMS applications</a>
 <br>
 
 <br>

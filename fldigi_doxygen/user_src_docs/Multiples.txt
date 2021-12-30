@@ -18,7 +18,7 @@ creates a desktop icon launcher.  Most of the Linux window
 managers allow you to create a desktop launch icon.  Make as many
 copies of the launcher as needed for your applications and rename them
 accordingly.  Then change the executable target entry to include
-the \ref command_line_switches_page "command line switch" '--config-dir'
+the \ref command_line_switches_page "command line switch" <pre>--config-dir</pre> 
 followed by the full pathname of the folder that will hold that
 particular configuration.  You do not need to create that folder
 as fldigi will do so the first time it is launched from that desktop
