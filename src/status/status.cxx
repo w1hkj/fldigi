@@ -587,7 +587,7 @@ if (!bWF_only) {
 	spref.set("last_macro_file", LastMacroFile.c_str());
 
 	spref.set("spot_recv", spot_recv);
-	spref.set("spot_log", spot_recv);
+	spref.set("spot_log", spot_log);
 
 	spref.set("contest", contest);
 	spref.set("quick_entry", quick_entry);

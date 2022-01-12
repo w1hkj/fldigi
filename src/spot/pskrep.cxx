@@ -385,7 +385,7 @@ void pskrep::recv(trx_mode mode, int afreq, const char* str, const regmatch_t* c
 	if (!wf->USB())
 		freq = -freq;
 	freq += wf->rfcarrier();
-	LOG_DEBUG("Spotted \"%s\" in buffer \"%s\"", call.c_str(), str);
+	LOG_VERBOSE("Spotted \"%s\" in buffer \"%s\"", call.c_str(), str);
 
 	reinterpret_cast<pskrep*>(obj)->append(call.c_str(), "", freq,
 					       active_modem->get_mode(), time(NULL), PSKREP_AUTO);
@@ -512,7 +512,7 @@ void pskrep::gc(void)
 			++i;
 	}
 
-	LOG_DEBUG("Removed %u sent report(s)", rm);
+	LOG_VERBOSE("Removed %u sent report(s)", rm);
 }
 
 static std::ostream& operator<<(std::ostream& out, const rcpt_report_t& r);
@@ -654,7 +654,7 @@ void pskrep_sender::write_station_info(void)
 	npad = &long_station_info[0] + long_len - p;
 	if (npad)
 		memset(p, 0, npad);
-	LOG_DEBUG("long_station_info=\"%s\"", str2hex(&long_station_info[0], long_len));
+	LOG_VERBOSE("long_station_info=\"%s\"", str2hex(&long_station_info[0], long_len));
 
 	// Write the short station info
 	p = &short_station_info[0];
@@ -671,7 +671,7 @@ void pskrep_sender::write_station_info(void)
 	npad = &short_station_info[0] + short_len - p;
 	if (npad)
 		memset(p, 0, npad);
-	LOG_DEBUG("short_station_info=\"%s\"", str2hex(&short_station_info[0], short_len));
+	LOG_VERBOSE("short_station_info=\"%s\"", str2hex(&short_station_info[0], short_len));
 }
 
 // fldigi uses 0x022C as the reception record template id (bytes 4,5)
@@ -756,7 +756,7 @@ bool pskrep_sender::append(const std::string& callsign, const band_map_t::value_
 
 
 	LOG_INFO("Appending report (call=%s mode=%s freq=%d time=%d type=%u)",
-		 callsign.c_str(), mode_info[r.mode].adif_name,
+		 callsign.c_str(), mode, //mode_info[r.mode].adif_name,
 		 static_cast<int>(r.freq),
 		 static_cast<int>(r.rtime), r.rtype);
 
@@ -775,7 +775,7 @@ bool pskrep_sender::append(const std::string& callsign, const band_map_t::value_
 	// info source
 	*p++ = r.rtype;
 
-	LOG_DEBUG("                 \"%s\"", str2hex(start, p - start));
+	LOG_VERBOSE("                 \"%s\"", str2hex(start, p - start));
 
 	dgram_size += rlen;
 	return true;
@@ -810,7 +810,7 @@ bool pskrep_sender::send(void)
 	if (dgram_size == 0 || dgram_size == report_offset + 4) {
 		std::stringstream info;
 		info << dgram_size << " " << report_offset;
-		LOG_DEBUG("Not sending empty dgram: %s", info.str().c_str());
+		LOG_VERBOSE("Not sending empty dgram: %s", info.str().c_str());
 		return false;
 	}
 
@@ -833,7 +833,7 @@ bool pskrep_sender::send(void)
 	{
 		std::stringstream info;
 		info << "(" << dgram_size << "): \"" << str2hex(dgram, dgram_size) << "\"";
-		LOG_DEBUG("Sending datgram %s", info.str().c_str());
+		LOG_VERBOSE("Sending datgram %s", info.str().c_str());
 	}
 	try {
 		if ((size_t)send_socket->send(dgram, dgram_size) != dgram_size)
