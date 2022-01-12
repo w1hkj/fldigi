@@ -464,8 +464,10 @@ void submit_log(void)
 		send_DXcluster_spot();
 	}
 
-	if (progStatus.spot_log)
-		spot_log(inpCall->value(), inpLoc->value());
+	if (progdefaults.pskrep_log)
+		spot_log(
+			inpCall->value(),
+			inpLoc->value());
 
 	logmode = mode_info[active_modem->get_mode()].adif_name;
 

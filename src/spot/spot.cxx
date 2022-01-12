@@ -144,6 +144,7 @@ static void get_log_details(long long& freq, trx_mode& mode, time_t& rtime)
 void spot_log(const char* callsign, const char* locator, long long freq, trx_mode mode, time_t rtime)
 {
 	get_log_details(freq, mode, rtime);
+std::cout << callsign << ", " << locator << ", " << freq << ", " << mode_info[mode].adif_name << ", " << mode_info[mode].adif_name << std::endl;
 	for (cblist_t::const_iterator i = cblist.begin(); i != cblist.end(); ++i)
 		if (i->lcb)
 			i->lcb(callsign, locator, freq, mode, rtime, i->data);

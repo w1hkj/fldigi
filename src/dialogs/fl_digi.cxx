@@ -6625,7 +6625,7 @@ void *do_pskreporter_lookup(void *)  // thread action
 	pskrep_working = true;
 	pskrep_data.clear();
 	pskrep_url.assign("https://pskreporter.info/cgi-bin/psk-freq.pl");
-	pskrep_url.append("?mode=").append(mode_info[active_modem->get_mode()].adif_name);
+	pskrep_url.append("?mode=").append(mode_info[active_modem->get_mode()].export_mode);
 	if (qso_inpAct->size())
 		pskrep_url.append("&?grid=").append(qso_inpAct->value());
 	else if (progdefaults.myLocator.length() > 2)
@@ -10407,10 +10407,9 @@ void add_to_heard_list(std::string szcall, std::string szdb)
 		ifkp_heard->redraw();
 	}
 	if (progStatus.spot_recv)
-		spot_log(szcall.c_str(),
-			inpLoc->value(),
-			wf->rfcarrier(),
-			active_modem->get_mode());
+		spot_log(
+			szcall.c_str(),
+			inpLoc->value());
 }
 
 bool in_heard(std::string call)
