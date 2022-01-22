@@ -162,19 +162,20 @@ void set_flrig_ptt(int on) {
 		return;
 
 	if (active_modem->get_mode() == MODE_CW) {
-		if (progdefaults.use_FLRIGkeying) {
-			flrig_cwio_ptt(on);
-			if (progdefaults.CATkeying_disable_ptt)
-				return;
-		}
-		else if (progdefaults.CATkeying_disable_ptt && 
+		if (progdefaults.CATkeying_disable_ptt && 
 				active_modem->get_mode() == MODE_CW &&
 				( progdefaults.use_ELCTkeying ||
 				  progdefaults.use_ICOMkeying ||
 				  progdefaults.use_KNWDkeying ||
 				  progdefaults.use_YAESUkeying ||
-				  progStatus.nanoCW_online ) )
+				  progStatus.nanoCW_online ) ) {
 			return;
+		} else if (progdefaults.use_FLRIGkeying) {
+			if (progdefaults.CATkeying_disable_ptt)
+				return;
+			if (on) flrig_cwio_send_text("[");
+			else    flrig_cwio_send_text("]");
+		}
 	}
 	new_ptt = on;
 }
@@ -1175,19 +1176,18 @@ void xmlrpc_shutdown_flrig()
 	} catch (...) {}
 }
 
-void flrig_cwio_ptt(int on)
-{
-	if (!connected_to_flrig) return;
-
-	XmlRpcValue val, result;
-	try {
-		guard_lock flrig_lock(&mutex_flrig);
-		val = (int)on;
-		flrig_client->execute("rig.cwio_send", val, result, 0.20);//timeout);
-	} catch (...) {
-}
-	return;
-}
+//void flrig_cwio_ptt(int on)
+//{
+//	if (!connected_to_flrig) return;
+//	XmlRpcValue val, result;
+//	try {
+//		guard_lock flrig_lock(&mutex_flrig);
+//		val = (int)on;
+//		flrig_client->execute("rig.cwio_send", val, result, 0.20);//timeout);
+//	} catch (...) {
+//}
+//	return;
+//}
 
 void flrig_cwio_send_text(std::string s)
 {
@@ -1203,3 +1203,15 @@ void flrig_cwio_send_text(std::string s)
 	return;
 }
 
+void flrig_fskio_send_text(std::string s)
+{
+	if (!connected_to_flrig) return;
+	XmlRpcValue val, result;
+	try {
+		guard_lock flrig_lock(&mutex_flrig);
+		val = std::string(s);
+		flrig_client->execute("rig.fskio_text", val, result, 0.20);
+	} catch (...) {
+	}
+	return;
+}

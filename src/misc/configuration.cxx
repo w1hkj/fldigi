@@ -571,6 +571,7 @@ int configuration::setDefaults()
 	select_nanoIO_CommPort->value(nanoIO_serial_port_name.c_str());
 	select_nanoCW_CommPort->value(nanoIO_serial_port_name.c_str());
 	select_CW_KEYLINE_CommPort->value(CW_KEYLINE_serial_port_name.c_str());
+	select_FSK_CommPort->value(fsk_port.c_str());
 
 	select_USN_FSK_port->value(Nav_FSK_port.c_str());
 	select_Nav_config_port->value(Nav_config_port.c_str());
@@ -943,6 +944,7 @@ void configuration::testCommPorts()
 		select_nanoIO_CommPort->add(gbuf.gl_pathv[j]);
 		select_nanoCW_CommPort->add(gbuf.gl_pathv[j]);
 		select_CW_KEYLINE_CommPort->add(gbuf.gl_pathv[j]);
+		select_FSK_CommPort->add(gbuf.gl_pathv[j]);
 
 		select_USN_FSK_port->add(gbuf.gl_pathv[j]);
 		select_Nav_config_port->add(gbuf.gl_pathv[j]);
@@ -981,6 +983,7 @@ void configuration::testCommPorts()
 			select_nanoIO_CommPort->add(ttyname);
 			select_nanoCW_CommPort->add(ttyname);
 			select_CW_KEYLINE_CommPort->add(ttyname);
+			select_FSK_CommPort->add(ttyname);
 
 			select_USN_FSK_port->add(ttyname);
 			select_Nav_config_port->add(ttyname);
@@ -1013,6 +1016,7 @@ void configuration::testCommPorts()
 			select_nanoIO_CommPort->add(gbuf.gl_pathv[j]);
 			select_nanoCW_CommPort->add(gbuf.gl_pathv[j]);
 			select_CW_KEYLINE_CommPort->add(gbuf.gl_pathv[j]);
+			select_FSK_CommPort->add(gbuf.gl_pathv[j]);
 
 			select_USN_FSK_port->add(gbuf.gl_pathv[j]);
 			select_Nav_config_port->add(gbuf.gl_pathv[j]);

@@ -4250,7 +4250,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/nanoIO}
+      label {Modem/CW/nanoIO} selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/nanoIO"));}
       code1 {config_pages.push_back(p);}
@@ -4522,7 +4522,7 @@ progdefaults.CW_KEYLINE_changed = true;}
         Fl_Group listbox_CW_KEYLINE {
           label {CW Keyline}
           callback {progdefaults.CW_KEYLINE = o->index();} open
-          xywh {471 241 90 24} box DOWN_BOX color 7
+          xywh {487 210 90 24} box DOWN_BOX color 7 align 4
           code0 {o->add("None|RTS|DTR");}
           code1 {o->index(progdefaults.CW_KEYLINE);}
           class Fl_ListBox
@@ -4578,17 +4578,15 @@ progdefaults.CW_KEYLINE_changed = true;} open
           tooltip {Connect / Disconnect from nanoIO} xywh {692 295 90 24}
           code0 {o->value(progStatus.useCW_KEYLINE);}
         }
-      }
-      Fl_Counter cnt_cwio_comp {
-        label {Comp (msec)}
-        callback {progdefaults.cwio_comp = int(o->value());}
-        tooltip {Timing compensation} xywh {600 241 80 24} type Simple align 1 minimum 0 maximum 10 step 1
-        code0 {o->value(progdefaults.cwio_comp);}
-      }
-      Fl_Light_Button btn_cw_dtr_calibrate {
-        label Calibrate
-        callback {calibrate_cwio();}
-        xywh {692 241 90 24} selection_color 6
+        Fl_Light_Button btn_cw_dtr_calibrate {
+          label {Speed test}
+          callback {calibrate_cwio();}
+          tooltip {1 minute 'PARIS '} xywh {687 212 100 24} selection_color 6
+        }
+        Fl_Output cwio_test_result {
+          label Result
+          xywh {487 241 300 25}
+        }
       }
     }
     Fl_Group {} {
@@ -6317,7 +6315,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/TTY/FSK} selected
+      label {Modem/TTY/FSK}
       xywh {200 0 600 350} box FLAT_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/TTY/FSK"));}
       code1 {config_pages.push_back(p);}
