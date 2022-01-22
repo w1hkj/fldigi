@@ -1086,16 +1086,83 @@ void rtty::send_idle()
 		send_char(0);
 }
 
+double rtty::rtty_now()
+{
+	static struct timeval t1;
+	gettimeofday(&t1, NULL);
+	return t1.tv_sec + t1.tv_usec / 1e6;
+}
+
+// sub millisecond accurate sleep function
+// sleep_time in seconds
+int rtty::rtty_sleep (double sleep_time)
+{
+	struct timespec tv;
+	double start_at = rtty_now();
+	double end_at = start_at + sleep_time;
+
+	double delay = sleep_time - 0.005;
+
+	tv.tv_sec = (time_t) delay;
+	tv.tv_nsec = (long) ((delay - tv.tv_sec) * 1000000000L);
+	int rval = 0;
+
+#ifdef __WIN32__
+	timeBeginPeriod(1);
+#endif
+//	while (1) {
+		rval = nanosleep (&tv, &tv);
+		if (errno == EINTR) {
+//			continue
+std::cout << "EINTR error in rtty_sleep" << std::endl;
+		}
+//		break;
+//	}
+	rval = 0;
+	while (rtty_now() < end_at) rval++;
+//std::cout << "rtty_sleep( " << sleep_time << ") : " << rval << std::endl;
+#ifdef __WIN32__
+	timeEndPeriod(1);
+#endif
+
+	return 0;
+}
+
 static int line_char_count = 0;
 // 1 start, 5 data, 1.5/2.0 stopbits
 #define wait_one_byte(baud, stopbits) \
-MilliSleep( (int)((6 + (stopbits))*1000.0 / (baud)));
+rtty_sleep( ((6 + (stopbits))*1.0 / (baud)));
+
+void rtty::flrig_fsk_send(char c)
+{
+	static std::string s = " ";
+	s[0] = c;
+	flrig_fskio_send_text(s);
+//	if (c == '[' || c == ']')
+//		return;
+	wait_one_byte(45.45, 1.5);
+}
 
 int rtty::tx_process()
 {
 	modem::tx_process();
 
 	int c = get_tx_char();
+
+	if (progdefaults.use_FLRIG_FSK) {
+		if (c == GET_TX_CHAR_ETX || stopflag) {
+			stopflag = false;
+			put_echo_char('\n');
+			return -1;
+		}
+		if (c == GET_TX_CHAR_NODATA) {
+			rtty_sleep(0.022 * 7.5);
+		} else {
+			flrig_fsk_send(c);
+			put_echo_char(c);
+		}
+		return 0;
+	}
 
 	if (progdefaults.useFSK) {
 
@@ -1106,17 +1173,20 @@ int rtty::tx_process()
 			return -1;
 		}
 
-		if (c != GET_TX_CHAR_NODATA) {
-			if (sig_start) {
-				int cltrs = 0x1F;
-				send_FSK(cltrs);
-				send_FSK(cltrs);
-				sig_start = false;
-			}
-			send_FSK(c);
-			put_echo_char(toupper(c));
-		} else
-			MilliSleep(22); // time of one bit
+		if (c == GET_TX_CHAR_NODATA) {
+			send_FSK(0x03);
+			return 0;
+		}
+
+//		if (sig_start) {
+//			int cltrs = 0x1F;
+//			send_FSK(cltrs);
+//			send_FSK(cltrs);
+//			sig_start = false;
+//		}
+		send_FSK(c);
+		put_echo_char(toupper(c));
+
 		return 0;
 	}
 
@@ -1369,7 +1439,9 @@ void rtty::send_FSK(int c)
 	if (!fsk_tty) return;
 	int timeout = 1000;
 	fsk_tty->append( (char)c );
-	while (fsk_tty->sending() && timeout--) MilliSleep(1);
+	while (fsk_tty->sending() && timeout--)
+		rtty_sleep(.010);
+//		MilliSleep(1);
 }
 
 //======================================================================

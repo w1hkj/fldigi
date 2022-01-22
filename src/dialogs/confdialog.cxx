@@ -3616,17 +3616,13 @@ static void cb_btn_CW_KEYLINE_connect(Fl_Light_Button* o, void*) {
 };
 }
 
-Fl_Counter *cnt_cwio_comp=(Fl_Counter *)0;
-
-static void cb_cnt_cwio_comp(Fl_Counter* o, void*) {
-  progdefaults.cwio_comp = int(o->value());
-}
-
 Fl_Light_Button *btn_cw_dtr_calibrate=(Fl_Light_Button *)0;
 
 static void cb_btn_cw_dtr_calibrate(Fl_Light_Button*, void*) {
   calibrate_cwio();
 }
+
+Fl_Output *cwio_test_result=(Fl_Output *)0;
 
 Fl_Check_Button *btn_use_ICOMkeying=(Fl_Check_Button *)0;
 
@@ -12760,7 +12756,7 @@ o settings for baud, stops bits, etc are needed."));
           btn_CW_KEYLINE_shared_PTT->align(Fl_Align(FL_ALIGN_RIGHT));
           o->value(progdefaults.CW_KEYLINE_on_ptt_port);
         } // Fl_Check_Button* btn_CW_KEYLINE_shared_PTT
-        { Fl_ListBox* o = listbox_CW_KEYLINE = new Fl_ListBox(471, 241, 90, 24, _("CW Keyline"));
+        { Fl_ListBox* o = listbox_CW_KEYLINE = new Fl_ListBox(487, 210, 90, 24, _("CW Keyline"));
           listbox_CW_KEYLINE->box(FL_DOWN_BOX);
           listbox_CW_KEYLINE->color(FL_BACKGROUND2_COLOR);
           listbox_CW_KEYLINE->selection_color(FL_BACKGROUND_COLOR);
@@ -12769,7 +12765,7 @@ o settings for baud, stops bits, etc are needed."));
           listbox_CW_KEYLINE->labelsize(14);
           listbox_CW_KEYLINE->labelcolor(FL_FOREGROUND_COLOR);
           listbox_CW_KEYLINE->callback((Fl_Callback*)cb_listbox_CW_KEYLINE);
-          listbox_CW_KEYLINE->align(Fl_Align(FL_ALIGN_TOP));
+          listbox_CW_KEYLINE->align(Fl_Align(FL_ALIGN_LEFT));
           listbox_CW_KEYLINE->when(FL_WHEN_RELEASE);
           o->add("None|RTS|DTR");
           o->index(progdefaults.CW_KEYLINE);
@@ -12811,22 +12807,15 @@ o settings for baud, stops bits, etc are needed."));
           btn_CW_KEYLINE_connect->callback((Fl_Callback*)cb_btn_CW_KEYLINE_connect);
           o->value(progStatus.useCW_KEYLINE);
         } // Fl_Light_Button* btn_CW_KEYLINE_connect
+        { btn_cw_dtr_calibrate = new Fl_Light_Button(687, 212, 100, 24, _("Speed test"));
+          btn_cw_dtr_calibrate->tooltip(_("1 minute \'PARIS \'"));
+          btn_cw_dtr_calibrate->selection_color((Fl_Color)6);
+          btn_cw_dtr_calibrate->callback((Fl_Callback*)cb_btn_cw_dtr_calibrate);
+        } // Fl_Light_Button* btn_cw_dtr_calibrate
+        { cwio_test_result = new Fl_Output(487, 241, 300, 25, _("Result"));
+        } // Fl_Output* cwio_test_result
         o->end();
       } // Fl_Group* o
-      { Fl_Counter* o = cnt_cwio_comp = new Fl_Counter(600, 241, 80, 24, _("Comp (msec)"));
-        cnt_cwio_comp->tooltip(_("Timing compensation"));
-        cnt_cwio_comp->type(1);
-        cnt_cwio_comp->minimum(0);
-        cnt_cwio_comp->maximum(10);
-        cnt_cwio_comp->step(1);
-        cnt_cwio_comp->callback((Fl_Callback*)cb_cnt_cwio_comp);
-        cnt_cwio_comp->align(Fl_Align(FL_ALIGN_TOP));
-        o->value(progdefaults.cwio_comp);
-      } // Fl_Counter* cnt_cwio_comp
-      { btn_cw_dtr_calibrate = new Fl_Light_Button(692, 241, 90, 24, _("Calibrate"));
-        btn_cw_dtr_calibrate->selection_color((Fl_Color)6);
-        btn_cw_dtr_calibrate->callback((Fl_Callback*)cb_btn_cw_dtr_calibrate);
-      } // Fl_Light_Button* btn_cw_dtr_calibrate
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/DTR-RTS keying"));
       config_pages.push_back(p);
       tab_tree->add(_("Modem/CW/DTR-RTS keying"));

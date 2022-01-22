@@ -95,6 +95,8 @@ public:
 
 //	size_t io_timer_id;
 
+	Cserial *using_port() { return fsk_port; }
+
 private:
 
 	Cserial		*fsk_port;
@@ -118,12 +120,18 @@ private:
 	int chr_bits;
 
     std::string str_buff;
-    int   chr_out;
+	int   chr_out;
+    int   fsk_chr;
 
 	int baudot_enc(int);
 	void send_baudot(int ch);
 	void fsk_out (bool);
 
+	double fsk_now();
+
+	void fskbit (int, double);
+
+	bool _sending;
 public:
 
 	int callback_method();

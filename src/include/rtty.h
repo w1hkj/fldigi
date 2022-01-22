@@ -244,6 +244,11 @@ private:
 	FSK  *fsk_tty;
 	void send_FSK(int);
 
+// FSK via flrig DTR/RTS
+	void flrig_fsk_send(char c);
+	double rtty_now();
+	int rtty_sleep (double);
+
 public:
 	rtty(trx_mode mode);
 	~rtty();

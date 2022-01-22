@@ -1363,17 +1363,20 @@ void flrig_cwio_send(char c)
 		cwio_morse->init();
 	}
 
-	if (c == '[') {
-		flrig_cwio_ptt(1);
-		return;
-	}
-	if (c == ']') {
-		flrig_cwio_ptt(0);
-		return;
-	}
+//	if (c == '[') {
+//		flrig_cwio_ptt(1);
+//		return;
+//	}
+//	if (c == ']') {
+//		flrig_cwio_ptt(0);
+//		return;
+//	}
+
 	std::string s = " ";
 	s[0] = c;
 	flrig_cwio_send_text(s);
+	if (c == '[' || c == ']')
+		return;
 
 	int tc = 1200 / progdefaults.CWspeed;
 	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth))
@@ -1428,6 +1431,7 @@ void cwio_ptt(int on)
 	}
 }
 
+/*
 #define cwio_bit(bit, len) {\
 switch (progdefaults.CW_KEYLINE) {\
 case 0: break;\
@@ -1435,6 +1439,108 @@ case 1: ser->SetRTS(bit); break;\
 case 2: ser->SetDTR(bit); break;\
 }\
 MilliSleep(len);}
+*/
+
+// return accurate time of day in secs
+
+double cwio_now()
+{
+	static struct timespec tp;
+
+#if HAVE_CLOCK_GETTIME
+	clock_gettime(CLOCK_MONOTONIC, &tp); 
+//	return 1000.0 * tp.tv_sec + tp.tv_nsec * 1e-6;
+#elif defined(__WIN32__)
+	DWORD msec = GetTickCount();
+	return 1.0 * msec;
+	tp.tv_sec = msec / 1000;
+	tp.tv_nsec = (msec % 1000) * 1000000;
+#elif defined(__APPLE__)
+	static mach_timebase_info_data_t info = { 0, 0 };
+	if (unlikely(info.denom == 0))
+		mach_timebase_info(&info);
+	uint64_t t = mach_absolute_time() * info.numer / info.denom;
+//	return t * 1e-6;
+	tp.tv_sec = t / 1000000000;
+	tp.tv_nsec = t % 1000000000;
+#endif
+	return 1.0 * tp.tv_sec + tp.tv_nsec * 1e-9;
+
+}
+
+// set DTR/RTS to bit value for msecs duration
+
+//#define CW_TTEST
+#ifdef CW_TTEST
+static FILE *cwio_test = 0;
+#endif
+
+void cwio_bit(int bit, double msecs)
+{
+#ifdef CW_TTEST
+	if (!cwio_test) cwio_test = fopen("cwio_test.txt", "a");
+#endif
+	static double secs;
+	static struct timespec tv = { 0, 1000000L};
+	static double end1 = 0;
+	static double end2 = 0;
+	static double t1 = 0;
+#ifdef CW_TTEST
+	static double t2 = 0;
+#endif
+	static double t3 = 0;
+	static double t4 = 0;
+	int loop1 = 0;
+	int loop2 = 0;
+	int n1 = msecs * 1e3;
+
+	secs = msecs * 1e-3;
+
+#ifdef __WIN32__
+	timeBeginPeriod(1);
+#endif
+
+	t1 = cwio_now();
+
+	end2 = t1 + secs - 0.00001;
+
+	cwio_key(bit);
+
+#ifdef CW_TTEST
+	t2 = t3 = cwio_now();
+#else
+	t3 = cwio_now();
+#endif
+	end1 = end2 - 0.005;
+
+	while (t3 < end1 && (++loop1 < n1)) {
+		nanosleep(&tv, NULL);
+		t3 = cwio_now();
+	}
+
+	t4 = t3;
+	while (t4 <= end2) {
+		loop2++;
+		t4 = cwio_now();
+	}
+
+#ifdef __WIN32__
+	timeEndPeriod(1);
+#endif
+
+#ifdef CW_TTEST
+	if (cwio_test)
+		fprintf(cwio_test, "%d, %d, %d, %6f, %6f, %6f, %6f, %6f, %6f, %6f\n",
+			bit, loop1, loop2,
+			secs * 1e3,
+			(t2 - t1)*1e3,
+			(t3 - t1)*1e3,
+			(t3 - end1) * 1e3,
+			(t4 - t1)*1e3,
+			(t4 - end2) * 1e3,
+			(t4 - t1 - secs)*1e3);
+#endif
+}
 
 void send_cwio(int c)
 {
@@ -1447,22 +1553,16 @@ void send_cwio(int c)
 	float ta = 0.0;
 	float tch = 3 * tc, twd = 4 * tc;
 
-	Cserial *ser = &CW_KEYLINE_serial;
-	if (progdefaults.CW_KEYLINE_on_cat_port)
-		ser = &rigio;
-	else if (progdefaults.CW_KEYLINE_on_ptt_port)
-		ser = &push2talk->serPort;
+//	Cserial *ser = &CW_KEYLINE_serial;
+//	if (progdefaults.CW_KEYLINE_on_cat_port)
+//		ser = &rigio;
+//	else if (progdefaults.CW_KEYLINE_on_ptt_port)
+//		ser = &push2talk->serPort;
 
 	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed > progdefaults.CWfarnsworth)) {
 		ta = 60000.0 / progdefaults.CWfarnsworth - 37200 / progdefaults.CWspeed;
 		tch = 3 * ta / 19;
 		twd = 4 * ta / 19;
-	}
-
-	if (progdefaults.cwio_comp && progdefaults.cwio_comp < tc) {
-		tc -= progdefaults.cwio_comp;
-		tch -= progdefaults.cwio_comp;
-		twd -= progdefaults.cwio_comp;
 	}
 
 	if (c == 0x0a) c = ' ';
@@ -1498,25 +1598,19 @@ void send_cwio(int c)
 unsigned long start_time = 0L;
 unsigned long end_time = 0L;
 int testwpm = 20;
-int testwords = 10;
 
 void cwio_calibrate_finished(void *)
 {
-	double ratio = (1200.0 * 50.0 * testwords / progdefaults.CWspeed) / (end_time - start_time);
-	int comp = round(testwpm * (1.0 - ratio));
-	progdefaults.cwio_comp = comp;
-	cnt_cwio_comp->value(comp);
+	double ratio = 60000.0 / (end_time - start_time);
 	btn_cw_dtr_calibrate->value(0);
 
-	LOG_DEBUG("\n\
-xmt %d words at %.0f wpm : %0.3f secs\n\
-compensation ratio:  %f\n\
-compensation (msec): %d",
-		testwords,
-		progdefaults.CWspeed,
+	static char result[100];
+	snprintf(result, sizeof(result), "Time: %0.4f secs, %%error: %0.2f",
 		(end_time - start_time) / 1000.0,
-		ratio,
-		comp);
+		100.0 * (1-ratio));
+	LOG_INFO("\n%s\n", result);
+	cwio_test_result->value(result);
+	cwio_test_result->redraw();
 }
 
 void cwio_calibrate()
@@ -1524,19 +1618,16 @@ void cwio_calibrate()
 	std::string paris = "PARIS "; 
 	bool farnsworth = progdefaults.CWusefarnsworth;
 	progdefaults.CWusefarnsworth = false;
-	int comp = progdefaults.cwio_comp;
-	progdefaults.cwio_comp = 0;
 
 	guard_lock lk(&fifo_mutex);
 
 	start_time = zmsec();
-	for (int i = 0; i < testwords; i++)
+	for (int i = 0; i < progdefaults.CWspeed; i++)
 		for (size_t n = 0; n < paris.length(); n++)
 			send_cwio(paris[n]);
 	end_time = zmsec();
 
 	progdefaults.CWusefarnsworth = farnsworth;
-	progdefaults.cwio_comp = comp;
 
 	Fl::awake(cwio_calibrate_finished);
 }

@@ -38,7 +38,19 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
-#include <time.h>
+
+//#include <time.h>
+#if !HAVE_CLOCK_GETTIME
+#  ifdef __APPLE__
+#    include <mach/mach_time.h>
+#    define CLOCK_REALTIME 0
+#    define CLOCK_MONOTONIC 6
+#  endif
+#  if TIME_WITH_SYS_TIME
+#    include <sys/time.h>
+#  endif
+#endif
+
 #include <math.h>
 #include <stdio.h>
 
@@ -129,6 +141,7 @@ FSK::FSK()
 	start_bits = 0;
 	stop_bits = 0;
 	chr_bits = 0;
+	fsk_chr = 0;
 	chr_out = 0;
 	shift_state  = FSK_FIGURES;
 	shift = 0;
@@ -137,6 +150,7 @@ FSK::FSK()
 	init_fsk_thread();
 
 	shared_port = false;
+	_sending = false;
 }
 
 FSK::~FSK()
@@ -159,21 +173,25 @@ void FSK::open_port(std::string device_name)
 
 void FSK::fsk_shares_port(Cserial *shared_device)
 {
+//std::cout << "fsk shares port : " << shared_device << std::endl;
 	shared_port = true;
 	fsk_port = shared_device;
 }
 
 bool FSK::sending() {
-	return str_buff.length() > 0;
+	return chr_out != 0;
+//	return str_buff.length() > 0;
 }
 
 void FSK::send(const char ch) {
-	str_buff.clear();
-	str_buff += ch;
+	chr_out = ch;
+//	str_buff.clear();
+//	str_buff += ch;
 }
 
 void FSK::append(const char ch) {
-	str_buff += ch;
+	chr_out = ch;
+//	str_buff += ch;
 }
 
 void FSK::send(std::string s) {
@@ -217,66 +235,54 @@ int FSK::baudot_enc(int data) {
 	return shift_state | 4;
 }
 
+//----------------------------------------------------------------------
 void FSK::send_baudot(int ch)
 {
-	if (ch == LTRS) shift_state = FSK_LETTERS;
-	else if (ch == FIGS) shift_state = FSK_FIGURES;
-
-// 1 start bit
-	fsk_out(FSK_SPACE);
-	accu_sleep(BITLEN);
-
-// 5 data bits
-	fsk_out((ch & 0x01) == 0x01 ? FSK_MARK : FSK_SPACE);
-	accu_sleep(BITLEN);
-
-	fsk_out((ch & 0x02) == 0x02 ? FSK_MARK : FSK_SPACE);
-	accu_sleep(BITLEN);
-
-	fsk_out((ch & 0x04) == 0x04 ? FSK_MARK : FSK_SPACE);
-	accu_sleep(BITLEN);
-
-	fsk_out((ch & 0x08) == 0x08 ? FSK_MARK : FSK_SPACE);
-	accu_sleep(BITLEN);
-
-	fsk_out((ch & 0x10) == 0x10 ? FSK_MARK : FSK_SPACE);
-	accu_sleep(BITLEN);
-
-// 1.5 or 2 stop bits
-	fsk_out(FSK_MARK);
-	accu_sleep(BITLEN * 
-		(progdefaults.fsk_STOPBITS ? 1.5 : 2.0) );
+	fskbit(FSK_SPACE, BITLEN);
+	fskbit((ch & 0x01) == 0x01 ? FSK_MARK : FSK_SPACE, BITLEN);
+	fskbit((ch & 0x02) == 0x02 ? FSK_MARK : FSK_SPACE, BITLEN);
+	fskbit((ch & 0x04) == 0x04 ? FSK_MARK : FSK_SPACE, BITLEN);
+	fskbit((ch & 0x08) == 0x08 ? FSK_MARK : FSK_SPACE, BITLEN);
+	fskbit((ch & 0x10) == 0x10 ? FSK_MARK : FSK_SPACE, BITLEN);
+	fskbit(FSK_MARK, BITLEN * (progdefaults.fsk_STOPBITS ? 1.5 : 2.0));
 }
+//----------------------------------------------------------------------
+
 
 extern state_t trx_state;
-static int idles = 4;
+static int idles = 0;
 
 int FSK::callback_method()
 {
-	if (trx_state != STATE_TX) {
-		shift_state = FSK_UNKNOWN; // will force at least one LTRS byte
-		shift = 0;
+	if (trx_state != STATE_TX || chr_out == 0) {
 		stop_bits = 0;
 		idles = 4;
-		accu_sleep(BITLEN);
+		MilliSleep(22);
 		return 0;
 	}
 
-	if (str_buff.empty() || idles) {
+	while (idles) {
 		send_baudot(LTRS);
-		if (idles) idles--;
+		shift_state = FSK_LETTERS;
+		idles--;
+	}
+	if (chr_out == 0x03) {
+		chr_out = 0;
+		send_baudot(LTRS);
+		shift_state = FSK_LETTERS;
 	} else {
-		chr_out = baudot_enc(str_buff[0]);
-		if ((chr_out & 0x300) != shift_state) {
-			shift_state = chr_out & 0x300;
+		fsk_chr = baudot_enc(chr_out & 0xFF);
+
+		if ((fsk_chr & 0x300) != shift_state) {
+			shift_state = fsk_chr & 0x300;
 			if (shift_state == FSK_LETTERS) {
 				send_baudot(LTRS);
 			} else {
 				send_baudot(FIGS);
 			}
 		}
-		str_buff.erase(0,1);
-		send_baudot(chr_out & 0x1F);
+		chr_out = 0;
+		send_baudot(fsk_chr & 0x1F);
 	}
 	return 0;
 }
@@ -324,3 +330,93 @@ void FSK::exit_fsk_thread()
 	fsk_loop_terminate = false;
 }
 
+double FSK::fsk_now()
+{
+	static struct timespec tp;
+
+#if HAVE_CLOCK_GETTIME
+	clock_gettime(CLOCK_MONOTONIC, &tp); 
+#elif defined(__WIN32__)
+	DWORD msec = GetTickCount();
+	tp.tv_sec = msec / 1000;
+	tp.tv_nsec = (msec % 1000) * 1000000;
+#elif defined(__APPLE__)
+	static mach_timebase_info_data_t info = { 0, 0 };
+	if (unlikely(info.denom == 0))
+		mach_timebase_info(&info);
+	uint64_t t = mach_absolute_time() * info.numer / info.denom;
+	tp.tv_sec = t / 1000000000;
+	tp.tv_nsec = t % 1000000000;
+#endif
+
+	return 1.0 * tp.tv_sec + tp.tv_nsec * 1e-9;
+}
+
+// set DTR/RTS to bit value for secs duration
+
+//#define TTEST
+#ifdef TTEST
+static FILE *ttest = 0;
+#endif
+
+void FSK::fskbit(int bit, double secs)
+{
+#ifdef TTEST
+	if (!ttest) ttest = fopen("ttest.txt", "a");
+#endif
+	static struct timespec tv = { 0, 1000000L};
+	static double end1 = 0;
+	static double end2 = 0;
+	static double t1 = 0;
+#ifdef TTEST
+	static double t2 = 0;
+#endif
+	static double t3 = 0;
+	static double t4 = 0;
+	int loop1 = 0;
+	int loop2 = 0;
+	int n1 = secs*1e3;
+#ifdef __WIN32__
+	timeBeginPeriod(1);
+#endif
+
+	t1 = fsk_now();
+
+	end2 = t1 + secs - 0.0001;
+
+	fsk_out(bit);
+
+#ifdef TTEST
+	t2 = fsk_now();
+#endif
+	end1 = end2 - 0.005;
+
+	t3 = fsk_now();
+	while (t3 < end1 && (++loop1 < n1)) {
+		nanosleep(&tv, NULL);
+		t3 = fsk_now();
+	}
+
+	t4 = t3;
+	while (t4 <= end2) {
+		loop2++;
+		t4 = fsk_now();
+	}
+
+#ifdef __WIN32__
+	timeEndPeriod(1);
+#endif
+
+#ifdef TTEST
+	if (ttest)
+		fprintf(ttest, "%d, %d, %d, %6f, %6f, %6f, %6f, %6f, %6f, %6f\n",
+			bit, loop1, loop2,
+			secs * 1e3,
+			(t2 - t1)*1e3,
+			(t3 - t1)*1e3,
+			(t3 - end1) * 1e3,
+			(t4 - t1)*1e3,
+			(t4 - end2) * 1e3,
+			(t4 - t1 - secs)*1e3);
+#endif
+}

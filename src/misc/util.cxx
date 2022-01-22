@@ -500,6 +500,7 @@ double fsk_now()
 
 // sub millisecond accurate sleep function
 // sleep_time in seconds
+// NOT THREAD SAFE !!!
 int accu_sleep (double sleep_time)
 {
 	struct timespec tv;

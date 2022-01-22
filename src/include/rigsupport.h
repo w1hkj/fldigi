@@ -103,8 +103,9 @@ extern void set_flrig_notch();
 extern void flrig_set_wpm();
 extern void flrig_get_wpm();
 
-extern void flrig_cwio_ptt(int);
+//extern void flrig_cwio_ptt(int);
 extern void flrig_cwio_send_text(std::string);
+extern void flrig_fskio_send_text(std::string s);
 
 // GPIO export/unexport pin #
 extern void export_gpio(int);
