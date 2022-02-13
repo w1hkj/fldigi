@@ -99,26 +99,24 @@
 #include "notify.h"
 #include "qrunner.h"
 
-using namespace std;
-
 struct notify_action_t
 {
-	string alert;
-	string rx_marker;
-	string macro;
-	string program;
+	std::string alert;
+	std::string rx_marker;
+	std::string macro;
+	std::string program;
 	time_t alert_timeout;
 	time_t trigger_limit;
 };
 
 enum notify_filter_match_t { NOTIFY_FILTER_CALLSIGN, NOTIFY_FILTER_DXCC };
-typedef MAP_TYPE<string, bool> notify_filter_dxcc_t;
+typedef MAP_TYPE<std::string, bool> notify_filter_dxcc_t;
 struct notify_filter_t
 {
 	notify_filter_match_t match;
-	string callsign;
+	std::string callsign;
 	notify_filter_dxcc_t dxcc;
-	string dxcc_last;
+	std::string dxcc_last;
 	bool nwb, lotw, eqsl;
 };
 
@@ -130,13 +128,13 @@ struct notify_dup_t
 	long long freq;
 };
 
-typedef MAP_TYPE<string, notify_dup_t> notify_seen_t;
+typedef MAP_TYPE<std::string, notify_dup_t> notify_seen_t;
 enum notify_event_t { NOTIFY_EVENT_MYCALL, NOTIFY_EVENT_STATION, NOTIFY_EVENT_CUSTOM, NOTIFY_EVENT_RSID };
 struct notify_t
 {
 	notify_event_t event;
 	time_t last_trigger;
-	string re;
+	std::string re;
 	bool enabled;
 	int afreq;
 	long long rfreq;
@@ -154,7 +152,7 @@ struct notify_t
 	notify_action_t action;
 	notify_filter_t filter;
 };
-typedef list<notify_t> notify_list_t;
+typedef std::list<notify_t> notify_list_t;
 
 
 static void notify_init_window(void);
@@ -267,7 +265,7 @@ template <typename T, typename U> static T advli(T i, U n) { advance(i, n); retu
 
 static notify_list_t notify_list;
 static notify_t notify_tmp;
-static const vector<dxcc*>* dxcc_list;
+static const std::vector<dxcc*>* dxcc_list;
 
 Fl_Double_Window* notify_window;
 Fl_Double_Window* dxcc_window;
@@ -390,17 +388,17 @@ static void notify_set_event_dup_menu(const char* re);
 static bool notify_dxcc_row_checked(int i);
 
 // return actual regular expression for event n
-static string notify_get_re(const notify_t& n)
+static std::string notify_get_re(const notify_t& n)
 {
-	string::size_type pos;
-	string s = n.re;
+	std::string::size_type pos;
+	std::string s = n.re;
 
 	struct { const char* str; const char* rep; } subst[] = {
 		{ "<MYCALL>", progdefaults.myCall.c_str() },
 		{ "<CALLSIGN_RE>", CALLSIGN_RE }
 	};
 	for (size_t i = 0; i < sizeof(subst)/sizeof(*subst); i++)
-		if ((pos = s.find(subst[i].str)) != string::npos)
+		if ((pos = s.find(subst[i].str)) != std::string::npos)
 			s.replace(pos, strlen(subst[i].str), subst[i].rep);
 
 	return s;
@@ -627,7 +625,7 @@ static void notify_init_window(void)
 	dxcc_list = dxcc_entity_list();
 	if (dxcc_list) {
 		char cq[5], itu[5];
-		for (vector<dxcc*>::const_iterator i = dxcc_list->begin(); i != dxcc_list->end(); ++i) {
+		for (std::vector<dxcc*>::const_iterator i = dxcc_list->begin(); i != dxcc_list->end(); ++i) {
 			snprintf(itu, sizeof(itu), "%02d", (*i)->itu_zone);
 			snprintf(cq, sizeof(cq), "%02d", (*i)->cq_zone);
 			tblNotifyFilterDXCC->addRow(NOTIFY_DXCC_NUMCOL, "[x]", (*i)->country,
@@ -651,7 +649,7 @@ static void notify_init_window(void)
 static void notify_table_append(const notify_t& n)
 {
 	// add to table
-	string fcol, acol;
+	std::string fcol, acol;
 	if (n.event == NOTIFY_EVENT_MYCALL)
 		fcol = "My callsign";
 	else if (n.event == NOTIFY_EVENT_STATION) {
@@ -779,7 +777,7 @@ struct replace_refs
 			break;
 		case REF_CALLSIGN:
 			if (n.event == NOTIFY_EVENT_MYCALL || n.event == NOTIFY_EVENT_STATION) {
-				stringstream info;
+				std::stringstream info;
 				info << "\\" << event_regex[n.event].index;
 				strncpy(str, info.str().c_str(), len-1);
 			}
@@ -800,17 +798,17 @@ struct replace_refs
 		}
 	}
 
-	void operator()(const notify_t& n, string& edit)
+	void operator()(const notify_t& n, std::string& edit)
 	{
 		char buf[128];
-		string::size_type p;
+		std::string::size_type p;
 		// replace $VARIABLES
 		const char* vars[] = {
 			"$MODEM", "$DF_HZ", "$RF_HZ", "$RF_KHZ", "$AF_HZ",
 			"$LF_KHZ", "$CALLSIGN", "$COUNTRY", "$MATCHED_TEXT", "$TEXT"
 		};
 		for (size_t i = 0; i < sizeof(vars)/sizeof(*vars); i++) {
-			if ((p = edit.find(vars[i])) != string::npos) {
+			if ((p = edit.find(vars[i])) != std::string::npos) {
 				replace_var(n, i, buf, sizeof(buf));
 				edit.replace(p, strlen(vars[i]), buf);
 			}
@@ -818,7 +816,7 @@ struct replace_refs
 		// replace \X refs with regex substrings
 		strcpy(buf, "\\0");
 		for (size_t i = 0; i < n.submatch_length; i++, buf[1]++)
-			for (p = 0; (p = edit.find(buf, p)) != string::npos; p = 0)
+			for (p = 0; (p = edit.find(buf, p)) != std::string::npos; p = 0)
 				edit.replace(p, 2, n.match_string + n.submatch_offsets[i].rm_so,
 					     n.submatch_offsets[i].rm_eo - n.submatch_offsets[i].rm_so);
 	}
@@ -829,9 +827,9 @@ static void notify_notify(const notify_t& n)
 {
 	// show alert window with timeout
 	if (!n.action.alert.empty()) {
-		string alert = n.action.alert;
+		std::string alert = n.action.alert;
 		replace_refs()(n, alert);
-		if (alert.find('%') == string::npos)
+		if (alert.find('%') == std::string::npos)
 			notify_show_alert(n, alert.c_str());
 		else { // treat alert text as strftime format string
 			size_t len = alert.length() + 256;
@@ -846,10 +844,10 @@ static void notify_notify(const notify_t& n)
 
 	// append to receive text
 	if (!n.action.rx_marker.empty()) {
-		string text = n.action.rx_marker;
+		std::string text = n.action.rx_marker;
 		replace_refs()(n, text);
-		string::size_type p;
-		if ((p = text.find("$RX_MARKER")) != string::npos) {
+		std::string::size_type p;
+		if ((p = text.find("$RX_MARKER")) != std::string::npos) {
 			text[p] = '\0';
 			note_qrg(false, text.c_str(), text.c_str() + p + strlen("$RX_MARKER"), n.mode, 0LL, n.afreq);
 		}
@@ -877,7 +875,7 @@ static void notify_notify(const notify_t& n)
 		case 0:
 #endif
 			char var[] = "FLDIGI_NOTIFY_STR_0";
-			string val;
+			std::string val;
 			for (size_t i = 0; i < n.submatch_length; i++, var[sizeof(var) - 2]++) {
 				val.assign(n.match_string + n.submatch_offsets[i].rm_so,
 					   n.submatch_offsets[i].rm_eo - n.submatch_offsets[i].rm_so);
@@ -928,13 +926,13 @@ static bool notify_is_dup(notify_t& n, const char* str, const regmatch_t* sub, s
 		return false;
 
 	if (n.dup_ref == 0 || n.dup_ref >= len) {
-		stringstream info;
+		std::stringstream info;
 		info << "Bad dup_ref: " << n.dup_ref << " >= " << len;
 		LOG_ERROR("%s", info.str().c_str());
 		return false;
 	}
 	const regmatch_t& subidx = sub[n.dup_ref];
-	string dupstr(subidx.rm_eo - subidx.rm_so, '\0');
+	std::string dupstr(subidx.rm_eo - subidx.rm_so, '\0');
 	transform(str + subidx.rm_so, str + subidx.rm_eo, dupstr.begin(), static_cast<int (*)(int)>(toupper));
 
 	notify_dup_t cur = { now, band(wf->rfcarrier()), mode };
@@ -989,7 +987,7 @@ static void notify_recv(trx_mode mode, int afreq, const char* str, const regmatc
 		break;
 	case NOTIFY_EVENT_STATION:
 		size_t re_idx = event_regex[n->event].index;
-		string call(str + sub[re_idx].rm_so, sub[re_idx].rm_eo - sub[re_idx].rm_so);
+		std::string call(str + sub[re_idx].rm_so, sub[re_idx].rm_eo - sub[re_idx].rm_so);
 		const dxcc* e = dxcc_lookup(call.c_str());
 
 		if (n->filter.match == NOTIFY_FILTER_CALLSIGN) {
@@ -1034,7 +1032,7 @@ static void notify_recv(trx_mode mode, int afreq, const char* str, const regmatc
 		n->mode = mode;
 		n->match_string = str;
 		n->submatch_offsets = sub;
-		n->submatch_length = min(len, (size_t)10); // whole string + up to 9 user-specified backrefs
+		n->submatch_length = std::min(len, (size_t)10); // whole string + up to 9 user-specified backrefs
 
 //std::cout << "trigger: " << n->last_trigger << "\n" <<
 //"audio freq: " << n->afreq << "\n" <<
@@ -1301,14 +1299,14 @@ static void notify_test_cb(Fl_Widget* w, void* arg)
 		return;
 	}
 
-	string test_strings[3];
+	std::string test_strings[3];
 	test_strings[NOTIFY_EVENT_MYCALL].assign(progdefaults.myCall).append(" de n0call");
 	test_strings[NOTIFY_EVENT_STATION] = "cq de n0call n0call ";
-	static string test;
+	static std::string test;
 	if (test.empty())
 		test = test_strings[notify_tmp.event];
 
-	string msg;
+	std::string msg;
 	msg.assign(_("Default test string is:\n  \"")).append(test_strings[notify_tmp.event]).append("\"\n")
 		.append(_("Enter test string or leave blank for default:"));
         const char* s = fl_input2("%s", msg.c_str(), test.c_str());
@@ -1323,7 +1321,7 @@ static void notify_test_cb(Fl_Widget* w, void* arg)
 	if (!re)
 		fl_alert2(_("This event's regular expression is invalid."));
 	else if (re.match(test.c_str())) {
-		const vector<regmatch_t>& o = re.suboff();
+		const std::vector<regmatch_t>& o = re.suboff();
 		notify_recv(active_modem->get_mode(), active_modem->get_freq(),
 			    test.c_str(), &o[0], o.size(), &notify_tmp);
 	}
@@ -1342,9 +1340,9 @@ static void notify_dialog_default_cb(Fl_Widget* w, void* arg)
 {
 	size_t i = CLAMP((size_t)mnuNotifyEvent->value(), 0,
 			 sizeof(default_alert_text)/sizeof(*default_alert_text) - 1);
-	string s = default_alert_text[i];
+	std::string s = default_alert_text[i];
 	if (s.empty()) { // custom search; count and list refs
-		size_t nsub = min(fre_t(inpNotifyRE->value(), REG_EXTENDED | REG_ICASE).nsub(), (size_t)9);
+		size_t nsub = std::min(fre_t(inpNotifyRE->value(), REG_EXTENDED | REG_ICASE).nsub(), (size_t)9);
 		if (nsub) {
 			s.assign(_("Available substrings")).append(":\n\\0\n");
 			char ref[] = "\\1";
@@ -1576,12 +1574,12 @@ static void notify_save(void)
 {
 	notify_set_qsodb_cache();
 
-	remove(string(HomeDir).append("/").append("notify.prefs").c_str());
+	remove(std::string(HomeDir).append("/").append("notify.prefs").c_str());
 	Fl_Preferences ndata(HomeDir.c_str(), PACKAGE_TARNAME, "notify");
 	ndata.set("items", static_cast<int>(notify_list.size()));
 
 	size_t num = 0;
-	stringstream group;
+	std::stringstream group;
 	for (notify_list_t::iterator i = notify_list.begin(); i != notify_list.end(); ++i) {
 		group << "item" << num++;
 
@@ -1630,7 +1628,7 @@ static void notify_load(void)
 		return;
 	size_t n = static_cast<size_t>(x);
 
-	stringstream group;
+	std::stringstream group;
 	for (size_t i = 0; i < n; i++) {
 		notify_t nitem;
 		group << "item" << i;

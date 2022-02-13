@@ -45,10 +45,8 @@
 
 LOG_FILE_SOURCE(debug::LOG_MODEM);
 
-using namespace std;
-
 char dommsg[80];
-static map<int, unsigned char> mupsksec2pri;
+static std::map<int, unsigned char> mupsksec2pri;
 
 bool usingFEC = false;
 

@@ -47,8 +47,6 @@
 
 #include "fl_digi.h"
 
-using namespace std;
-
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
@@ -482,7 +480,7 @@ void Url::debug()
 		rotate_log(fname);
 		_rotate_log = 1;
 	}
-	debug_file.open(fname.c_str(), ios::app);
+	debug_file.open(fname.c_str(), std::ios::app);
 }
 
 bool get_http(const std::string& url, std::string& reply, double timeout)

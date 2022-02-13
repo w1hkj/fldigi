@@ -44,9 +44,6 @@
 #  include "flarq.h"
 #endif
 
-using namespace std;
-
-
 static volatile sig_atomic_t signum = 0;
 #if !HAVE_DBG_STACK
 static void pstack(int fd, unsigned skip = 0);
@@ -81,19 +78,19 @@ void diediedie(void)
 #endif
 	{
 		if (signum)
-			cerr << "\nCaught signal " << signum;
-		cerr << CRASH_HEADER;
+			std::cerr << "\nCaught signal " << signum;
+		std::cerr << CRASH_HEADER;
 #if !HAVE_DBG_STACK
 		pstack(STDERR_FILENO);
 #else
-		pstack(cerr);
+		pstack(std::cerr);
 #endif
 
-		extern string version_text, build_text;
-		cerr << "\n****** Version information:\n" << version_text
+		extern std::string version_text, build_text;
+		std::cerr << "\n****** Version information:\n" << version_text
 		     << "\n****** Build information:\n" << build_text;
 
-		string stfname;
+		std::string stfname;
 #ifdef BUILD_FLDIGI
 		stfname.assign(DebugDir).append("stacktrace.txt");
 		rotate_log(stfname);
@@ -162,13 +159,13 @@ void pstack_maybe(void)
 #if !HAVE_DBG_STACK
                 pstack(STDERR_FILENO, 1);
 #else
-		pstack(cerr, 1);
+		pstack(std::cerr, 1);
 #endif
 }
 
 void handle_unexpected(void)
 {
-        cerr << "Uncaught exception. Not again!\n";
+        std::cerr << "Uncaught exception. Not again!\n";
         abort();
 }
 

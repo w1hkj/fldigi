@@ -29,8 +29,6 @@
 #include "charsetdistiller.h"
 #include "tiniconv.h"
 
-using namespace std;
-
 /*
     CharsetDistiller
 
@@ -256,7 +254,7 @@ int CharsetDistiller::num_chars(void)
 /*
  Return a reference to the output buffer.
  */
-const string &CharsetDistiller::data(void)
+const std::string &CharsetDistiller::data(void)
 {
    return outdata;
 }

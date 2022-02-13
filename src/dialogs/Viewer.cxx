@@ -47,8 +47,6 @@
 
 extern pskBrowser *mainViewer;
 
-using namespace std;
-
 //
 // External viewer dialog
 // 

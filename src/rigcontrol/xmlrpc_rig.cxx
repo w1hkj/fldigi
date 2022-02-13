@@ -50,7 +50,6 @@
 LOG_FILE_SOURCE(debug::debug::LOG_RPC_CLIENT);
 
 using namespace XmlRpc;
-using namespace std;
 
 static int xmlrpc_verbosity = 0;
 
@@ -94,9 +93,9 @@ static bool bws_posted = false;
 static bool modes_posted = false;
 static bool freq_posted = true;
 
-static string xcvr_name;
-static string str_freq;
-static string mode_result;
+static std::string xcvr_name;
+static std::string str_freq;
+static std::string mode_result;
 static XmlRpcValue modes_result;
 static XmlRpcValue bws_result;
 static XmlRpcValue bw_result;
@@ -316,7 +315,7 @@ void flrig_get_frequency()
 			ret = flrig_client->execute("rig.get_vfo", XmlRpcValue(), result, timeout);
 		}
 		if (ret) {
-			str_freq = (string)result;
+			str_freq = (std::string)result;
 			unsigned long int fr = atoll(str_freq.c_str());
 
 			if (!wait_freq && (fr != xcvr_freq)) {
@@ -347,14 +346,14 @@ void flrig_get_frequency()
 
 static bool wait_mode = false; // wait for transceiver to respond
 static int  wait_mode_timeout = 5; // 5 polls and then disable wait
-static string posted_mode = "";
+static std::string posted_mode = "";
 
 static bool wait_bw = false; // wait for transceiver to respond
 static int  wait_bw_timeout = 5; // 5 polls and then disable wait
 static bool need_sideband = false;
-static string  posted_bw = "";
-static string  posted_bw1 = "";
-static string  posted_bw2 = "";
+static std::string  posted_bw = "";
+static std::string  posted_bw1 = "";
+static std::string  posted_bw2 = "";
 
 void set_flrig_mode(const char *md)
 {
@@ -362,7 +361,7 @@ void set_flrig_mode(const char *md)
 
 	XmlRpcValue val, result;
 	try {
-		val = string(md);
+		val = std::string(md);
 
 		bool ret;
 		{
@@ -399,7 +398,7 @@ void xmlrpc_rig_post_mode(void *data)
 {
 	guard_lock flrig_lock(&mutex_flrig_mode);
 	if (!qso_opMODE) return;
-	string *s = reinterpret_cast<string *>(data);
+	std::string *s = reinterpret_cast<std::string *>(data);
 	qso_opMODE->value(s->c_str());
 	bws_posted = false;
 	need_sideband = false;
@@ -415,8 +414,8 @@ void flrig_get_mode()
 			ret = flrig_client->execute("rig.get_mode", XmlRpcValue(), res, timeout);
 		}
 		if (ret) {
-			static string md;
-			md = (string)res;
+			static std::string md;
+			md = (std::string)res;
 			bool posted = (md == posted_mode);
 			if (!wait_mode && (!posted || need_sideband)) {
 				posted_mode = md;
@@ -426,8 +425,8 @@ void flrig_get_mode()
 					ret = flrig_client->execute("rig.get_sideband", XmlRpcValue(), res, timeout);
 				}
 				if (ret) {
-					static string sb;
-					sb = (string)res;
+					static std::string sb;
+					sb = (std::string)res;
 					xml_USB = (sb[0] == 'U');
 				} else {
 					xml_USB = true;
@@ -473,7 +472,7 @@ void xmlrpc_rig_post_modes(void *)
 
 	std::string smodes;
 	for (int i = 0; i < nargs; i++)
-		smodes.append((string)modes_result[i]).append("|");
+		smodes.append((std::string)modes_result[i]).append("|");
 	qso_opMODE->add(smodes.c_str());
 
 	qso_opMODE->index(0);
@@ -497,10 +496,10 @@ void flrig_get_modes()
 			posted_mode = posted_bw = posted_bw1 = posted_bw2 = "GETME";
 			{
 				int nargs = modes_result.size();
-				static string debugstr;
+				static std::string debugstr;
 				debugstr.assign("Mode table: ");
 				for (int i = 0; i < nargs - 1; i++)
-					debugstr.append((string)modes_result[i]).append(",");
+					debugstr.append((std::string)modes_result[i]).append(",");
 				debugstr.append(modes_result[nargs-1]);
 				LOG_VERBOSE("%s", debugstr.c_str());
 			}
@@ -592,11 +591,11 @@ void do_flrig_get_bw()
 			ret = flrig_client->execute("rig.get_bw", XmlRpcValue(), res, timeout);
 		}
 		if (ret) {
-			static string s1;
-			static string s2;
+			static std::string s1;
+			static std::string s2;
 
-			s2 = (string)res[0];
-			s1 = (string)res[1];
+			s2 = (std::string)res[0];
+			s1 = (std::string)res[1];
 			if (!s1.empty())  {
 				posted_bw1 = s1;
 				Fl::awake(xmlrpc_rig_post_bw1);
@@ -637,14 +636,14 @@ void xmlrpc_rig_post_bws(void *)
 	try { // two BW controls
 		nargs = bws_result[1].size();
 
-		static string bwstr;
+		static std::string bwstr;
 		qso_opBW1->clear();
 		for (int i = 1; i < nargs; i++) {
-			bwstr = (string)bws_result[1][i];
+			bwstr = (std::string)bws_result[1][i];
 			qso_opBW1->add(bwstr.c_str());
 		}
 
-		string labels1 = (string)bws_result[1][0];
+		std::string labels1 = (std::string)bws_result[1][0];
 		static char btn1_label[2];
 		btn1_label[0] = labels1[0]; btn1_label[1] = 0;
 		qso_btnBW1->label(btn1_label);
@@ -657,11 +656,11 @@ void xmlrpc_rig_post_bws(void *)
 		qso_opBW1->redraw();
 
 		{
-			static string debugstr;
+			static std::string debugstr;
 			debugstr.assign("\nBW1 table: ");
 			for (int i = 1; i < nargs-1; i++)
-				debugstr.append((string)bws_result[1][i]).append(", ");
-			debugstr.append((string)bws_result[1][nargs - 1]).append("\n");
+				debugstr.append((std::string)bws_result[1][i]).append(", ");
+			debugstr.append((std::string)bws_result[1][nargs - 1]).append("\n");
 			debugstr.append(labels1);
 			LOG_VERBOSE("%s", debugstr.c_str());
 		}
@@ -669,14 +668,14 @@ void xmlrpc_rig_post_bws(void *)
 		try {
 			nargs = bws_result[0].size();
 
-			static string bwstr;
+			static std::string bwstr;
 			qso_opBW2->clear();
 			for (int i = 1; i < nargs; i++) {
-				bwstr = (string)bws_result[0][i];
+				bwstr = (std::string)bws_result[0][i];
 				qso_opBW2->add(bwstr.c_str());
 			}
 
-			string labels2 = (string)bws_result[0][0];
+			std::string labels2 = (std::string)bws_result[0][0];
 			static char btn2_label[2];
 			btn2_label[0] = labels2[0]; btn2_label[1] = 0;
 			qso_btnBW2->label(btn2_label);
@@ -689,11 +688,11 @@ void xmlrpc_rig_post_bws(void *)
 			qso_opBW2->redraw();
 
 			{
-				static string debugstr;
+				static std::string debugstr;
 				debugstr.assign("\nBW2 table: ");
 				for (int i = 1; i < nargs-1; i++)
-					debugstr.append((string)bws_result[0][i]).append(", ");
-				debugstr.append((string)bws_result[0][nargs - 1]).append("\n");
+					debugstr.append((std::string)bws_result[0][i]).append(", ");
+				debugstr.append((std::string)bws_result[0][nargs - 1]).append("\n");
 				debugstr.append(labels2);
 				LOG_VERBOSE("%s", debugstr.c_str());
 			}
@@ -708,10 +707,10 @@ void xmlrpc_rig_post_bws(void *)
 	} catch (XmlRpcException err) {
 		try { // one BW control
 			nargs = bws_result[0].size();
-			string bwstr;
+			std::string bwstr;
 			qso_opBW->clear();
 			for (int i = 1; i < nargs; i++) {
-				bwstr.append((string)bws_result[0][i]).append("|");
+				bwstr.append((std::string)bws_result[0][i]).append("|");
 			}
 			qso_opBW->add(bwstr.c_str());
 			qso_opBW->index(0);
@@ -720,11 +719,11 @@ void xmlrpc_rig_post_bws(void *)
 			qso_opGROUP->hide();
 
 			{
-				static string debugstr;
+				static std::string debugstr;
 				debugstr.assign("BW table: ");
 				for (int i = 1; i < nargs-1; i++)
-					debugstr.append((string)bws_result[0][i]).append(", ");
-				debugstr.append((string)bws_result[0][nargs - 1]);
+					debugstr.append((std::string)bws_result[0][i]).append(", ");
+				debugstr.append((std::string)bws_result[0][nargs - 1]);
 				LOG_VERBOSE("%s", debugstr.c_str());
 			}
 
@@ -875,7 +874,7 @@ void flrig_get_smeter()
 			ret = flrig_client->execute("rig.get_smeter", XmlRpcValue(), result, timeout);
 		}
 		if (ret) {
-			std::string smeter = (string)result;
+			std::string smeter = (std::string)result;
 			int sm = atoll(smeter.c_str());
 			guard_lock lck(&mutex_flrig_smeter);
 			Fl::awake(xmlrpc_rig_set_smeter, reinterpret_cast<void*>(sm));
@@ -912,7 +911,7 @@ void flrig_get_pwrmeter()
 			ret = flrig_client->execute("rig.get_pwrmeter", val, result, timeout);
 		}
 		if (ret) {
-			std::string meter = (string)result;
+			std::string meter = (std::string)result;
 			int sm = atoll(meter.c_str());
 			guard_lock lck(&mutex_flrig_pwrmeter);
 			Fl::awake(xmlrpc_rig_set_pwrmeter, reinterpret_cast<void*>(sm));
@@ -947,7 +946,7 @@ bool flrig_get_xcvr()
 			ret = flrig_client->execute("rig.get_xcvr", XmlRpcValue(), result, timeout);
 		}
 		if (ret) {
-			string nuxcvr = (string)result;
+			std::string nuxcvr = (std::string)result;
 			if (nuxcvr != xcvr_name) {
 				xcvr_name = nuxcvr;
 				modes_posted = false;
@@ -1007,7 +1006,7 @@ void flrig_connection()
 		}
 		if (ret) {
 			int nargs = result.size();
-			string method_str = "\nMethods:\n";
+			std::string method_str = "\nMethods:\n";
 			for (int i = 0; i < nargs; i++)
 				method_str.append("    ").append(result[i]).append("\n");
 			LOG_VERBOSE("%s", method_str.c_str());
@@ -1190,7 +1189,7 @@ void flrig_cwio_ptt(int on)
 	return;
 }
 
-void flrig_cwio_send_text(string s)
+void flrig_cwio_send_text(std::string s)
 {
 	if (!connected_to_flrig) return;
 

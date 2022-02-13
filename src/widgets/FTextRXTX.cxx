@@ -75,8 +75,6 @@
 #include "contest.h"
 #include "counties.h"
 
-using namespace std;
-
 
 // Fl_Scrollbar wrapper to draw marks on the slider background.
 // Currently only implemented for a vertical scrollbar.
@@ -99,7 +97,7 @@ public:
 	void clear(void) { marks.clear(); redraw(); }
 
 private:
-	vector<mark_t> marks;
+	std::vector<mark_t> marks;
 	bool draw_marks;
 };
 
@@ -382,7 +380,7 @@ void FTextRX::add(unsigned int c, int attr)
 		if ( lwidth >= (text_area.w - mVScrollBar->w() - LEFT_MARGIN - RIGHT_MARGIN)) {
 			if (c != ' ') {
 				size_t p = s_text.rfind(' ');
-				if (p != string::npos) {
+				if (p != std::string::npos) {
 					s_text.erase(0, p+1);
 					s_style.erase(0, p+1);
 					if (s_text.length() < 10) { // wrap and delete trailing space
@@ -497,8 +495,8 @@ void FTextRX::handle_qsy(int start, int end)
 {
 	char* text = tbuf->text_range(start, end);
 
-	extern map<string, qrg_mode_t> qrg_marks;
-	map<string, qrg_mode_t>::const_iterator i;
+	extern std::map<std::string, qrg_mode_t> qrg_marks;
+	std::map<std::string, qrg_mode_t>::const_iterator i;
 	if ((i = qrg_marks.find(text)) != qrg_marks.end()) {
 		const qrg_mode_t& m = i->second;
 		if (active_modem->get_mode() != m.mode)
@@ -513,7 +511,7 @@ static fre_t rst("^[1-5][123456789nN]{2}$", REG_EXTENDED | REG_NOSUB);
 static fre_t loc("[a-r]{2}[[:digit:]]{2}([a-x]{2})?", REG_EXTENDED | REG_ICASE);
 static fre_t call("([[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+)", REG_EXTENDED);
 
-void set_cbo_county(string str)
+void set_cbo_county(std::string str)
 {
 	inpCounty->value(str.c_str());
 	inpSQSO_county1->value(str.c_str());
@@ -522,7 +520,7 @@ void set_cbo_county(string str)
 	Cstates st;
 	if (inpState->value()[0])
 		cboCountyQSO->value(
-			string(st.state_short(inpState->value())).append(" ").
+			std::string(st.state_short(inpState->value())).append(" ").
 			append(st.county(inpState->value(), inpCounty->value())).c_str());
 	else
 		cboCountyQSO->clear_entry();
@@ -755,7 +753,7 @@ void parseSQSO(std::string str)
 
 	{
 		bool bCAT = (QSOparties.qso_parties[progdefaults.SQSOcontest].cat[0]);
-		string category = ucasestr(str);
+		std::string category = ucasestr(str);
 		if (bCAT &&
 			(category == "CLB" || category == "MOB" || category == "QRP" || category == "STD")) {
 			inpSQSO_category->value(category.c_str());
@@ -1752,15 +1750,15 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 	}
 
 	double lon1, lat1, lon2 = 360.0, lat2 = 360.0, distance, azimuth;
-	static string tip;
-	ostringstream stip;
+	static std::string tip;
+	std::ostringstream stip;
 	const dxcc* e = 0;
 	cQsoRec* qso = 0;
 	unsigned char qsl;
 
 	// prevent locator-only lookup if Ctrl is held
 	if (!(Fl::event_state() & FL_CTRL) && loc.match(s)) {
-		const vector<regmatch_t>& v = loc.suboff();
+		const std::vector<regmatch_t>& v = loc.suboff();
 		s += v[0].rm_so;
 		*(s + v[0].rm_eo) = '\0';
 		if (QRB::locator2longlat(&lon2, &lat2, s) != QRB::QRB_OK)
@@ -1783,21 +1781,21 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 		if (lat2 == 360.0)
 			lat2 = e->latitude;
 		stip << e->country << " (" << e->continent
-		     << " GMT" << fixed << showpos << setprecision(1) << -e->gmt_offset << noshowpos
+		     << " GMT" << std::fixed << std::showpos << std::setprecision(1) << -e->gmt_offset << std::noshowpos
 		     << ") CQ-" << e->cq_zone << " ITU-" << e->itu_zone << '\n';
 	}
 
 	if (QRB::locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == QRB::QRB_OK &&
 	    QRB::qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == QRB::QRB_OK) {
 			if (progdefaults.us_units) {
-				stip << "QTE " << fixed << setprecision(0) << azimuth << '\260' << " ("
+				stip << "QTE " << std::fixed << std::setprecision(0) << azimuth << '\260' << " ("
 					<< QRB::azimuth_long_path(azimuth) << '\260' << ")  QRB "
 					<< distance * 0.62168188 << "mi"<< " (" <<
 					QRB::distance_long_path(distance) * 0.62168188 <<
 					"mi)\n";
 			}
 			else {
-				stip << "QTE " << fixed << setprecision(0) << azimuth << '\260' << " ("
+				stip << "QTE " << std::fixed << std::setprecision(0) << azimuth << '\260' << " ("
 					<< QRB::azimuth_long_path(azimuth) << '\260' << ")  QRB "
 					<< distance << "km(" <<
 					QRB::distance_long_path(distance) << "km)\n";
@@ -2079,7 +2077,7 @@ int FTextTX::nextChar(void)
 
 // called by xmlrpc thread
 // called by macro execution
-void FTextTX::add_text(string s)
+void FTextTX::add_text(std::string s)
 {
 	for (size_t n = 0; n < s.length(); n++) {
 		if (s[n] == '\b') {
@@ -2624,7 +2622,7 @@ void MVScrollbar::draw(void)
 	int x1 = x() + Fl::box_dx(box()), x2 = x1 + w() - Fl::box_dw(box()) - 1, ypos;
 	// Convert stored scrollbar values to vertical positions and draw
 	// lines inside the widget if they don't overlap with the knob area.
-	for (vector<mark_t>::const_iterator i = marks.begin(); i != marks.end(); ++i) {
+	for (std::vector<mark_t>::const_iterator i = marks.begin(); i != marks.end(); ++i) {
 		ypos = static_cast<int>(w() + H * i->pos / maximum());
 		// Don't draw over slider knob
 		if ((ypos > slider_y && ypos < slider_y + slider_h) ||

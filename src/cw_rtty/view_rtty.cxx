@@ -23,7 +23,6 @@
 
 #include <config.h>
 #include <iostream>
-using namespace std;
 
 //#include "rtty.h"
 #include "view_rtty.h"
@@ -498,7 +497,7 @@ int view_rtty::rx_process(const double *buf, int buflen)
 				channel[ch].space_noise = decayavg (channel[ch].space_noise, channel[ch].space_mag,
 					(channel[ch].space_mag < channel[ch].space_noise) ? symbollen / 4 : symbollen * 48);
 
-				channel[ch].noise_floor = min(channel[ch].space_noise, channel[ch].mark_noise);
+				channel[ch].noise_floor = std::min(channel[ch].space_noise, channel[ch].mark_noise);
 
 // clipped if clipped decoder selected
 				double mclipped = 0, sclipped = 0;

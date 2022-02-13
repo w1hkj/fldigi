@@ -23,6 +23,7 @@
 #include <config.h>
 
 #include <string>
+#include <iostream>
 
 #include "misc.h"
 #include "filters.h"
@@ -44,8 +45,6 @@
 #include "status.h"
 #include "debug.h"
 #include "audio_alert.h"
-
-using namespace std;
 
 modem *null_modem = 0;
 modem *cw_modem = 0;
@@ -637,9 +636,6 @@ void modem::ModulateXmtr(double *buffer, int len)
 	}
 }
 
-#include <iostream>
-using namespace std;
-
 void modem::ModulateStereo(double *left, double *right, int len, bool sample_flag)
 {
 	if (unlikely(!TXscard)) return;
@@ -950,7 +946,7 @@ void modem::cwid_send_ch(int ch)
 
 }
 
-void modem::cwid_sendtext (const string& s)
+void modem::cwid_sendtext (const std::string& s)
 {
 	cwid_symbollen = (int)(1.2 * samplerate / progdefaults.CWIDwpm);
 	RT = (int) (samplerate * 6 / 1000.0); // 6 msec risetime for CW pulse
@@ -965,7 +961,7 @@ void modem::cwid()
 {
 	if ((CW_EOT && progdefaults.cwid_modes.test(mode) &&
 		progdefaults.CWid == true) || progdefaults.macroCWid == true) {
-		string tosend = " DE ";
+		std::string tosend = " DE ";
 		tosend += progdefaults.myCall;
 		cwid_sendtext(tosend);
 		progdefaults.macroCWid = false;
@@ -1039,7 +1035,7 @@ void modem::wfid_send(int numchars)
 	ModulateVideo(wfid_outbuf, IDSYMLEN);
 }
 
-void modem::wfid_sendchars(string s)
+void modem::wfid_sendchars(std::string s)
 {
 	int len = s.length();
 	int  n[len];
@@ -1105,10 +1101,10 @@ void modem::pretone()
 
 }
 
-void modem::wfid_text(const string& s)
+void modem::wfid_text(const std::string& s)
 {
 	int len = s.length();
-	string video = "Video text: ";
+	std::string video = "Video text: ";
 	video += s;
 
 	if (progdefaults.ID_SMALL) {
@@ -1142,7 +1138,7 @@ void modem::wfid_text(const string& s)
 	disable_modem = true;
 
 	int numlines = 0;
-	string tosend;
+	std::string tosend;
 	while (numlines < len) numlines += vidwidth;
 	numlines -= vidwidth;
 	while (numlines >= 0) {

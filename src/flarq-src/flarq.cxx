@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <cstring>
 #include <ctime>
@@ -140,8 +141,6 @@ Fl_Double_Window *arqwin = 0;
 Fl_Double_Window *dlgconfig = 0;
 Fl_Double_Window *outdialog = 0;
 Fl_Double_Window *composer = 0;
-
-using namespace std;
 
 arq *digi_arq;
 bool traffic = false;
@@ -345,7 +344,7 @@ void selectTrafficOut(bool ComposerOnly)
 		if (fname.find(".eml") == std::string::npos)
 			continue;
 		int validlines = 0;
-		ifstream emailtxt(fname.c_str());
+		std::ifstream emailtxt(fname.c_str());
 		while (!emailtxt.eof()) {
 			memset(szline, 0, 10000);
 			emailtxt.getline(szline,10000);
@@ -401,7 +400,7 @@ void cb_CancelComposeMail()
 
 void readComposedFile(std::string filename)
 {
-	ifstream textfile;
+	std::ifstream textfile;
 	textfile.open(filename.c_str());
 	if (textfile) {
 		char szline[10000];
@@ -499,20 +498,20 @@ std::string nextEmailFile(std::string fname)
 
 void saveComposedText(std::string filename)
 {
-	ofstream textfile;
+	std::ofstream textfile;
 	textfile.open(filename.c_str());
-	textfile << "//FLARQ COMPOSER" << endl;
+	textfile << "//FLARQ COMPOSER" << std::endl;
 	char szmaildt[100];
 	time_t maildt = time(NULL);
 	struct tm *gmt = gmtime(&maildt);
 	strftime(szmaildt, sizeof(szmaildt), "%x %X", gmt);
-	textfile << "Date: " << szmaildt << endl;
-	textfile << "From: " << inpMailFrom->value() << endl;
-	textfile << "To: " << inpMailTo->value() << endl;
-	textfile << "Subject: " << inpMailSubj->value() << endl;
-	textfile << "Content-Type: text/plain; charset=\"UTF-8\"" << endl;
-	textfile << endl;
-	textfile << txtbuffComposer->text() << endl;
+	textfile << "Date: " << szmaildt << std::endl;
+	textfile << "From: " << inpMailFrom->value() << std::endl;
+	textfile << "To: " << inpMailTo->value() << std::endl;
+	textfile << "Subject: " << inpMailSubj->value() << std::endl;
+	textfile << "Content-Type: text/plain; charset=\"UTF-8\"" << std::endl;
+	textfile << std::endl;
+	textfile << txtbuffComposer->text() << std::endl;
 	textfile.close();
 	cb_ClearComposer();
 }
@@ -613,7 +612,7 @@ void testDirectory(std::string dir)
 	std::string tstdir = ARQ_dir;
 	tstdir += '/';
 	tstdir.append(dir);
-	ifstream test(tstdir.c_str());
+	std::ifstream test(tstdir.c_str());
 	if (!test)
 		mkdir(tstdir.c_str(), 0777);
 	else
@@ -625,7 +624,7 @@ void readConfig()
 	extern void cbMenuConfig();
 	std::string configfname = ARQ_dir;
 	configfname.append("flarq.config");
-	ifstream configfile(configfname.c_str());
+	std::ifstream configfile(configfname.c_str());
 	if (configfile) {
 		char tempstr[200];
 		configfile.getline(tempstr,200);
@@ -666,26 +665,26 @@ void saveConfig()
 {
 	std::string configfname = ARQ_dir;
 	configfname.append("flarq.config");
-	ofstream configfile(configfname.c_str());
+	std::ofstream configfile(configfname.c_str());
 	if (configfile) {
 		int mainX = arqwin->x();
 		int mainY = arqwin->y();
 		int mainW = arqwin->w();
 		int mainH = arqwin->h();
-		configfile << VERSION << endl;
-		configfile << MyCall << endl;
-		configfile << exponent << endl;
-		configfile << txdelay << endl;
-		configfile << iretries << endl;
-		configfile << iwaittime << endl;
-		configfile << itimeout << endl;
-		configfile << bcnInterval << endl;
-		configfile << mainX << endl;
-		configfile << mainY << endl;
-		configfile << mainW << endl;
-		configfile << mainH << endl;
-		configfile << beacontext.c_str() << endl;
-		configfile << restart_beacon << endl;
+		configfile << VERSION << std::endl;
+		configfile << MyCall << std::endl;
+		configfile << exponent << std::endl;
+		configfile << txdelay << std::endl;
+		configfile << iretries << std::endl;
+		configfile << iwaittime << std::endl;
+		configfile << itimeout << std::endl;
+		configfile << bcnInterval << std::endl;
+		configfile << mainX << std::endl;
+		configfile << mainY << std::endl;
+		configfile << mainW << std::endl;
+		configfile << mainH << std::endl;
+		configfile << beacontext.c_str() << std::endl;
+		configfile << restart_beacon << std::endl;
 		configfile.close();
 	}
 }
@@ -744,7 +743,7 @@ void mpsk_on()
 		tcpip->send(s);
 	}
 	catch (const SocketException& e) {
-		cerr << e.what() << '\n';
+		std::cerr << e.what() << '\n';
 	}
 }
 
@@ -756,7 +755,7 @@ void mpsk_off_after_buffer_sent()
 		tcpip->send(s);
 	}
 	catch (const SocketException& e) {
-		cerr << e.what() << '\n';
+		std::cerr << e.what() << '\n';
 	}
 }
 
@@ -768,7 +767,7 @@ void mpsk_off()
 		tcpip->send(s);
 	}
 	catch (const SocketException& e) {
-		cerr << e.what() << '\n';
+		std::cerr << e.what() << '\n';
 	}
 }
 
@@ -787,7 +786,7 @@ void MPSK_client_transmit(const std::string& s)
 		mpsk_off_after_buffer_sent();
 	}
 	catch (const SocketException& e) {
-		cerr << e.what() << '\n';
+		std::cerr << e.what() << '\n';
 	}
 }
 
@@ -841,7 +840,7 @@ void MPSK_Socket_rcv_loop(void *)
 		}
 	}
 	catch (const SocketException& e) {
-		cerr << e.what() << '\n';
+		std::cerr << e.what() << '\n';
 	}
 
 	inLoop = false;
@@ -857,7 +856,7 @@ void client_transmit(const std::string& s )
 			tcpip->send(s);
 	}
 	catch (const SocketException& e) {
-		cerr << e.what() << '\n';
+		std::cerr << e.what() << '\n';
 	}
 }
 
@@ -873,7 +872,7 @@ void Socket_rcv_loop(void *)
 		tcpip->set_nonblocking(false);
 	}
 	catch (const SocketException& e) {
-		cerr << e.what() << '\n';
+		std::cerr << e.what() << '\n';
 	}
 
 	inLoop = false;
@@ -1032,7 +1031,7 @@ void arqCONNECT()
 
 bool fileExists(std::string fname)
 {
-	ifstream test(fname.c_str());
+	std::ifstream test(fname.c_str());
 	if (test) {
 		test.close();
 		return true;
@@ -1086,7 +1085,7 @@ void saveEmailFile()
 	while (fileExists(savetoname))
 		savetoname = nextFileName(savetoname);
 
-	ofstream tfile(savetoname.c_str(), ios::binary);
+	std::ofstream tfile(savetoname.c_str(), std::ios::binary);
 	if (tfile) {
 		tfile << txtarqload;
 		tfile.close();
@@ -1110,7 +1109,7 @@ void saveRxFile()
 	if (fileExists(savetoname))
 		savetoname = nextFileName(savetoname);
 
-	ofstream tfile(savetoname.c_str(), ios::binary);
+	std::ofstream tfile(savetoname.c_str(), std::ios::binary);
 	if (tfile) {
 		tfile << txtarqload;
 		tfile.close();
@@ -1237,14 +1236,14 @@ void moveEmailFile()
 	if (MailFileName.empty()) return;
 	if (MailSaveFileName.empty()) return;
 
-	ifstream infile(MailFileName.c_str(), ios::in | ios::binary);
+	std::ifstream infile(MailFileName.c_str(), std::ios::in | std::ios::binary);
 
 	if (MailSaveFileName.find(".eml") == std::string::npos)
 		MailSaveFileName.append(".eml");
 	while (fileExists(MailSaveFileName))
 		MailSaveFileName = nextFileName(MailSaveFileName);
 
-	ofstream outfile(MailSaveFileName.c_str(), ios::out | ios::binary);
+	std::ofstream outfile(MailSaveFileName.c_str(), std::ios::out | std::ios::binary);
 	char c;
 
 	if (infile && outfile) {
@@ -1279,8 +1278,8 @@ void sendEmailFile()
 	char sizemsg[40];
 	size_t p;
 
-	ifstream textfile;
-	textfile.open(sendfilename.c_str(), ios::binary);
+	std::ifstream textfile;
+	textfile.open(sendfilename.c_str(), std::ios::binary);
 	if (textfile) {
 		for (size_t i = 0; i < sendfilename.length(); i++)
 			if (sendfilename[i] == '\\') sendfilename[i] = '/';
@@ -1343,7 +1342,7 @@ void sendAsciiFile()
 	std::string textin = "";
 	char sizemsg[40];
 	if (p && *p) {
-		ifstream textfile;
+		std::ifstream textfile;
 		textfile.open(p);
 		if (textfile) {
 			TX.erase();
@@ -1396,8 +1395,8 @@ void sendImageFile()
 	base64 b64(true);
 	char sizemsg[40];
 	if (p && *p) {
-		ifstream textfile;
-		textfile.open(p, ios::binary);
+		std::ifstream textfile;
+		textfile.open(p, std::ios::binary);
 		if (textfile) {
 			TX.erase();
 			TX.append(arqfile);
@@ -1445,8 +1444,8 @@ void sendBinaryFile()
 	base64 b64(true);
 	char sizemsg[40];
 	if (p && *p) {
-		ifstream textfile;
-		textfile.open(p, ios::binary);
+		std::ifstream textfile;
+		textfile.open(p, std::ios::binary);
 		if (textfile) {
 			TX.erase();
 			TX.append(arqfile);
@@ -1755,9 +1754,9 @@ void arqlog(std::string nom,std::string s)
 			strdebug += ASCII[(int)s[i]];
 		else
 			strdebug += s[i];
-	ofstream logfile(Logfile.c_str(), ios::app);
+	std::ofstream logfile(Logfile.c_str(), std::ios::app);
 	if (logfile)
-		logfile << nom << szGMT << strdebug << endl;
+		logfile << nom << szGMT << strdebug << std::endl;
 }
 
 void DEBUGrxprint(std::string s)
@@ -1807,8 +1806,8 @@ int main (int argc, char *argv[] )
 {
 	sscanf(VERSION, "%f", &version);
 
-	set_unexpected(handle_unexpected);
-	set_terminate(diediedie);
+	std::set_unexpected(handle_unexpected);
+	std::set_terminate(diediedie);
 	setup_signal_handlers();
 
 	NBEMS_dir.clear();
@@ -1867,7 +1866,7 @@ int main (int argc, char *argv[] )
 
 	int arg_idx;
 	if (Fl::args(argc, argv, arg_idx, parse_args) != argc) {
-		cerr << PACKAGE_NAME << ": bad option `" << argv[arg_idx]
+		std::cerr << PACKAGE_NAME << ": bad option `" << argv[arg_idx]
 		     << "'\nTry `" << PACKAGE_NAME
 		     << " --help' for more information.\n";
 		exit(EXIT_FAILURE);
@@ -2003,7 +2002,7 @@ static void checkdirectories(void)
 			NBEMS_dirs[i].dir.assign(NBEMS_dir).append(NBEMS_dirs[i].suffix).append("/");
 
 		if ((r = mkdir(NBEMS_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
-			cerr << _("Could not make directory") << ' ' << NBEMS_dirs[i].dir
+			std::cerr << _("Could not make directory") << ' ' << NBEMS_dirs[i].dir
 			     << ": " << strerror(errno) << '\n';
 			exit(EXIT_FAILURE);
 		}

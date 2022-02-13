@@ -71,7 +71,7 @@ char ifkp_txgry_tooltip[24];
 static int translate = 0;
 static bool enabled = false;
 
-static string ifkp_fname;
+static std::string ifkp_fname;
 
 std::string ifkp::imageheader;
 std::string ifkp::avatarheader;
@@ -137,7 +137,7 @@ void cb_btnifkpRxReset(Fl_Widget *, void *)
 
 void cb_btnifkpRxSave(Fl_Widget *, void *)
 {
-	ifkppicRx->save_png(string(ifkp_fname).append(".png").c_str());
+	ifkppicRx->save_png(std::string(ifkp_fname).append(".png").c_str());
 }
 
 void cb_btnifkpRxClose(Fl_Widget *, void *)
@@ -157,7 +157,7 @@ void ifkp_save_raw_video()
 
 	ifkp_fname.assign(PicsDir).append("IFKP").append(sztime);
 
-	FILE *raw = fl_fopen(string(ifkp_fname).append(".raw").c_str(), "wb");
+	FILE *raw = fl_fopen(std::string(ifkp_fname).append(".raw").c_str(), "wb");
 	fwrite(&ifkp_image_type, 1, 1, raw);
 	fwrite(ifkp_rawvideo, 1, RAWSIZE, raw);
 	fclose(raw);
@@ -167,7 +167,7 @@ void ifkp_load_raw_video()
 {
 // abort & close any Rx video processing
 	int image_type = 0;
-	string image_types = "TtSsLlFVvPpMm";
+	std::string image_types = "TtSsLlFVvPpMm";
 
 	if (!ifkppicRxWin)
 		ifkp_createRxViewer();
@@ -190,7 +190,7 @@ void ifkp_load_raw_video()
 		return;
 	}
 
-	if (image_types.find(ifkp_image_type) != string::npos) {
+	if (image_types.find(ifkp_image_type) != std::string::npos) {
 
 		ifkp_showRxViewer(image_type);
 
@@ -458,7 +458,7 @@ void cb_ifkppicTransmit( Fl_Widget *w, void *)
 {
 	bool grey = btnifkppicTxGrey->value();
 	char ch = ' ';
-	string picmode = " pic%";
+	std::string picmode = " pic%";
 	switch (selifkppicSize->value()) {
 		case 0 : ifkp_showTxViewer(ch = (grey ? 't' : 'T')); break; // 59 x 74
 		case 1 : ifkp_showTxViewer(ch = (grey ? 'm' : 'M')); break; // 120 x 150
@@ -546,7 +546,7 @@ void ifkp_load_scaled_image(std::string fname, bool gray)
 	int winH = 512;
 	int ifkppicX = 0;
 	int ifkppicY = 0;
-	string picmode = "pic% \n";
+	std::string picmode = "pic% \n";
 
 	if (ifkpTxImg) {
 		ifkpTxImg->release();

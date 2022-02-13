@@ -45,8 +45,6 @@
 #define DECBUFSIZE 8 * SEARCHLEN
 
 
-using namespace std;
-
 struct callback_t
 {
 	void* data;
@@ -54,7 +52,7 @@ struct callback_t
 	spot_log_cb_t mcb;
 	spot_recv_cb_t rcb;
 };
-typedef list<callback_t> cblist_t;
+typedef std::list<callback_t> cblist_t;
 
 
 struct fre_hash : std::unary_function<const fre_t*, size_t>
@@ -66,14 +64,14 @@ struct fre_comp : std::unary_function<const fre_t*, bool>
 	size_t operator()(const fre_t* l, const fre_t* r) const { return *l == *r; }
 };
 
-typedef list<callback_t*> callback_p_list_t;
+typedef std::list<callback_t*> callback_p_list_t;
 
 #if HAVE_STD_HASH
 	typedef std::unordered_map<fre_t*, callback_p_list_t, fre_hash, fre_comp> rcblist_t;
-	static std::unordered_map<int, string> buffers;
+	static std::unordered_map<int, std::string> buffers;
 #elif HAVE_STD_TR1_HASH
 	typedef tr1::unordered_map<fre_t*, callback_p_list_t, fre_hash, fre_comp> rcblist_t;
-	static tr1::unordered_map<int, string> buffers;
+	static tr1::unordered_map<int, std::string> buffers;
 #endif
 
 static cblist_t cblist;
@@ -96,12 +94,12 @@ void spot_recv(char c, int decoder, int afreq, int md)
 	if (afreq == 0)
 		afreq = active_modem->get_freq();
 
-	string& buf = buffers[decoder];
+	std::string& buf = buffers[decoder];
 	if (unlikely(buf.capacity() < DECBUFSIZE))
 		buf.reserve(DECBUFSIZE);
 
 	buf += c;
-	string::size_type n = buf.length();
+	std::string::size_type n = buf.length();
 	if (n == DECBUFSIZE)
 		buf.erase(0, DECBUFSIZE - SEARCHLEN);
 
@@ -112,8 +110,8 @@ void spot_recv(char c, int decoder, int afreq, int md)
 	for (rcblist_t::iterator i = rcblist.begin(); i != rcblist.end(); ++i) {
 		if (unlikely(i->first->match(search))) {
 			matched = true;
-			const vector<regmatch_t>& m = i->first->suboff();
-			for (list<callback_t*>::iterator j = i->second.begin();
+			const std::vector<regmatch_t>& m = i->first->suboff();
+			for (std::list<callback_t*>::iterator j = i->second.begin();
 			     j != i->second.end() && (*j)->rcb; ++j) {
 				if (m.empty())
 					(*j)->rcb(last_mode, afreq, search, NULL, 0, (*j)->data);
@@ -237,7 +235,7 @@ void spot_unregister_recv(spot_recv_cb_t rcb, const void* rdata)
 
 	// remove pointer from rcblist
 	for (rcblist_t::iterator j = rcblist.begin(); j != rcblist.end(); ++j) {
-		for (list<callback_t*>::iterator k = j->second.begin(); k != j->second.end(); ++k) {
+		for (std::list<callback_t*>::iterator k = j->second.begin(); k != j->second.end(); ++k) {
 			if (*k == p) {
 				j->second.erase(k);
 				if (j->second.empty()) {

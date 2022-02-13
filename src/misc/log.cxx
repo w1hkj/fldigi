@@ -42,11 +42,9 @@
 
 #include "ascii.h"
 
-using namespace std;
-
 static const char *lognames[] = { "RX", "TX", "", "" };
 
-cLogfile::cLogfile(const string& fname)
+cLogfile::cLogfile(const std::string& fname)
 	: retflag(true), logtype(LOG_RX)
 {
 	if ((logfile = fl_fopen(fname.c_str(), "a"))) {
@@ -61,7 +59,7 @@ cLogfile::~cLogfile()
 		fclose(logfile);
 }
 
-void cLogfile::log_to_file(log_t type, const string& s)
+void cLogfile::log_to_file(log_t type, const std::string& s)
 {
 	if (!logfile || ferror(logfile) || s.empty())
 		return;

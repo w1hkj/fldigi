@@ -33,8 +33,6 @@
 #include "wwv.h"
 #include "fl_digi.h"
 
-using namespace std;
-
 void wwv::tx_init()
 {
 	phaseacc = 0;

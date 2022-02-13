@@ -1,4 +1,4 @@
-string arc_commands = "\
+std::string arc_commands = "\
 <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 5.0//EN\">\n\
 <html>\n\
 <head>\n\

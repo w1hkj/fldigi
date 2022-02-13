@@ -27,9 +27,6 @@
 
 #include "re.h"
 
-using namespace std;
-
-
 re_t::re_t(const char* pattern_, int cflags_)
 	: pattern(pattern_), cflags(cflags_), eflags(0), error(false)
 {
@@ -103,7 +100,7 @@ bool re_t::match(const char* str, int eflags_)
 	return found;
 }
 
-const string& re_t::submatch(size_t n) const
+const std::string& re_t::submatch(size_t n) const
 {
 	return substrings[n];
 }
@@ -131,10 +128,10 @@ void re_t::suboff(size_t n, int* start, int* end) const
 size_t re_t::hash(void) const
 {
 #if HAVE_STD_HASH
-	size_t h = std::hash<string>()(pattern);
+	size_t h = std::hash<std::string>()(pattern);
 	return h ^ (std::hash<int>()(cflags) + 0x9e3779b9 + (h << 6) + (h >> 2));
 #elif HAVE_STD_TR1_HASH
-	size_t h = tr1::hash<string>()(pattern);
+	size_t h = tr1::hash<std::string>()(pattern);
 	return h ^ (tr1::hash<int>()(cflags) + 0x9e3779b9 + (h << 6) + (h >> 2));
 #endif
 }

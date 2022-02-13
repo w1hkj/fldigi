@@ -55,11 +55,9 @@ extern bool n3fjp_connected;
 
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
-using namespace std;
+std::string windowTitle;
 
-string windowTitle;
-
-vector<qrg_mode_t> freqlist;
+std::vector<qrg_mode_t> freqlist;
 
 const unsigned char nfields = 5;//4;
 int fwidths[nfields];
@@ -124,15 +122,15 @@ struct rmode_name_t {
 #endif
 };
 
-map<string, rmode_t> mode_nums;
-map<rmode_t, string> mode_names;
+std::map<std::string, rmode_t> mode_nums;
+std::map<rmode_t, std::string> mode_names;
 
 void qso_selMode(rmode_t m)
 {
 	qso_opMODE->value(mode_names[m].c_str());
 }
 
-string modeString(rmode_t m)
+std::string modeString(rmode_t m)
 {
 	return mode_names[m].c_str();
 }
@@ -141,8 +139,8 @@ void initOptionMenus()
 {
 	qso_opMODE->clear();
 
-	list<MODE>::iterator MD;
-	list<MODE> *pMD = 0;
+	std::list<MODE>::iterator MD;
+	std::list<MODE> *pMD = 0;
 
 	if (lmodes.empty() == false)
 		pMD = &lmodes;
@@ -164,8 +162,8 @@ void initOptionMenus()
 	}
 
 	qso_opBW->clear();
-	list<BW>::iterator bw;
-	list<BW> *pBW = 0;
+	std::list<BW>::iterator bw;
+	std::list<BW> *pBW = 0;
 	if (lbws.empty() == false)
 		pBW = &lbws;
 	else if (lbwCMD.empty() == false)
@@ -201,7 +199,7 @@ void updateSelect()
 	}
 }
 
-size_t updateList(long rf, int freq, string rmd, trx_mode md, string usage = "")
+size_t updateList(long rf, int freq, std::string rmd, trx_mode md, std::string usage = "")
 {
 	qrg_mode_t m;
 	m.rmode = rmd;
@@ -213,7 +211,7 @@ size_t updateList(long rf, int freq, string rmd, trx_mode md, string usage = "")
 	freqlist.push_back(m);
 	sort(freqlist.begin(), freqlist.end());
 
-	vector<qrg_mode_t>::const_iterator pos = find(freqlist.begin(), freqlist.end(), m);
+	std::vector<qrg_mode_t>::const_iterator pos = find(freqlist.begin(), freqlist.end(), m);
 	if (pos != freqlist.end())
 		return pos - freqlist.begin();
 	else
@@ -239,19 +237,19 @@ size_t addtoList(long val)
 
 bool readFreqList()
 {
-	ifstream freqfile((HomeDir + "frequencies2.txt").c_str());
+	std::ifstream freqfile((HomeDir + "frequencies2.txt").c_str());
 	if (!freqfile) {
 		LOG_ERROR("Could not open %s", (HomeDir + "frequencies2.txt").c_str());
 		return false;
 	}
 
-	string line;
+	std::string line;
 	qrg_mode_t m;
 	while (!getline(freqfile, line).eof()) {
 		LOG_INFO("%s", line.c_str());
 		if (line[0] == '#')
 			continue;
-		istringstream is(line);
+		std::istringstream is(line);
 		is >> m;
 		freqlist.push_back(m);
 	}
@@ -267,7 +265,7 @@ void saveFreqList()
 {
 	if (freqlist.empty()) return;
 
-	ofstream freqfile((HomeDir + "frequencies2.txt").c_str());
+	std::ofstream freqfile((HomeDir + "frequencies2.txt").c_str());
 	if (!freqfile) {
 		LOG_ERROR("Could not open %s", (HomeDir + "frequencies2.txt").c_str());
 		return;
@@ -276,7 +274,7 @@ void saveFreqList()
 
 	copy(	freqlist.begin(),
 			freqlist.end(),
-			ostream_iterator<qrg_mode_t>(freqfile, "\n") );
+			std::ostream_iterator<qrg_mode_t>(freqfile, "\n") );
 
 	freqfile.close();
 }

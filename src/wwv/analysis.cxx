@@ -50,8 +50,6 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
 static char msg1[80];
 
 void anal::tx_init()
@@ -174,7 +172,7 @@ cmplx anal::mixer(cmplx in)
 
 void anal::start_csv()
 {
-	string InfoPathname(AnalysisDir);
+	std::string InfoPathname(AnalysisDir);
 	InfoPathname.append("info.txt");
 
 	createfilename();
@@ -192,8 +190,8 @@ void anal::start_csv()
 			return;
 		}
 
-		string InfoText;
-		ifstream InfoTextFile( InfoPathname.c_str() );
+		std::string InfoText;
+		std::ifstream InfoTextFile( InfoPathname.c_str() );
 		if (InfoTextFile.is_open()) {
 // files exists, obtain info in text file
 			getline (InfoTextFile, InfoText);

@@ -56,8 +56,6 @@
 
 LOG_FILE_SOURCE(debug::LOG_FD);
 
-using namespace std;
-
 //forward declarations of local functions
 void FD_start();
 
@@ -76,10 +74,10 @@ bool FD_logged_on = false;
 bool FD_enabled = false;
 bool FD_exit = false;
 
-string FD_ip_addr = "";
-string FD_ip_port = "";
+std::string FD_ip_addr = "";
+std::string FD_ip_port = "";
 
-string FD_rxbuffer;
+std::string FD_rxbuffer;
 
 //======================================================================
 // data report from fdserver.tcl
@@ -117,36 +115,36 @@ void view(Fl_Output *w, const char * s)
 //======================================================================
 //
 //======================================================================
-static string toparse;
+static std::string toparse;
 
-void parse_logon_ok(string s)
+void parse_logon_ok(std::string s)
 {
 	size_t p = 0;
-	static string call, clss, mult, sect;
+	static std::string call, clss, mult, sect;
 	call.clear(); clss.clear(); sect.clear();
 	s.erase(0, 9);
 	call = s;
 	call.erase(call.find(" "));
 	p = s.find(" ");
-	if (p != string::npos) {
+	if (p != std::string::npos) {
 		s.erase(0, p+1);
 		clss = s;
 		p = clss.find(" ");
 		clss.erase(p);
 		p = s.find(" ");
-		if (p != string::npos) {
+		if (p != std::string::npos) {
 			s.erase(0,p+1);
 			mult = s;
 			p = mult.find(" ");
 			mult.erase(p);
 			p = s.find(" ");
-			if (p != string::npos) {
+			if (p != std::string::npos) {
 				s.erase(0,p+1);
 				sect = s;
 				p = sect.find("\r");
-				if (p != string::npos) sect.erase(p);
+				if (p != std::string::npos) sect.erase(p);
 				p = sect.find("\n");
-				if (p != string::npos) sect.erase(p);
+				if (p != std::string::npos) sect.erase(p);
 			}
 		}
 	}
@@ -166,15 +164,15 @@ void parse_logon_ok(string s)
 //======================================================================
 //
 //======================================================================
-void parse_score(string s)
+void parse_score(std::string s)
 {
-	static string sscore;
+	static std::string sscore;
 	size_t p = s.find("\r");
-	if (p != string::npos) s.erase(p);
+	if (p != std::string::npos) s.erase(p);
 	p = s.find("\n");
-	if (p != string::npos) s.erase(p);
+	if (p != std::string::npos) s.erase(p);
 	p = s.find(" ");
-	if (p != string::npos) s.erase(0, p+1);
+	if (p != std::string::npos) s.erase(0, p+1);
 	sscore = s;
 	REQ(&view, view_FD_score, sscore.c_str());
 }
@@ -182,15 +180,15 @@ void parse_score(string s)
 //======================================================================
 //
 //======================================================================
-void parse_entry( string needle, Fl_Output *view1, Fl_Output *view2 )
+void parse_entry( std::string needle, Fl_Output *view1, Fl_Output *view2 )
 {
 	size_t p1 = toparse.find(needle);
-	if (p1 == string::npos) return;
+	if (p1 == std::string::npos) return;
 	p1 += needle.length();
 	size_t p2 = toparse.find(" ", p1);
 	size_t p3 = toparse.find("}", p1);
-	if (p3 == string::npos) return;
-	string num = "", op = "";
+	if (p3 == std::string::npos) return;
+	std::string num = "", op = "";
 	num = toparse.substr(p1, p2 - p1);
 	op = toparse.substr(p2+1, p3 - (p2+1));
 
@@ -267,59 +265,59 @@ void clear_fd_viewer() {
 //======================================================================
 //
 //======================================================================
-void parse_FD_stream(string data)
+void parse_FD_stream(std::string data)
 {
 	size_t p = 0;
 	if (data.empty()) return;
 
 //std::cout << "RX Stream:\n" << data << std::endl;
 
-	if (data.find("QUIT") != string::npos) {
+	if (data.find("QUIT") != std::string::npos) {
 //std::cout << "Quit\n";
 		FD_disconnect();
 		btn_fd_connect->value(0);
 		return;
 	}
-	if (data.find("LOGON_DENIED") != string::npos) {
+	if (data.find("LOGON_DENIED") != std::string::npos) {
 //std::cout << "Logon denied\n";
 		FD_logged_on = false;
 		LOG_ERROR("FD logon DENIED");
 		btn_fd_connect->value(0);
 		return;
 	}
-	if (data.find("LOGOFF_OK") != string::npos) {
+	if (data.find("LOGOFF_OK") != std::string::npos) {
 //std::cout << "Log off OK\n";
 		FD_logged_on = false;
 		return;
 	}
-	if (data.find("LOGON_OK") != string::npos) {
+	if (data.find("LOGON_OK") != std::string::npos) {
 //std::cout << "Logon OK\n";
 		parse_logon_ok(data.substr(p));
 		FD_logged_on = true;
 		box_fdserver_connected->color((Fl_Color)2);
 		box_fdserver_connected->redraw();
 	}
-	if ( (p = data.find("SCORE") ) != string::npos) {
+	if ( (p = data.find("SCORE") ) != std::string::npos) {
 //std::cout << "SCORE\n";
 		parse_score(data.substr(p));
 	}
-	if ( (p = data.find("WORKED"))!= string::npos) {
+	if ( (p = data.find("WORKED"))!= std::string::npos) {
 //std::cout << "WORKED\n";
 		toparse = data.substr(p);
 		REQ(parse_worked);
 		return;
 	}
-	if ( data.find("NODUP") != string::npos) {
+	if ( data.find("NODUP") != std::string::npos) {
 //std::cout << "Not a duplicate\n";
 		return;
 	}
-	else if (data.find("DUP") != string::npos) {
+	else if (data.find("DUP") != std::string::npos) {
 //std::cout << "Duplicate\n";
 	}
-	else if (data.find("REJECT") != string::npos) {
+	else if (data.find("REJECT") != std::string::npos) {
 //std::cout << "Reject\n";
 	}
-	else if (data.find("ACCEPT") != string::npos) {
+	else if (data.find("ACCEPT") != std::string::npos) {
 //std::cout << "Accept\n";
 	}
 }
@@ -327,7 +325,7 @@ void parse_FD_stream(string data)
 //======================================================================
 //
 //======================================================================
-void FD_write(string s)
+void FD_write(std::string s)
 {
 	FD_socket->send(s.append("\n"));
 }
@@ -335,7 +333,7 @@ void FD_write(string s)
 //======================================================================
 //
 //======================================================================
-void FD_get_record(string call)
+void FD_get_record(std::string call)
 {
 	if(!FD_socket) return;
 	if (!FD_connected) return;
@@ -349,7 +347,7 @@ void FD_add_record()
 	if(!FD_socket) return;
 	if (!FD_connected) return;
 	guard_lock send_lock(&FD_mutex);
-	string cmd = "ADD ";
+	std::string cmd = "ADD ";
 	cmd.append(inpCall->value()).append(" ");
 	cmd.append(inpSection->value()).append(" ");
 	cmd.append(inpClass->value());
@@ -359,10 +357,10 @@ void FD_add_record()
 //======================================================================
 //
 //======================================================================
-static string fd_band;
-static string fd_mode;
+static std::string fd_band;
+static std::string fd_mode;
 
-static string FD_opmode()
+static std::string FD_opmode()
 {
 	if (!active_modem) {
 		return "DIG";
@@ -379,7 +377,7 @@ static string FD_opmode()
 //======================================================================
 //
 //======================================================================
-static string FD_opband()
+static std::string FD_opband()
 {
 	if (!active_modem) return "40";
 
@@ -409,8 +407,8 @@ int FD_dupcheck()
 	if(!FD_socket) return 0;
 	if (!FD_connected) return 0;
 
-	string response;
-	string cmd = "DUPCHECK ";
+	std::string response;
+	std::string cmd = "DUPCHECK ";
 	cmd.append(inpCall->value());
 	try {
 		guard_lock send_lock(&FD_mutex);
@@ -419,9 +417,9 @@ int FD_dupcheck()
 		FD_socket->recv(response);
 		if (response.empty())
 			return 0;
-		if (response.find("NODUP") != string::npos)
+		if (response.find("NODUP") != std::string::npos)
 			return 0;
-		if (response.find("DUP") != string::npos)
+		if (response.find("DUP") != std::string::npos)
 			return 1;
 		return 0;
 	} catch (const SocketException& e) {
@@ -436,9 +434,9 @@ int FD_dupcheck()
 //======================================================================
 void FD_logon()
 {
-	string ucasecall = progdefaults.fd_op_call;
-	string buffer;
-	string cmd = "LOGON ";
+	std::string ucasecall = progdefaults.fd_op_call;
+	std::string buffer;
+	std::string cmd = "LOGON ";
 
 	if (ucasecall.empty()) return;
 	for (size_t n = 0; n < ucasecall.length(); n++)
@@ -477,7 +475,7 @@ void FD_logoff()
 
 	guard_lock send_lock(&FD_mutex);
 	try {
-		string buffer;
+		std::string buffer;
 		FD_write("LOGOFF");
 		MilliSleep(100);
 		FD_socket->recv(buffer);
@@ -519,7 +517,7 @@ void FD_mode_check() {
 //======================================================================
 void FD_rcv_data()
 {
-	string tempbuff;
+	std::string tempbuff;
 	try {
 		guard_lock send_lock(&FD_mutex);
 		FD_socket->recv(tempbuff);

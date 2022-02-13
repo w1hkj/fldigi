@@ -73,8 +73,6 @@
 
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
-using namespace std;
-
 extern Cserial CW_KEYLINE_serial;
 
 int cmedia_fd = -1;
@@ -128,7 +126,7 @@ void PTT::reset(ptt_t dev)
 
 void PTT::set(bool ptt)
 {
-	string ptt_temp =
+	std::string ptt_temp =
 		pttdev == PTT_NONE ? "NONE" :
 		pttdev == PTT_HAMLIB ? "HAMLIB" :
 		pttdev == PTT_RIGCAT ? "RIGCAT" :
@@ -292,7 +290,7 @@ static const char *gpio_name[] = {
 void export_gpio(int bcm)
 {
 	if (bcm < 0 || bcm > 16) return;
-	string exec_str = "gpio export ";
+	std::string exec_str = "gpio export ";
 	exec_str.append(gpio_name[bcm]).append(" out");
 	gpioEXEC(exec_str);
 	LOG_INFO("%s", exec_str.c_str());
@@ -301,7 +299,7 @@ void export_gpio(int bcm)
 void unexport_gpio(int bcm)
 {
 	if (bcm < 0 || bcm > 16) return;
-	string exec_str = "gpio unexport ";
+	std::string exec_str = "gpio unexport ";
 	exec_str.append(gpio_name[bcm]);
 	gpioEXEC(exec_str);
 	LOG_INFO("%s", exec_str.c_str());
@@ -330,8 +328,8 @@ void PTT::set_gpio(bool ptt)
 #define VALUE_MAX 30
 	static const char s_values_str[] = "01";
 
-	string portname = "/sys/class/gpio/gpio";
-	string ctrlport;
+	std::string portname = "/sys/class/gpio/gpio";
+	std::string ctrlport;
 	bool enabled = false;
 	int val = 0;
 	int fd;
@@ -423,7 +421,7 @@ void PTT::set_tty(bool ptt)
 
 void PTT::open_parport(void)
 {
-    if (progdefaults.PTTdev.find("tty") != string::npos) return;
+    if (progdefaults.PTTdev.find("tty") != std::string::npos) return;
 
 	int oflags = O_RDWR | O_NDELAY;
 #	ifdef HAVE_O_CLOEXEC
@@ -543,7 +541,7 @@ static ssize_t tm_write(int fd, const void* buf, size_t len, const struct timeva
 static bool open_fifos(const char* base, int fd[2])
 {
 	struct stat st;
-	string fifo = base;
+	std::string fifo = base;
 	size_t len = fifo.length();
 
 	fifo += "Read";

@@ -50,8 +50,6 @@
 
 #define LOG_WKEY  LOG_INFO
 
-using namespace std;
-
 //----------------------------------------------------------------------
 // WinKeyer general support
 //----------------------------------------------------------------------
@@ -140,7 +138,7 @@ void WK_echo_(int);
 void WK_eeprom_(int);
 bool WK_readByte(unsigned char &byte);
 int WK_readString();
-int WK_sendString (string &s);
+int WK_sendString (std::string &s);
 void WK_clearSerialPort();
 void WK_display_byte(int);
 
@@ -150,7 +148,7 @@ bool WK_run_serial_thread = true;
 bool WK_PTT = false;
 int  WK_powerlevel = 0;
 
-static string WK_str_out = "";
+static std::string WK_str_out = "";
 static bool WK_get_version = false;
 static bool WK_test_echo = false;
 static bool WK_host_is_up = false;
@@ -176,7 +174,7 @@ static std::string hexstr(std::string &s)
 	return hex;
 }
 
-static void upcase(string &s)
+static void upcase(std::string &s)
 {
 	for (size_t n = 0; n < s.length(); n++)
 		if (s[n] > ' ') s[n] = toupper(s[n]);
@@ -184,7 +182,7 @@ static void upcase(string &s)
 
 enum {NOTHING, WAIT_ECHO, WAIT_VERSION};
 
-static void WK_send_command(string &cmd, int what = NOTHING)
+static void WK_send_command(std::string &cmd, int what = NOTHING)
 {
 	int cnt = 101;
 	while (cnt-- && !WK_str_out.empty()) MilliSleep(1);
@@ -434,7 +432,7 @@ void WK_show_speed_change(int wpm)
 
 	sync_cw_parameters();
 
-	string cmd = SET_WPM;
+	std::string cmd = SET_WPM;
 	cmd += progdefaults.CWspeed;
 
 LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
@@ -450,7 +448,7 @@ void WK_speed_(int byte)
 
 void WK_set_wpm()
 {
-	string cmd = SET_WPM;
+	std::string cmd = SET_WPM;
 	cmd += progdefaults.CWspeed;
 
 LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
@@ -462,12 +460,12 @@ void WK_use_pot_changed()
 {
 	progStatus.WK_use_pot = btn_WK_use_pot->value();
 	if (progStatus.WK_use_pot) {
-		string cmd = GET_SPEED_POT;
+		std::string cmd = GET_SPEED_POT;
 
 LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 
 	} else {
-		string cmd = SET_WPM;
+		std::string cmd = SET_WPM;
 		if (cntCW_WPM->value() > 55) cntCW_WPM->value(55);
 		if (cntCW_WPM->value() < 5) cntCW_WPM->value(5);
 		progdefaults.CWspeed = cntCW_WPM->value();
@@ -497,7 +495,7 @@ void WK_eeprom_(int byte)
 
 void load_defaults()
 {
-	string cmd = LOAD_DEFAULTS;
+	std::string cmd = LOAD_DEFAULTS;
 
 	cmd += progStatus.WK_mode_register;
 	cmd += progdefaults.CWspeed;
@@ -559,12 +557,12 @@ LOG_WKEY("SET_SPEED_POT : %s", hexstr(cmd).c_str());
 	WK_send_command(cmd);
 
 	if (progStatus.WK_use_pot) {
-		string cmd = GET_SPEED_POT;
+		std::string cmd = GET_SPEED_POT;
 LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 		WK_send_command(cmd);
 
 	} else {
-		string cmd = SET_WPM;
+		std::string cmd = SET_WPM;
 		cmd += progdefaults.CWspeed;
 LOG_WKEY("SETWPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 		WK_send_command(cmd);
@@ -574,7 +572,7 @@ LOG_WKEY("SETWPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 
 void WKCW_init()
 {
-	string cmd;
+	std::string cmd;
 
 	if (wk2_version) {
 		cmd = "  ";
@@ -612,7 +610,7 @@ LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 void open_wkeyer()
 {
 	int cnt = 0;
-	string cmd = NULL_CMD;
+	std::string cmd = NULL_CMD;
 
 LOG_WKEY("NULL_CMD : %s", hexstr(cmd).c_str());
 
@@ -674,7 +672,7 @@ LOG_WKEY("HOST_OPEN : %s", hexstr(cmd).c_str());
 
 void close_wkeyer()
 {
-	string cmd = "  ";
+	std::string cmd = "  ";
 
 	cmd[0] = ADMIN;
 	cmd[1] = RESET;
@@ -690,7 +688,7 @@ LOG_WKEY("HOST CLOSE : %s", hexstr(cmd).c_str());
 
 void WK_cancel_transmit()
 {
-	string cmd = CLEAR_BUFFER;
+	std::string cmd = CLEAR_BUFFER;
 
 LOG_WKEY("CLEAR_BUFFER : %s", hexstr(cmd).c_str());
 
@@ -699,7 +697,7 @@ LOG_WKEY("CLEAR_BUFFER : %s", hexstr(cmd).c_str());
 
 void WK_tune(bool on)
 {
-	string cmd = KEY_IMMEDIATE;
+	std::string cmd = KEY_IMMEDIATE;
 	if (on) cmd += '\1';
 	else cmd += '\0';
 
@@ -982,7 +980,7 @@ Serial port:\n\
 
 #define WK_RXBUFFSIZE 512
 static unsigned char WK_replybuff[WK_RXBUFFSIZE+1];
-static string WK_replystr;
+static std::string WK_replystr;
 
 bool WK_readByte(unsigned char &byte)
 {
@@ -1005,7 +1003,7 @@ int WK_readString()
 	return numread;
 }
 
-int WK_sendString (string &s)
+int WK_sendString (std::string &s)
 {
 	if (WK_serial.IsOpen() == false) {
 		LOG_WKEY("command: %s", str2hex(s.data(), s.length()));

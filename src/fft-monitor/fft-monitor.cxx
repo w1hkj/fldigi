@@ -25,6 +25,7 @@
 #include <string>
 #include <cstdio>
 #include <ctime>
+#include <cstring>
 
 #include <FL/Fl_Counter.H>
 
@@ -45,8 +46,6 @@
 #include "threads.h"
 
 #include "configuration.h"
-
-using namespace std;
 
 //extern Digiscope	*fftscope;
 //extern spectrum		*fftscope;

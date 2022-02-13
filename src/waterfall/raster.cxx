@@ -40,8 +40,6 @@
 
 static pthread_mutex_t raster_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-using namespace std;
-
 bool active = false;
 
 Raster::Raster (int X, int Y, int W, int H, int rh, bool rv) :

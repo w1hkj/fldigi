@@ -71,8 +71,6 @@
 #  define AI_NUMERICSERV 0
 #endif
 
-using namespace std;
-
 static int dummy_value = 0;
 
 //
@@ -227,7 +225,7 @@ Address::Address(const char* host, int port, const char* proto_name)
 	if (node.empty() && (port == 0))
 		return;
 
-	ostringstream s;
+	std::ostringstream s;
 	s << port;
 	service = s.str();
 	try {
@@ -329,7 +327,7 @@ void Address::lookup(const char* proto_name)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = (proto == IPPROTO_TCP ? SOCK_STREAM : SOCK_DGRAM);
 
-	if (service.find_first_not_of("0123456789") == string::npos)
+	if (service.find_first_not_of("0123456789") == std::string::npos)
 		hints.ai_flags |= AI_NUMERICSERV;
 
 	int r = getaddrinfo(node.empty() ? NULL : node.c_str(), service.c_str(), &hints, &info);
@@ -353,7 +351,7 @@ void Address::lookup(const char* proto_name)
 	struct servent* sp;
 	if ((sp = getservbyname(service.c_str(), NULL)) == NULL) {
 		// if a service name string could not be looked up by name, it must be numeric
-		if (service.find_first_not_of("0123456789") != string::npos)
+		if (service.find_first_not_of("0123456789") != std::string::npos)
 			throw SocketException("Unknown service name");
 		port = htons(atoi(service.c_str()));
 		sp = getservbyport(port, NULL);
@@ -435,7 +433,7 @@ const addr_info_t* Address::get(size_t n) const
 ///
 /// Returns the string representation of an address
 ///
-string Address::get_str(const addr_info_t* addr)
+std::string Address::get_str(const addr_info_t* addr)
 {
 	if (!addr)
 		return "";
@@ -446,7 +444,7 @@ string Address::get_str(const addr_info_t* addr)
 	if (getnameinfo(addr->ai_addr, sizeof(struct sockaddr_storage),
 			host, sizeof(host), port, sizeof(port),
 			NI_NUMERICHOST | NI_NUMERICSERV) == 0)
-		return string("[").append(host).append("]:").append(port);
+		return std::string("[").append(host).append("]:").append(port);
 	else
 		return "";
 #else
@@ -458,7 +456,7 @@ string Address::get_str(const addr_info_t* addr)
 	host = inet_ntoa(((struct sockaddr_in6*)addr->ai_addr)->sin6_addr);
 	snprintf(port, sizeof(port), "%u", htons(((struct sockaddr_in6*)addr->ai_addr)->sin6_port));
 #endif
-	return string("[").append(host).append("]:").append(port);
+	return std::string("[").append(host).append("]:").append(port);
 #endif
 }
 
@@ -1079,7 +1077,7 @@ size_t Socket::send(const void* buf, size_t len)
 /// @return The amount of data that was sent. This may be less than len
 ///         if the socket is non-blocking.
 ///
-size_t Socket::send(const string& buf)
+size_t Socket::send(const std::string& buf)
 {
 	size_t ret;
 	try {
@@ -1123,7 +1121,7 @@ size_t Socket::recv(void* buf, size_t len)
 ///
 /// @return The amount of data that was received.
 ///
-size_t Socket::recv(string& buf)
+size_t Socket::recv(std::string& buf)
 {
 	ssize_t r = 0;
 	// if we have a nonblocking socket and a nonzero timeout,

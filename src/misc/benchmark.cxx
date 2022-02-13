@@ -51,8 +51,6 @@
 
 #include "benchmark.h"
 
-using namespace std;
-
 struct benchmark_params benchmark = { MODE_PSK31, 1000, false, false, 0.0, 1.0, SRC_SINC_FASTEST };
 
 
@@ -105,7 +103,7 @@ static size_t do_rx_src(struct rusage ru[2], struct timespec wall_time[2]);
 void do_benchmark(void)
 {
 	ENSURE_THREAD(TRX_TID);
-	stringstream info;
+	std::stringstream info;
 
 	if (benchmark.src_ratio != 1.0)
 		info << "modem=" << active_modem->get_mode()

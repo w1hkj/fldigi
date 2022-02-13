@@ -59,30 +59,27 @@
 #include "network.h"
 #include "locator.h"
 
-using namespace std;
+std::string qrzhost = "xmldata.qrz.com";
+std::string qrzSessionKey;
+std::string qrzalert;
+std::string qrzerror;
 
+std::string callsign;
 
-string qrzhost = "xmldata.qrz.com";
-string qrzSessionKey;
-string qrzalert;
-string qrzerror;
-
-string callsign;
-
-string lookup_name;
-string lookup_addr1;
-string lookup_addr2;
-string lookup_state;
-string lookup_province;
-string lookup_zip;
-string lookup_country;
-string lookup_born;
-string lookup_fname;
-string lookup_qth;
-string lookup_grid;
-string lookup_latd;
-string lookup_lond;
-string lookup_notes;
+std::string lookup_name;
+std::string lookup_addr1;
+std::string lookup_addr2;
+std::string lookup_state;
+std::string lookup_province;
+std::string lookup_zip;
+std::string lookup_country;
+std::string lookup_born;
+std::string lookup_fname;
+std::string lookup_qth;
+std::string lookup_grid;
+std::string lookup_latd;
+std::string lookup_lond;
+std::string lookup_notes;
 
 qrz_xmlquery_t DB_XML_query = QRZXMLNONE;
 qrz_webquery_t DB_WEB_query = QRZWEBNONE;
@@ -103,20 +100,20 @@ static void *LOOKUP_loop(void *args);
 bool parseSessionKey();
 bool parse_xml();
 
-bool getSessionKey(string& sessionpage);
-bool QRZGetXML(string& xmlpage);
+bool getSessionKey(std::string& sessionpage);
+bool QRZGetXML(std::string& xmlpage);
 int  bearing(const char *, const char *);
 void qra(const char *, double &, double &);
 void QRZ_disp_result();
 void QRZ_CD_query();
 void Lookup_init(void);
 void QRZclose(void);
-void qthappend(string &qth, string &datum);
+void qthappend(std::string &qth, std::string &datum);
 void QRZAlert();
-bool QRZLogin(string& sessionpage);
+bool QRZLogin(std::string& sessionpage);
 void QRZquery();
-void parse_html(const string& htmlpage);
-bool HAMCALLget(string& htmlpage);
+void parse_html(const std::string& htmlpage);
+bool HAMCALLget(std::string& htmlpage);
 void HAMCALLquery();
 
 void QRZ_DETAILS_query();
@@ -125,13 +122,13 @@ QRZ *qCall = 0;
 
 static notify_dialog *announce = 0;
 
-void print_query(const string &name, const string &s)
+void print_query(const std::string &name, const std::string &s)
 {
 //	LOG_WARN("%s query:\n%s", name.c_str(), s.c_str());
 	LOG_VERBOSE("%s query:\n%s", name.c_str(), s.c_str());
 }
 
-void print_data(const string &name, const string &s) {
+void print_data(const std::string &name, const std::string &s) {
 //	LOG_WARN("%s data:\n%s", name.c_str(), s.c_str());
 	LOG_VERBOSE("%s data:\n%s", name.c_str(), s.c_str());
 }
@@ -158,9 +155,9 @@ void clear_Lookup()
 // QRZ subscription query
 // ----------------------------------------------------------------------------
 
-bool parseSessionKey(const string& sessionpage)
+bool parseSessionKey(const std::string& sessionpage)
 {
-	if (sessionpage.find("Bad Request") != string::npos) {
+	if (sessionpage.find("Bad Request") != std::string::npos) {
 		return false;
 	}
 
@@ -212,7 +209,7 @@ bool parseSessionKey(const string& sessionpage)
 }
 
 
-bool parse_xml(const string& xmlpage)
+bool parse_xml(const std::string& xmlpage)
 {
 	print_data("xmldata.qrz.com", xmlpage);
 
@@ -258,7 +255,7 @@ bool parse_xml(const string& xmlpage)
 						{
 						lookup_addr1 =  xml->getNodeData();
 						size_t apt = lookup_addr1.find("#");
-						if (apt != string::npos)
+						if (apt != std::string::npos)
 							lookup_addr1.erase(apt, lookup_addr1.length() - apt);
 						break;
 						}
@@ -333,9 +330,9 @@ bool parse_xml(const string& xmlpage)
 	return true;
 }
 
-bool getSessionKey(string& sessionpage)
+bool getSessionKey(std::string& sessionpage)
 {
-	string html = "http://";
+	std::string html = "http://";
 	html.append(qrzhost);
 	html.append(" /xml/current/?username=");
 	html.append(progdefaults.QRZusername);
@@ -348,9 +345,9 @@ bool getSessionKey(string& sessionpage)
 	return get_http(html, sessionpage, 5.0);
 }
 
-bool QRZGetXML(string& xmlpage)
+bool QRZGetXML(std::string& xmlpage)
 {
-	string html;
+	std::string html;
 	html.assign("http://").append(qrzhost);
 	html.append(" /bin/xml?s=");
 	html.append(qrzSessionKey);
@@ -359,7 +356,7 @@ bool QRZGetXML(string& xmlpage)
 	return get_http(html, xmlpage, 5.0);
 }
 
-void camel_case(string &s)
+void camel_case(std::string &s)
 {
 	bool first_letter = true;
 	for (size_t n = 0; n < s.length(); n++) {
@@ -377,15 +374,15 @@ void QRZ_disp_result()
 
 	if (lookup_fname.length() > 0) {
 		camel_case(lookup_fname);
-		string::size_type spacePos = lookup_fname.find(" ");
+		std::string::size_type spacePos = lookup_fname.find(" ");
 		//    if fname is "ABC" then display "ABC"
 		// or if fname is "A BCD" then display "A BCD"
-		if (spacePos == string::npos || (spacePos == 1)) {
+		if (spacePos == std::string::npos || (spacePos == 1)) {
 			inpName->value(lookup_fname.c_str());
 		}
 		// if fname is "ABC Y" then display "ABC"
 		else if (spacePos > 2) {
-			string fname;
+			std::string fname;
 			fname.assign(lookup_fname, 0, spacePos);
 			inpName->value(fname.c_str());
 		}
@@ -442,7 +439,7 @@ void QRZ_CD_query()
 	for (size_t i = 0; i < strlen(srch); i ++ )
 		srch[i] = toupper(srch[i]);
 
-	string notes;
+	std::string notes;
 	if (!progdefaults.clear_notes) notes.assign(inpNotes->value());
 	else notes.clear();
 
@@ -450,7 +447,7 @@ void QRZ_CD_query()
 		lookup_fname = qCall->GetFname();
 		camel_case(lookup_fname);
 		snip = lookup_fname.find(' ');
-		if (snip != string::npos)
+		if (snip != std::string::npos)
 			lookup_fname.erase(snip, lookup_fname.length() - snip);
 		lookup_qth = qCall->GetCity();
 		lookup_state = qCall->GetState();
@@ -512,7 +509,7 @@ void QRZclose(void)
 	QRZ_thread = 0;
 }
 
-void qthappend(string &qth, string &datum) {
+void qthappend(std::string &qth, std::string &datum) {
 	if (datum.empty()) return;
 	if (!qth.empty()) qth += ", ";
 	qth += datum;
@@ -522,7 +519,7 @@ void QRZAlert()
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
-	string qrznote;
+	std::string qrznote;
 	if (!qrzalert.empty()) {
 		qrznote.append("QRZ alert:\n");
 		qrznote.append(qrzalert);
@@ -534,7 +531,7 @@ void QRZAlert()
 		qrznote.append(qrzerror);
 		qrzerror.clear();
 	}
-	string notes;
+	std::string notes;
 	if (!progdefaults.clear_notes) notes.assign(inpNotes->value());
 	else notes.clear();
 
@@ -545,7 +542,7 @@ void QRZAlert()
 	}
 }
 
-bool QRZLogin(string& sessionpage)
+bool QRZLogin(std::string& sessionpage)
 {
 	bool ok = true;
 	if (qrzSessionKey.empty()) {
@@ -566,7 +563,7 @@ void QRZquery()
 
 	bool ok = true;
 
-	string qrzpage;
+	std::string qrzpage;
 
 	if (qrzSessionKey.empty())
 		ok = QRZLogin(qrzpage);
@@ -578,12 +575,12 @@ void QRZquery()
 			REQ(QRZAlert);
 		else {
 			lookup_qth = lookup_addr2;
-			if (lookup_country.find("Canada") != string::npos) {
+			if (lookup_country.find("Canada") != std::string::npos) {
 				lookup_province = lookup_state;
 				lookup_state.clear();
 			}
 
-			string notes;
+			std::string notes;
 			if (!progdefaults.clear_notes) notes.assign(inpNotes->value());
 			else notes.clear();
 
@@ -613,21 +610,21 @@ void QRZquery()
 // HTTP:://callook.info queries
 // ---------------------------------------------------------------------
 
-string node_data(const string &xmlpage, const string nodename)
+std::string node_data(const std::string &xmlpage, const std::string nodename)
 {
 	size_t pos1, pos2;
-	string test;
+	std::string test;
 	test.assign("<").append(nodename).append(">");
 	pos1 = xmlpage.find(test);
-	if (pos1 == string::npos) return "";
+	if (pos1 == std::string::npos) return "";
 	pos1 += test.length();
 	test.assign("</").append(nodename).append(">");
 	pos2 = xmlpage.find(test);
-	if (pos2 == string::npos) return "";
+	if (pos2 == std::string::npos) return "";
 	return xmlpage.substr(pos1, pos2 - pos1);
 }
 
-void parse_callook(string& xmlpage)
+void parse_callook(std::string& xmlpage)
 {
 	print_data("Callook info", xmlpage);
 
@@ -638,7 +635,7 @@ void parse_callook(string& xmlpage)
 		return;
 	}
 
-	string nodestr = node_data(xmlpage, "current");
+	std::string nodestr = node_data(xmlpage, "current");
 
 	if (nodestr.empty()) {
 		if (!announce) announce = new notify_dialog;
@@ -648,7 +645,7 @@ void parse_callook(string& xmlpage)
 	}
 
 	size_t start_pos = xmlpage.find("</trustee>");
-	if (start_pos == string::npos) return;
+	if (start_pos == std::string::npos) return;
 
 	start_pos += 10;
 	xmlpage = xmlpage.substr(start_pos);
@@ -669,7 +666,7 @@ void parse_callook(string& xmlpage)
 		lookup_grid = node_data(nodestr, "gridsquare");
 	}
 
-	string notes;
+	std::string notes;
 	if (!progdefaults.clear_notes) notes.assign(inpNotes->value());
 	else notes.clear();
 
@@ -682,19 +679,19 @@ void parse_callook(string& xmlpage)
 	lookup_notes = notes;
 
 	size_t p = lookup_addr2.find(",");
-	if (p != string::npos) {
+	if (p != std::string::npos) {
 		lookup_qth = lookup_addr2.substr(0, p);
 		lookup_addr2.erase(0, p+2);
 		p = lookup_addr2.find(" ");
-		if (p != string::npos)
+		if (p != std::string::npos)
 			lookup_state = lookup_addr2.substr(0, p);
 	}
 
 }
 
-bool CALLOOKGetXML(string& xmlpage)
+bool CALLOOKGetXML(std::string& xmlpage)
 {
-	string url = progdefaults.callookurl;
+	std::string url = progdefaults.callookurl;
 	size_t p = 0;
 	if ((p = url.find("https")) != std::string::npos)
 		url.erase(p+4,1);
@@ -710,7 +707,7 @@ void CALLOOKquery()
 
 //	bool ok = true;
 
-	string CALLOOKpage;
+	std::string CALLOOKpage;
 
 	clear_Lookup();
 //	ok = 
@@ -731,35 +728,35 @@ void CALLOOKquery()
 #define HAMCALL_GRID   (char)202
 #define HAMCALL_DOB    (char)194
 
-void parse_html(const string& htmlpage)
+void parse_html(const std::string& htmlpage)
 {
 	print_data("Hamcall data", htmlpage);
 
 	size_t p;
 
 	clear_Lookup();
-	if ((p = htmlpage.find(HAMCALL_FIRST)) != string::npos) {
+	if ((p = htmlpage.find(HAMCALL_FIRST)) != std::string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length() )
 			lookup_fname.append(1, htmlpage[p++]);
 		camel_case(lookup_fname);
 	}
-	if ((p = htmlpage.find(HAMCALL_CITY)) != string::npos) {
+	if ((p = htmlpage.find(HAMCALL_CITY)) != std::string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
 			lookup_qth.append(1, htmlpage[p++]);
 	}
-	if ((p = htmlpage.find(HAMCALL_STATE)) != string::npos) {
+	if ((p = htmlpage.find(HAMCALL_STATE)) != std::string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
 			lookup_state.append(1, htmlpage[p++]);
 	}
-	if ((p = htmlpage.find(HAMCALL_GRID)) != string::npos) {
+	if ((p = htmlpage.find(HAMCALL_GRID)) != std::string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
 			lookup_grid.append(1, htmlpage[p++]);
 	}
-	if ((p = htmlpage.find(HAMCALL_DOB)) != string::npos) {
+	if ((p = htmlpage.find(HAMCALL_DOB)) != std::string::npos) {
 		p++;
 		lookup_notes.append("DOB: ");
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
@@ -767,9 +764,9 @@ void parse_html(const string& htmlpage)
 	}
 }
 
-bool HAMCALLget(string& htmlpage)
+bool HAMCALLget(std::string& htmlpage)
 {
-        string html;
+        std::string html;
 	size_t p1;
 
 	html.assign(progdefaults.hamcallurl);
@@ -788,9 +785,9 @@ bool HAMCALLget(string& htmlpage)
 
 //	print_query("hamcall", url_html);
 
-//	string url = progdefaults.hamcallurl;
+//	std::string url = progdefaults.hamcallurl;
 //	size_t p = url.find("//");
-//	string service = url.substr(0, p);
+//	std::string service = url.substr(0, p);
 //	url.erase(0, p+2);
 //	size_t len = url.length();
 //	if (url[len-1]=='/') url.erase(len-1, 1);
@@ -801,7 +798,7 @@ void HAMCALLquery()
 {
 	ENSURE_THREAD(QRZ_TID);
 
-	string htmlpage;
+	std::string htmlpage;
 
 	if (HAMCALLget(htmlpage))
 		parse_html(htmlpage);
@@ -814,8 +811,8 @@ void HAMCALLquery()
 // Hamcall specific functions
 // ---------------------------------------------------------------------
 
-static string HAMQTH_session_id = "";
-static string HAMQTH_reply = "";
+static std::string HAMQTH_session_id = "";
+static std::string HAMQTH_reply = "";
 
 #define HAMQTH_DEBUG 1
 #undef HAMQTH_DEBUG
@@ -872,10 +869,10 @@ static string HAMQTH_reply = "";
 */
 bool HAMQTH_get_session_id()
 {
-	string url;
-	string retstr = "";
-	size_t p1 = string::npos;
-	size_t p2 = string::npos;
+	std::string url;
+	std::string retstr = "";
+	size_t p1 = std::string::npos;
+	size_t p2 = std::string::npos;
 
 	url.assign(progdefaults.hamqthurl);
 	if ((p1 = url.find("https")) != std::string::npos)
@@ -896,16 +893,16 @@ bool HAMQTH_get_session_id()
 	LOG_VERBOSE("url: %s", url.c_str());
 	LOG_VERBOSE("reply: %s\n", retstr.c_str());
 	p1 = retstr.find("<error>");
-	if (p1 != string::npos) {
+	if (p1 != std::string::npos) {
 		p2 = retstr.find("</error>");
-		if (p2 != string::npos) {
+		if (p2 != std::string::npos) {
 			p1 += 7;
 			lookup_notes = retstr.substr(p1, p2 - p1);
 		}
 		return false;
 	}
 	p1 = retstr.find("<session_id>");
-	if (p1 == string::npos) {
+	if (p1 == std::string::npos) {
 		lookup_notes = "HamQTH not available";
 		return false;
 	}
@@ -915,13 +912,13 @@ bool HAMQTH_get_session_id()
 	return true;
 }
 
-void parse_HAMQTH_html(const string& htmlpage)
+void parse_HAMQTH_html(const std::string& htmlpage)
 {
 	print_data("HamQth html", htmlpage);
 
-	size_t p = string::npos;
-	size_t p1 = string::npos;
-	string tempstr;
+	size_t p = std::string::npos;
+	size_t p1 = std::string::npos;
+	std::string tempstr;
 
 	clear_Lookup();
 
@@ -932,10 +929,10 @@ void parse_HAMQTH_html(const string& htmlpage)
 	lookup_notes.clear();
 	lookup_country.clear();
 
-	if ((p = htmlpage.find("<error>")) != string::npos) {
+	if ((p = htmlpage.find("<error>")) != std::string::npos) {
 		p += 7;
 		p1 = htmlpage.find("</error>", p);
-		if (p1 != string::npos) {
+		if (p1 != std::string::npos) {
 			std::string errstr = htmlpage.substr(p, p1 - p);
 			if (!announce) announce = new notify_dialog;
 			announce->notify(errstr.c_str(), 2.0);
@@ -943,80 +940,80 @@ void parse_HAMQTH_html(const string& htmlpage)
 		}
 		return;
 	}
-	if ((p = htmlpage.find("<nick>")) != string::npos) {
+	if ((p = htmlpage.find("<nick>")) != std::string::npos) {
 		p += 6;
 		p1 = htmlpage.find("</nick>", p);
-		if (p1 != string::npos) {
+		if (p1 != std::string::npos) {
 			lookup_fname = htmlpage.substr(p, p1 - p);
 			camel_case(lookup_fname);
 		}
 	}
-	if ((p = htmlpage.find("<qth>")) != string::npos) {
+	if ((p = htmlpage.find("<qth>")) != std::string::npos) {
 		p += 5;
 		p1 = htmlpage.find("</qth>", p);
-		if (p1 != string::npos)
+		if (p1 != std::string::npos)
 			lookup_qth = htmlpage.substr(p, p1 - p);
 	}
-	if ((p = htmlpage.find("<country>")) != string::npos) {
+	if ((p = htmlpage.find("<country>")) != std::string::npos) {
 		p += 9;
 		p1 = htmlpage.find("</country>", p);
-		if (p1 != string::npos) {
+		if (p1 != std::string::npos) {
 			lookup_country = htmlpage.substr(p, p1 - p);
 			if (lookup_country == "Canada") {
 				p = htmlpage.find("<district>");
-				if (p != string::npos) {
+				if (p != std::string::npos) {
 					p += 10;
 					p1 = htmlpage.find("</district>", p);
-					if (p1 != string::npos)
+					if (p1 != std::string::npos)
 						lookup_province = htmlpage.substr(p, p1 - p);
 				}
 			}
 		}
 	}
-	if ((p = htmlpage.find("<us_state>")) != string::npos) {
+	if ((p = htmlpage.find("<us_state>")) != std::string::npos) {
 		p += 10;
 		p1 = htmlpage.find("</us_state>", p);
-		if (p1 != string::npos)
+		if (p1 != std::string::npos)
 			lookup_state = htmlpage.substr(p, p1 - p);
 	}
-	if ((p = htmlpage.find("<grid>")) != string::npos) {
+	if ((p = htmlpage.find("<grid>")) != std::string::npos) {
 		p += 6;
 		p1 = htmlpage.find("</grid>", p);
-		if (p1 != string::npos)
+		if (p1 != std::string::npos)
 			lookup_grid = htmlpage.substr(p, p1 - p);
 	}
-	if ((p = htmlpage.find("<qsl_via>")) != string::npos) {
+	if ((p = htmlpage.find("<qsl_via>")) != std::string::npos) {
 		p += 9;
 		p1 = htmlpage.find("</qsl_via>", p);
-		if (p1 != string::npos) {
+		if (p1 != std::string::npos) {
 			tempstr.assign(htmlpage.substr(p, p1 - p));
 			if (!tempstr.empty())
 				lookup_notes.append("QSL via: ").append(tempstr).append("\n");
 		}
 	}
 	if (progdefaults.notes_address) {
-		if ((p = htmlpage.find("<adr_name>")) != string::npos) {
+		if ((p = htmlpage.find("<adr_name>")) != std::string::npos) {
 			p += 10;
 			p1 = htmlpage.find("</adr_name>", p);
-			if (p1 != string::npos) {
+			if (p1 != std::string::npos) {
 				tempstr.assign(htmlpage.substr(p, p1 - p));
 				if (!tempstr.empty())
 					lookup_notes.append(tempstr).append("\n");
 			}
 		}
-		if ((p = htmlpage.find("<adr_street1>")) != string::npos) {
+		if ((p = htmlpage.find("<adr_street1>")) != std::string::npos) {
 			p += 13;
 			p1 = htmlpage.find("</adr_street1>", p);
-			if (p1 != string::npos) {
+			if (p1 != std::string::npos) {
 				tempstr.assign(htmlpage.substr(p, p1 - p));
 				if (!tempstr.empty())
 					lookup_notes.append(tempstr).append("\n");
 			}
 		}
-		if ((p = htmlpage.find("<adr_city>")) != string::npos) {
+		if ((p = htmlpage.find("<adr_city>")) != std::string::npos) {
 			p += 10;
 			p1 = htmlpage.find("</adr_city>", p);
-			if (p1 != string::npos) {
+			if (p1 != std::string::npos) {
 				tempstr.assign(htmlpage.substr(p, p1 - p));
 				if (!tempstr.empty())
 					lookup_notes.append(tempstr);
@@ -1026,10 +1023,10 @@ void parse_HAMQTH_html(const string& htmlpage)
 					lookup_notes.append(", ").append(lookup_province);
 			}
 		}
-		if ((p = htmlpage.find("<adr_zip>")) != string::npos) {
+		if ((p = htmlpage.find("<adr_zip>")) != std::string::npos) {
 			p += 9;
 			p1 = htmlpage.find("</adr_zip>", p);
-			if (p1 != string::npos) {
+			if (p1 != std::string::npos) {
 				tempstr.assign(htmlpage.substr(p, p1 - p));
 				if (!tempstr.empty())
 					lookup_notes.append("  ").append(tempstr);
@@ -1038,9 +1035,9 @@ void parse_HAMQTH_html(const string& htmlpage)
 	}
 }
 
-bool HAMQTHget(string& htmlpage)
+bool HAMQTHget(std::string& htmlpage)
 {
-	string url;
+	std::string url;
 	bool ret;
 
 	if (HAMQTH_session_id.empty()) {
@@ -1065,7 +1062,7 @@ bool HAMQTHget(string& htmlpage)
 	ret = get_http(url, htmlpage, 5.0);
 
 	size_t p = htmlpage.find("Session does not exist or expired");
-	if (p != string::npos) {
+	if (p != std::string::npos) {
 		htmlpage.clear();
 		LOG_WARN("HAMQTH session id expired!");
 		HAMQTH_session_id.clear();
@@ -1089,7 +1086,7 @@ void HAMQTHquery()
 {
 	ENSURE_THREAD(QRZ_TID);
 
-	string htmlpage;
+	std::string htmlpage;
 
 	if (!HAMQTHget(htmlpage)) return;
 
@@ -1102,28 +1099,28 @@ void HAMQTHquery()
 
 void QRZ_DETAILS_query()
 {
-	string qrz = progdefaults.qrzurl;
+	std::string qrz = progdefaults.qrzurl;
 	qrz.append("db/").append(callsign);
 	cb_mnuVisitURL(0, (void*)qrz.c_str());
 }
 
 void HAMCALL_DETAILS_query()
 {
-	string hamcall = progdefaults.hamcallurl;
+	std::string hamcall = progdefaults.hamcallurl;
 	hamcall.append("call?callsign=").append(callsign);
 	cb_mnuVisitURL(0, (void*)hamcall.c_str());
 }
 
 void HAMQTH_DETAILS_query()
 {
-	string hamqth = progdefaults.hamqthurl;
+	std::string hamqth = progdefaults.hamqthurl;
 	hamqth.append(callsign);
 	cb_mnuVisitURL(0, (void*)hamqth.c_str());
 }
 
 void CALLOOK_DETAILS_query()
 {
-	string hamcall = progdefaults.callookurl;
+	std::string hamcall = progdefaults.callookurl;
 	hamcall.append(callsign);
 	cb_mnuVisitURL(0, (void *)hamcall.c_str());
 }
@@ -1205,7 +1202,7 @@ void CALLSIGNquery()
 		inpCall->value(callsign.c_str());
 
 	size_t slash;
-	while ((slash = callsign.rfind('/')) != string::npos) {
+	while ((slash = callsign.rfind('/')) != std::string::npos) {
 		if (((slash+1) * 2) < callsign.length())
 			callsign.erase(0, slash + 1);
 		else

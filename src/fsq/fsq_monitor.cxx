@@ -40,8 +40,6 @@
 #include "icons.h"
 #include "qrunner.h"
 
-using namespace std;
-
 //
 // External fsq monitor dialog
 //
@@ -187,7 +185,7 @@ void open_fsqDebug()
 	fsqDebug->redraw();
 }
 
-void write_fsqDebug(string s, int style)
+void write_fsqDebug(std::string s, int style)
 {
 	if (!fsq_debug) return;
 	REQ(&FTextRX::addstr, fsq_debug, s, style);

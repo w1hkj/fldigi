@@ -182,7 +182,7 @@ void Fl_PopBrowser::popshow (int x, int y)
 
 	popbrwsr->topline (i);
 
-	keystrokes.empty();
+	keystrokes.clear();
 
 	popbrwsr->show();
 	show();

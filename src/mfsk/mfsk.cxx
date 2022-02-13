@@ -51,8 +51,6 @@
 
 #define SOFTPROFILE false
 
-using namespace std;
-
 // MFSKpic receive start delay value based on a viterbi length of 45
 //   44 nulls at 8 samples per pixel
 //   88 nulls at 4 samples per pixel
@@ -866,7 +864,7 @@ int mfsk::rx_process(const double *buf, int len)
 				rxstate = RX_STATE_DATA;
 				put_status("");
 
-				string autosave_dir = PicsDir;
+				std::string autosave_dir = PicsDir;
 				picRx->save_png(autosave_dir.c_str());
 				rx_init();
 			} else

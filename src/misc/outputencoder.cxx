@@ -29,8 +29,6 @@
 #include "config.h"
 #include "debug.h"
 
-using namespace std;
-
 /*
  OutputEncoder accepts UTF-8 strings at input, converts them to the
  selected encoding and outputs them one character at a time.
@@ -73,7 +71,7 @@ void OutputEncoder::set_output_encoding(const int charset_out)
 /*
  Push input data into the encoder.
 */
-void OutputEncoder::push(string s)
+void OutputEncoder::push(std::string s)
 {
 	int available = buffer_size - (encoding_ptr - buffer);
 	int consumed_in;

@@ -1574,11 +1574,11 @@ private:
 			double noise_floor = (space_noise + mark_noise) / 2;
 
 			// clip mark & space to envelope & floor
-			mark_abs = min(mark_abs, mark_env);
-			mark_abs = max(mark_abs, noise_floor);
+			mark_abs = std::min(mark_abs, mark_env);
+			mark_abs = std::max(mark_abs, noise_floor);
 
-			space_abs = min(space_abs, space_env);
-			space_abs = max(space_abs, noise_floor);
+			space_abs = std::min(space_abs, space_env);
+			space_abs = std::max(space_abs, noise_floor);
 
 			// mark-space discriminator with automatic threshold
 			// correction, see:

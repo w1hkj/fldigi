@@ -52,8 +52,6 @@
 
 LOG_FILE_SOURCE(debug::LOG_MACLOGGER);
 
-using namespace std;
-
 //======================================================================
 // Socket MACLOGGER i/o used on all platforms
 //======================================================================
@@ -66,51 +64,51 @@ Socket *maclogger_socket = 0;
 bool maclogger_enabled = false;
 bool maclogger_exit = false;
 
-string maclogger_ip_address= "";;
-string maclogger_ip_port= "";;
+std::string maclogger_ip_address= "";;
+std::string maclogger_ip_port= "";;
 
-string mclg_str = "";
+std::string mclg_str = "";
 int    mclg_rxhz;
 int    mclg_txhz;
-string mclg_band;
-string mclg_mode;
-string mclg_power;
-string mclg_call;
-string mclg_dxccnum;
-string mclg_dxccstr;
-string mclg_city;
-string mclg_state;
-string mclg_firstname;
-string mclg_lastname;
-string mclg_comment;
-string mclg_bearing;
-string mclg_longpath;
-string mclg_distance;
+std::string mclg_band;
+std::string mclg_mode;
+std::string mclg_power;
+std::string mclg_call;
+std::string mclg_dxccnum;
+std::string mclg_dxccstr;
+std::string mclg_city;
+std::string mclg_state;
+std::string mclg_firstname;
+std::string mclg_lastname;
+std::string mclg_comment;
+std::string mclg_bearing;
+std::string mclg_longpath;
+std::string mclg_distance;
 
 //======================================================================
 // MacLogger UDP string parsing
 //======================================================================
 
-static string get_str(string s)
+static std::string get_str(std::string s)
 {
 	size_t p = s.find(":");
-	if (p == string::npos) return "";
+	if (p == std::string::npos) return "";
 	s.erase(0, p+1);
 	p = s.find(",");
-	if (p == string::npos) p = s.find("]");
-	if (p == string::npos) return "";
-	string s2 = s.substr(0, p);
+	if (p == std::string::npos) p = s.find("]");
+	if (p == std::string::npos) return "";
+	std::string s2 = s.substr(0, p);
 	if (s2 == "(null)") return "";
 	return s2;
 }
 
-static int get_freq(string s)
+static int get_freq(std::string s)
 {
-	string s2 = get_str(s);
+	std::string s2 = get_str(s);
 	size_t dpt = s2.find(".");
-	if (dpt == string::npos) return 0;
-	string sf = s2.substr(0, dpt);
-	string sm = s2.substr(dpt+1);
+	if (dpt == std::string::npos) return 0;
+	std::string sf = s2.substr(0, dpt);
+	std::string sm = s2.substr(dpt+1);
 	while(sm.length() < 6) sm.append("0");
 	sf.append(sm);
 	int fr = sf[0] - '0';
@@ -193,7 +191,7 @@ void show_mac_strings()
 
 }
 
-void parse_report(string str)
+void parse_report(std::string str)
 {
 	size_t p;
 	mclg_rxhz = 0;
@@ -213,38 +211,38 @@ void parse_report(string str)
 	mclg_longpath.clear();
 	mclg_distance.clear();
 
-	if ((p = str.find("RxMHz:")) != string::npos)
+	if ((p = str.find("RxMHz:")) != std::string::npos)
 		mclg_rxhz = get_freq(str.substr(p));
-	if ((p = str.find("TxMHz:")) != string::npos)
+	if ((p = str.find("TxMHz:")) != std::string::npos)
 		mclg_txhz = get_freq(str.substr(p));
-	if ((p = str.find("Mode:"))  != string::npos)
+	if ((p = str.find("Mode:"))  != std::string::npos)
 		mclg_mode = get_str(str.substr(p));
-	if ((p = str.find("Call:"))  != string::npos)
+	if ((p = str.find("Call:"))  != std::string::npos)
 		mclg_call = get_str(str.substr(p));
-	if ((p = str.find("city:")) != string::npos)
+	if ((p = str.find("city:")) != std::string::npos)
 		mclg_city = get_str(str.substr(p));
-	if ((p = str.find("state:")) != string::npos)
+	if ((p = str.find("state:")) != std::string::npos)
 		mclg_state = get_str(str.substr(p));
-	if ((p = str.find("first_name:")) != string::npos)
+	if ((p = str.find("first_name:")) != std::string::npos)
 		mclg_firstname = get_str(str.substr(p));
 
-//	if ((p = mclg_str.find("dxcc_num:")) != string::npos)
+//	if ((p = mclg_str.find("dxcc_num:")) != std::string::npos)
 //		mclg_dxccnum = get_str(mclg_str.substr(p));
-//	if ((p = mclg_str.find("dxcc_string:")) != string::npos)
+//	if ((p = mclg_str.find("dxcc_string:")) != std::string::npos)
 //		mclg_dxccstr = get_str(mclg_str.substr(p));
-//	if ((p = mclg_str.find("Power:")) != string::npos)
+//	if ((p = mclg_str.find("Power:")) != std::string::npos)
 //		mclg_power = get_str(mclg_str.substr(p));
-//	if ((p = mclg_str.find("Band:"))  != string::npos)
+//	if ((p = mclg_str.find("Band:"))  != std::string::npos)
 //		mclg_band = get_str(mclg_str.substr(p));
-//	if ((p = mclg_str.find("last_name:")) != string::npos)
+//	if ((p = mclg_str.find("last_name:")) != std::string::npos)
 //		mclg_lastname = get_str(mclg_str.substr(p));
-//	if ((p = mclg_str.find("Comment:")) != string::npos)
+//	if ((p = mclg_str.find("Comment:")) != std::string::npos)
 //		mclg_comment = get_str(mclg_str.substr(p));
-//	if ((p = mclg_str.find("Bearing:")) != string::npos)
+//	if ((p = mclg_str.find("Bearing:")) != std::string::npos)
 //		mclg_bearing = get_str(mclg_str.substr(p));
-//	if ((p = mclg_str.find("LongPath:")) != string::npos)
+//	if ((p = mclg_str.find("LongPath:")) != std::string::npos)
 //		mclg_longpath = get_str(mclg_str.substr(p));
-//	if ((p = mclg_str.find("Distance:")) != string::npos)
+//	if ((p = mclg_str.find("Distance:")) != std::string::npos)
 //		mclg_distance = get_str(mclg_str.substr(p));
 
 	show_mac_strings();
@@ -253,14 +251,14 @@ void parse_report(string str)
 void parse_maclog()
 {
 	size_t p1, p2;
-	string str;
-	static string srep;
+	std::string str;
+	static std::string srep;
 	while (!mclg_str.empty()) {
 		p1 = mclg_str.find("[");
-		if (p1 == string::npos) return;
+		if (p1 == std::string::npos) return;
 		if (p1 != 0) mclg_str.erase(0, p1);
 		p2 = mclg_str.find("]");
-		if (p2 == string::npos) return;
+		if (p2 == std::string::npos) return;
 
 		str = mclg_str.substr(0, p2 + 1);
 		srep = str;
@@ -301,7 +299,7 @@ void parse_maclog()
 //======================================================================
 
 #ifdef TESTSTRINGS
-string tstring[6] = {
+std::string tstring[6] = {
 	"[Radio Report:RxMHz:24.96400, TxMHz:24.96400, Band:12M, Mode:USB, Power:5]",
 	"[SpotTune:RxMHz:3.5095, TxMHz:3.549525, Band:10M, Mode:USB]",
 	"[Log Report: Call:N2BJ, RxMHz:21.08580, TxMHz:21.08580, Band:15M, Mode:FSK, Power:5, dxcc_num:291, dxcc_string:United States, city:NEW LENOX, state:IL, first_name:Barry, last_name:COHEN]",

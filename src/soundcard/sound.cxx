@@ -85,8 +85,6 @@
 
 int sndfile_samplerate[7] = {8000, 11025, 16000, 22050, 24000, 44100, 48000};
 
-using namespace std;
-
 LOG_FILE_SOURCE(debug::LOG_AUDIO);
 
 namespace SND_SUPPORT {
@@ -1136,10 +1134,10 @@ size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 bool SoundPort::pa_init = false;
 std::vector<const PaDeviceInfo*> SoundPort::devs;
 
-static ostringstream device_text[2];
+static std::ostringstream device_text[2];
 static pthread_mutex_t device_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-map<string, vector<double> > supported_rates[2];
+std::map<std::string, std::vector<double> > supported_rates[2];
 
 void SoundPort::initialize(void)
 {
@@ -1187,14 +1185,14 @@ const std::vector<const PaDeviceInfo*>& SoundPort::devices(void)
 {
 		return devs;
 }
-void SoundPort::devices_info(string& in, string& out)
+void SoundPort::devices_info(std::string& in, std::string& out)
 {
 	guard_lock devices_lock(&device_mutex);
 	in = device_text[0].str();
 	out = device_text[1].str();
 }
 
-const vector<double>& SoundPort::get_supported_rates(const string& name, unsigned dir)
+const std::vector<double>& SoundPort::get_supported_rates(const std::string& name, unsigned dir)
 {
 	return supported_rates[dir][name];
 }
@@ -1760,7 +1758,7 @@ void SoundPort::src_data_reset(unsigned dir)
 					MAX(req_sample_rate, sd[dir].dev_sample_rate) /
 					MIN(req_sample_rate, sd[dir].dev_sample_rate))),
 					8192);
-	stringstream info;
+	std::stringstream info;
 	info << "rbsize = " << rbsize;
 	LOG_VERBOSE("%s", info.str().c_str());
 	if (sd[dir].rb) delete sd[dir].rb;
@@ -1858,12 +1856,12 @@ void SoundPort::init_stream(unsigned dir)
 			sd[1].params.channelCount = max_channels;
 	}
 
-	const vector<double>& rates = supported_rates[dir][(*sd[dir].idev)->name];
+	const std::vector<double>& rates = supported_rates[dir][(*sd[dir].idev)->name];
 	if (rates.size() <= 1)
 		probe_supported_rates(sd[dir].idev);
-	ostringstream ss;
+	std::ostringstream ss;
 	if (rates.size() > 1)
-		copy(rates.begin() + 1, rates.end(), ostream_iterator<double>(ss, " "));
+		copy(rates.begin() + 1, rates.end(), std::ostream_iterator<double>(ss, " "));
 	else
 		ss << "Unknown";
 
@@ -1879,7 +1877,7 @@ void SoundPort::init_stream(unsigned dir)
 		<< "\nmax output channels: " << (*sd[dir].idev)->maxOutputChannels
 		<< "\ndefault sample rate: " << (*sd[dir].idev)->defaultSampleRate
 		<< "\nsupported sample rates: " << ss.str()
-		<< boolalpha
+		<< std::boolalpha
 		<< "\ninput only: " << ((*sd[dir].idev)->maxOutputChannels == 0)
 		<< "\noutput only: " << ((*sd[dir].idev)->maxInputChannels == 0)
 		<< "\nfull duplex: " << full_duplex_device(*sd[dir].idev)
@@ -2057,8 +2055,8 @@ double SoundPort::find_srate(unsigned dir)
 				return sr;
 		}
 
-	const vector<double>& rates = supported_rates[dir][(*sd[dir].idev)->name];
-	for (vector<double>::const_iterator i = rates.begin(); i != rates.end(); i++)
+	const std::vector<double>& rates = supported_rates[dir][(*sd[dir].idev)->name];
+	for (std::vector<double>::const_iterator i = rates.begin(); i != rates.end(); i++)
 		if (req_sample_rate == *i || (*sd[dir].idev)->defaultSampleRate == *i)
 			return *i;
 

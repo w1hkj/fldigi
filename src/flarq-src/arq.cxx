@@ -26,32 +26,30 @@
 
 #include "arq.h"
 
-using namespace std;
-
 //=============================================================================
 // status messages
 //=============================================================================
-string TXPOLL		= "TX: Send Blocks Report";
-string STIMEDOUT	= "Timed out";
-string ABORTXFR		= "ABORT transfer";
-string RXIDENT		= "RX: Link Still Active";
-string RXCONREQ		= "RX: Connect Request";
-string RXCONACK		= "RX: Connect OK";
-string RXDISCONN	= "RX: Disconnect Request";
-string RXDISCONACK	= "RX: Disconnect OK";
-string RXSTATUS		= "RX: Status Report";
-string RXPOLL		= "RX: Send Blocks Report";
-string TXSTATUS		= "TX: Blocks Received OK";
-string TXDISCONN	= "TX: Disconnect Request";
-string TXDISACK		= "TX: Disconnect OK";
-string TXBEACON		= "TX: Beacon";
-string TXCONNECT	= "TX: Connect";
-string TXCONNACK	= "TX: Connect OK";
-string TXIDENT		= "TX: Watchdog %d";
+std::string TXPOLL		= "TX: Send Blocks Report";
+std::string STIMEDOUT	= "Timed out";
+std::string ABORTXFR		= "ABORT transfer";
+std::string RXIDENT		= "RX: Link Still Active";
+std::string RXCONREQ		= "RX: Connect Request";
+std::string RXCONACK		= "RX: Connect OK";
+std::string RXDISCONN	= "RX: Disconnect Request";
+std::string RXDISCONACK	= "RX: Disconnect OK";
+std::string RXSTATUS		= "RX: Status Report";
+std::string RXPOLL		= "RX: Send Blocks Report";
+std::string TXSTATUS		= "TX: Blocks Received OK";
+std::string TXDISCONN	= "TX: Disconnect Request";
+std::string TXDISACK		= "TX: Disconnect OK";
+std::string TXBEACON		= "TX: Beacon";
+std::string TXCONNECT	= "TX: Connect";
+std::string TXCONNACK	= "TX: Connect OK";
+std::string TXIDENT		= "TX: Watchdog %d";
 
 //bool bPoll = false;
 
-string arq::upcase(string s)
+std::string arq::upcase(std::string s)
 {
 	for (size_t i = 0; i < s.length(); i++)
 		s[i] = toupper(s[i]);
@@ -211,7 +209,7 @@ void arq::newblocknumber()
 }
 
 // Checksum of header + Header
-string arq::checksum(string &s)
+std::string arq::checksum(std::string &s)
 {
 	framecrc.reset();
 	return framecrc.scrc16(s);
@@ -239,7 +237,7 @@ void arq::UnkHeader()
 
 char crlf[3] = "  ";
 
-void arq::addToTxQue(string s)
+void arq::addToTxQue(std::string s)
 {
 //	TxTextQueue += "\r\n";
 	crlf[0] = 0x0D;
@@ -420,7 +418,7 @@ void arq::pingFrame()
 // talk frame
 // similar to UNPROTO frame
 // but only sent if ARQ_CONNECTED
-void arq::talkFrame(string txt)
+void arq::talkFrame(std::string txt)
 {
 	IdHeader();
 	Header += _TALK;
@@ -545,7 +543,7 @@ void arq::abortFrame()
 // u Header = From:port  data
 // e.g: '00uKH6TY:72 Beacon text '
 //
-void arq::beaconFrame(string txt)
+void arq::beaconFrame(std::string txt)
 {
 	UnkHeader();
 	Header += _UNPROTO;
@@ -617,28 +615,28 @@ void arq::parseCONREQ()
 {
 
 	size_t p1 = 0, p2 = rcvPayload.find(':');
-	if (p2 == string::npos)
+	if (p2 == std::string::npos)
 		return;
 //	if (LinkState == ARQ_CONNECTED || LinkState == WAITFORACK) return; // disallow multiple connects
 
 // requesting stations callsign
 	UrCall = upcase(rcvPayload.substr(p1, p2 - p1));
 	p1 = rcvPayload.find(' ', p2+1);
-	if (p1 == string::npos) {
+	if (p1 == std::string::npos) {
 		UrCall.erase();
 		return;
 	}
 
 	p1++;
 	p2 = rcvPayload.find(":", p1);
-	string testcall = upcase(rcvPayload.substr(p1, p2 - p1));
+	std::string testcall = upcase(rcvPayload.substr(p1, p2 - p1));
 	if (testcall != MyCall) {
 		UrCall.erase();
 		return;
 	}
 
 	p1 = rcvPayload.find(' ', p2 +1);
-	if (p1 == string::npos) {
+	if (p1 == std::string::npos) {
 		UrCall.erase();
 		return;
 	}
@@ -673,7 +671,7 @@ void arq::parseCONREQ()
 			}
 /*
 			char line[80];
-			string NewValues = "Temporary control parameters set to\n";
+			std::string NewValues = "Temporary control parameters set to\n";
 			snprintf(line, 79, "  Retries   = %d\n", Retries);
 			NewValues.append(line);
 			snprintf(line, 79, "  Wait time = %d secs\n", RetryTime / 1000);
@@ -707,19 +705,19 @@ void arq::parseCONACK()
 
 	size_t p1 = 0, p2 = rcvPayload.find(':');
 //	LinkState = DOWN;
-	if (p2 == string::npos)
+	if (p2 == std::string::npos)
 		return;
 // requesting stations callsign
 	UrCall = upcase(rcvPayload.substr(p1, p2 - p1));
 	p1 = rcvPayload.find(' ', p2+1);
-	if (p1 == string::npos) {
+	if (p1 == std::string::npos) {
 		UrCall.erase();
 		return;
 	}
 
 	p1++;
 	p2 = rcvPayload.find(" ", p1);
-	string testcall = upcase(rcvPayload.substr(p1, p2 - p1));
+	std::string testcall = upcase(rcvPayload.substr(p1, p2 - p1));
 	if (testcall != MyCall) {
 		UrCall.erase();
 		return;
@@ -782,7 +780,7 @@ void arq::parseACKABORT()
 void arq::parseUNPROTO()
 {
 	size_t p1 = 0, p2 = rcvPayload.find(':');
-	if (p2 == string::npos)
+	if (p2 == std::string::npos)
 		return;
 // requesting stations callsign
 	UrCall = upcase(rcvPayload.substr(p1, p2 - p1));
@@ -793,9 +791,9 @@ void arq::parseUNPROTO()
 void arq::parseTALK()
 {
 	size_t p1 = rcvPayload.find(":73");
-	if (p1 == string::npos)
+	if (p1 == std::string::npos)
 		return;
-	string talktext = rcvPayload.substr(p1 + 4);
+	std::string talktext = rcvPayload.substr(p1 + 4);
 	if (printTALK) printTALK(talktext);
 }
 
@@ -809,7 +807,7 @@ void arq::parseSTATUS()
 		UrEndHeader = rcvPayload[2] - 0x20;		// Other station's last received Header
 
 		size_t nummissing = rcvPayload.length() - 3;
-		vector<int> missing;
+		std::vector<int> missing;
 // append those reported missing
 		if (nummissing > 0)
 			for (size_t i = 0; i < nummissing; i++)
@@ -830,8 +828,8 @@ void arq::parseSTATUS()
 			TxMissing.clear();
 
 		if (TxMissing.empty() == false) {
-			list<cTxtBlk> keep;
-			list<cTxtBlk>::iterator p = TxMissing.begin();
+			std::list<cTxtBlk> keep;
+			std::list<cTxtBlk>::iterator p = TxMissing.begin();
 			while (p != TxMissing.end()) {
 				for (size_t n = 0; n < missing.size(); n++) {
 					if (p->nbr() == missing[n]) {
@@ -846,7 +844,7 @@ void arq::parseSTATUS()
 	}
 
 // print any txpending blocks up to and including UrGoodHeader
-	list <cTxtBlk>::iterator p1 = TxPending.begin();
+	std::list<cTxtBlk>::iterator p1 = TxPending.begin();
 
 	p1 = TxPending.begin();
 	while (p1 != TxPending.end()) {
@@ -898,7 +896,7 @@ void arq::parsePOLL()
 
 void arq::parseDATA()
 {
-	vector<cTxtBlk>::iterator p1, p2;
+	std::vector<cTxtBlk>::iterator p1, p2;
 	int n1, n2;
 
 	if (LinkState < ARQ_CONNECTED) return; // do not respond if DOWN or TIMEDOUT
@@ -975,7 +973,7 @@ bool arq::isUrcall()
 {
 	if (UrCall.empty())
 		return false;
-	if (rcvPayload.find(UrCall) != string::npos)
+	if (rcvPayload.find(UrCall) != std::string::npos)
 		return true;
 	return false;
 }
@@ -990,7 +988,7 @@ bool arq::isUrcall()
 //    n  valid frame
 //       rcvPayload will contain the valid payload
 //
-int arq::parseFrame(string txt)
+int arq::parseFrame(std::string txt)
 {
 	if ( txt.length() < 8 ) {
 		return -1; // not a valid frame
@@ -1012,7 +1010,7 @@ int arq::parseFrame(string txt)
 		return -1;
 	}
 
-	string sRcvdCRC = testcrc.scrc16( txt.substr(0, len - 4));
+	std::string sRcvdCRC = testcrc.scrc16( txt.substr(0, len - 4));
 
 	if (sRcvdCRC != txt.substr(len - 4) ) {
 		if (printRX_DEBUG)
@@ -1164,7 +1162,7 @@ void arq::rcvChar( char c )
 
 //=====================================================================
 
-void arq::sendText (string txt)
+void arq::sendText (std::string txt)
 {
 	size_t offset = 0;
 	cTxtBlk tempblk;
@@ -1189,7 +1187,7 @@ void arq::sendblocks()
 	cTxtBlk tempblk;
 
 	if (TxMissing.empty() == false) {
-		list<cTxtBlk>::iterator p = TxMissing.begin();
+		std::list<cTxtBlk>::iterator p = TxMissing.begin();
 		while (p != TxMissing.end()) {
 			textFrame(*p);
 			p++;
@@ -1222,7 +1220,7 @@ void arq::sendblocks()
 		LinkState = WAITING;
 }
 
-void arq::connect(string callsign)
+void arq::connect(std::string callsign)
 {
 	UrCall = callsign;
 	for (size_t i = 0; i < UrCall.length(); i++)
@@ -1252,9 +1250,9 @@ void arq::abort()
 	LinkState = ABORT;
 }
 
-void arq::sendBeacon (string txt)
+void arq::sendBeacon (std::string txt)
 {
-	string deText = "<<< FLARQ Beacon >>> de ";
+	std::string deText = "<<< FLARQ Beacon >>> de ";
 	deText.append(MyCall);
 	TxTextQueue.clear();//erase();
 	addToTxQue(deText);
@@ -1263,7 +1261,7 @@ void arq::sendBeacon (string txt)
 	LinkState = DOWN;
 }
 
-void arq::sendPlainText( string txt )
+void arq::sendPlainText( std::string txt )
 {
 	size_t p = 0;
 	while (p < txt.length()) {

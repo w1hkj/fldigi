@@ -49,16 +49,14 @@
 #include "stacktrace.h"
 #include "flarq.h"
 
-using namespace std;
-
-string option_help, version_text, build_text;
-extern string arq_address, arq_port;
+std::string option_help, version_text, build_text;
+extern std::string arq_address, arq_port;
 extern bool ioMPSK;
 extern bool SHOWDEBUG;
 
 void generate_option_help(void)
 {
-	ostringstream help;
+	std::ostringstream help;
 	help << "Usage:\n"
 	     << "    " << PACKAGE_NAME << " [option...]\n\n";
 
@@ -184,7 +182,7 @@ int parse_args(int argc, char** argv, int& idx)
 			else if (!strcmp(optarg, "multipsk"))
 				ioMPSK = true;
 			else {
-				cerr << "E: unknown protocol type\n";
+				std::cerr << "E: unknown protocol type\n";
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -211,24 +209,24 @@ int parse_args(int argc, char** argv, int& idx)
 			break;
 
 		case OPT_DEPRECATED:
-			cerr << "W: the --" << longopts[longindex].name
+			std::cerr << "W: the --" << longopts[longindex].name
 			     << " option has been deprecated and will be removed in a future version\n";
 			break;
 
 		case OPT_HELP:
-			cout << option_help;
+			std::cout << option_help;
 			exit(EXIT_SUCCESS);
 
 		case OPT_VERSION:
-			cout << version_text;
+			std::cout << version_text;
 			exit(EXIT_SUCCESS);
 
 		case OPT_BUILD_INFO:
-			cout << build_text;
+			std::cout << build_text;
 			exit(EXIT_SUCCESS);
 
 		case '?': default:
-			cerr << "Try `" << PACKAGE_NAME << " --help' for more information.\n";
+			std::cerr << "Try `" << PACKAGE_NAME << " --help' for more information.\n";
 			exit(EXIT_FAILURE);
 
 	}
@@ -238,9 +236,9 @@ int parse_args(int argc, char** argv, int& idx)
 	// as the option name itself, i.e., --opt=arg.
         c = longopts[longindex].has_arg ? 2 : 1;
         if (c == 2) {
-                string arg = argv[idx];
-                string::size_type p;
-                if ((p = arg.rfind(optarg)) != string::npos && arg[p-1] == '=')
+                std::string arg = argv[idx];
+                std::string::size_type p;
+                if ((p = arg.rfind(optarg)) != std::string::npos && arg[p-1] == '=')
                         c = 1;
         }
 	idx += c;
@@ -267,7 +265,7 @@ void generate_version_text(void)
 			    "This is free software: you are free to change and redistribute it.\n"
 			    "There is NO WARRANTY, to the extent permitted by law.\n");
 
-	ostringstream s;
+	std::ostringstream s;
 	s << "Build information:\n";
 	s << "  built          : " << BUILD_DATE << " by " << BUILD_USER
 	  << '@' << BUILD_HOST << " on " << BUILD_BUILD_PLATFORM

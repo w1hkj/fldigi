@@ -223,7 +223,7 @@ extern Fl_Scroll       *wefax_pic_rx_scroll;
 
 #define LOG_CONNECT_SERVER     _("Connect to server")
 
-// MAXIMUM allowable string lengths in log fields
+// MAXIMUM allowable std::string lengths in log fields
 #define MAX_FREQ 14
 #define MAX_TIME 4
 #define MAX_RST 3
@@ -240,8 +240,6 @@ extern Fl_Scroll       *wefax_pic_rx_scroll;
 #define MAX_NOTES 400
 #define MAX_SECTION 20
 #define MAX_CLASS   10
-
-using namespace std;
 
 void set599();
 
@@ -1507,7 +1505,7 @@ void set_mode_controls(trx_mode id)
 		}
 		ifkp_avatar->hide();
 		thor_avatar->hide();
-		string call = inpCall->value();
+		std::string call = inpCall->value();
 		if (id == MODE_IFKP) {
 			NFtabs->resize(
 				NFtabs->x(), NFtabs->y(),
@@ -2404,7 +2402,7 @@ void cb_logfile(Fl_Widget* w, void*)
 	progStatus.LOGenabled = reinterpret_cast<Fl_Menu_*>(w)->mvalue()->value();
 	if (progStatus.LOGenabled == true) {
 		Date tdy;
-		string lfname = HomeDir;
+		std::string lfname = HomeDir;
 		lfname.append("fldigi");
 		lfname.append(tdy.szDate(2));
 		lfname.append(".log");
@@ -2663,10 +2661,10 @@ void open_recv_folder(const char *folder)
 
 void cb_mnuVisitPSKRep(Fl_Widget*, void*)
 {
-	cb_mnuVisitURL(0, (void*)string("http://pskreporter.info/pskmap?").append(progdefaults.myCall).c_str());
+	cb_mnuVisitURL(0, (void*)std::string("http://pskreporter.info/pskmap?").append(progdefaults.myCall).c_str());
 }
 
-void html_help( const string &Html)
+void html_help( const std::string &Html)
 {
 	if (!help_dialog)
 		help_dialog = new Fl_Help_Dialog;
@@ -2676,9 +2674,9 @@ void html_help( const string &Html)
 
 void cb_mnuBeginnersURL(Fl_Widget*, void*)
 {
-	string deffname = HelpDir;
+	std::string deffname = HelpDir;
 	deffname.append("beginners.html");
-	ofstream f(deffname.c_str());
+	std::ofstream f(deffname.c_str());
 	if (!f)
 		return;
 	f << szBeginner;
@@ -2692,9 +2690,9 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 
 void cb_mnuOnLineDOCS(Fl_Widget *, void *)
 {
-	string helpfile = HelpDir;
+	std::string helpfile = HelpDir;
 	helpfile.append("fldigi-help/index.html");
-	ifstream f(helpfile.c_str());
+	std::ifstream f(helpfile.c_str());
 	if (!f) {
 		cb_mnuVisitURL(0, (void *)PACKAGE_DOCS);
 	} else {
@@ -2703,7 +2701,7 @@ void cb_mnuOnLineDOCS(Fl_Widget *, void *)
 	}
 }
 
-inline int version_check(string v1, string v2) {
+inline int version_check(std::string v1, std::string v2) {
 
 	long v1a, v1b, v1c;
 	long v2a, v2b, v2c;
@@ -2732,8 +2730,8 @@ void cb_mnuCheckUpdate(Fl_Widget *, void *)
 {
 	const char *url = "http://www.w1hkj.com/files/fldigi/";
 
-	string version_str;
-	string reply;
+	std::string version_str;
+	std::string reply;
 
 	put_status(_("Checking for updates..."));
 
@@ -2747,7 +2745,7 @@ void cb_mnuCheckUpdate(Fl_Widget *, void *)
 	size_t p2 = reply.rfind("fldigi", p);
 	p2 += 7;
 	version_str = reply.substr(p2, p - p2);
-	int is_ok = version_check(string(PACKAGE_VERSION), version_str);
+	int is_ok = version_check(std::string(PACKAGE_VERSION), version_str);
 
 	if (!latest_dialog) latest_dialog = new notify_dialog;
 	if (is_ok == 0) {
@@ -2776,9 +2774,9 @@ void cb_mnuAboutURL(Fl_Widget*, void*)
 	help_dialog->show();
 }
 
-void fldigi_help(const string& theHelp)
+void fldigi_help(const std::string& theHelp)
 {
-	string htmlHelp =
+	std::string htmlHelp =
 "<HTML>"
 "<HEAD>"
 "<TITLE>" PACKAGE " Help</TITLE>"
@@ -2810,14 +2808,14 @@ void fldigi_help(const string& theHelp)
 
 void cb_mnuCmdLineHelp(Fl_Widget*, void*)
 {
-	extern string option_help;
+	extern std::string option_help;
 	fldigi_help(option_help);
 	restoreFocus(8);
 }
 
 void cb_mnuBuildInfo(Fl_Widget*, void*)
 {
-	extern string build_text;
+	extern std::string build_text;
 	fldigi_help(build_text);
 	restoreFocus(9);
 }
@@ -2843,7 +2841,7 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
 
 #if USE_PORTAUDIO
 	size_t ndev;
-		string devtext[2], headers[2];
+		std::string devtext[2], headers[2];
 	SoundPort::devices_info(devtext[0], devtext[1]);
 	if (devtext[0] != devtext[1]) {
 		headers[0] = _("Capture device");
@@ -2855,18 +2853,18 @@ void cb_mnuAudioInfo(Fl_Widget*, void*)
 		ndev = 1;
 	}
 
-	string audio_info;
+	std::string audio_info;
 	for (size_t i = 0; i < ndev; i++) {
 		audio_info.append("<center><h4>").append(headers[i]).append("</h4>\n<table border=\"1\">\n");
 
-		string::size_type j, n = 0;
-		while ((j = devtext[i].find(": ", n)) != string::npos) {
+		std::string::size_type j, n = 0;
+		while ((j = devtext[i].find(": ", n)) != std::string::npos) {
 			audio_info.append("<tr>")
 				  .append("<td align=\"center\">")
 				  .append(devtext[i].substr(n, j-n))
 				  .append("</td>");
 
-			if ((n = devtext[i].find('\n', j)) == string::npos) {
+			if ((n = devtext[i].find('\n', j)) == std::string::npos) {
 				devtext[i] += '\n';
 				n = devtext[i].length() - 1;
 			}
@@ -3135,8 +3133,8 @@ void updateOutSerNo()
 	}
 }
 
-static string old_call;
-static string new_call;
+static std::string old_call;
+static std::string new_call;
 
 void set599()
 {
@@ -3156,7 +3154,7 @@ void set599()
 //		inpRstOut_WAE2,
 		inpRstOut_WPX2};
 	if (!active_modem) return;
-	string defrst = (active_modem->get_mode() == MODE_SSB) ? "59" : "599";
+	std::string defrst = (active_modem->get_mode() == MODE_SSB) ? "59" : "599";
 	if (progdefaults.RSTin_default) {
 		size_t num_fields = sizeof(rstin)/sizeof(*rstin);
 		for (size_t i = 0; i < num_fields; i++)
@@ -3603,7 +3601,7 @@ if (bWF_only) return;
 	if (progdefaults.calluppercase) {
 		int pos = inpCall->position();
 		char* uc = new char[inpCall->size()];
-		transform(inpCall->value(), inpCall->value() + inpCall->size(), uc,
+		std::transform(inpCall->value(), inpCall->value() + inpCall->size(), uc,
 			  static_cast<int (*)(int)>(std::toupper));
 		inpCall->value(uc, inpCall->size());
 		inpCall->position(pos);
@@ -4040,7 +4038,7 @@ void cb_log(Fl_Widget* w, void*)
 		Cstates st;
 		if (inpCounty->value()[0])
 			cboCountyQSO->value(
-				string(st.state_short(inpState->value())).append(" ").
+				std::string(st.state_short(inpState->value())).append(" ").
 				append(st.county(inpState->value(), inpCounty->value())).c_str());
 		else
 			cboCountyQSO->clear_entry();
@@ -4051,7 +4049,7 @@ void cb_log(Fl_Widget* w, void*)
 		Cstates st;
 		if (inpState->value()[0])
 			cboCountyQSO->value(
-				string(st.state_short(inpState->value())).append(" ").
+				std::string(st.state_short(inpState->value())).append(" ").
 				append(st.county(inpState->value(), inpCounty->value())).c_str());
 		else
 			cboCountyQSO->clear_entry();
@@ -4096,8 +4094,8 @@ extern cQsoDb	qsodb;
 void qso_save_now()
 {
 //	if (!qsodb.isdirty()) return;
-	string havecall = inpCall->value();
-	string timeon   = inpTimeOn->value();
+	std::string havecall = inpCall->value();
+	std::string timeon   = inpTimeOn->value();
 
 	while (!havecall.empty() && havecall[0] <= ' ') havecall.erase(0,1);
 	while (!havecall.empty() && havecall[havecall.length() - 1] <= ' ') havecall.erase(havecall.length()-1, 1);
@@ -4136,7 +4134,7 @@ void cb_QRZ(Fl_Widget *b, void *)
 		oktoclear = false;
 		break;
 	case FL_RIGHT_MOUSE:
-		if (quick_choice(string("Spot \"").append(inpCall->value()).append("\"?").c_str(),
+		if (quick_choice(std::string("Spot \"").append(inpCall->value()).append("\"?").c_str(),
 				 2, _("Confirm"), _("Cancel"), NULL) == 1)
 			spot_manual(inpCall->value(), inpLoc->value());
 		break;
@@ -4308,7 +4306,7 @@ void macro_timed_execute(void *)
 void startTimedExecute(std::string &title)
 {
 	ENSURE_THREAD(FLMAIN_TID);
-	string txt = "Macro '";
+	std::string txt = "Macro '";
 	txt.append(title).
 		append("' scheduled on ").
 		append(exec_date.substr(0,4)).append("/").
@@ -6454,13 +6452,13 @@ inline int below(Fl_Widget* w)
 	return (a & FL_ALIGN_BOTTOM) ? w->y() + w->h() + FL_NORMAL_SIZE : w->y() + w->h();
 }
 
-string argv_window_title;
-string main_window_title;
-string xcvr_title;
+std::string argv_window_title;
+std::string main_window_title;
+std::string xcvr_title;
 
 void update_main_title()
 {
-	string buf = argv_window_title;
+	std::string buf = argv_window_title;
 	buf.append(" ver").append(PACKAGE_VERSION);
 	if (!xcvr_title.empty()) {
 		buf.append(" / ").append(xcvr_title);
@@ -6547,9 +6545,9 @@ void cb_qso_btnClearList(Fl_Widget *, void *)
 #define PSKREP_MENU_MAX 8
 
 static pthread_t PSKREP_thread;
-static string pskrep_data, pskrep_url, popup_title;
-static string pskrep_str[PSKREP_MENU_MAX];
-static string::size_type pskrep_i;
+static std::string pskrep_data, pskrep_url, popup_title;
+static std::string pskrep_str[PSKREP_MENU_MAX];
+static std::string::size_type pskrep_i;
 static Fl_Menu_Item pskrep_menu[PSKREP_MENU_MAX + 1];
 static bool pskrep_working = false;
 
@@ -6599,7 +6597,7 @@ void *do_pskreporter_lookup(void *)  // thread action
 	}
 
 	pskrep_i = pskrep_data.rfind("\r\n\r\n");
-	if (pskrep_i == string::npos) {
+	if (pskrep_i == std::string::npos) {
 		LOG_ERROR("Pskreporter return invalid: %s", pskrep_data.c_str());
 		pskrep_working = false;
 		return NULL;
@@ -6611,17 +6609,17 @@ void *do_pskreporter_lookup(void *)  // thread action
 
 	size_t j = 0;
 	memset(pskrep_menu, 0, sizeof(pskrep_menu));
-	string title;
+	std::string title;
 	while (re.match(pskrep_data.substr(pskrep_i).c_str()) && j < PSKREP_MENU_MAX) {
 		pskrep_i = pskrep_data.find("\r\n", pskrep_i + 1);
-		if (pskrep_i == string::npos) break;
+		if (pskrep_i == std::string::npos) break;
 		pskrep_i += 2;
 		pskrep_str[j].assign(re.submatch(1)).append(" (").append(re.submatch(2)).
 			append(" ").append(atoi(re.submatch(2).c_str()) == 1 ? _("report") : _("reports")).append(")");
 		pskrep_menu[j].label(pskrep_str[j].c_str());
 		pskrep_menu[++j].label(NULL);
 	}
-	if ((pskrep_i = pskrep_data.rfind(" grid ")) != string::npos) {
+	if ((pskrep_i = pskrep_data.rfind(" grid ")) != std::string::npos) {
 		popup_title.assign(_("Recent activity for grid ")).
 					append(pskrep_data.substr(pskrep_i + 5, 3));
 	} else {
@@ -6651,9 +6649,9 @@ void cb_qso_inpAct(Fl_Widget*, void*)
 //======================================================================
 
 static int i_opUsage;
-static string s_opEntry;
-static string s_opUsageEntry;
-static string s_outEntry;
+static std::string s_opEntry;
+static std::string s_opUsageEntry;
+static std::string s_outEntry;
 
 void cb_opUsageEnter(Fl_Button *, void*)
 {
@@ -6674,7 +6672,7 @@ void qso_opBrowser_amend(int i)
 	s_opEntry.erase(pos + 1);
 
 	s_outEntry = s_opEntry.substr(0, pos);
-	while ((pos = s_outEntry.find('|')) != string::npos)
+	while ((pos = s_outEntry.find('|')) != std::string::npos)
 		s_outEntry.replace(pos, 1, "  ");
 
 	opOutUsage->value(s_outEntry.c_str());
@@ -6735,22 +6733,22 @@ void show_frequency(long long freq)
 	REQ(_show_frequency, freq);
 }
 
-void show_mode(const string sMode)
+void show_mode(const std::string sMode)
 {
 	REQ(&Fl_ListBox::put_value, qso_opMODE, sMode.c_str());
 }
 
-void show_bw(const string sWidth)
+void show_bw(const std::string sWidth)
 {
 	REQ(&Fl_ListBox::put_value, qso_opBW, sWidth.c_str());
 }
 
-void show_bw1(const string sVal)
+void show_bw1(const std::string sVal)
 {
 	REQ(&Fl_ListBox::put_value, qso_opBW1, sVal.c_str());
 }
 
-void show_bw2(const string sVal)
+void show_bw2(const std::string sVal)
 {
 	REQ(&Fl_ListBox::put_value, qso_opBW2, sVal.c_str());
 }
@@ -6790,8 +6788,8 @@ void showMacroSet() {
 	set_macroLabels();
 }
 
-void showDTMF(const string s) {
-	string dtmfstr = "\n<DTMF> ";
+void showDTMF(const std::string s) {
+	std::string dtmfstr = "\n<DTMF> ";
 	dtmfstr.append(s);
 	ReceiveText->addstr(dtmfstr);
 }
@@ -7500,11 +7498,11 @@ void log_callback(Fl_Widget *w) {
 
 void cb_CountyQSO(Fl_Widget *)
 {
-	string sc = cboCountyQSO->value();
+	std::string sc = cboCountyQSO->value();
 	if (sc.empty()) return;
 	Cstates st;
-	string ST = sc.substr(0,2);
-	string CNTY = st.cnty_short(sc.substr(0,2), sc.substr(3));
+	std::string ST = sc.substr(0,2);
+	std::string CNTY = st.cnty_short(sc.substr(0,2), sc.substr(3));
 	if (inpState) inpState->value(ST.c_str());
 	if (inpState1) inpState1->value(ST.c_str());
 	if (inp_CQstate1) inp_CQstate1->value(ST.c_str());
@@ -8605,10 +8603,10 @@ static void display_rx_data(const unsigned char data, int style)
 	speak(data);
 
 	if (Maillogfile)
-		Maillogfile->log_to_file(cLogfile::LOG_RX, string(1, (const char)data));
+		Maillogfile->log_to_file(cLogfile::LOG_RX, std::string(1, (const char)data));
 
 	if (progStatus.LOGenabled)
-		logfile->log_to_file(cLogfile::LOG_RX, string(1, (const char)data));
+		logfile->log_to_file(cLogfile::LOG_RX, std::string(1, (const char)data));
 }
 
 static void rx_parser(const unsigned char data, int style)
@@ -8763,7 +8761,7 @@ void put_rx_char(unsigned int data, int style)
 #endif
 }
 
-static string strSecText = "";
+static std::string strSecText = "";
 
 static void put_sec_char_flmain(char chr)
 {
@@ -8982,7 +8980,7 @@ void do_que_execute(void *)
 
 char szTestChar[] = "E|I|S|T|M|O|A|V";
 
-//string bools = "------";
+//std::string bools = "------";
 //char testbools[7];
 
 extern int get_fsq_tx_char();
@@ -9003,7 +9001,7 @@ int get_tx_char(void)
 	if (macro_idle_on) { return GET_TX_CHAR_NODATA; }
 
 	if ((progStatus.repeatMacro > -1) && text2repeat.length()) {
-		string repeat_content;
+		std::string repeat_content;
 		int utf8size = fl_utf8len1(text2repeat[repeatchar]);
 		for (int i = 0; i < utf8size; i++)
 			repeat_content += text2repeat[repeatchar + i];
@@ -9100,7 +9098,7 @@ int get_tx_char(void)
 
 		case 'i': case 'I':
 			{
-				string fname;
+				std::string fname;
 				if (active_modem->get_mode() == MODE_IFKP)
 					c = ifkp_tx_text->nextChar();
 				else
@@ -9192,7 +9190,7 @@ int get_tx_char(void)
 		default:
 			char utf8_char[6];
 			int utf8_len = fl_utf8encode(c, utf8_char);
-			tx_encoder.push("^" + string(utf8_char, utf8_len));
+			tx_encoder.push("^" + std::string(utf8_char, utf8_len));
 		}
 	}
 	else if (c == '\n') {
@@ -9201,7 +9199,7 @@ int get_tx_char(void)
 	else {
 		char utf8_char[6];
 		int utf8_len = fl_utf8encode(c, utf8_char);
-		tx_encoder.push(string(utf8_char, utf8_len));
+		tx_encoder.push(std::string(utf8_char, utf8_len));
 	}
 
 	transmit:
@@ -9264,7 +9262,7 @@ void put_echo_char(unsigned int data, int style)
 	lastdata = data;
 
 	if (Maillogfile) {
-		string s = iscntrl(data & 0x7F) ? ascii2[data & 0x7F] : string(1, data);
+		std::string s = iscntrl(data & 0x7F) ? ascii2[data & 0x7F] : std::string(1, data);
 		Maillogfile->log_to_file(cLogfile::LOG_TX, s);
 	}
 
@@ -9397,15 +9395,15 @@ void qsy(long long rfc, int fmid)
 	else
 		qso_selectFreq((long int) rfc, fmid);
 
-	string testmode = qso_opMODE->value();
-	bool xcvr_useFSK = (testmode.find("RTTY") != string::npos);
+	std::string testmode = qso_opMODE->value();
+	bool xcvr_useFSK = (testmode.find("RTTY") != std::string::npos);
 	if (xcvr_useFSK) {
 		int fmid = progdefaults.xcvr_FSK_MARK + rtty::SHIFT[progdefaults.rtty_shift]/2;
 		wf->carrier(fmid);
 	}
 }
 
-map<string, qrg_mode_t> qrg_marks;
+std::map<std::string, qrg_mode_t> qrg_marks;
 qrg_mode_t last_marked_qrg;
 
 void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode, long long rfc, int afreq)
@@ -10129,9 +10127,9 @@ void cb_heard_send_file(Fl_Widget *w, void *)
 	if (!*p) return;
 
 	std::string fname = fl_filename_name(p);
-	ifstream txfile(p);
+	std::ifstream txfile(p);
 	if (!txfile) return;
-	stringstream text;
+	std::stringstream text;
 	char ch = txfile.get();
 	while (!txfile.eof()) {
 		text << ch;
@@ -10151,7 +10149,7 @@ void cb_heard_read_file(Fl_Widget *w, void*)
 {
 	const char *p = fl_input2("File name");
 	if (p == NULL) return;
-	string fname = p;
+	std::string fname = p;
 	if (fname.empty()) return;
 
 	std::string s = fsq_selected_call.c_str();
@@ -10172,7 +10170,7 @@ void cb_heard_send_msg(Fl_Widget *w, void*)
 {
 	const char *p = fl_input2("Send message");
 	if (p == NULL) return;
-	string msg = p;
+	std::string msg = p;
 	if (msg.empty()) return;
 
 	std::string s = fsq_selected_call.c_str();
@@ -10218,7 +10216,7 @@ static const Fl_Menu_Item directed_popup[] = {
 
 std::string heard_list()
 {
-	string heard;
+	std::string heard;
 	if (fsq_heard->size() < 2) return heard;
 
 	for (int i = 2; i <= fsq_heard->size(); i++)
@@ -10244,7 +10242,7 @@ void clear_heard_list()
 	}
 }
 
-int tm2int(string s)
+int tm2int(std::string s)
 {
 	int t = (s[2]-'0')*10 + s[3] - '0';
 	t += 60*((s[0] - '0')*10 + s[1] - '0');
@@ -10253,10 +10251,10 @@ int tm2int(string s)
 
 void age_heard_list()
 {
-	string entry;
-	string now = ztime(); now.erase(4);
+	std::string entry;
+	std::string now = ztime(); now.erase(4);
 	int tnow = tm2int(now);
-	string tm;
+	std::string tm;
 	int aging_secs;
 	switch (progdefaults.fsq_heard_aging) {
 		case 1: aging_secs = 60; break;   // 1 minute
@@ -10299,7 +10297,7 @@ void age_heard_list()
 	}
 }
 
-void add_to_heard_list(string szcall, string szdb)
+void add_to_heard_list(std::string szcall, std::string szdb)
 {
 	int found = 0;
 	size_t pos_comma;
@@ -10360,7 +10358,7 @@ void add_to_heard_list(string szcall, string szdb)
 			active_modem->get_mode());
 }
 
-bool in_heard(string call)
+bool in_heard(std::string call)
 {
 	std::string line;
 	for (int i = 1; i <= fsq_heard->size(); i++) {

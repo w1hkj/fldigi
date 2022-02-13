@@ -40,13 +40,11 @@
 #include "re.h"
 #include "strutil.h"
 
-using namespace std;
-
-vector<string> split(const char* re_str, const char* str, unsigned max_split)
+std::vector<std::string> split(const char* re_str, const char* str, unsigned max_split)
 {
-	vector<string> v;
+	std::vector<std::string> v;
 	size_t n = strlen(re_str);
-	string s; s.reserve(n + 2); s.append(1, '(').append(re_str, n).append(1, ')');
+	std::string s; s.reserve(n + 2); s.append(1, '(').append(re_str, n).append(1, ')');
 	fre_t re(s.c_str(), REG_EXTENDED);
 
 	bool ignore_trailing_empty = false;
@@ -56,7 +54,7 @@ vector<string> split(const char* re_str, const char* str, unsigned max_split)
 	}
 
 	s = str;
-	const vector<regmatch_t>& sub = re.suboff();
+	const std::vector<regmatch_t>& sub = re.suboff();
 	while (re.match(s.c_str())) {
 		if (unlikely(sub.empty() || ((max_split != UINT_MAX) && --max_split == 0)))
 			break;
@@ -73,7 +71,7 @@ vector<string> split(const char* re_str, const char* str, unsigned max_split)
 }
 
 /// Builds a string out of a printf-style formatted vararg list.
-string strformat( const char * fmt, ... )
+std::string strformat( const char * fmt, ... )
 {
 	static const int sz_buf = 512 ;
 	char buf_usual[sz_buf];
@@ -82,14 +80,14 @@ string strformat( const char * fmt, ... )
 	va_start(ap, fmt);
 	int res = vsnprintf( buf_usual, sz_buf, fmt, ap);
 	va_end(ap);
- 	if( res < 0 ) throw runtime_error(__FUNCTION__);
+ 	if( res < 0 ) throw std::runtime_error(__FUNCTION__);
 	if( res < sz_buf ) return buf_usual ;
 
-	string str( res, ' ' );
+	std::string str( res, ' ' );
 	va_start(ap, fmt);
 	res = vsnprintf( &str[0], res + 1, fmt, ap);
 	va_end(ap);
-	if( res < 0 ) throw runtime_error(__FUNCTION__);
+	if( res < 0 ) throw std::runtime_error(__FUNCTION__);
 	return str ;
 }
 
@@ -149,7 +147,7 @@ std::string strreplace( const std::string & inp, const std::string & from, const
 }
 
 /// Edit distance. Not the fastest implementation.
-size_t levenshtein(const string & source, const string & target) {
+size_t levenshtein(const std::string & source, const std::string & target) {
 	const size_t n = source.size();
 	const size_t m = target.size();
 	if (n == 0) return m;
@@ -205,9 +203,9 @@ size_t levenshtein(const string & source, const string & target) {
 }
 
 /// Converts a string to ucasestr.
-std::string ucasestr( string str )
+std::string ucasestr( std::string str )
 {
-	string resu ;
+	std::string resu ;
 	for( size_t i = 0 ; i < str.size(); ++i )
 	{
 		resu += static_cast<char>( toupper( str[i] ) );
@@ -217,7 +215,7 @@ std::string ucasestr( string str )
 
 std::string ucasestr(const char *str)
 {
-	string resu ;
+	std::string resu ;
 	for( size_t i = 0 ; i < strlen(str); ++i )
 	{
 		resu += static_cast<char>( toupper( str[i] ) );

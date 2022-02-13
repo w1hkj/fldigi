@@ -34,8 +34,6 @@
 #include "fileselect.h"
 #include "debug.h"
 
-using namespace std;
-
 void colorbox::draw() {
 	int ypos = y() + 2;
 	int xpos;
@@ -75,8 +73,8 @@ void selectColor(int n)
 	WF_Palette->redraw();
 }
 
-static string palfilename = "";
-static string palLabelStr;
+static std::string palfilename = "";
+static std::string palLabelStr;
 
 void loadPalette()
 {
@@ -109,7 +107,7 @@ void loadPalette()
 		palfilename = p;
 		palLabelStr = p;
 		size_t pos = palLabelStr.find_last_of('/');
-		if (pos != string::npos) palLabelStr.erase(0, pos+1);
+		if (pos != std::string::npos) palLabelStr.erase(0, pos+1);
 		palLabelStr = _("Palette: ") + palLabelStr;
 		WF_Palette->label(palLabelStr.c_str());
 		WF_Palette->redraw();
@@ -134,7 +132,7 @@ void savePalette()
 		palfilename = p;
 		palLabelStr = p;
 		size_t pos = palLabelStr.find_last_of('/');
-		if (pos != string::npos) palLabelStr.erase(0, pos+1);
+		if (pos != std::string::npos) palLabelStr.erase(0, pos+1);
 		palLabelStr = _("Palette: ") + palLabelStr;
 		WF_Palette->label(palLabelStr.c_str());
 		WF_Palette->redraw();

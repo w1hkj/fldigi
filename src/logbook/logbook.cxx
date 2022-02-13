@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <cstring>
+#include <string>
 #include <iostream>
 #include <fstream>
 
@@ -35,8 +36,6 @@
 #include "qrunner.h"
 #include "gettext.h"
 #include "icons.h"
-
-using namespace std;
 
 void start_logbook ()
 {
@@ -54,7 +53,7 @@ void start_logbook ()
 
 	adifFile.readFile (logbook_filename.c_str(), &qsodb);
 
-	string label = "Logbook - ";
+	std::string label = "Logbook - ";
 	label.append(fl_filename_name(logbook_filename.c_str()));
 	dlgLogbook->copy_label(label.c_str());
 	txtLogFile->value(logbook_filename.c_str());

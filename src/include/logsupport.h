@@ -90,7 +90,7 @@ extern void cb_mnuExportADIF_log(Fl_Menu_* m, void* d);
 extern void cb_mnuExportCSV_log(Fl_Menu_* m, void* d);
 extern void cb_mnuExportTEXT_log(Fl_Menu_* m, void* d);
 
-extern string lotw_rec(cQsoRec &rec);
+extern std::string lotw_rec(cQsoRec &rec);
 extern void cb_btnExportLoTW();
 
 extern Fl_Double_Window *lotw_review_dialog;

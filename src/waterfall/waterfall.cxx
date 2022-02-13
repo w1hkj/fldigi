@@ -79,8 +79,6 @@
 
 #include "spectrum_viewer.h"
 
-using namespace std;
-
 //pthread_mutex_t draw_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #define bwFFT		30
@@ -673,7 +671,7 @@ struct AUDIO_BLOCK {
 };
 bool clear_audio_blocks;
 
-queue<AUDIO_BLOCK> audio_blocks;
+std::queue<AUDIO_BLOCK> audio_blocks;
 
 void WFdisp::sig_data( double *sig, int len )
 {
@@ -781,14 +779,14 @@ void WFdisp::handle_sig_data()
 			int offset = 0;
 			double afreq = active_modem->get_txfreq();
 			trx_mode mode = active_modem->get_mode();
-			string testmode = qso_opMODE->value();
+			std::string testmode = qso_opMODE->value();
 
-			bool xcvr_useFSK = ((testmode.find("RTTY") != string::npos) ||
-								(testmode.find("FSK") != string::npos) ||
-								((testmode.find("DATA") != string::npos) &&
+			bool xcvr_useFSK = ((testmode.find("RTTY") != std::string::npos) ||
+								(testmode.find("FSK") != std::string::npos) ||
+								((testmode.find("DATA") != std::string::npos) &&
 								 (use_nanoIO || progdefaults.PseudoFSK)) );
 			usb = !ModeIsLSB(testmode);
-			if ((testmode.find("DATA") != string::npos) && xcvr_useFSK)
+			if ((testmode.find("DATA") != std::string::npos) && xcvr_useFSK)
 				usb = !usb;
 
 			if (mode == MODE_RTTY && progdefaults.useMARKfreq && !xcvr_useFSK) {
@@ -798,7 +796,7 @@ void WFdisp::handle_sig_data()
 				offset /= 2;
 				if (active_modem->get_reverse()) offset *= -1;
 			}
-			if (testmode.find("CW") != string::npos)
+			if (testmode.find("CW") != std::string::npos)
 				afreq = 0;
 			if (xcvr_useFSK)
 				afreq = 0;
@@ -956,18 +954,18 @@ void WFdisp::drawScale() {
 	}
 
 	int mdoffset = 0;
-	string testmode = qso_opMODE->value();
+	std::string testmode = qso_opMODE->value();
 
-	bool xcvr_useFSK = ((testmode.find("RTTY") != string::npos) ||
-						(testmode.find("FSK") != string::npos) ||
-						((testmode.find("DATA") != string::npos) &&
+	bool xcvr_useFSK = ((testmode.find("RTTY") != std::string::npos) ||
+						(testmode.find("FSK") != std::string::npos) ||
+						((testmode.find("DATA") != std::string::npos) &&
 						 (use_nanoIO ||progdefaults.PseudoFSK)) );
 
 	usb = !ModeIsLSB(testmode);
-	if ((testmode.find("DATA") != string::npos) && xcvr_useFSK)
+	if ((testmode.find("DATA") != std::string::npos) && xcvr_useFSK)
 		usb = !usb;
 
-	if (testmode.find("CW") != string::npos)
+	if (testmode.find("CW") != std::string::npos)
 		mdoffset = progdefaults.CWsweetspot;
 
 	if (xcvr_useFSK) {
@@ -1270,7 +1268,7 @@ void WFdisp::drawspectrum() {
 			fft_sig_img[fftpixel -= offset_idx] = graylevel; 
 			ffty++;
 			if (fftpixel < offset_idx) {
-				cout << "corrupt index 1\n";
+				std::cout << "corrupt index 1\n";
 				break;
 			}
 		}
@@ -1278,14 +1276,14 @@ void WFdisp::drawspectrum() {
 			fft_sig_img[fftpixel += offset_idx] = graylevel; 
 			ffty--;
 			if (fftpixel >= (image_area - 1)) {
-				cout << "corrupt index 2\n";
+				std::cout << "corrupt index 2\n";
 				break;
 			}
 		}
 		if (fftpixel >= 0 && fftpixel <= image_area)
 			fft_sig_img[fftpixel++] = graylevel;
 		else
-			cout << "fft_sig_image index out of bounds: " << fftpixel << endl;
+			std::cout << "fft_sig_image index out of bounds: " << fftpixel << std::endl;
 	}
 
 	if (progdefaults.UseBWTracks) {
@@ -1474,7 +1472,7 @@ void carrier_cb(Fl_Widget *w, void *v) {
 void do_qsy(bool dir)
 {
 	if (!active_modem) return;
-	static vector<qrg_mode_t> qsy_stack;
+	static std::vector<qrg_mode_t> qsy_stack;
 	qrg_mode_t m;
 
 	wf->xmtlock->value(0);
@@ -1488,10 +1486,10 @@ void do_qsy(bool dir)
 		m.rmode = qso_opMODE->value();
 		trx_mode md = active_modem->get_mode();
 
-		string testmode = qso_opMODE->value();
-		bool xcvr_useFSK = ((testmode.find("RTTY") != string::npos) ||
-							(testmode.find("FSK") != string::npos) ||
-							((testmode.find("DATA") != string::npos) &&
+		std::string testmode = qso_opMODE->value();
+		bool xcvr_useFSK = ((testmode.find("RTTY") != std::string::npos) ||
+							(testmode.find("FSK") != std::string::npos) ||
+							((testmode.find("DATA") != std::string::npos) &&
 							 (use_nanoIO)) );
 
 // qsy to the sweet spot frequency that is the center of the PBF in the rig
@@ -1520,7 +1518,7 @@ void do_qsy(bool dir)
 				m.carrier = progdefaults.PSKsweetspot;
 				break;
 		}
-		if (m.rmode.find("CW") != string::npos) {
+		if (m.rmode.find("CW") != std::string::npos) {
 			if (wf->USB())
 				m.rfcarrier += (wfc - m.carrier);
 			else
@@ -1781,7 +1779,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
 				qrg_list[elem] = m;
 // write the menu item text
 			{
-				ostringstream o;
+				std::ostringstream o;
 				o << mode_info[m.mode].name << " @@ ";
 				if (m.rfcarrier > 0) { // write 1000s separators
 					char s[20], *p = s + sizeof(s) - 1;
@@ -2193,9 +2191,9 @@ void waterfall::insert_text(bool check)
 		last_marked_qrg = m;
 	}
 
-	string::size_type i;
-	if ((i = progdefaults.WaterfallClickText.find("<FREQ>")) != string::npos) {
-		string s = progdefaults.WaterfallClickText;
+	std::string::size_type i;
+	if ((i = progdefaults.WaterfallClickText.find("<FREQ>")) != std::string::npos) {
+		std::string s = progdefaults.WaterfallClickText;
 		s[i] = '\0';
 		ReceiveText->addstr(s);
 		note_qrg(false);
@@ -2212,8 +2210,8 @@ static void find_signal_text(void)
 	int freq = active_modem->get_freq();
 	trx_mode mode = active_modem->get_mode();
 
-	extern map<string, qrg_mode_t> qrg_marks;
-	map<string, qrg_mode_t>::const_iterator i;
+	extern std::map<std::string, qrg_mode_t> qrg_marks;
+	std::map<std::string, qrg_mode_t>::const_iterator i;
 	for (i = qrg_marks.begin(); i != qrg_marks.end(); ++i)
 		if (i->second.mode == mode && abs(i->second.carrier - freq) <= 20)
 			break;

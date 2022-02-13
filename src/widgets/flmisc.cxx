@@ -47,8 +47,6 @@
 #include "flmisc.h"
 #include "pixmaps.h"
 
-using namespace std;
-
 unsigned quick_choice_menu(const char* title, unsigned sel, const Fl_Menu_Item* menu)
 {
 	unsigned n = menu->size();
@@ -244,7 +242,7 @@ void notify_dialog::notify(const char* msg, double timeout)
 	_timeout = timeout;
 	const char* p;
 	if ((p = strchr(msg, '\n'))) { // use first line as label
-		string l(msg, p - msg);
+		std::string l(msg, p - msg);
 		copy_label(l.c_str());
 	}
 	else
@@ -255,7 +253,7 @@ void notify_dialog::notify(const char* msg, double timeout)
 	for (const char* p = msg; (p = strchr(p, '\n')); p++)
 		H++;
 
-	int nuh = 103 + max(H-1, 0) * fl_height();
+	int nuh = 103 + std::max(H-1, 0) * fl_height();
 	resize(x(), y(), w(), nuh);
 }
 

@@ -30,8 +30,6 @@
 #include "lgbook.h"
 #include "globals.h"
 
-using namespace std;
-
 #ifdef __WOE32__
 static const char *szEOL = "\r\n";
 #else
@@ -185,7 +183,7 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, ",\"%s\"", pRec->getField(LOTWSDATE));
 
 				if (btnSelectNotes->value()) {
-					string temp = pRec->getField(NOTES);
+					std::string temp = pRec->getField(NOTES);
 					for (size_t n = 0; n < temp.length(); n++)
 						if (temp[n] == '\r' || temp[n] == '\n') temp[n] = '-';
 					fprintf (txtFile, ",\"%s\"", temp.c_str());
@@ -361,7 +359,7 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 				if (btnSelectLOTWsent->value())
 					fprintf (txtFile, "%-10s", pRec->getField(LOTWSDATE));
 				if (btnSelectNotes->value()) {
-					string temp = pRec->getField(NOTES);
+					std::string temp = pRec->getField(NOTES);
 					for (size_t n = 0; n < temp.length(); n++)
 						if (temp[n] == '\n') temp[n] = ';';
 					fprintf (txtFile, "%-80s", temp.c_str());

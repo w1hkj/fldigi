@@ -43,12 +43,10 @@
 #include "qrunner.h"
 #include "timeops.h"
 
-using namespace std;
-
 static pthread_mutex_t logfile_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 size_t ptr, ptr2;
-string sbuff;
+std::string sbuff;
 
 #ifdef __WOE32__
 static const char *szEOL = "\r\n";
@@ -153,7 +151,7 @@ FIELD fields[] = {
 };
 */
 
-static string read_errors;
+static std::string read_errors;
 static int    num_read_errors;
 
 static void write_rxtext(const char *s)
@@ -241,12 +239,12 @@ char * cAdifIO::fillfield (int recnbr, int fieldnum, char *buff)
 		p1++;
 	}
 
-	string tmp = "";
+	std::string tmp = "";
 	tmp.assign(p2+1, fldsize);
 
 // added to disallow very large corrupted adif fields
 	if (fldsize > fields[fieldnum].fsize) {
-		string bfr = buff;
+		std::string bfr = buff;
 		tmp.erase(fields[fieldnum].fsize);
 		static char szmsg[1000];
 		snprintf(szmsg, sizeof(szmsg), 
@@ -323,15 +321,15 @@ size_t recend;
 
 	while (p != std::string::npos) {
 		recend = sbuff.find("<EOR>", p);
-		if (recend == string::npos) recend = sbuff.find("<eor>", p);
-		if (recend == string::npos)
+		if (recend == std::string::npos) recend = sbuff.find("<eor>", p);
+		if (recend == std::string::npos)
 			break;
 
 		ptr = p;
 		adifqso = 0;
 		while (ptr != std::string::npos) {
 			ptr2 = sbuff.find('<', ptr + 1);
-			if (ptr2 == string::npos)
+			if (ptr2 == std::string::npos)
 				break;
 			found = findfield( &sbuff[ptr + 1] );
 			if (found > -1) {
@@ -405,7 +403,7 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 {
 	guard_lock lock(&logfile_mutex);
 
-	string ADIFHEADER;
+	std::string ADIFHEADER;
 	ADIFHEADER = "File: %s";
 	ADIFHEADER.append(szEOL);
 	ADIFHEADER.append("<ADIF_VER:%d>%s");
@@ -418,7 +416,7 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 	ADIFHEADER.append(szEOL);
 // open the adif file
 	cQsoRec *rec;
-	string sFld;
+	std::string sFld;
 	adiFile = fl_fopen (fname, "wb");
 	if (!adiFile)
 		return 1;
@@ -429,7 +427,7 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 			 strlen(PACKAGE_NAME), PACKAGE_NAME,
 			 strlen(PACKAGE_VERSION), PACKAGE_VERSION);
 
-	string sName;
+	std::string sName;
 	int field_type;
 	for (int i = 0; i < db->nbrRecs(); i++) {
 		rec = db->getRec(i);
@@ -503,10 +501,10 @@ pthread_mutex_t ADIF_RW_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t ADIF_RW_cond = PTHREAD_COND_INITIALIZER;
 static void ADIF_RW_init();
 
-static string adif_file_image;
-static string adif_file_name;
-static string records;
-static string record;
+static std::string adif_file_image;
+static std::string adif_file_name;
+static std::string records;
+static std::string record;
 static char recfield[200];
 
 static bool ADIF_READ = false;
@@ -615,7 +613,7 @@ void cAdifIO::do_writelog()
 {
 	guard_lock lock(&logfile_mutex);
 
-	string ADIFHEADER;
+	std::string ADIFHEADER;
 	ADIFHEADER = "File: %s";
 	ADIFHEADER.append(szEOL);
 	ADIFHEADER.append("<ADIF_VER:%d>%s");

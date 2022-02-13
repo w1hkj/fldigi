@@ -53,8 +53,6 @@
 
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
-using namespace std;
-
 static pthread_mutex_t	hamlib_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t	*hamlib_thread = 0;
 
@@ -81,7 +79,7 @@ static void *hamlib_loop(void *args);
 
 void show_error(const char* msg1, const char* msg2 = 0)
 {
-	string error = msg1;
+	std::string error = msg1;
 	if (msg2)
 		error.append(": ").append(msg2);
 	put_status(error.c_str(), 10.0);
@@ -184,7 +182,7 @@ bool hamlib_init(bool bPtt)
 	hamlib_init_defaults();
 
 #ifdef __CYGWIN__
-	string port = progdefaults.HamRigDevice;
+	std::string port = progdefaults.HamRigDevice;
 	com_to_tty(port);
 #endif
 
@@ -239,8 +237,8 @@ bool hamlib_init(bool bPtt)
 			xcvr->setConf("stop_bits", progdefaults.HamRigStopbits == 1 ? "1" : "2");
 		}
 
-		string::size_type c = progdefaults.HamConfig.find('#');
-		if (c != string::npos)
+		std::string::size_type c = progdefaults.HamConfig.find('#');
+		if (c != std::string::npos)
 			progdefaults.HamConfig.erase(c);
 		if (!progdefaults.HamConfig.empty()) {
 			re_t re("([^, =]+) *= *([^, =]+)", REG_EXTENDED);
@@ -637,7 +635,7 @@ rig_model_t hamlib_get_rig_model(size_t i)
 
 void hamlib_get_rig_str(int (*func)(const char*))
 {
-	string rigstr;
+	std::string rigstr;
 	for (rig_list_t::const_iterator i = hamlib_rigs.begin(); i != hamlib_rigs.end(); ++i) {
 		rigstr.clear();
 		rigstr.append((*i)->mfg_name).append(" ").append((*i)->model_name);

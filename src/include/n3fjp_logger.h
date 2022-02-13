@@ -16,7 +16,7 @@ extern void n3fjp_close(void);
 
 extern int  n3fjp_dupcheck();
 extern void n3fjp_add_record(cQsoRec &rec);
-extern void n3fjp_get_record(string rec);
+extern void n3fjp_get_record(std::string rec);
 extern void n3fjp_set_freq(long f);
 extern void n3fjp_set_ptt(int on);
 extern void n3fjp_clear_record();

@@ -81,9 +81,6 @@
 
 #include <dirent.h>
 
-using namespace std;
-
-
 const char *szBaudRates[] = {
 	"",
 	"300","600","1200","2400",
@@ -95,11 +92,12 @@ const char *szBands[] = {
 	"1830", "3580", "7030", "7070", "10138",
 	"14070", "18100", "21070", "21080", "24920", "28070", "28120", 0};
 
-ostream& operator<<(ostream& out, const RGB& rgb)
+std::ostream& operator<<(std::ostream& out, const RGB& rgb)
 {
 	return out << (int)rgb.R << ' ' << (int)rgb.G << ' ' << (int)rgb.B;
 }
-istream& operator>>(istream& in, RGB& rgb)
+
+std::istream& operator>>(std::istream& in, RGB& rgb)
 {
 	int i;
 	in >> i; rgb.R = i;
@@ -108,11 +106,13 @@ istream& operator>>(istream& in, RGB& rgb)
 	return 	in;
 
 }
-ostream& operator<<(ostream& out, const RGBI& rgbi)
+
+std::ostream& operator<<(std::ostream& out, const RGBI& rgbi)
 {
 	return out << (int)rgbi.R << ' ' << (int)rgbi.G << ' ' << (int)rgbi.B;
 }
-istream& operator>>(istream& in, RGBI& rgbi)
+
+std::istream& operator>>(std::istream& in, RGBI& rgbi)
 {
 	int i;
 	in >> i; rgbi.R = i;
@@ -126,7 +126,7 @@ class tag_base
 {
 public:
 	tag_base(const char* t, const char* d = "") : tag(t), doc(d) { }
-	virtual void write(ostream& out) const = 0;
+	virtual void write(std::ostream& out) const = 0;
 	virtual void read(const char* data) = 0;
 	virtual ~tag_base() { }
 	const char* tag;
@@ -139,14 +139,14 @@ class tag_elem : public tag_base
 {
 public:
 	tag_elem(const char* t, const char* d, T& v) : tag_base(t, d), var(v) { }
-	void write(ostream& out) const
+	void write(std::ostream& out) const
         {
 		out << "<!-- " << doc << " -->\n"
 		    << '<' << tag << '>' << var << "</" << tag << ">\n\n";
 	}
 	void read(const char* data)
 	{
-		istringstream iss(data);
+		std::istringstream iss(data);
 		iss >> var;
 	}
 	T& var;
@@ -156,48 +156,48 @@ public:
 
 // Special handling for strings
 template <>
-class tag_elem<string> : public tag_base
+class tag_elem<std::string> : public tag_base
 {
 public:
-	tag_elem(const char* t, const char* d, string& s) : tag_base(t, d), str(s) { }
-	void write(ostream& out) const
+	tag_elem(const char* t, const char* d, std::string& s) : tag_base(t, d), str(s) { }
+	void write(std::ostream& out) const
         {
-		string s = str;
-		string s2 = doc;
+		std::string s = str;
+		std::string s2 = doc;
 
-		string::size_type i = s.find('&');
-		while (i != string::npos) {
+		std::string::size_type i = s.find('&');
+		while (i != std::string::npos) {
 			s.replace(i, 1, "&amp;");
 			i = s.find('&', i + 1);
 		}
-		while ((i = s.find('<')) != string::npos)
+		while ((i = s.find('<')) != std::string::npos)
 			s.replace(i, 1, "&lt;");
-		while ((i = s.find('>')) != string::npos)
+		while ((i = s.find('>')) != std::string::npos)
 			s.replace(i, 1, "&gt;");
-		while ((i = s.find('"')) != string::npos)
+		while ((i = s.find('"')) != std::string::npos)
 			s.replace(i, 1, "&quot;");
-		while ((i = s.find('\'')) != string::npos)
+		while ((i = s.find('\'')) != std::string::npos)
 			s.replace(i, 1, "&apos;");
 
 		i = s2.find('&');
-		while (i != string::npos) {
+		while (i != std::string::npos) {
 			s2.replace(i, 1, "&amp;");
 			i = s2.find('&', i + 1);
 		}
-		while ((i = s2.find('<')) != string::npos)
+		while ((i = s2.find('<')) != std::string::npos)
 			s2.replace(i, 1, "&lt;");
-		while ((i = s2.find('>')) != string::npos)
+		while ((i = s2.find('>')) != std::string::npos)
 			s2.replace(i, 1, "&gt;");
-		while ((i = s2.find('"')) != string::npos)
+		while ((i = s2.find('"')) != std::string::npos)
 			s2.replace(i, 1, "&quot;");
-		while ((i = s2.find('\'')) != string::npos)
+		while ((i = s2.find('\'')) != std::string::npos)
 			s2.replace(i, 1, "&apos;");
 
 		out << "<!-- " << s2 << " -->\n"
 		    << '<' << tag << '>' << s << "</" << tag << ">\n\n";
 	}
 	void read(const char* data) { str = data; }
-	string& str;
+	std::string& str;
 };
 
 // Special handling for mode bitsets
@@ -206,7 +206,7 @@ class tag_elem<mode_set_t> : public tag_base
 {
 public:
 	tag_elem(const char* t, const char* d, mode_set_t& m) : tag_base(t, d), modes(m) { }
-	void write(ostream& out) const
+	void write(std::ostream& out) const
         {
 		out << "<!-- " << doc << " -->\n" << '<' << tag << '>';
 		for (size_t i = 0; i < modes.size(); i++) {
@@ -217,10 +217,10 @@ public:
 	}
 	void read(const char* data)
 	{
-		string sdata = data, smode, tstmode;
+		std::string sdata = data, smode, tstmode;
 		modes.set();
 		size_t p = sdata.find(",");
-		while ((p != string::npos) && (p != 0)) {
+		while ((p != std::string::npos) && (p != 0)) {
 			smode = sdata.substr(0, p);
 
 			for (size_t i = 0; i < modes.size(); i++) {
@@ -257,15 +257,15 @@ configuration progdefaults = { CONFIG_LIST };
 
 void configuration::writeDefaultsXML()
 {
-	string deffname(HomeDir);
+	std::string deffname(HomeDir);
 	deffname.append("fldigi_def.xml");
 
-	string deffname_backup(deffname);
+	std::string deffname_backup(deffname);
 	deffname_backup.append("-old");
 	remove(deffname_backup.c_str());
 	rename(deffname.c_str(), deffname_backup.c_str());
 
-	ofstream f(deffname.c_str());
+	std::ofstream f(deffname.c_str());
 	if (!f) {
 		LOG_ERROR("Could not write %s", deffname.c_str());
 		return;
@@ -300,7 +300,7 @@ return;
 		{ &progdefaults.cwid_modes, "CWID" },
 		{ &progdefaults.videoid_modes, "VIDEOID" }
 	};
-	string buf;
+	std::string buf;
 	for (size_t i = 0; i < sizeof(excluded)/sizeof(*excluded); i++) {
 		size_t n = excluded[i].modes->size();
 		if (excluded[i].modes->count() == n)
@@ -329,17 +329,17 @@ bool configuration::readDefaultsXML()
 	// Show all op modes
 	visible_modes.set();
 
-	string deffname = HomeDir;
+	std::string deffname = HomeDir;
 	deffname.append("fldigi_def.xml");
-	ifstream f(deffname.c_str());
+	std::ifstream f(deffname.c_str());
 	if (!f)
 		return false;
 
-	string xmlbuf;
+	std::string xmlbuf;
 
-	f.seekg(0, ios::end);
+	f.seekg(0, std::ios::end);
 	xmlbuf.reserve(f.tellg()); // reserve some space to avoid reallocations
-	f.seekg(0, ios::beg);
+	f.seekg(0, std::ios::beg);
 
 	char line[2048];
 	while (f.getline(line, sizeof(line)))
@@ -351,7 +351,7 @@ bool configuration::readDefaultsXML()
 		return false;
 
 	// create a TAG_NAME -> ELEMENT map
-	typedef map<string, tag_base*> tag_map_t;
+	typedef std::map<std::string, tag_base*> tag_map_t;
 	tag_map_t tag_map;
 
 	tag_base* tag_list[] = { CONFIG_LIST };
@@ -702,7 +702,7 @@ int configuration::setDefaults()
 #endif
 
 #if ENABLE_NLS && defined(__WOE32__)
-	ostringstream ss;
+	std::ostringstream ss;
 	for (lang_def_t* p = ui_langs; p->lang; p++) {
 		ss.str("");
 		ss << p->native_name;
@@ -734,8 +734,8 @@ Files: fldigi_def.xml and fldigi.prefs will be deleted!\n"), _("OK"), _("Cancel"
 
 void configuration::reset(void)
 {
-	remove(string(HomeDir).append("fldigi_def.xml").c_str());
-	remove(string(HomeDir).append("fldigi.prefs").c_str());
+	remove(std::string(HomeDir).append("fldigi_def.xml").c_str());
+	remove(std::string(HomeDir).append("fldigi.prefs").c_str());
 }
 
 #include "rigio.h"
