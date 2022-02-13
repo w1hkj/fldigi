@@ -83,7 +83,6 @@ struct XmlRpcImpl;
 
 LOG_FILE_SOURCE(debug::LOG_RPC_SERVER);
 
-//using namespace std;
 using namespace XmlRpc;
 
 /// Not defined the usual way on Mingw
