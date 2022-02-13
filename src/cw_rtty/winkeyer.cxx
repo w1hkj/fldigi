@@ -519,7 +519,7 @@ LOG_DEBUG("\n\
       dit dah ratio .... %d\n\
       pin config ....... %d\n\
       don't care ....... %d\n\
-      hex string ....... %s",
+      hex std::string ....... %s",
 	progStatus.WK_mode_register,
 	progdefaults.CWspeed,
 	progStatus.WK_sidetone,
