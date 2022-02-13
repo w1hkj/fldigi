@@ -984,7 +984,7 @@ LOG_ERROR("rig.get_xcvr FAILED");
 // xmlrpc read polling thread
 //======================================================================
 static bool run_flrig_thread = true;
-static int poll_interval = 100; // 1 second
+static int poll_interval = 1000; // 1 second
 
 //----------------------------------------------------------------------
 // Set QSY to true if xmlrpc client connection is OK
@@ -1012,13 +1012,13 @@ void flrig_connection()
 				method_str.append("    ").append(result[i]).append("\n");
 			LOG_VERBOSE("%s", method_str.c_str());
 			connected_to_flrig = true;
-			poll_interval = 20; // every 200 msec
+			poll_interval = progdefaults.flrig_poll;
 			flrig_get_xcvr();
 			Fl::awake(flrig_setQSY);
 		} else {
 			LOG_VERBOSE("%s", "Waiting for flrig");
 			connected_to_flrig = false;
-			poll_interval = 200; // every 2 seconds
+			poll_interval = 2000; // every 2 seconds
 		}
 	} catch (...) {
 		LOG_ERROR("%s", "failure in flrig_client");
@@ -1061,7 +1061,10 @@ void * flrig_thread_loop(void *d)
 			}
 		}
 
-		if (--poll == 0) {
+		if (connected_to_flrig && poll_interval != progdefaults.flrig_poll)
+			poll_interval = progdefaults.flrig_poll;
+
+		if ((poll -= 10) <= 0) {
 			poll = poll_interval;
 			if (progdefaults.fldigi_client_to_flrig) {
 				if (!flrig_client)
@@ -1102,7 +1105,7 @@ void * flrig_thread_loop(void *d)
 void FLRIG_start_flrig_thread()
 {
 	flrig_thread = new pthread_t;
-	poll_interval = 100;  // every second
+	poll_interval = 1000;  // every second
 	if (pthread_create(flrig_thread, NULL, flrig_thread_loop, NULL)) {
 		LOG_ERROR("%s", "flrig_thread create");
 		exit(EXIT_FAILURE);
