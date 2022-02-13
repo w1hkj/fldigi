@@ -62,6 +62,10 @@ extern int process_hrdw_ptt_end_delay(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_hrdw_ptt_uhrouter(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_hrdw_ptt_initialize(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 
+extern int process_cmedia_ptt(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
+extern int process_cmedia_device(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
+extern int process_cmedia_gpio_line(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
+
 extern int process_use_rigcat(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_rigcat_desc_file(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_rigcat_device_path(ScriptParsing *sp, SCRIPT_COMMANDS *sc);

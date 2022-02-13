@@ -595,6 +595,9 @@
         ELEM_(bool, CW_prosign_display, "CW_prosign_display",                           \
               "Display decoded prosign as assigned short cut key",                      \
               false)                                                                    \
+        ELEM_(int, CW_cal_speed, "CWCALSPEED",                                          \
+              "CW calibrate speed in WPM",                                              \
+              20)                                                                       \
         ELEM_(bool, A_umlaut, "A_umlaut",                                               \
               "Use Ä extended CW character",                                            \
               true)                                                                     \

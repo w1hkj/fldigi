@@ -112,6 +112,11 @@
 #define CMD_HPTT_PARALLEL              F_LOC("PARALLEL")
 #define CMD_HPTT_SP2_INITIALIZE        F_LOC("INIT")
 
+#define CMD_CMEDIA_PTT              F_LOC("CMEDIA PTT")
+#define CMD_USE_CMEDIA_PTT            F_LOC("CMEDIA_PTT")
+#define CMD_CMEDIA_DEV                F_LOC("CMEDIA_DEVICE")      
+#define CMD_CMEDIA_GPIO_LINE          F_LOC("CMEDIA_GPIO_LINE")
+
 #define CMD_RIGCAT                  F_LOC("RIGCAT")
 #define CMD_RIGCAT_STATE                F_LOC("STATE")
 #define CMD_RIGCAT_DESC_FILE            F_LOC("DESC FILE")

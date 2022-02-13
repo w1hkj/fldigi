@@ -216,6 +216,7 @@ protected:
 
 	double	wpm;
 	double	fwpm;
+	double  cal_wpm;
 
 	void	create_edges();
 	void	sync_transmit_parameters();
@@ -242,6 +243,8 @@ public:
 	void	incWPM();
 	void	decWPM();
 	void	toggleWPM();
+	double	calWPM() { return cal_wpm; }
+	void    calWPM(double val) { cal_wpm = val; }
 
 	int normalize(float *v, int n, int twodots);
 	std::string	find_winner (float *inbuf, int twodots);

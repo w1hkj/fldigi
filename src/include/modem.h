@@ -237,6 +237,8 @@ public:
 	void	cwid();
 	void	set_CW_EOT() { CW_EOT = true; }
 	void	clear_CW_EOT() { CW_EOT = false; }
+	double  calWPM() {return 20;}
+	void    calWPM(double) {};
 
 // for fft scan modem
 public:

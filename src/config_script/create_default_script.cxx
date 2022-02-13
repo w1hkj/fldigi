@@ -385,6 +385,13 @@ static int create_default_script(char *file_name)
 	if(add_command(fd, (char *)CMD_HPTT_SP2_INITIALIZE,      1)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_END_CMD,                  0)) return fclose(fd);
 
+	// Cmedia PTT
+	if(add_command(fd, (char *)CMD_CMEDIA_PTT,                0)) return fclose(fd);
+	if(add_command(fd, (char *)CMD_USE_CMEDIA_PTT,           (bool)   btn_use_cmedia_PTT->value(), 1)) return fclose(fd);
+	if(add_command(fd, (char *)CMD_CMEDIA_DEV,               (char *) progdefaults.cmedia_device.c_str(), 1)) return fclose(fd);
+	if(add_command(fd, (char *)CMD_CMEDIA_GPIO_LINE,         (char *) progdefaults.cmedia_gpio_line.c_str(), 1)) return fclose(fd);
+	if(add_command(fd, (char *)CMD_END_CMD,                  0)) return fclose(fd);
+
 	// RIG CAT
 	if(add_command(fd, (char *)CMD_RIGCAT,                   0)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_RIGCAT_STATE,             (bool)   chkUSERIGCAT->value(),               1)) return fclose(fd);
