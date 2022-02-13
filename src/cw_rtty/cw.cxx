@@ -26,7 +26,6 @@
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-
 #include <config.h>
 
 #include <cstring>
@@ -366,6 +365,8 @@ cw::cw() : modem()
 	noise_floor = 1.0;
 	sig_avg = 0.0;
 
+	cal_wpm = 20;
+
 	start_cwio_thread();
 
 }
@@ -526,13 +527,12 @@ static int max_dash = 3 * KWPM / 5;
 void cw::update_Status()
 {
 	put_MODEstatus("CW %s Rx %d", usedefaultWPM ? "*" : " ", cw_receive_speed);
-	REQ(set_CWwpm);
 }
 
 //=======================================================================
 //update_syncscope()
 //Routine called to update the display on the sync scope display.
-//For CW this is an o scope pattern that shows the cw data stream.
+//For CW this is an o scope pattern that shows the cw data streacwTrackm.
 //=======================================================================
 //
 
@@ -1124,7 +1124,7 @@ void cw::send_ch(int ch)
 	}
 
 	if (ch != -1) {
-		std::string prtstr = morse.tx_print();
+		std::string prtstr = morse->tx_print();
 		for (size_t n = 0; n < prtstr.length(); n++)
 			put_echo_char(
 				prtstr[n],
@@ -1170,7 +1170,7 @@ int cw::tx_process()
 			put_echo_char('\n');
 			return -1;
 		}
-		if (WK_send_char(c)){
+		if (WK_send_char(c)) {
 			put_echo_char('\n');
 			return -1; // WinKeyer problem
 		}
@@ -1299,7 +1299,7 @@ int open_CW_KEYLINE()
 	CW_KEYLINE_serial.RTSCTS(false);
 	CW_KEYLINE_serial.Stopbits(1);
 
-	LOG_VERBOSE("\n\
+	LOG_DEBUG("\n\
 CW Keyline Serial port parameters:\n\
 device	 : %s\n\
 baudrate   : %d\n\
@@ -1508,7 +1508,7 @@ void cwio_calibrate_finished(void *)
 	cnt_cwio_comp->value(comp);
 	btn_cw_dtr_calibrate->value(0);
 
-	LOG_INFO("\n\
+	LOG_DEBUG("\n\
 xmt %d words at %.0f wpm : %0.3f secs\n\
 compensation ratio:  %f\n\
 compensation (msec): %d",
@@ -1632,7 +1632,7 @@ void start_cwio_thread(void)
 		LOG_ERROR("AUDIO_ALERT thread create fail (pthread_create)");
 	}
 
-	LOG_VERBOSE("started audio cwio thread");
+	LOG_DEBUG("started audio cwio thread");
 
 	MilliSleep(10); // Give the CPU time to set 'cwio_thread_running'
 }
@@ -1664,19 +1664,13 @@ unsigned long CAT_end_time = 0L;
 
 void CAT_keying_calibrate_finished(void *)
 {
-	int comp = (CAT_end_time - CAT_start_time - 60000);
-
-	progdefaults.CATkeying_compensation = comp;
-
-	out_CATkeying_compensation->value(comp / 1000.0);
-
+	out_CATkeying_compensation->value(progdefaults.CATkeying_compensation / 1000.0);
 	char info[1000];
 	snprintf(info, sizeof(info),
 		"Speed test: %.0f wpm : %0.2f secs",
 		progdefaults.CWspeed,
-		(CAT_end_time - CAT_start_time) / 1000.0);
-	LOG_INFO("\n%s", info);
-
+		progdefaults.CATkeying_compensation / 1000.0);
+	LOG_DEBUG("\n%s", info);
 }
 
 static pthread_t       CW_keying_pthread;
@@ -1686,35 +1680,68 @@ void *do_CAT_keying_calibrate(void *args)
 {
 	CW_CAT_thread_running = true;
 
-	if (progdefaults.use_KNWDkeying || progdefaults.use_ELCTkeying)
+LOG_DEBUG("%s", "CAT keying calibrate thread running");
+
+	bool tempcwTrack = active_modem->get_cwTrack();
+	progdefaults.CWtrack = false;
+	active_modem->set_cwTrack(false);
+LOG_DEBUG("1");
+	progdefaults.CWspeed = cntCW_WPM->value();
+	active_modem->calWPM(progdefaults.CWspeed);
+	sldrCWxmtWPM->value(progdefaults.CWspeed);
+	cntr_nanoCW_WPM->value(progdefaults.CWspeed);
+LOG_DEBUG("2");
+	bool farnsworth = progdefaults.CWusefarnsworth;
+	progdefaults.CWusefarnsworth = false;
+	progdefaults.CATkeying_compensation = 0;
+LOG_DEBUG("3");
+	if (progStatus.WK_online) {
+		WK_set_wpm();
+		WK_reset_timing();
+	} else if (progdefaults.use_KNWDkeying || progdefaults.use_ELCTkeying)
 		set_KYkeyer();
 	else if (progdefaults.use_ICOMkeying)
 		set_ICOMkeyer();
 	else if (progdefaults.use_YAESUkeying)
 		set_FTkeyer();
-
+LOG_DEBUG("4");
 	std::string paris = "PARIS "; 
-	bool farnsworth = progdefaults.CWusefarnsworth;
-	progdefaults.CWusefarnsworth = false;
-	progdefaults.CATkeying_compensation = 0;
 
 	CAT_start_time = zmsec();
+LOG_DEBUG("5");
 	for (int i = 0; i < progdefaults.CWspeed; i++) {
+LOG_DEBUG("6");
 		for (size_t n = 0; n < paris.length(); n++) {
+LOG_DEBUG("7");
 			if (progdefaults.use_KNWDkeying || progdefaults.use_ELCTkeying)
 				KYkeyer_send_char(paris[n]);
 			else if (progdefaults.use_ICOMkeying)
 				ICOMkeyer_send_char(paris[n]);
 			else if (progdefaults.use_YAESUkeying)
 				FTkeyer_send_char(paris[n]);
+			else if (progStatus.WK_online) {
+				WK_send_char(paris[n]);
+			}
+			Fl::awake();
 		}
 	}
 	CAT_end_time = zmsec();
+
+	progdefaults.CATkeying_compensation = (CAT_end_time - CAT_start_time - 60000);
+
+	if (progStatus.WK_online)
+		WK_set_comp();
 
 	progdefaults.CWusefarnsworth = farnsworth;
 
 	Fl::awake(CAT_keying_calibrate_finished);
 	CW_CAT_thread_running = false;
+
+	progdefaults.CWtrack = tempcwTrack;
+	active_modem->set_cwTrack(tempcwTrack);
+
+LOG_DEBUG("%s", "exiting calibration thread");
+
 	return NULL;
 }
 
@@ -1727,7 +1754,7 @@ void CAT_keying_calibrate()
 		return;
 	}
 
-	LOG_VERBOSE("started CW CAT calibration thread");
+	LOG_DEBUG("started CW CAT calibration thread");
 
 	MilliSleep(10);
 	
@@ -1743,7 +1770,22 @@ void *do_CAT_keying_test(void *args)
 {
 	CW_CAT_thread_running = true;
 
-	if (progdefaults.use_KNWDkeying || progdefaults.use_ELCTkeying)
+	bool tempcwTrack = active_modem->get_cwTrack();
+	progdefaults.CWtrack = false;
+	active_modem->set_cwTrack(false);
+
+	progdefaults.CWspeed = cntCW_WPM->value();
+	sldrCWxmtWPM->value(progdefaults.CWspeed);
+	cntr_nanoCW_WPM->value(progdefaults.CWspeed);
+
+	progdefaults.CW_cal_speed = progdefaults.CWspeed;
+
+	bool farnsworth = progdefaults.CWusefarnsworth;
+	progdefaults.CWusefarnsworth = false;
+
+	if (progStatus.WK_online) {
+		WK_set_wpm();
+	} else if (progdefaults.use_KNWDkeying || progdefaults.use_ELCTkeying)
 		set_KYkeyer();
 	else if (progdefaults.use_ICOMkeying)
 		set_ICOMkeyer();
@@ -1751,18 +1793,20 @@ void *do_CAT_keying_test(void *args)
 		set_FTkeyer();
 
 	std::string paris = "PARIS "; 
-	bool farnsworth = progdefaults.CWusefarnsworth;
-	progdefaults.CWusefarnsworth = false;
 
 	CAT_start_time = zmsec();
-	for (int i = 0; i < progdefaults.CWspeed; i++) {
+	for (int i = 0; i < progdefaults.CW_cal_speed; i++) {
 		for (size_t n = 0; n < paris.length(); n++) {
+			if (progStatus.WK_online) {
+				WK_send_char(paris[n]);
+			}
 			if (progdefaults.use_KNWDkeying || progdefaults.use_ELCTkeying)
 				KYkeyer_send_char(paris[n]);
 			else if (progdefaults.use_ICOMkeying)
 				ICOMkeyer_send_char(paris[n]);
 			else if (progdefaults.use_YAESUkeying)
 				FTkeyer_send_char(paris[n]);
+			Fl::awake();
 		}
 	}
 	CAT_end_time = zmsec();
@@ -1771,6 +1815,10 @@ void *do_CAT_keying_test(void *args)
 
 	Fl::awake(CAT_keying_test_finished);
 	CW_CAT_thread_running = false;
+
+	progdefaults.CWtrack = tempcwTrack;
+	active_modem->set_cwTrack(tempcwTrack);
+
 	return NULL;
 }
 
@@ -1783,8 +1831,8 @@ void CAT_keying_test()
 		return;
 	}
 
-	LOG_VERBOSE("started CW CAT calibration thread");
+	LOG_DEBUG("started CW CAT calibration thread");
 
 	MilliSleep(10);
-	
+
 }

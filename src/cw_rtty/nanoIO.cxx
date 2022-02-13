@@ -118,7 +118,6 @@ char nano_read_byte(int &msec)
 	msec = round(dmsec);
 	static char szresp[50];
 	snprintf(szresp, sizeof(szresp), "'%c' [%0.2f]", c, dmsec);
-std::cout << szresp << std::endl;
 
 	REQ(rcvd, szresp);
 
@@ -259,6 +258,7 @@ void nanoIO_wpm_cal()
 LOG_INFO("%f WPM", progdefaults.CWspeed);
 
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
+
 	cntCW_WPM->value(progdefaults.CWspeed);
 
 	nanoIO_isCW = true;
@@ -314,7 +314,7 @@ void nano_PTT(int val)
 	} else {
 		timeval ptt_end = tmval();
 		double tdiff = timeval_subtract(ptt_start, ptt_end);
-//std::cout << "PTT: [ " << tdiff << " ]" << std::endl;
+
 		if (calibrating) {
 			wpm_err = tdiff - 60;
 			Fl::awake(dispWPMtiming);

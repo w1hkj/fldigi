@@ -1941,6 +1941,72 @@ int process_hrdw_ptt_initialize(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
  * \param sc Access to SCRIPT_COMMANDS structure variables.
  * \return 0 (no error) Other (error)
  ***********************************************************/
+int process_cmedia_ptt(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
+{
+	if (!btn_use_cmedia_PTT)
+		return script_no_errors;
+	btn_use_cmedia_PTT->do_callback();
+	return script_no_errors;
+}
+
+/** ********************************************************
+ * \brief
+ * \param sp Access to ScritpParsing members.
+ * \param sc Access to SCRIPT_COMMANDS structure variables.
+ * \return 0 (no error) Other (error)
+ ***********************************************************/
+int process_cmedia_device(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
+{
+	// Not suitable for assign_xxxx
+	if(!sp || !sc)
+		return script_function_parameter_error;
+
+	std::string str_data = "";
+
+	if(sc->argc > 0)
+		str_data.assign(sc->args[0]);
+
+	if(str_data.empty())
+		return script_invalid_parameter;
+
+	progdefaults.cmedia_device.assign(str_data);
+	inp_cmedia_dev->value(progdefaults.cmedia_device.c_str());
+
+	return script_no_errors;
+}
+
+/** ********************************************************
+ * \brief
+ * \param sp Access to ScritpParsing members.
+ * \param sc Access to SCRIPT_COMMANDS structure variables.
+ * \return 0 (no error) Other (error)
+ ***********************************************************/
+int process_cmedia_gpio_line(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
+{
+	// Not suitable for assign_xxxx
+	if(!sp || !sc)
+		return script_function_parameter_error;
+
+	std::string str_data = "";
+
+	if(sc->argc > 0)
+		str_data.assign(sc->args[0]);
+
+	if(str_data.empty())
+		return script_invalid_parameter;
+
+	progdefaults.cmedia_gpio_line.assign(str_data);
+	inp_cmedia_GPIO_line->value(progdefaults.cmedia_gpio_line.c_str());
+
+	return script_no_errors;
+}
+
+/** ********************************************************
+ * \brief
+ * \param sp Access to ScritpParsing members.
+ * \param sc Access to SCRIPT_COMMANDS structure variables.
+ * \return 0 (no error) Other (error)
+ ***********************************************************/
 int process_use_rigcat(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
 {
 	return assign_bool(chkUSERIGCAT, sp, sc);

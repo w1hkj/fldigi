@@ -51,6 +51,8 @@ extern void WK_change_choice_output_pins();
 extern void WK_use_pot_changed();
 extern void WKCW_connect(bool start);
 
+extern void WK_reset_timing();
+extern void WK_set_comp();
 extern int  WK_send_char(int c);
 extern void WK_set_wpm();
 extern void WK_tune(bool on);

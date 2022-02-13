@@ -103,6 +103,13 @@ static const SCRIPT_COMMANDS default_rig_hrdwr_ptt_command_table[] = {
 	{ {0} }
 };
 
+static const SCRIPT_COMMANDS default_cmedia_ptt_command_table[] = {
+	{ CMD_USE_CMEDIA_PTT,          SCRIPT_COMMAND, 0,  1, {0}, { p_bool },         0, 0, 0, process_cmedia_ptt, 0, 0},
+	{ CMD_CMEDIA_DEV,              SCRIPT_COMMAND, 0,  1, {0}, { p_string },       0, 0, 0, process_cmedia_device, 0, 0},
+	{ CMD_CMEDIA_GPIO_LINE,        SCRIPT_COMMAND, 0,  1, {0}, { p_string },       0, 0, 0, process_cmedia_gpio_line, 0, 0},
+	{ {0} }
+};
+
 static const SCRIPT_COMMANDS default_rigcat_command_table[] = {
 	{ CMD_RIGCAT_STATE,            SCRIPT_COMMAND, 0,  1, {0}, { p_bool },         0, 0, 0, process_use_rigcat, 0, 0},
 	{ CMD_RIGCAT_DESC_FILE,        SCRIPT_COMMAND, 0,  1, {0}, { p_filename },     0, 0, 0, process_rigcat_desc_file, 0, 0},

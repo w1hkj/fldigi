@@ -288,6 +288,14 @@ std::string cMorse::tx_lookup(int c)
 
 }
 
+/*
+Morse Code timing rules
+  The length of a dot is 1 time unit.
+  A dash is 3 time units.
+  The space between symbols (dots and dashes) of the same letter is 1 time unit.
+  The space between letters is 3 time units.
+  The space between words is 7 time units.
+*/
 int cMorse::tx_length(int c)
 {
 	if (c == ' ') return 4;

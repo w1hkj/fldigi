@@ -3707,6 +3707,14 @@ if (o->value()) {
 progdefaults.changed=true;
 }
 
+Fl_Check_Button *btn_CAT_CW_disable_ptt=(Fl_Check_Button *)0;
+
+static void cb_btn_CAT_CW_disable_ptt(Fl_Check_Button* o, void*) {
+  progdefaults.CATkeying_disable_ptt = o->value();
+btn_FLRIG_CW_disable_ptt->value(o->value());
+progdefaults.changed = true;
+}
+
 Fl_Button *btn_CAT_keying_calibrate=(Fl_Button *)0;
 
 static void cb_btn_CAT_keying_calibrate(Fl_Button*, void*) {
@@ -3735,14 +3743,6 @@ static void cb_btn_CAT_keying_test(Fl_Button*, void*) {
 }
 
 Fl_Value_Input *out_CATkeying_test_result=(Fl_Value_Input *)0;
-
-Fl_Check_Button *btn_CAT_CW_disable_ptt=(Fl_Check_Button *)0;
-
-static void cb_btn_CAT_CW_disable_ptt(Fl_Check_Button* o, void*) {
-  progdefaults.CATkeying_disable_ptt = o->value();
-btn_FLRIG_CW_disable_ptt->value(o->value());
-progdefaults.changed = true;
-}
 
 Fl_Input2 *txtSecondary=(Fl_Input2 *)0;
 
@@ -12699,7 +12699,7 @@ o settings for baud, stops bits, etc are needed."));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
-      { Fl_Box* o = new Fl_Box(210, 23, 585, 140, _("CW keying using CAT command strings.  Available for supported transceivers.\n\
+      { Fl_Box* o = new Fl_Box(213, 23, 575, 140, _("CW keying using CAT command strings.  Available for supported transceivers.\n\
 Use with RigCAT or flrig transceiver control.  A separate serial port is NOT n\
 eeded.\n\nDisable CAT PTT if transceiver interprets that as a keydown command \
 (e.g. TS480).\nRecommend setting transceiver to either semi or full break-in.\
@@ -12710,71 +12710,33 @@ eeded.\n\nDisable CAT PTT if transceiver interprets that as a keydown command \
         o->labelsize(13);
         o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
       } // Fl_Box* o
-      { Fl_Check_Button* o = btn_use_ICOMkeying = new Fl_Check_Button(273, 173, 70, 15, _("Icom"));
+      { Fl_Check_Button* o = btn_use_ICOMkeying = new Fl_Check_Button(273, 192, 70, 15, _("Icom"));
         btn_use_ICOMkeying->down_box(FL_DOWN_BOX);
         btn_use_ICOMkeying->callback((Fl_Callback*)cb_btn_use_ICOMkeying);
         o->value(progdefaults.use_ICOMkeying);
       } // Fl_Check_Button* btn_use_ICOMkeying
-      { Fl_Input* o = val_ICOMcivaddr = new Fl_Input(343, 169, 58, 22, _("Hex CIV addr"));
+      { Fl_Input* o = val_ICOMcivaddr = new Fl_Input(343, 188, 58, 22, _("Hex CIV addr"));
         val_ICOMcivaddr->tooltip(_("Enter transceiver HEX CIV address"));
         val_ICOMcivaddr->callback((Fl_Callback*)cb_val_ICOMcivaddr);
         val_ICOMcivaddr->align(Fl_Align(FL_ALIGN_RIGHT));
         o->value(progdefaults.ICOMcivaddr.c_str());
       } // Fl_Input* val_ICOMcivaddr
-      { Fl_Check_Button* o = btn_use_ELCTkeying = new Fl_Check_Button(273, 197, 70, 15, _("Elecraft"));
+      { Fl_Check_Button* o = btn_use_ELCTkeying = new Fl_Check_Button(273, 216, 70, 15, _("Elecraft"));
         btn_use_ELCTkeying->down_box(FL_DOWN_BOX);
         btn_use_ELCTkeying->callback((Fl_Callback*)cb_btn_use_ELCTkeying);
         o->value(progdefaults.use_ELCTkeying);
       } // Fl_Check_Button* btn_use_ELCTkeying
-      { Fl_Check_Button* o = btn_use_KNWDkeying = new Fl_Check_Button(455, 197, 70, 15, _("Kenwood"));
+      { Fl_Check_Button* o = btn_use_KNWDkeying = new Fl_Check_Button(455, 216, 70, 15, _("Kenwood"));
         btn_use_KNWDkeying->down_box(FL_DOWN_BOX);
         btn_use_KNWDkeying->callback((Fl_Callback*)cb_btn_use_KNWDkeying);
         o->value(progdefaults.use_KNWDkeying);
       } // Fl_Check_Button* btn_use_KNWDkeying
-      { Fl_Check_Button* o = btn_use_YAESUkeying = new Fl_Check_Button(637, 197, 70, 15, _("Yaesu"));
+      { Fl_Check_Button* o = btn_use_YAESUkeying = new Fl_Check_Button(637, 216, 70, 15, _("Yaesu"));
         btn_use_YAESUkeying->down_box(FL_DOWN_BOX);
         btn_use_YAESUkeying->callback((Fl_Callback*)cb_btn_use_YAESUkeying);
         o->value(progdefaults.use_YAESUkeying);
       } // Fl_Check_Button* btn_use_YAESUkeying
-      { Fl_Group* o = new Fl_Group(205, 242, 590, 103, _("Timing Compensation"));
-        o->box(FL_ENGRAVED_BOX);
-        o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { btn_CAT_keying_calibrate = new Fl_Button(230, 317, 80, 22, _("Calibrate"));
-          btn_CAT_keying_calibrate->tooltip(_("Send WPM \'PARIS \' words"));
-          btn_CAT_keying_calibrate->callback((Fl_Callback*)cb_btn_CAT_keying_calibrate);
-        } // Fl_Button* btn_CAT_keying_calibrate
-        { Fl_Value_Input* o = out_CATkeying_compensation = new Fl_Value_Input(314, 317, 50, 22, _("Compensate (secs)"));
-          out_CATkeying_compensation->maximum(10);
-          out_CATkeying_compensation->step(0.01);
-          out_CATkeying_compensation->callback((Fl_Callback*)cb_out_CATkeying_compensation);
-          out_CATkeying_compensation->align(Fl_Align(FL_ALIGN_RIGHT));
-          o->value(progdefaults.CATkeying_compensation / 1000.0);
-        } // Fl_Value_Input* out_CATkeying_compensation
-        { btn_CAT_keying_clear = new Fl_Button(510, 317, 50, 22, _("Clear"));
-          btn_CAT_keying_clear->tooltip(_("Clear compensation"));
-          btn_CAT_keying_clear->callback((Fl_Callback*)cb_btn_CAT_keying_clear);
-        } // Fl_Button* btn_CAT_keying_clear
-        { Fl_Group* o = new Fl_Group(210, 265, 580, 45, _("Compute timing compensation at current WPM .  Set WPM to nominal.  Compensati\
-on\nwill be good over a 2:1 WPM range.  Calibration/Test is 1 minute of PARIS"));
-          o->box(FL_THIN_DOWN_BOX);
-          o->color(FL_LIGHT3);
-          o->labelsize(13);
-          o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
-          o->end();
-        } // Fl_Group* o
-        { btn_CAT_keying_test = new Fl_Button(574, 317, 50, 22, _("Test"));
-          btn_CAT_keying_test->tooltip(_("Send WPM \'PARIS \' words"));
-          btn_CAT_keying_test->callback((Fl_Callback*)cb_btn_CAT_keying_test);
-        } // Fl_Button* btn_CAT_keying_test
-        { Fl_Value_Input* o = out_CATkeying_test_result = new Fl_Value_Input(630, 317, 50, 22, _("secs"));
-          out_CATkeying_test_result->maximum(10);
-          out_CATkeying_test_result->step(0.01);
-          out_CATkeying_test_result->align(Fl_Align(FL_ALIGN_RIGHT));
-          o->value(0);
-        } // Fl_Value_Input* out_CATkeying_test_result
-        o->end();
-      } // Fl_Group* o
-      { Fl_Check_Button* o = btn_CAT_CW_disable_ptt = new Fl_Check_Button(273, 221, 70, 15, _("Disable CAT PTT"));
+      { Fl_Check_Button* o = btn_CAT_CW_disable_ptt = new Fl_Check_Button(273, 240, 70, 15, _("Disable CAT PTT"));
         btn_CAT_CW_disable_ptt->tooltip(_("Required for some transceivers\ne.g. TS-480"));
         btn_CAT_CW_disable_ptt->down_box(FL_DOWN_BOX);
         btn_CAT_CW_disable_ptt->callback((Fl_Callback*)cb_btn_CAT_CW_disable_ptt);
@@ -12783,6 +12745,48 @@ on\nwill be good over a 2:1 WPM range.  Calibration/Test is 1 minute of PARIS"))
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/CAT keying"));
       config_pages.push_back(p);
       tab_tree->add(_("Modem/CW/CAT keying"));
+      o->end();
+    } // Fl_Group* o
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("CW CAT & WinKeyer Compensation"));
+      o->box(FL_ENGRAVED_BOX);
+      o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+      o->hide();
+      { Fl_Box* o = new Fl_Box(210, 33, 575, 118, _("Compute timing compensation for CAT CW and WinKeyer CW.  Computation at curre\
+nt\nWPM .  Set WPM to nominal (suggest 20 WPM).\n\nCompensation will be good o\
+ver a +/- 10 WPM range.  Calibration/Test is 1 minute of\n\'PARIS \'."));
+        o->box(FL_ENGRAVED_BOX);
+        o->color((Fl_Color)53);
+        o->labelsize(13);
+        o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+      } // Fl_Box* o
+      { btn_CAT_keying_calibrate = new Fl_Button(245, 184, 80, 22, _("Calibrate"));
+        btn_CAT_keying_calibrate->tooltip(_("Send WPM \'PARIS \' words"));
+        btn_CAT_keying_calibrate->callback((Fl_Callback*)cb_btn_CAT_keying_calibrate);
+      } // Fl_Button* btn_CAT_keying_calibrate
+      { Fl_Value_Input* o = out_CATkeying_compensation = new Fl_Value_Input(329, 184, 50, 22, _("Compensate (secs)"));
+        out_CATkeying_compensation->maximum(10);
+        out_CATkeying_compensation->step(0.01);
+        out_CATkeying_compensation->callback((Fl_Callback*)cb_out_CATkeying_compensation);
+        out_CATkeying_compensation->align(Fl_Align(FL_ALIGN_RIGHT));
+        o->value(progdefaults.CATkeying_compensation / 1000.0);
+      } // Fl_Value_Input* out_CATkeying_compensation
+      { btn_CAT_keying_clear = new Fl_Button(525, 184, 50, 22, _("Clear"));
+        btn_CAT_keying_clear->tooltip(_("Clear compensation"));
+        btn_CAT_keying_clear->callback((Fl_Callback*)cb_btn_CAT_keying_clear);
+      } // Fl_Button* btn_CAT_keying_clear
+      { btn_CAT_keying_test = new Fl_Button(589, 184, 50, 22, _("Test"));
+        btn_CAT_keying_test->tooltip(_("Send WPM \'PARIS \' words"));
+        btn_CAT_keying_test->callback((Fl_Callback*)cb_btn_CAT_keying_test);
+      } // Fl_Button* btn_CAT_keying_test
+      { Fl_Value_Input* o = out_CATkeying_test_result = new Fl_Value_Input(645, 184, 50, 22, _("secs"));
+        out_CATkeying_test_result->maximum(10);
+        out_CATkeying_test_result->step(0.01);
+        out_CATkeying_test_result->align(Fl_Align(FL_ALIGN_RIGHT));
+        o->value(0);
+      } // Fl_Value_Input* out_CATkeying_test_result
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/CAT comp'"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Modem/CW/CAT comp'"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Modem/DominoEX"));

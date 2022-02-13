@@ -211,88 +211,79 @@ static void WK_send_command(std::string &cmd, int what = NOTHING)
 static bool WK_wait_for_char = false;
 static char lastchar = ' ';
 
+double WK_accum = 0;
+double WK_dcomp = 0;
+
+void WK_reset_timing()
+{
+	WK_accum = 0;
+	WK_dcomp = 0;
+}
+
+static bool comp_set = false;
+
+void WK_set_comp()
+{
+// progdefaults.CATkeying_compensation in milliseconds of error over 60 seconds
+// WK_dcomp is error for 1 dot interval
+	WK_dcomp = progdefaults.CATkeying_compensation / (50.0 * progdefaults.CW_cal_speed);
+	comp_set = true;
+}
+
+static int dispch;
+void dispbyte(void *)
+{
+	ReceiveText->add(dispch, FTextBase::XMIT);
+}
+
 int WK_send_char(int c)
 {
+	if (!comp_set) WK_set_comp();
+
 	if (!wkmorse) wkmorse = new cMorse;
 
-	c = toupper(c);
-	if (c <= 0) {
+	int ch = toupper(c);
+	if (ch <= 0) {
 		MilliSleep(10);
 		Fl::awake();
 		return 0;
 	}
 
-	struct timeval t;
-	long msec_start;
-	long msec_end;
-	
-	if (c < ' ') c = ' ';
+	if (ch < ' ' || ch > 'Z') ch = ' ';
 
-	if (c == '0' && progStatus.WK_cut_zeronine) c = 'T';
-	if (c == '9' && progStatus.WK_cut_zeronine) c = 'N';
-	int n = 0;
+	if (ch == '0' && progStatus.WK_cut_zeronine) ch = 'T';
+	if (ch == '9' && progStatus.WK_cut_zeronine) ch = 'N';
 
-	if (lastchar == ' ' && c == ' ') n = 7;
-	else if (lastchar != ' ' && c == ' ') n = 4;
-	else {
-		if (c != ' ') {
-			std::string code = wkmorse->tx_lookup(c);
-			for (size_t i = 0; i < code.length(); i++) {
-				n += 2;
-				if (code[i] == '-') n += 2;
-			}
-			n += 2;
-		}
-	}
-	n *= 1200 / cntCW_WPM->value();
+	double tc = 1200.0 / progdefaults.CWspeed;
 
-	lastchar = c;
-
-	if (c != ' ') {
-		guard_lock wklock(&WK_buffer_mutex);
-		WK_str_out += c;
-		if (btn_WK_serial_echo->value())
-			WK_wait_for_char = true;
-	}
-
-	gettimeofday(&t, NULL);
-	msec_start = (t.tv_sec - (t.tv_sec / 10000) * 10000) * 1000;
-	msec_start += t.tv_usec / 1000;
-	msec_start += n;
-
-	if (WK_wait_for_char) {
-		n += 100;
-		while (WK_wait_for_char) {
-			MilliSleep(1);
-			if (n % 50 == 0) Fl::awake();
-			if (--n == 0) {
-				WK_wait_for_char = false;
-				LOG_ERROR("Winkeyer did not echo character!");
-				return 1;
-			}
-			if (active_modem->get_stopflag()) {
-				WK_wait_for_char = false;
-				LOG_INFO("Aborted transmission");
-				return 1;
-			}
-		}
+	tc -= progdefaults.CATkeying_compensation / (50.0 * progdefaults.CW_cal_speed);
+	if (lastchar == ' ' && ch == ' ') {
+		tc *= 7;
 	} else {
-		while (!active_modem->get_stopflag()) {
-			MilliSleep(1);
-			gettimeofday(&t, NULL);
-			msec_end = (t.tv_sec - (t.tv_sec / 10000) * 10000) * 1000;
-			msec_end += t.tv_usec / 1000;
-			if (msec_end >= msec_start) {
-				break;
-			}
-			n--;
-			if (n == 0) {
-				break;
-			}
-			if (n % 50 == 0) Fl::awake();
-		}
-		REQ(WK_display_byte, c);
+		tc *= wkmorse->tx_length(ch);
 	}
+
+	int tn = trunc(tc);
+	WK_accum += (tc - tn);
+
+	if (WK_accum >= 1.0) {
+		WK_accum -= 1.0;
+		tn += 1;
+	}
+	LOG_VERBOSE("tn: %d, tc: %6.2f, accum: %6.2f", tn, tc, WK_accum);
+	lastchar = ch;
+
+	dispch = ch;
+	Fl::awake(dispbyte);
+
+	if (ch != ' ') {
+		guard_lock wklock(&WK_mutex_serial);
+		static unsigned char szstr[2];
+		szstr[0] = ch; szstr[1] = 0;
+		WK_serial.WriteBuffer(szstr, 1);
+	}
+	if (tn > 0)
+		MilliSleep(tn);
 
 	return 0;
 }
@@ -368,7 +359,7 @@ void WK_echo_(int byte)
 void WK_echo_test(int byte)
 {
 	if (byte != 'U') return;
-	LOG_WKEY("passed echo test");
+	LOG_DEBUG("passed echo test");
 	WK_test_echo = false;
 }
 
@@ -414,36 +405,34 @@ void WK_status_(int byte)
 	REQ(WK_show_status_change, byte);
 }
 
-void WK_show_speed_change(int wpm)
+void WK_show_speed_change()
 {
-	if (!progStatus.WK_use_pot) {
-		return;
-	}
 	static char szwpm[8];
-	snprintf(szwpm, sizeof(szwpm), "%3d", wpm);
+	snprintf(szwpm, sizeof(szwpm), "%.0f", progdefaults.CWspeed);
 
 	txt_WK_wpm->value(szwpm);
 	txt_WK_wpm->redraw();
 
-	cntCW_WPM->value(wpm);
+	cntCW_WPM->value(progdefaults.CWspeed);
 	cntCW_WPM->redraw();
-
-	progdefaults.CWspeed = wpm;
 
 	sync_cw_parameters();
 
 	std::string cmd = SET_WPM;
+
 	cmd += progdefaults.CWspeed;
 
-LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+	LOG_DEBUG("SET_WPM %.0f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 
 	WK_send_command(cmd);
 }
 
 void WK_speed_(int byte)
 {
+	if (!progStatus.WK_use_pot) return;
 	int val = (byte & 0x3F) + progStatus.WK_min_wpm;
-	REQ(WK_show_speed_change, val);
+	progdefaults.CWspeed = progStatus.WK_speed_wpm = val;
+	REQ(WK_show_speed_change);
 }
 
 void WK_set_wpm()
@@ -451,7 +440,7 @@ void WK_set_wpm()
 	std::string cmd = SET_WPM;
 	cmd += progdefaults.CWspeed;
 
-LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+LOG_DEBUG("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 
 	WK_send_command(cmd);
 }
@@ -461,8 +450,9 @@ void WK_use_pot_changed()
 	progStatus.WK_use_pot = btn_WK_use_pot->value();
 	if (progStatus.WK_use_pot) {
 		std::string cmd = GET_SPEED_POT;
+		WK_send_command(cmd);
 
-LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
+LOG_DEBUG("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 
 	} else {
 		std::string cmd = SET_WPM;
@@ -471,7 +461,7 @@ LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 		progdefaults.CWspeed = cntCW_WPM->value();
 		cmd += progdefaults.CWspeed;
 
-LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+LOG_DEBUG("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 
 		WK_send_command(cmd);
 	}
@@ -488,7 +478,7 @@ void WK_eeprom_(int byte)
 		eeprom_image[eeprom_ptr++] = byte;
 	if (eeprom_ptr == 256) {
 		read_EEPROM = false;
-		LOG_WKEY("\n%s", str2hex(eeprom_image, 256));
+		LOG_DEBUG("\n%s", str2hex(eeprom_image, 256));
 		eeprom_ptr = 0;
 	}
 }
@@ -513,7 +503,7 @@ void load_defaults()
 	cmd += progStatus.WK_pin_configuration;
 	cmd += progStatus.WK_dont_care;
 
-LOG_WKEY("\n\
+LOG_DEBUG("\n\
       mode register .... %0x\n\
       CW speed ......... %.1f\n\
       side tone ........ %d\n\
@@ -553,7 +543,7 @@ LOG_WKEY("\n\
 	cmd += progStatus.WK_min_wpm;
 	cmd += progStatus.WK_rng_wpm;
 	cmd += 0xFF;
-LOG_WKEY("SET_SPEED_POT : %s", hexstr(cmd).c_str());
+LOG_DEBUG("SET_SPEED_POT : %s", hexstr(cmd).c_str());
 	WK_send_command(cmd);
 
 	if (progStatus.WK_use_pot) {
@@ -564,7 +554,7 @@ LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 	} else {
 		std::string cmd = SET_WPM;
 		cmd += progdefaults.CWspeed;
-LOG_WKEY("SETWPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+LOG_DEBUG("SETWPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 		WK_send_command(cmd);
 
 	}
@@ -578,7 +568,7 @@ void WKCW_init()
 		cmd = "  ";
 		cmd[0] = ADMIN;
 		cmd[1] = WK2_MODE;
-LOG_WKEY("WK2_MODE %s", hexstr(cmd).c_str());
+LOG_DEBUG("WK2_MODE %s", hexstr(cmd).c_str());
 		WK_send_command(cmd);
 	}
 
@@ -587,23 +577,23 @@ LOG_WKEY("WK2_MODE %s", hexstr(cmd).c_str());
 	load_defaults();
 
 	cmd = GET_SPEED_POT;
-LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
+LOG_DEBUG("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 	WK_send_command(cmd);
 
 	cmd = SET_WPM;
 	cmd += progdefaults.CWspeed;
-LOG_WKEY("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
+LOG_DEBUG("SET_WPM %.1f : %s", progdefaults.CWspeed, hexstr(cmd).c_str());
 	WK_send_command(cmd);
 
 	cmd = SET_SPEED_POT;
 	cmd += progStatus.WK_min_wpm;
 	cmd += progStatus.WK_rng_wpm;
 	cmd += 0xFF;
-LOG_WKEY("SET_SPEED_POT : %s", hexstr(cmd).c_str());
+LOG_DEBUG("SET_SPEED_POT : %s", hexstr(cmd).c_str());
 	WK_send_command(cmd);
 
 	cmd = GET_SPEED_POT;
-LOG_WKEY("GET_SPEED_POT : %s", hexstr(cmd).c_str());
+LOG_DEBUG("GET_SPEED_POT : %s", hexstr(cmd).c_str());
 	WK_send_command(cmd);
 }
 
@@ -612,7 +602,7 @@ void open_wkeyer()
 	int cnt = 0;
 	std::string cmd = NULL_CMD;
 
-LOG_WKEY("NULL_CMD : %s", hexstr(cmd).c_str());
+LOG_DEBUG("NULL_CMD : %s", hexstr(cmd).c_str());
 
 	WK_send_command(cmd);
 
@@ -627,7 +617,7 @@ LOG_WKEY("NULL_CMD : %s", hexstr(cmd).c_str());
 		cmd[1] = ECHO_TEST;
 		cmd += 'U';
 
-LOG_WKEY("ECHO_TEST : %s", hexstr(cmd).c_str());
+LOG_DEBUG("ECHO_TEST : %s", hexstr(cmd).c_str());
 
 		WK_send_command(cmd, WAIT_ECHO);
 
@@ -650,14 +640,14 @@ LOG_WKEY("ECHO_TEST : %s", hexstr(cmd).c_str());
 			return;
 		}
 
-		LOG_WKEY("Echo response in %d msec", 5000 - cnt);
+		LOG_DEBUG("Echo response in %d msec", 5000 - cnt);
 
 	}
 
 	cmd = "  ";
 	cmd[0] = ADMIN;
 	cmd[1] = HOST_OPEN;
-LOG_WKEY("HOST_OPEN : %s", hexstr(cmd).c_str());
+LOG_DEBUG("HOST_OPEN : %s", hexstr(cmd).c_str());
 
 	WK_send_command(cmd, WAIT_VERSION);
 
@@ -676,12 +666,12 @@ void close_wkeyer()
 
 	cmd[0] = ADMIN;
 	cmd[1] = RESET;
-LOG_WKEY("WKEY RESET : %s", hexstr(cmd).c_str());
+LOG_DEBUG("WKEY RESET : %s", hexstr(cmd).c_str());
 	WK_send_command(cmd);
 
 	cmd[0] = ADMIN;
 	cmd[1] = HOST_CLOSE;
-LOG_WKEY("HOST CLOSE : %s", hexstr(cmd).c_str());
+LOG_DEBUG("HOST CLOSE : %s", hexstr(cmd).c_str());
 	WK_send_command(cmd);
 
 }
@@ -690,7 +680,7 @@ void WK_cancel_transmit()
 {
 	std::string cmd = CLEAR_BUFFER;
 
-LOG_WKEY("CLEAR_BUFFER : %s", hexstr(cmd).c_str());
+LOG_DEBUG("CLEAR_BUFFER : %s", hexstr(cmd).c_str());
 
 	WK_send_command(cmd);
 }
@@ -701,7 +691,7 @@ void WK_tune(bool on)
 	if (on) cmd += '\1';
 	else cmd += '\0';
 
-LOG_WKEY("KEY_IMMEDIATE : %s", hexstr(cmd).c_str());
+LOG_DEBUG("KEY_IMMEDIATE : %s", hexstr(cmd).c_str());
 
 	WK_send_command(cmd);
 }
@@ -714,7 +704,7 @@ void WK_change_btn_swap()
 {
 	progStatus.WK_mode_register &=0xF7;
 	progStatus.WK_mode_register |= btn_WK_swap->value() ? 0x08 : 0x00;
-	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
+	LOG_DEBUG("mode reg: %2X", progStatus.WK_mode_register);
 	if (progStatus.WK_online)
 		load_defaults();
 }
@@ -723,7 +713,7 @@ void WK_change_btn_auto_space()
 {
 	progStatus.WK_mode_register &=0xFD;
 	progStatus.WK_mode_register |= btn_WK_auto_space->value() ? 0x02 : 0x00;
-	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
+	LOG_DEBUG("mode reg: %2X", progStatus.WK_mode_register);
 	if (progStatus.WK_online)
 		load_defaults();
 }
@@ -733,7 +723,7 @@ void WK_change_btn_ct_space()
 {
 	progStatus.WK_mode_register &= 0xFE;
 	progStatus.WK_mode_register |= btn_WK_ct_space->value();
-	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
+	LOG_DEBUG("mode reg: %2X", progStatus.WK_mode_register);
 	if (progStatus.WK_online)
 		load_defaults();
 }
@@ -743,7 +733,7 @@ void WK_change_btn_paddledog()
 {
 	progStatus.WK_mode_register &=0x7F;
 	progStatus.WK_mode_register |= btn_WK_paddledog->value() ? 0x80 : 0x00;
-	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
+	LOG_DEBUG("mode reg: %2X", progStatus.WK_mode_register);
 	if (progStatus.WK_online)
 		load_defaults();
 }
@@ -759,7 +749,7 @@ void WK_change_btn_paddle_echo()
 {
 	progStatus.WK_mode_register &=0xBF;
 	progStatus.WK_mode_register |= btn_WK_paddle_echo->value() ? 0x40 : 0x00;
-	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
+	LOG_DEBUG("mode reg: %2X", progStatus.WK_mode_register);
 	if (progStatus.WK_online)
 		load_defaults();
 }
@@ -769,7 +759,7 @@ void WK_change_btn_serial_echo()
 {
 	progStatus.WK_mode_register &=0xFB;
 	progStatus.WK_mode_register |= btn_WK_serial_echo->value() ? 0x04 : 0x00;
-	LOG_WKEY("mode reg: %2X", progStatus.WK_mode_register);
+	LOG_DEBUG("mode reg: %2X", progStatus.WK_mode_register);
 	if (progStatus.WK_online)
 		load_defaults();
 }
@@ -896,7 +886,7 @@ void WK_change_choice_keyer_mode()
 {
 	int modebits = choice_WK_keyer_mode->index() << 4;
 	progStatus.WK_mode_register = (progStatus.WK_mode_register & 0xCF) | modebits;
-	LOG_WKEY("mode reg: %02X", progStatus.WK_mode_register);
+	LOG_DEBUG("mode reg: %02X", progStatus.WK_mode_register);
 	if (progStatus.WK_online)
 		load_defaults();
 }
@@ -957,7 +947,7 @@ bool WK_start_wkey_serial()
 		LOG_ERROR("Cannot access %s", progStatus.WK_serial_port_name.c_str());
 		return false;
 	} else  {
-		LOG_WKEY("\n\
+		LOG_DEBUG("\n\
 Serial port:\n\
   Port     : %s\n\
   Baud     : %d\n\
@@ -1006,7 +996,7 @@ int WK_readString()
 int WK_sendString (std::string &s)
 {
 	if (WK_serial.IsOpen() == false) {
-		LOG_WKEY("command: %s", str2hex(s.data(), s.length()));
+		LOG_DEBUG("command: %s", str2hex(s.data(), s.length()));
 		return 0;
 	}
 	int numwrite = (int)s.length();
@@ -1014,9 +1004,9 @@ int WK_sendString (std::string &s)
 	WK_serial.WriteBuffer((unsigned char *)s.c_str(), numwrite);
 
 	if (isprint(s[0]))
-		LOG_WKEY("Sent %d: '%s' %s", numwrite, s.c_str(), str2hex(s.data(), s.length()));
+		LOG_DEBUG("Sent %d: '%s' %s", numwrite, s.c_str(), str2hex(s.data(), s.length()));
 	else
-		LOG_WKEY("Sent %d: %s", numwrite, str2hex(s.data(), s.length()));
+		LOG_DEBUG("Sent %d: %s", numwrite, str2hex(s.data(), s.length()));
 	return numwrite;
 }
 
@@ -1076,13 +1066,13 @@ void WKFSK_send_char(int ch)
 	{
 		guard_lock wklock(&WK_buffer_mutex);
 		if (c == '[' || c == ']' || c == '}' || c == '{' || c < ' ') {
-			LOG_WKEY("%s", 
+			LOG_DEBUG("%s", 
 				(c == '[' ? "[ - ptt ON" :
 				 c == ']' ? "] - ptt OFF" :
 				 c == '}' ? "} - CR/LF" : 
 				 c == '{' ? "{ - left brace" : "Control code"));
 		} else
-			LOG_WKEY("Sending %c, %x", c, c);
+			LOG_DEBUG("Sending %c, %x", c, c);
 		if (progStatus.WKFSK_monitor)
 			WK_wait_for_char = true;
 		WK_str_out += c;
@@ -1094,7 +1084,7 @@ void WKFSK_send_char(int ch)
 		n -= 10;
 		if (n <= 0 || active_modem->get_stopflag()) {
 			WK_wait_for_char = false;
-			LOG_WKEY("%s",
+			LOG_DEBUG("%s",
 				(n <= 0 ? "echo: NIL" : "xmt aborted") );
 			return;
 		}
@@ -1106,17 +1096,17 @@ void WKFSK_init()
 {
 	std::string cmd = "    ";
 
-LOG_WKEY("mode        %d", progStatus.WKFSK_mode);
-LOG_WKEY("diddle      %d", progStatus.WKFSK_diddle);
-LOG_WKEY("ptt         %d", progStatus.WKFSK_ptt);
-LOG_WKEY("auto crlf   %d", progStatus.WKFSK_auto_crlf);
-LOG_WKEY("monitor     %d", progStatus.WKFSK_monitor);
-LOG_WKEY("polarity    %d", progStatus.WKFSK_polarity);
-LOG_WKEY("baud        %d", progStatus.WKFSK_baud);
-LOG_WKEY("stopbits    %d", progStatus.WKFSK_stopbits);
-LOG_WKEY("sidetone    %d", progStatus.WKFSK_sidetone);
-LOG_WKEY("diddle_char %d", progStatus.WKFSK_diddle_char);
-LOG_WKEY("usos        %d", progStatus.WKFSK_usos);
+LOG_DEBUG("mode        %d", progStatus.WKFSK_mode);
+LOG_DEBUG("diddle      %d", progStatus.WKFSK_diddle);
+LOG_DEBUG("ptt         %d", progStatus.WKFSK_ptt);
+LOG_DEBUG("auto crlf   %d", progStatus.WKFSK_auto_crlf);
+LOG_DEBUG("monitor     %d", progStatus.WKFSK_monitor);
+LOG_DEBUG("polarity    %d", progStatus.WKFSK_polarity);
+LOG_DEBUG("baud        %d", progStatus.WKFSK_baud);
+LOG_DEBUG("stopbits    %d", progStatus.WKFSK_stopbits);
+LOG_DEBUG("sidetone    %d", progStatus.WKFSK_sidetone);
+LOG_DEBUG("diddle_char %d", progStatus.WKFSK_diddle_char);
+LOG_DEBUG("usos        %d", progStatus.WKFSK_usos);
 
 	cmd[0] = ADMIN;
 	cmd[1] = FSK_MODE;
@@ -1139,7 +1129,7 @@ LOG_WKEY("usos        %d", progStatus.WKFSK_usos);
 
 void WKCW_connect(bool start)
 {
-	LOG_WKEY("WKCW_connect(%s)", (start ? "ON" : "OFF"));
+	LOG_DEBUG("WKCW_connect(%s)", (start ? "ON" : "OFF"));
 
 	progStatus.WKFSK_mode = false;
 	btn_WKFSK_connect->value(0);
@@ -1191,7 +1181,7 @@ void WKCW_connect(bool start)
 
 void WKFSK_connect(bool start)
 {
-	LOG_WKEY("WKFSK_connect(%s)", (start ? "ON" : "OFF"));
+	LOG_DEBUG("WKFSK_connect(%s)", (start ? "ON" : "OFF"));
 
 	progStatus.WKFSK_mode = false;
 	btn_WKFSK_connect->value(0);
@@ -1260,3 +1250,4 @@ void WKFSK_connect(bool start)
 	btn_WKFSK_connect->value(1);
 
 }
+
