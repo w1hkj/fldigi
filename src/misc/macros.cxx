@@ -2554,7 +2554,7 @@ static void pLOG(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	size_t start = s.find(':', i);
-	if (start != std::string::npos) {
+	if (start != std::string::npos && start < endbracket) {
 		std::string msg = inpNotes->value();
 		if (!msg.empty()) msg.append("\n");
 		msg.append(s.substr(start + 1, endbracket-start-1));
