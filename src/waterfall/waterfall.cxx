@@ -679,7 +679,7 @@ void WFdisp::sig_data( double *sig, int len )
 
 	if (audio_blocks.size() > 32) { //8) {
 		clear_audio_blocks = true;
-		LOG_ERROR("%s", "audio_blocks overflow");
+//		LOG_ERROR("%s", "audio_blocks overflow");
 		return;
 	}
 	if ((len * src_ratio) > WF_BLOCKSIZE * 2) {

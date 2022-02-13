@@ -628,12 +628,14 @@ void cRsId::apply(int iBin, int iSymbol, int extended)
 	}
 
 	if (progdefaults.rsid_rx_modes.test(mbin)) {
-		LOG_VERBOSE("RSID: %s @ %0.1f Hz",
-			p_rsid[n].name, rsidfreq);
+		char msg[50];
+		snprintf(msg, sizeof(msg), "RSID: %s @ %0.1f Hz", p_rsid[n].name, rsidfreq);
+		LOG_VERBOSE("%s", msg);
 	}
 	else {
-		LOG_DEBUG("Ignoring RSID: %s @ %0.1f Hz",
-			p_rsid[n].name, rsidfreq);
+		char msg[50];
+		snprintf(msg, sizeof(msg), "Ignoring RSID: %s @ %0.1f Hz", p_rsid[n].name, rsidfreq);
+		LOG_DEBUG("%s", msg);
 		return;
 	}
 
@@ -645,6 +647,15 @@ void cRsId::apply(int iBin, int iSymbol, int extended)
 
 	if (progdefaults.rsid_auto_disable)
 		REQ(toggleRSID);
+
+	if (iSymbol == RSID_EOT) {
+		if (progdefaults.rsid_eot_squelch) {
+			REQ(rsid_eot_squelch);
+			if (!progdefaults.disable_rsid_warning_dialog_box)
+				REQ(notify_rsid_eot, mbin, rsidfreq);
+		}
+		return;
+	}
 
 	if (!progdefaults.disable_rsid_warning_dialog_box)
 		REQ(notify_rsid, mbin, rsidfreq);
@@ -658,7 +669,7 @@ void cRsId::apply(int iBin, int iSymbol, int extended)
 	}
 
 	if (progdefaults.rsid_mark) // mark current modem & freq
-		REQ(note_qrg, false, "\nBefore RSID: ", "\n",
+		REQ(note_qrg, false, "\nBefore RSID: ", "\n\n",
 			active_modem->get_mode(), 0LL, currfreq);
 
 	if(active_modem) // Currently only effects Olivia, Contestia and MT63.
@@ -738,6 +749,10 @@ bool cRsId::assigned(trx_mode mode) {
 	rmode2 = RSID_NONE2;
 
 	switch (mode) {
+	case MODE_EOT : 
+		rmode = RSID_EOT;
+std::cout << "send RSID_EOT" << std::endl;
+		return true;
 	case MODE_RTTY :
 		if (progdefaults.rtty_baud == 5 && progdefaults.rtty_bits == 1 && progdefaults.rtty_shift == 9)
 			rmode = RSID_RTTY_ASCII_7;
@@ -932,6 +947,50 @@ bool cRsId::assigned(trx_mode mode) {
 		return false;
 	}
 	return true;
+}
+
+void cRsId::send_eot()
+{
+	unsigned char rsid[RSID_NSYMBOLS];
+	double sr;
+	size_t len;
+	int iTone;
+	double freq, phaseincr;
+	double fr;
+	double phase;
+
+	Encode(RSID_EOT, rsid);
+	sr = active_modem->get_samplerate();
+	len = (size_t)floor(RSID_SYMLEN * sr);
+	if (unlikely(len != symlen)) {
+		symlen = len;
+		delete [] outbuf;
+		outbuf = new double[symlen];
+	}
+
+// transmit 5 symbol periods of silence at beginning of rsid
+	memset(outbuf, 0, symlen * sizeof(*outbuf));
+	for (int i = 0; i < 5; i++)
+		active_modem->ModulateXmtr(outbuf, symlen);
+
+// transmit sequence of 15 symbols (tones)
+	fr = 1.0 * active_modem->get_txfreq_woffset() - (RSID_SAMPLE_RATE * 7 / 1024);
+	phase = 0.0;
+
+	for (int i = 0; i < 15; i++) {
+		iTone = rsid[i];
+		if (active_modem->get_reverse())
+		iTone = 15 - iTone;
+		freq = fr + iTone * RSID_SAMPLE_RATE / 1024;
+		phaseincr = 2.0 * M_PI * freq / sr;
+
+		for (size_t j = 0; j < symlen; j++) {
+			phase += phaseincr;
+			if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
+			outbuf[j] = sin(phase);
+		}
+		active_modem->ModulateXmtr(outbuf, symlen);
+	}
 }
 
 void cRsId::send(bool preRSID)

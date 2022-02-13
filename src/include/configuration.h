@@ -108,6 +108,9 @@
         ELEM_(bool, rsid_notify_only, "RSIDNOTIFYONLY",                                 \
               "Trigger RSID notifications but do not change modem and frequency",       \
               false)                                                                    \
+        ELEM_(bool, rsid_eot_squelch, "RSIDEOTSQUELCH",                                 \
+              "restore squelch upon decode of RSID_EOT signal",                         \
+              false)                                                                    \
         ELEM_(bool, rsid_auto_disable, "RSIDAUTODISABLE",                               \
               "Disable RSID detection when RsID signal is detected",                    \
               false)                                                                    \

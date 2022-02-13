@@ -1862,13 +1862,6 @@ static void cb_listbox_rsid_errors(Fl_ListBox* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Counter *val_RSIDsquelch=(Fl_Counter *)0;
-
-static void cb_val_RSIDsquelch(Fl_Counter* o, void*) {
-  progdefaults.rsid_squelch = (int)o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *chkRSidShowAlert=(Fl_Check_Button *)0;
 
 static void cb_chkRSidShowAlert(Fl_Check_Button* o, void*) {
@@ -1887,6 +1880,20 @@ Fl_Check_Button *chkDisableFreqChange=(Fl_Check_Button *)0;
 
 static void cb_chkDisableFreqChange(Fl_Check_Button* o, void*) {
   progdefaults.disable_rsid_freq_change = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chk_RSID_EOT=(Fl_Check_Button *)0;
+
+static void cb_chk_RSID_EOT(Fl_Check_Button* o, void*) {
+  progdefaults.rsid_eot_squelch = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *val_RSIDsquelch=(Fl_Counter *)0;
+
+static void cb_val_RSIDsquelch(Fl_Counter* o, void*) {
+  progdefaults.rsid_squelch = (int)o->value();
 progdefaults.changed = true;
 }
 
@@ -10296,32 +10303,32 @@ Fl_Double_Window* ConfigureDialog() {
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
-      { Fl_Group* o = new Fl_Group(243, 22, 535, 210, _("Reed-Solomon ID (Rx)"));
+      { Fl_Group* o = new Fl_Group(243, 22, 535, 220, _("Reed-Solomon ID (Rx)"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-        { chkRSidNotifyOnly = new Fl_Check_Button(251, 79, 168, 20, _("Notify only"));
+        { chkRSidNotifyOnly = new Fl_Check_Button(251, 89, 168, 20, _("Notify only"));
           chkRSidNotifyOnly->tooltip(_("Check this to be notified when an RSID is received\nwithout changing modem an\
 d frequency"));
           chkRSidNotifyOnly->down_box(FL_DOWN_BOX);
           chkRSidNotifyOnly->callback((Fl_Callback*)cb_chkRSidNotifyOnly);
           chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);
         } // Fl_Check_Button* chkRSidNotifyOnly
-        { bRSIDRxModes = new Fl_Button(251, 48, 130, 24, _("Receive modes"));
+        { bRSIDRxModes = new Fl_Button(251, 48, 87, 24, _("Rx modes"));
           bRSIDRxModes->callback((Fl_Callback*)cb_bRSIDRxModes);
         } // Fl_Button* bRSIDRxModes
-        { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(251, 110, 203, 20, _("Searches passband"));
+        { Fl_Check_Button* o = chkRSidWideSearch = new Fl_Check_Button(251, 119, 203, 20, _("Searches passband"));
           chkRSidWideSearch->tooltip(_("ON - search over entire waterfall\nOFF - limit search to +/- 200 Hz"));
           chkRSidWideSearch->down_box(FL_DOWN_BOX);
           chkRSidWideSearch->callback((Fl_Callback*)cb_chkRSidWideSearch);
           o->value(progdefaults.rsidWideSearch);
         } // Fl_Check_Button* chkRSidWideSearch
-        { chkRSidMark = new Fl_Check_Button(251, 142, 203, 20, _("Mark prev freq/mode"));
+        { chkRSidMark = new Fl_Check_Button(251, 149, 203, 20, _("Mark prev freq/mode"));
           chkRSidMark->tooltip(_("Insert RX text marker before\nchanging frequency and modem"));
           chkRSidMark->down_box(FL_DOWN_BOX);
           chkRSidMark->callback((Fl_Callback*)cb_chkRSidMark);
           chkRSidMark->value(progdefaults.rsid_mark);
         } // Fl_Check_Button* chkRSidMark
-        { chkRSidAutoDisable = new Fl_Check_Button(251, 174, 203, 20, _("Disables detector"));
+        { chkRSidAutoDisable = new Fl_Check_Button(251, 179, 203, 20, _("Disables detector"));
           chkRSidAutoDisable->tooltip(_("Disable further detection when RSID is received"));
           chkRSidAutoDisable->down_box(FL_DOWN_BOX);
           chkRSidAutoDisable->callback((Fl_Callback*)cb_chkRSidAutoDisable);
@@ -10329,7 +10336,7 @@ d frequency"));
           chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);
           if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();
         } // Fl_Check_Button* chkRSidAutoDisable
-        { Fl_ListBox* o = listbox_rsid_errors = new Fl_ListBox(251, 200, 100, 22, _("Allow errors"));
+        { Fl_ListBox* o = listbox_rsid_errors = new Fl_ListBox(251, 210, 100, 22, _("Allow errors"));
           listbox_rsid_errors->tooltip(_("Low = zero errors\nMedium = 1 error\nHigh = 2 errors"));
           listbox_rsid_errors->box(FL_DOWN_BOX);
           listbox_rsid_errors->color(FL_BACKGROUND2_COLOR);
@@ -10346,7 +10353,31 @@ d frequency"));
           o->labelsize(FL_NORMAL_SIZE);
           listbox_rsid_errors->end();
         } // Fl_ListBox* listbox_rsid_errors
-        { Fl_Counter* o = val_RSIDsquelch = new Fl_Counter(471, 201, 140, 21, _("Squelch open (sec)"));
+        { Fl_Check_Button* o = chkRSidShowAlert = new Fl_Check_Button(487, 89, 203, 20, _("Disable alert dialog"));
+          chkRSidShowAlert->tooltip(_("Do not show RsID alert dialog box"));
+          chkRSidShowAlert->down_box(FL_DOWN_BOX);
+          chkRSidShowAlert->callback((Fl_Callback*)cb_chkRSidShowAlert);
+          o->value(progdefaults.disable_rsid_warning_dialog_box);
+        } // Fl_Check_Button* chkRSidShowAlert
+        { Fl_Check_Button* o = chkRetainFreqLock = new Fl_Check_Button(487, 119, 203, 20, _("Retain tx freq lock"));
+          chkRetainFreqLock->tooltip(_("Retain TX lock frequency (Lk) when changing to RX RsID frequency"));
+          chkRetainFreqLock->down_box(FL_DOWN_BOX);
+          chkRetainFreqLock->callback((Fl_Callback*)cb_chkRetainFreqLock);
+          o->value(progdefaults.retain_freq_lock);
+        } // Fl_Check_Button* chkRetainFreqLock
+        { Fl_Check_Button* o = chkDisableFreqChange = new Fl_Check_Button(487, 149, 203, 20, _("Disable freq change"));
+          chkDisableFreqChange->tooltip(_("Do not automatically change to RX RsID frequency"));
+          chkDisableFreqChange->down_box(FL_DOWN_BOX);
+          chkDisableFreqChange->callback((Fl_Callback*)cb_chkDisableFreqChange);
+          o->value(progdefaults.disable_rsid_freq_change);
+        } // Fl_Check_Button* chkDisableFreqChange
+        { Fl_Check_Button* o = chk_RSID_EOT = new Fl_Check_Button(487, 179, 232, 20, _("Rx/Tx RsID EOT"));
+          chk_RSID_EOT->tooltip(_("Do not automatically change to RX RsID frequency"));
+          chk_RSID_EOT->down_box(FL_DOWN_BOX);
+          chk_RSID_EOT->callback((Fl_Callback*)cb_chk_RSID_EOT);
+          o->value(progdefaults.rsid_eot_squelch);
+        } // Fl_Check_Button* chk_RSID_EOT
+        { Fl_Counter* o = val_RSIDsquelch = new Fl_Counter(471, 210, 140, 21, _("Squelch open (sec)"));
           val_RSIDsquelch->tooltip(_("Use for triggering amplifier carrier detect"));
           val_RSIDsquelch->minimum(0);
           val_RSIDsquelch->maximum(300);
@@ -10356,26 +10387,8 @@ d frequency"));
           o->value(progdefaults.rsid_squelch);
           o->lstep(10.0);
         } // Fl_Counter* val_RSIDsquelch
-        { Fl_Check_Button* o = chkRSidShowAlert = new Fl_Check_Button(487, 110, 203, 20, _("Disable alert dialog"));
-          chkRSidShowAlert->tooltip(_("Do not show RsID alert dialog box"));
-          chkRSidShowAlert->down_box(FL_DOWN_BOX);
-          chkRSidShowAlert->callback((Fl_Callback*)cb_chkRSidShowAlert);
-          o->value(progdefaults.disable_rsid_warning_dialog_box);
-        } // Fl_Check_Button* chkRSidShowAlert
-        { Fl_Check_Button* o = chkRetainFreqLock = new Fl_Check_Button(487, 142, 203, 20, _("Retain tx freq lock"));
-          chkRetainFreqLock->tooltip(_("Retain TX lock frequency (Lk) when changing to RX RsID frequency"));
-          chkRetainFreqLock->down_box(FL_DOWN_BOX);
-          chkRetainFreqLock->callback((Fl_Callback*)cb_chkRetainFreqLock);
-          o->value(progdefaults.retain_freq_lock);
-        } // Fl_Check_Button* chkRetainFreqLock
-        { Fl_Check_Button* o = chkDisableFreqChange = new Fl_Check_Button(487, 174, 203, 20, _("Disable freq change"));
-          chkDisableFreqChange->tooltip(_("Do not automatically change to RX RsID frequency"));
-          chkDisableFreqChange->down_box(FL_DOWN_BOX);
-          chkDisableFreqChange->callback((Fl_Callback*)cb_chkDisableFreqChange);
-          o->value(progdefaults.disable_rsid_freq_change);
-        } // Fl_Check_Button* chkDisableFreqChange
-        { Fl_Group* o = new Fl_Group(427, 41, 330, 60, _("The RsID notification message contents and\ndisplay characteristics are confi\
-gured on the\n\"Notifications\" configure dialog."));
+        { Fl_Group* o = new Fl_Group(363, 45, 406, 38, _("The RsID notification message contents and display\ncharacteristics are confi\
+gured on the \"Notifications\" tab."));
           o->box(FL_BORDER_BOX);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
           o->end();

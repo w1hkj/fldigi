@@ -30,6 +30,7 @@
                                                         \
 /* ESCAPE used to transition to 2nd RSID set */         \
                                                         \
+        ELEM_(263, EOT, MODE_EOT)                       \
         ELEM_(6, ESCAPE, NUM_MODES)                     \
                                                         \
         ELEM_(1, BPSK31, MODE_PSK31)                    \

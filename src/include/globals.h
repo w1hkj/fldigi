@@ -258,6 +258,7 @@ enum {
 	MODE_ANALYSIS,
 	MODE_FMT,
 
+	MODE_EOT,  // a dummy mode used to invoke transmission of RsID-EOT code
 	NUM_MODES,
 	NUM_RXTX_MODES = NUM_MODES - 2
 };

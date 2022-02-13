@@ -23,12 +23,13 @@
 
 #include "globals.h"
 
-void notify_start(void);
-void notify_stop(void);
-void notify_show(void);
-void notify_dxcc_show(bool readonly = true);
-void notify_change_callsign(void);
-void notify_rsid(trx_mode mode, int afreq);
-void notify_create_rsid_event(bool val);
+extern void notify_start(void);
+extern void notify_stop(void);
+extern void notify_show(void);
+extern void notify_dxcc_show(bool readonly = true);
+extern void notify_change_callsign(void);
+extern void notify_rsid(trx_mode mode, int afreq);
+extern void notify_rsid_eot(trx_mode mode, int afreq);
+extern void notify_create_rsid_event(bool val);
 
 #endif // NOTIFY_H_

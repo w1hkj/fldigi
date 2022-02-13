@@ -248,7 +248,9 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 {MODE_SSB,&ssb_modem,"SSB","SSB","","SSB","SSB","","", DISABLED_IO },
 {MODE_WWV,&wwv_modem,"WWV","WWV","","","","","", DISABLED_IO },
 {MODE_ANALYSIS,&anal_modem,"ANALYSIS","Freq Analysis","","","","","", DISABLED_IO },
-{MODE_FMT,&fmt_modem,"FMT","Frequency Measurement Test","","","","","", DISABLED_IO }
+{MODE_FMT,&fmt_modem,"FMT","Frequency Measurement Test","","","","","", DISABLED_IO },
+
+{MODE_EOT,&null_modem,"RSID_EOT","EOT","","EOT","","","", DISABLED_IO }
 };
 
 std::string adif2export(std::string adif)
