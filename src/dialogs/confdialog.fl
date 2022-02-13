@@ -2201,7 +2201,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {IDs/RsID}
+      label {IDs/RsID} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("IDs/RsID"));}
       code1 {config_pages.push_back(p);}
@@ -2209,7 +2209,7 @@ progdefaults.changed = true;}
     } {
       Fl_Group {} {
         label {Reed-Solomon ID (Rx)} open
-        xywh {243 22 535 210} box ENGRAVED_FRAME align 21
+        xywh {243 22 535 220} box ENGRAVED_FRAME align 21
       } {
         Fl_Check_Button chkRSidNotifyOnly {
           label {Notify only}
@@ -2225,16 +2225,16 @@ else {
 }
 progdefaults.changed = true;}
           tooltip {Check this to be notified when an RSID is received
-without changing modem and frequency} xywh {251 79 168 20} down_box DOWN_BOX
+without changing modem and frequency} xywh {251 89 168 20} down_box DOWN_BOX
           code0 {chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);}
         }
         Fl_Button bRSIDRxModes {
-          label {Receive modes}
+          label {Rx modes}
           callback {mode_browser->label(o->label());
 mode_browser->callback(0);
 mode_browser->show_(&progdefaults.rsid_rx_modes);
 progdefaults.changed = true;}
-          xywh {251 48 130 24}
+          xywh {251 48 87 24}
         }
         Fl_Check_Button chkRSidWideSearch {
           label {Searches passband}
@@ -2242,7 +2242,7 @@ progdefaults.changed = true;}
 rxid_selection_color();
 progdefaults.changed = true;}
           tooltip {ON - search over entire waterfall
-OFF - limit search to +/- 200 Hz} xywh {251 110 203 20} down_box DOWN_BOX
+OFF - limit search to +/- 200 Hz} xywh {251 119 203 20} down_box DOWN_BOX
           code0 {o->value(progdefaults.rsidWideSearch);}
         }
         Fl_Check_Button chkRSidMark {
@@ -2250,14 +2250,14 @@ OFF - limit search to +/- 200 Hz} xywh {251 110 203 20} down_box DOWN_BOX
           callback {progdefaults.rsid_mark = o->value();
 progdefaults.changed = true;}
           tooltip {Insert RX text marker before
-changing frequency and modem} xywh {251 142 203 20} down_box DOWN_BOX
+changing frequency and modem} xywh {251 149 203 20} down_box DOWN_BOX
           code0 {chkRSidMark->value(progdefaults.rsid_mark);}
         }
         Fl_Check_Button chkRSidAutoDisable {
           label {Disables detector}
           callback {progdefaults.rsid_auto_disable = o->value();
 progdefaults.changed = true;}
-          tooltip {Disable further detection when RSID is received} xywh {251 174 203 20} down_box DOWN_BOX
+          tooltip {Disable further detection when RSID is received} xywh {251 179 203 20} down_box DOWN_BOX
           code0 {if (progdefaults.rsid_notify_only) progdefaults.rsid_auto_disable = false;}
           code1 {chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);}
           code2 {if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();}
@@ -2268,46 +2268,52 @@ progdefaults.changed = true;}
 progdefaults.changed = true;} open
           tooltip {Low = zero errors
 Medium = 1 error
-High = 2 errors} xywh {251 200 100 22} box DOWN_BOX color 7 align 8
+High = 2 errors} xywh {251 210 100 22} box DOWN_BOX color 7 align 8
           code0 {listbox_rsid_errors->add(_("Low")); listbox_rsid_errors->add(_("Medium")); listbox_rsid_errors->add(_("High"));}
           code1 {listbox_rsid_errors->index(progdefaults.RsID_label_type);}
           code2 {o->labelsize(FL_NORMAL_SIZE);}
           class Fl_ListBox
         } {}
-        Fl_Counter val_RSIDsquelch {
-          label {Squelch open (sec)}
-          callback {progdefaults.rsid_squelch = (int)o->value();
-progdefaults.changed = true;}
-          tooltip {Use for triggering amplifier carrier detect} xywh {471 201 140 21} align 8 minimum 0 maximum 300 step 1
-          code0 {o->value(progdefaults.rsid_squelch);}
-          code1 {o->lstep(10.0);}
-        }
         Fl_Check_Button chkRSidShowAlert {
           label {Disable alert dialog}
           callback {progdefaults.disable_rsid_warning_dialog_box = o->value();
 progdefaults.changed = true;}
-          tooltip {Do not show RsID alert dialog box} xywh {487 110 203 20} down_box DOWN_BOX
+          tooltip {Do not show RsID alert dialog box} xywh {487 89 203 20} down_box DOWN_BOX
           code0 {o->value(progdefaults.disable_rsid_warning_dialog_box);}
         }
         Fl_Check_Button chkRetainFreqLock {
           label {Retain tx freq lock}
           callback {progdefaults.retain_freq_lock = o->value();
 progdefaults.changed = true;}
-          tooltip {Retain TX lock frequency (Lk) when changing to RX RsID frequency} xywh {487 142 203 20} down_box DOWN_BOX
+          tooltip {Retain TX lock frequency (Lk) when changing to RX RsID frequency} xywh {487 119 203 20} down_box DOWN_BOX
           code0 {o->value(progdefaults.retain_freq_lock);}
         }
         Fl_Check_Button chkDisableFreqChange {
           label {Disable freq change}
           callback {progdefaults.disable_rsid_freq_change = o->value();
 progdefaults.changed = true;}
-          tooltip {Do not automatically change to RX RsID frequency} xywh {487 174 203 20} down_box DOWN_BOX
+          tooltip {Do not automatically change to RX RsID frequency} xywh {487 149 203 20} down_box DOWN_BOX
           code0 {o->value(progdefaults.disable_rsid_freq_change);}
         }
+        Fl_Check_Button chk_RSID_EOT {
+          label {Rx/Tx RsID EOT}
+          callback {progdefaults.rsid_eot_squelch = o->value();
+progdefaults.changed = true;}
+          tooltip {Do not automatically change to RX RsID frequency} xywh {487 179 232 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.rsid_eot_squelch);}
+        }
+        Fl_Counter val_RSIDsquelch {
+          label {Squelch open (sec)}
+          callback {progdefaults.rsid_squelch = (int)o->value();
+progdefaults.changed = true;}
+          tooltip {Use for triggering amplifier carrier detect} xywh {471 210 140 21} align 8 minimum 0 maximum 300 step 1
+          code0 {o->value(progdefaults.rsid_squelch);}
+          code1 {o->lstep(10.0);}
+        }
         Fl_Group {} {
-          label {The RsID notification message contents and
-display characteristics are configured on the
-"Notifications" configure dialog.} open
-          xywh {427 41 330 60} box BORDER_BOX align 21
+          label {The RsID notification message contents and display
+characteristics are configured on the "Notifications" tab.} open
+          xywh {363 45 406 38} box BORDER_BOX align 21
         } {}
       }
       Fl_Group {} {
@@ -10670,7 +10676,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {UI/General} open selected
+      label {UI/General} open
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("UI/General"));}
       code1 {config_pages.push_back(p);}

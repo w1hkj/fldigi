@@ -129,7 +129,7 @@ struct notify_dup_t
 };
 
 typedef MAP_TYPE<std::string, notify_dup_t> notify_seen_t;
-enum notify_event_t { NOTIFY_EVENT_MYCALL, NOTIFY_EVENT_STATION, NOTIFY_EVENT_CUSTOM, NOTIFY_EVENT_RSID };
+enum notify_event_t { NOTIFY_EVENT_MYCALL, NOTIFY_EVENT_STATION, NOTIFY_EVENT_CUSTOM, NOTIFY_EVENT_RSID, NOTIFY_EVENT_RSID_EOT };
 struct notify_t
 {
 	notify_event_t event;
@@ -194,6 +194,7 @@ static Fl_Menu_Item notify_event_menu[] = {
 	{ _("Station heard twice") },
 	{ _("Custom text search") },
 	{ _("RSID reception") },
+	{ _("RSID EOT") },
 	{ 0 }
 };
 
@@ -233,7 +234,8 @@ static event_regex_t event_regex[] = {
 	{ "<MYCALL>.+de[[:space:]]+(<CALLSIGN_RE>)", 1 },
 	{ PSKREP_RE, PSKREP_RE_INDEX },
 	{ "", 0 },
-	{ "", 1 }
+	{ "", 1 },
+	{ "", 0 }
 };
 
 static const char* default_alert_text[] = {
@@ -241,6 +243,7 @@ static const char* default_alert_text[] = {
 	"Heard $CALLSIGN ($COUNTRY)\n    $TEXT\nTime: %X %Z (%z)\nMode: $MODEM @ $RF_KHZ KHz",
 	"",
 	"RSID received\nMode: $MODEM @ $RF_KHZ KHz\nTime: %X %Z (%z)",
+	"RSID End of Transmission",
 };
 
 static Fl_Menu_Item notify_dup_callsign_menu[] = {
@@ -355,6 +358,17 @@ void notify_rsid(trx_mode mode, int afreq)
 			notify_recv(mode, afreq, mode_name, sub, 2, &*i);
 }
 
+// called by the RSID decoder
+void notify_rsid_eot(trx_mode mode, int afreq)
+{
+	const char* mode_name = mode_info[mode].name;
+	regmatch_t sub[2] = { { 0, (regoff_t)strlen(mode_name) } };
+	sub[1] = sub[0];
+	for (notify_list_t::iterator i = notify_list.begin(); i != notify_list.end(); ++i)
+		if (i->event == NOTIFY_EVENT_RSID_EOT)
+			notify_recv(mode, afreq, mode_name, sub, 2, &*i);
+}
+
 // called by the config dialog when the "notifications only"
 // rsid option is selected
 void notify_create_rsid_event(bool val)
@@ -362,7 +376,7 @@ void notify_create_rsid_event(bool val)
 	if (!val)
 		return;
 	for (notify_list_t::iterator i = notify_list.begin(); i != notify_list.end(); ++i)
-		if (i->event == NOTIFY_EVENT_RSID)
+		if (i->event == NOTIFY_EVENT_RSID || i->event == NOTIFY_EVENT_RSID_EOT)
 			return;
 
 	notify_t rsid_event = {
@@ -462,7 +476,7 @@ static void notify_gui_to_event(notify_t& n)
 	n.last_trigger = 0;
 	if (n.event == NOTIFY_EVENT_CUSTOM)
 		n.re = inpNotifyRE->value();
-	else
+	else if (n.event != NOTIFY_EVENT_RSID_EOT)
 		n.re = event_regex[n.event].regex;
 	n.enabled = btnNotifyEnabled->value();
 	n.afreq = 0;
@@ -707,8 +721,8 @@ static notify_dialog *alert_window = 0;
 static void notify_goto_freq_cb(Fl_Widget* w, void* arg)
 {
 	const notify_t* n = static_cast<notify_t*>(arg);
-	if (progdefaults.rsid_mark) // mark current modem & freq
-		REQ(note_qrg, false, "\nBefore RSID: ", "\n",
+	if (progdefaults.rsid_mark && n->event != NOTIFY_EVENT_RSID_EOT) // mark current modem & freq
+		REQ(note_qrg, false, "\nBefore RSID: ", "\n\n",
 			active_modem->get_mode(), 0LL, active_modem->get_freq());
 	if (active_modem->get_mode() != n->mode)
 		init_modem_sync(n->mode);
@@ -922,6 +936,9 @@ static void notify_notify(const notify_t& n)
 static bool notify_is_dup(notify_t& n, const char* str, const regmatch_t* sub, size_t len,
 			  time_t now, int afreq, trx_mode mode)
 {
+	if (n.event == NOTIFY_EVENT_RSID_EOT)
+		return false;
+
 	if (!n.dup_ignore)
 		return false;
 
@@ -983,7 +1000,7 @@ static void notify_recv(trx_mode mode, int afreq, const char* str, const regmatc
 		return;
 
 	switch (n->event) {
-	case NOTIFY_EVENT_MYCALL: case NOTIFY_EVENT_CUSTOM: case NOTIFY_EVENT_RSID:
+	case NOTIFY_EVENT_MYCALL: case NOTIFY_EVENT_CUSTOM: case NOTIFY_EVENT_RSID: case NOTIFY_EVENT_RSID_EOT:
 		break;
 	case NOTIFY_EVENT_STATION:
 		size_t re_idx = event_regex[n->event].index;
@@ -1034,14 +1051,14 @@ static void notify_recv(trx_mode mode, int afreq, const char* str, const regmatc
 		n->submatch_offsets = sub;
 		n->submatch_length = std::min(len, (size_t)10); // whole string + up to 9 user-specified backrefs
 
-//std::cout << "trigger: " << n->last_trigger << "\n" <<
-//"audio freq: " << n->afreq << "\n" <<
-//"rf carrier: " << n->rfreq << "\n" <<
-//"mode #: " << n->mode << "\n" <<
-//"mode: " << mode_info[n->mode].name << "\n" <<
-//"match: " << n->match_string << "\n" <<
-//"offsets: " << n->submatch_offsets << "\n" <<
-//"length: " << n->submatch_length << std::endl;
+std::cout << "trigger: " << n->last_trigger << "\n" <<
+"audio freq: " << n->afreq << "\n" <<
+"rf carrier: " << n->rfreq << "\n" <<
+"mode #: " << n->mode << "\n" <<
+"mode: " << mode_info[n->mode].name << "\n" <<
+"match: " << n->match_string << "\n" <<
+"offsets: " << n->submatch_offsets << "\n" <<
+"length: " << n->submatch_length << std::endl;
 
 		notify_notify(*n);
 	}
@@ -1062,15 +1079,17 @@ static void notify_set_qsodb_cache(void)
 // register event n with the spotter
 static void notify_register(notify_t& n)
 {
-	if (n.event != NOTIFY_EVENT_RSID)
-		spot_register_recv(notify_recv, &n, notify_get_re(n).c_str(), REG_EXTENDED | REG_ICASE);
+	if (n.event == NOTIFY_EVENT_RSID || n.event == NOTIFY_EVENT_RSID_EOT)
+		return;
+	spot_register_recv(notify_recv, &n, notify_get_re(n).c_str(), REG_EXTENDED | REG_ICASE);
 }
 
 // unregister event n
 static void notify_unregister(const notify_t& n)
 {
-	if (n.event != NOTIFY_EVENT_RSID)
-		spot_unregister_recv(notify_recv, &n);
+	if (n.event == NOTIFY_EVENT_RSID || n.event == NOTIFY_EVENT_RSID_EOT)
+		return;
+	spot_unregister_recv(notify_recv, &n);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1241,7 +1260,7 @@ static void notify_event_cb(Fl_Widget* w, void* arg)
 		chkNotifyFilterEQSL->value(0);
 		inpNotifyRE->show();
 		break;
-	case NOTIFY_EVENT_RSID:
+	case NOTIFY_EVENT_RSID: case NOTIFY_EVENT_RSID_EOT:
 		grpNotifyFilter->deactivate();
 		chkNotifyFilterCall->value(0);
 		inpNotifyFilterCall->hide();
@@ -1290,7 +1309,7 @@ static void notify_test_cb(Fl_Widget* w, void* arg)
 {
 	notify_gui_to_event(notify_tmp);
 
-	if (notify_tmp.event == NOTIFY_EVENT_RSID) {
+	if (notify_tmp.event == NOTIFY_EVENT_RSID || notify_tmp.event == NOTIFY_EVENT_RSID_EOT) {
 		notify_tmp.mode = active_modem->get_mode();
 		regmatch_t sub[2] = { { 0, (regoff_t)strlen(mode_info[notify_tmp.mode].name) } };
 		sub[1] = sub[0];
@@ -1358,6 +1377,8 @@ static void notify_rx_default_cb(Fl_Widget* w, void* arg)
 {
 	if (mnuNotifyEvent->value() == NOTIFY_EVENT_RSID)
 		inpNotifyActionRXMarker->value("\nRSID: $RX_MARKER\n");
+	else if (mnuNotifyEvent->value() == NOTIFY_EVENT_RSID_EOT)
+		inpNotifyActionRXMarker->value("\nRSID EOT\n");
 	else
 		inpNotifyActionRXMarker->value("\n$RX_MARKER\n");
 }
@@ -1420,7 +1441,9 @@ static void notify_set_event_dup(const notify_t& n)
 		notify_dup_refs_menu[i].hide();
 
 	switch (n.event) {
-	case NOTIFY_EVENT_MYCALL: case NOTIFY_EVENT_STATION: case NOTIFY_EVENT_RSID:
+	case NOTIFY_EVENT_MYCALL:
+	case NOTIFY_EVENT_STATION:
+	case NOTIFY_EVENT_RSID: 
 		i = event_regex[n.event].index;
 		mnuNotifyDupWhich->menu(notify_dup_callsign_menu);
 		for (size_t j = 0; j < sizeof(notify_dup_callsign_menu)/sizeof(*notify_dup_callsign_menu) - 1; j++)
@@ -1435,6 +1458,9 @@ static void notify_set_event_dup(const notify_t& n)
 	case NOTIFY_EVENT_CUSTOM:
 		mnuNotifyDupWhich->menu(notify_dup_refs_menu);
 		notify_set_event_dup_menu(notify_get_re(n).c_str());
+		break;
+	case NOTIFY_EVENT_RSID_EOT:
+	default:
 		break;
 	}
 }

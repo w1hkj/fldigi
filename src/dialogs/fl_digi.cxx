@@ -1679,8 +1679,17 @@ void init_modem_squelch(trx_mode mode, int freq)
 	squelch_val = progStatus.sqlonoff;
 	progStatus.sqlonoff = 0;
 	btnSQL->value(0);
-	Fl::add_timeout(progdefaults.rsid_squelch, rsid_squelch_timer);
+	if (!progdefaults.rsid_eot_squelch)
+		Fl::add_timeout(progdefaults.rsid_squelch, rsid_squelch_timer);
 	init_modem(mode, freq);
+}
+
+void rsid_eot_squelch()
+{
+	progStatus.sqlonoff = squelch_val;
+	if (progStatus.sqlonoff)
+		btnSQL->value(1);
+	Fl::remove_timeout(rsid_squelch_timer);
 }
 
 extern bool valid_kiss_modem(std::string modem_name);

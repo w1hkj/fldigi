@@ -151,6 +151,7 @@ public:
 	void	reset();
 	void	receive(const float* buf, size_t len);
 	void	send(bool postidle);
+	void	send_eot();
 	bool	assigned(trx_mode mode);
 
 friend void reset_rsid(void *who);

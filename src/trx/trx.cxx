@@ -475,6 +475,11 @@ void trx_trx_transmit_loop()
 				trx_state = STATE_RX;
 
 		if (ReedSolomon->assigned(active_modem->get_mode()) &&
+			progdefaults.rsid_eot_squelch && // test for RsID_EOT
+			progdefaults.TransmitRSid &&
+			progStatus.n_rsids >= 0) ReedSolomon->send_eot();
+
+		if (ReedSolomon->assigned(active_modem->get_mode()) &&
 			progdefaults.TransmitRSid &&
 			progdefaults.rsid_post &&
 			progStatus.n_rsids >= 0) ReedSolomon->send(false);
