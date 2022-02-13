@@ -63,35 +63,33 @@
 
 #include <FL/fl_ask.H>
 
-using namespace std;
-
 //---------------------------------------------------------------------
 const char *logmode;
 
-static string log_msg;
-static string errmsg;
-static string notes;
+static std::string log_msg;
+static std::string errmsg;
+static std::string notes;
 
 //======================================================================
 // LoTW
-static string lotw_fname;
-static string lotw_logfname;
-static string lotw_send_fname;
-static string lotw_log_fname;
+static std::string lotw_fname;
+static std::string lotw_logfname;
+static std::string lotw_send_fname;
+static std::string lotw_log_fname;
 static int tracefile_timeout = 0;
 
-string str_lotw;
+std::string str_lotw;
 //======================================================================
 // eQSL
-void submit_eQSL(cQsoRec &rec, string msg);
+void submit_eQSL(cQsoRec &rec, std::string msg);
 //======================================================================
 
-static string adif;
+static std::string adif;
 
 void writeADIF () {
 // open the adif file
 	FILE *adiFile;
-	string fname;
+	std::string fname;
 
     fname = TempDir;
     fname.append("log.adif");
@@ -103,7 +101,7 @@ void writeADIF () {
 	}
 }
 
-void putadif(int num, const char *s, string &str = adif)
+void putadif(int num, const char *s, std::string &str = adif)
 {
 	char tempstr[100];
 	int slen = strlen(s);
@@ -115,7 +113,7 @@ void putadif(int num, const char *s, string &str = adif)
 	str.append(tempstr).append(s);
 }
 
-vector<int> lotw_recs_sent;
+std::vector<int> lotw_recs_sent;
 
 void clear_lotw_recs_sent()
 {
@@ -159,7 +157,7 @@ void check_lotw_log(void *)
 		return;
 	}
 
-	string trace_text;
+	std::string trace_text;
 	fseek(logfile, 0, SEEK_END);
 	size_t logfile_size = ftell(logfile);
 	rewind(logfile);
@@ -189,7 +187,7 @@ void check_lotw_log(void *)
 	size_t p1 = trace_text.find("UploadFile returns 0");
 	size_t p2 = trace_text.find("Final Status: Success");
 
-	if ((p1 == string::npos) && (p2 == string::npos)) {
+	if ((p1 == std::string::npos) && (p2 == std::string::npos)) {
 		tracefile_timeout--;
 		if (!tracefile_timeout) {
 			LOG_ERROR("%s", "TQSL trace file failed!");
@@ -240,7 +238,7 @@ void send_to_lotw(void *)
 	lotw_send_fname.append("_").append(ztime());
 	lotw_send_fname.append(".adi");
 
-	ofstream outfile(lotw_send_fname.c_str());
+	std::ofstream outfile(lotw_send_fname.c_str());
 	outfile << str_lotw;
 	outfile.close();
 
@@ -251,7 +249,7 @@ void send_to_lotw(void *)
 	rotate_log(lotw_log_fname);
 	remove(lotw_log_fname.c_str());
 
-	string pstring;
+	std::string pstring;
 	pstring.assign("\"").append(progdefaults.lotw_pathname).append("\"");
 	pstring.append(" -d -u -a compliant");
 
@@ -268,7 +266,7 @@ void send_to_lotw(void *)
 	if (progdefaults.lotw_quiet_mode)
 		pstring.append(" -q");
 
-	LOG_DEBUG("LoTW command string: %s", pstring.c_str());
+	LOG_DEBUG("LoTW command std::string: %s", pstring.c_str());
 
 	start_process(pstring);
 
@@ -276,16 +274,16 @@ void send_to_lotw(void *)
 	Fl::add_timeout(0, check_lotw_log);
 }
 
-string lotw_rec(cQsoRec &rec)
+std::string lotw_rec(cQsoRec &rec)
 {
-	string temp;
-	string strrec;
+	std::string temp;
+	std::string strrec;
 
 	putadif(CALL, rec.getField(CALL), strrec);
 
 	putadif(ADIF_MODE, adif2export(rec.getField(ADIF_MODE)).c_str(), strrec);
 
-	string sm = adif2submode(rec.getField(ADIF_MODE));
+	std::string sm = adif2submode(rec.getField(ADIF_MODE));
 	if (!sm.empty())
 	putadif(SUBMODE, sm.c_str(), strrec);
 
@@ -308,7 +306,7 @@ string lotw_rec(cQsoRec &rec)
 
 void submit_lotw(cQsoRec &rec)
 {
-	string adifrec = lotw_rec(rec);
+	std::string adifrec = lotw_rec(rec);
 
 	if (adifrec.empty()) return;
 
@@ -332,7 +330,7 @@ void submit_ADIF(cQsoRec &rec)
 	putadif(FREQ, rec.getField(FREQ));
 	putadif(ADIF_MODE, adif2export(rec.getField(ADIF_MODE)).c_str());
 
-	string sm = adif2submode(rec.getField(ADIF_MODE));
+	std::string sm = adif2submode(rec.getField(ADIF_MODE));
 	if (!sm.empty())
 		putadif(SUBMODE, sm.c_str());
 
@@ -393,7 +391,7 @@ static void send_IPC_log(cQsoRec &rec)
 	Date logdate(mm, dd, yyyy);
 
 	log_msg.clear();
-	log_msg = string("program:") + PACKAGE_NAME + string(" v ") + PACKAGE_VERSION + LOG_MSEPARATOR;
+	log_msg = std::string("program:") + PACKAGE_NAME + std::string(" v ") + PACKAGE_VERSION + LOG_MSEPARATOR;
 	addtomsg("version:",	LOG_MVERSION);
 	addtomsg("date:",		logdate.szDate(5));
 	memset(sztime, 0, sizeof(sztime) / sizeof(char));
@@ -406,7 +404,7 @@ static void send_IPC_log(cQsoRec &rec)
 	addtomsg("mhz:",		rec.getField(FREQ));
 	addtomsg("mode:",		adif2export(rec.getField(ADIF_MODE)));
 
-	string sm = adif2submode(rec.getField(ADIF_MODE));
+	std::string sm = adif2submode(rec.getField(ADIF_MODE));
 	if (!sm.empty())
 		addtomsg("submode:",	sm.c_str());
 
@@ -654,10 +652,10 @@ static void EQSL_init(void)
 	MilliSleep(10);
 }
 
-void submit_eQSL(cQsoRec &rec, string msg)
+void submit_eQSL(cQsoRec &rec, std::string msg)
 {
-	string eQSL_data;
-	string tempstr;
+	std::string eQSL_data;
+	std::string tempstr;
 	char sztemp[100];
 
 	eQSL_data = "upload <adIF_ver:4>4.0 ";
@@ -678,7 +676,7 @@ void submit_eQSL(cQsoRec &rec, string msg)
 	putadif(CALL, rec.getField(CALL), eQSL_data);
 	putadif(ADIF_MODE, adif2export(rec.getField(ADIF_MODE)).c_str(), eQSL_data);
 
-	string sm = adif2submode(rec.getField(ADIF_MODE));
+	std::string sm = adif2submode(rec.getField(ADIF_MODE));
 	if (!sm.empty())
 		putadif(SUBMODE, sm.c_str(), eQSL_data);
 

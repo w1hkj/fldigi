@@ -55,8 +55,6 @@
 #include "debug.h"
 #include "timeops.h"
 
-using namespace std;
-
 wefax_map::wefax_map (int X, int Y, int W, int H, int bg_col) :
 	Fl_Widget (X, Y, W, H) 
 {
@@ -532,7 +530,7 @@ int wefax_map::save_png(const char* filename, const char *extra_comments)
 	strftime(z, sizeof(z), "%Y-%m-%dT%H:%M:%SZ", &tm);
 	z[sizeof(z) - 1] = '\0';
 
-	ostringstream comment;
+	std::ostringstream comment;
 	comment << "Program: " PACKAGE_STRING << '\n'
 		<< "Received: " << z << '\n'
 		<< "Modem: " << mode_info[active_modem->get_mode()].name << '\n'
@@ -735,14 +733,14 @@ int wefax_picbox::handle(int event)
 	}
 
 	// handle FL_PASTE
-	string text = Fl::event_text();
+	std::string text = Fl::event_text();
 // from dnd event "file:///home/dave/Photos/dave.jpeg"
-	string::size_type p;
-	if ((p = text.find("file://")) != string::npos)
+	std::string::size_type p;
+	if ((p = text.find("file://")) != std::string::npos)
 		text.erase(0, p + strlen("file://"));
-	if ((p = text.find('\r')) != string::npos)
+	if ((p = text.find('\r')) != std::string::npos)
 		text.erase(p);
-	if ((p = text.find('\n')) != string::npos)
+	if ((p = text.find('\n')) != std::string::npos)
 		text.erase(p);
 
 	struct stat st;

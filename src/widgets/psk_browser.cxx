@@ -46,12 +46,10 @@
 
 #include <string>
 
-using namespace std;
-
-string pskBrowser::hilite_color_1;
-string pskBrowser::hilite_color_2;
-string pskBrowser::white;
-string pskBrowser::bkgnd[2];
+std::string pskBrowser::hilite_color_1;
+std::string pskBrowser::hilite_color_2;
+std::string pskBrowser::white;
+std::string pskBrowser::bkgnd[2];
 
 int pskBrowser::cwidth = 5;
 int pskBrowser::cheight = 12;
@@ -76,7 +74,7 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 	makecolors();
 	cdistiller = reinterpret_cast<CharsetDistiller*>(operator new(MAXCHANNELS*sizeof(CharsetDistiller)));
 
-	string bline;
+	std::string bline;
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		alerted[i].regex_alert = alerted[i].mycall_alert = false;
 		bwsrline[i] = " ";
@@ -114,7 +112,7 @@ void pskBrowser::evalcwidth()
 	columns(labelwidth[progdefaults.VIEWERlabeltype]);
 }
 
-string pskBrowser::freqformat(int i) // 0 < i < channels
+std::string pskBrowser::freqformat(int i) // 0 < i < channels
 {
 	szLine[0] = 0;
 	int freq = bwsrfreq[i];
@@ -146,7 +144,7 @@ string pskBrowser::freqformat(int i) // 0 < i < channels
 
 void pskBrowser::swap(int i, int j)
 {
-	string tempstr = bwsrline[j];
+	std::string tempstr = bwsrline[j];
 	bwsrline[j] = bwsrline[i];
 	bwsrline[i] = tempstr;
 	int f = bwsrfreq[j];
@@ -165,10 +163,10 @@ void pskBrowser::swap(int i, int j)
 
 }
 
-static size_t case_find(string &haystack, string &needle)
+static size_t case_find(std::string &haystack, std::string &needle)
 {
-	string Uhaystack = haystack;
-	string Uneedle = needle;
+	std::string Uhaystack = haystack;
+	std::string Uneedle = needle;
 	for (size_t i = 0; i < Uhaystack.length(); i++ ) Uhaystack[i] = toupper(Uhaystack[i]);
 	for (size_t i = 0; i < Uneedle.length(); i++ ) Uneedle[i] = toupper(Uneedle[i]);
 	return Uhaystack.find(Uneedle);
@@ -181,7 +179,7 @@ void pskBrowser::resize(int x, int y, int w, int h)
 		evalcwidth();
 		nchars = (w - cols[0] - (sbarwidth + 2*BWSR_BORDER)) / cwidth;
 		nchars = nchars < 1 ? 1 : nchars; 
-		string bline;
+		std::string bline;
 		Fl_Hold_Browser::clear();
 		for (int i = 0, j = 0; i < progdefaults.VIEWERchannels; i++) {
 			if (progdefaults.VIEWERascend) j = progdefaults.VIEWERchannels - 1 - i;
@@ -192,7 +190,7 @@ void pskBrowser::resize(int x, int y, int w, int h)
 			if (seek_re  && seek_re->match(bwsrline[j].c_str(), REG_NOTBOL | REG_NOTEOL))
 				bline.append(hilite_color_1);
 			else if (	!progdefaults.myCall.empty() && 
-						case_find (bwsrline[j], progdefaults.myCall ) != string::npos)
+						case_find (bwsrline[j], progdefaults.myCall ) != std::string::npos)
 				bline.append(hilite_color_2);
 			Fl_Hold_Browser::add(bline.c_str());
 		}
@@ -278,7 +276,7 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md, bool signal_a
 		alerted[ch].regex_alert = false;
 	}
 	if (!progdefaults.myCall.empty() && 
-			case_find (bwsrline[ch], progdefaults.myCall ) != string::npos) {
+			case_find (bwsrline[ch], progdefaults.myCall ) != std::string::npos) {
 		nuline.append(hilite_color_2);
 		if ((trx_state == STATE_RX) && 
 			(alerted[ch].mycall_alert == false) &&
@@ -302,7 +300,7 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md, bool signal_a
 
 void pskBrowser::set_freq(int i, int freq) // 0 < i < channels
 {
-	string new_line = "";
+	std::string new_line = "";
 
 	bwsrfreq[i] = freq;
 	new_line.append(freqformat(i)).append(bwsrline[i]);

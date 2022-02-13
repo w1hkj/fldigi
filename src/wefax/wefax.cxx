@@ -59,8 +59,6 @@
 
 #include "qrunner.h"
 
-using namespace std;
-
 // ---------------------------------------------------------------------
 //
 // ---------------------------------------------------------------------
@@ -1959,7 +1957,7 @@ void fax_implementation::rx_new_samples(const double* audio_ptr, int audio_sz)
 			demod[i] = 255; // white
 		else {
 			ix = round (255 * (0.5 - deviation_ratio * arg (conj (prevz) * currz)));
-			demod[i] = min (max (0, ix), 255);
+			demod[i] = std::min (std::max (0, ix), 255);
 		}
 		prevz = currz;
 

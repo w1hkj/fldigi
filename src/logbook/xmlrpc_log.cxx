@@ -63,14 +63,14 @@ bool test_connection(bool info = false)
 	XmlRpcValue query, result;
 	if (log_client->execute("system.listMethods", query, result)) {
 		if (info) {
-			string res;
+			std::string res;
 			int asize = result.size();
 			XmlRpcValue oneArg, help;
 			res = "Xml-log methods:";
 			for (int i = 0; i < asize; i++) {
 				oneArg[0] = result[i];
 				try {
-					if (std::string(result[i]).find("system") == string::npos) {
+					if (std::string(result[i]).find("system") == std::string::npos) {
 						log_client->execute("system.methodHelp", oneArg, help);
 						res.append("\n\t").append(help);
 					}
@@ -96,9 +96,9 @@ void activate_log_menus(bool val)
 	activate_menu_item(_("Reports"), val);
 }
 
-string get_field(string &adifline, int field)
+std::string get_field(std::string &adifline, int field)
 {
-	string fld;
+	std::string fld;
 	fld.append("<").append(fields[field].name).append(":");
 	size_t pos1 = adifline.find(fld);
 	if (pos1 == std::string::npos)
@@ -124,7 +124,7 @@ cQsoRec* search_fllog(const char *callsign)
 	}
 	oneArg[0] = callsign;
 	if (log_client->execute("log.get_record", oneArg, result)) {
-		string adifline = std::string(result);
+		std::string adifline = std::string(result);
 
 		rec->putField(NAME, get_field(adifline, NAME).c_str());
 		rec->putField(QTH, get_field(adifline, QTH).c_str());
@@ -149,7 +149,7 @@ bool xml_get_record(const char *callsign)
 	}
 	oneArg[0] = callsign;
 	if (log_client->execute("log.get_record", oneArg, result)) {
-		string adifline = std::string(result);
+		std::string adifline = std::string(result);
 //std::cout << adifline << std::endl;
 
 		inpName->value(get_field(adifline, NAME).c_str());
@@ -383,7 +383,7 @@ int xml_check_dup()
 	six_args[4] = (progdefaults.dupstate && inpState->value()[0]) ? inpState->value() : "0";
 	six_args[5] = (progdefaults.dupxchg1 && inpXchgIn->value()[0]) ? inpXchgIn->value() : "0";
 	if (log_client->execute("log.check_dup", six_args, result)) {
-		string res = std::string(result);
+		std::string res = std::string(result);
 		if (res == "true")
 			dup_test = 1;
 		else if (res == "possible")

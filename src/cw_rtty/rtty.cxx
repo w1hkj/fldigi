@@ -30,8 +30,6 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
 //#include "rtty.h"
 #include "view_rtty.h"
 #include "fl_digi.h"
@@ -673,7 +671,7 @@ if (snum < 2 * filter_length) {
 if (mnum < 2 * filter_length)
 	ook_signal << ",,," << mnum++ + filter_length / 2 << "," << mark_mag << "," << space_mag << "\n";
 #endif
-			noise_floor = min(space_noise, mark_noise);
+			noise_floor = std::min(space_noise, mark_noise);
 
 // clipped if clipped decoder selected
 			double mclipped = 0, sclipped = 0;

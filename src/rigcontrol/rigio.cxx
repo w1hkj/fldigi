@@ -50,8 +50,6 @@
 
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
-using namespace std;
-
 Cserial rigio;
 static pthread_t		rigCAT_thread;
 pthread_mutex_t	rigCAT_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -60,8 +58,8 @@ pthread_mutex_t	cmdque_mutex = PTHREAD_MUTEX_INITIALIZER;
 static bool			rigCAT_exit = false;
 static bool			rigCAT_open = false;
 
-static string		sRigWidth = "";
-static string		sRigMode = "";
+static std::string		sRigWidth = "";
+static std::string		sRigMode = "";
 static long long	llFreq = 0;
 
 static void *rigCAT_loop(void *args);
@@ -71,11 +69,11 @@ static unsigned char replybuff[RXBUFFSIZE+1];
 static unsigned char retbuf[3];
 
 struct CMDQUEUE {
-	string cmd;
-	string s;
+	std::string cmd;
+	std::string s;
 	int retnbr;
 	int waitval;
-	CMDQUEUE(string _cmd, string _s, int _retnbr, int _waitval) {
+	CMDQUEUE(std::string _cmd, std::string _s, int _retnbr, int _waitval) {
 		cmd = _cmd;
 		s = _s;
 		retnbr = _retnbr;
@@ -85,9 +83,9 @@ struct CMDQUEUE {
 	~CMDQUEUE() {};
 };
 
-queue<CMDQUEUE> cmdque;
+std::queue<CMDQUEUE> cmdque;
 
-void add_to_cmdque( string cmd, string s, int retnbr, int waitval)
+void add_to_cmdque( std::string cmd, std::string s, int retnbr, int waitval)
 {
 	guard_lock quelock(&cmdque_mutex);
 	cmdque.push(CMDQUEUE(cmd, s, retnbr, waitval));
@@ -108,7 +106,7 @@ void cmdque_exec()
 	if (sendcmd) sendCommand(cmdq.cmd, cmdq.s, cmdq.retnbr, cmdq.waitval);
 }
 
-bool sendCommand (string cmd, string s, int retnbr, int waitval)
+bool sendCommand (std::string cmd, std::string s, int retnbr, int waitval)
 {
 	int numwrite = (int)s.length();
 	int readafter = 0;
@@ -177,9 +175,9 @@ bool sendCommand (string cmd, string s, int retnbr, int waitval)
 	return (numread == retnbr);
 }
 
-string to_bcd_be(long long freq, int len)
+std::string to_bcd_be(long long freq, int len)
 {
-	string bcd = "";
+	std::string bcd = "";
 	unsigned char a;
 	int numchars = len / 2;
 	if (len & 1) numchars ++;
@@ -194,10 +192,10 @@ string to_bcd_be(long long freq, int len)
 	return bcd;
 }
 
-string to_bcd(long long freq, int len)
+std::string to_bcd(long long freq, int len)
 {
-	string bcd = "";
-	string bcd_be = to_bcd_be(freq, len);
+	std::string bcd = "";
+	std::string bcd_be = to_bcd_be(freq, len);
 	int bcdlen = bcd_be.size();
 	for (int i = bcdlen - 1; i >= 0; i--)
 		bcd += bcd_be[i];
@@ -233,9 +231,9 @@ long long fm_bcd_be(size_t p, int len)
 	return fm_bcd(p, len);
 }
 
-string to_binary_be(long long freq, int len)
+std::string to_binary_be(long long freq, int len)
 {
-	string bin = "";
+	std::string bin = "";
 	for (int i = 0; i < len; i++) {
 		bin += freq & 0xFF;
 		freq >>= 8;
@@ -243,10 +241,10 @@ string to_binary_be(long long freq, int len)
 	return bin;
 }
 
-string to_binary(long long freq, int len)
+std::string to_binary(long long freq, int len)
 {
-	string bin = "";
-	string bin_be = to_binary_be(freq, len);
+	std::string bin = "";
+	std::string bin_be = to_binary_be(freq, len);
 	int binlen = bin_be.size();
 	for (int i = binlen - 1; i >= 0; i--)
 		bin += bin_be[i];
@@ -277,9 +275,9 @@ long long fm_binary_be(size_t p, int len)
 	return fm_binary(p, len);
 }
 
-string to_decimal_be(long long d, int len)
+std::string to_decimal_be(long long d, int len)
 {
-	string sdec_be = "";
+	std::string sdec_be = "";
 	for (int i = 0; i < len; i++) {
 		sdec_be += (char)((d % 10) + '0');
 		d /= 10;
@@ -287,10 +285,10 @@ string to_decimal_be(long long d, int len)
 	return sdec_be;
 }
 
-string to_decimal(long long d, int len)
+std::string to_decimal(long long d, int len)
 {
-	string sdec = "";
-	string sdec_be = to_decimal_be(d, len);
+	std::string sdec = "";
+	std::string sdec_be = to_decimal_be(d, len);
 	int bcdlen = sdec_be.size();
 	for (int i = bcdlen - 1; i >= 0; i--)
 		sdec += sdec_be[i];
@@ -320,7 +318,7 @@ long long fm_decimal_be(size_t p, int len)
 	return fm_decimal(p, len);
 }
 
-string to_freqdata(DATA d, long long f)
+std::string to_freqdata(DATA d, long long f)
 {
 	int num, den;
 	num = 100;
@@ -381,8 +379,8 @@ long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 
 	if (waitval == 0) waitval = progdefaults.RigCatWait;
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
 	long long f = 0;
 
@@ -412,7 +410,7 @@ long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 		return 0;
 	}
 
-	for (list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
+	for (std::list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
 		if (preply->SYMBOL != modeCmd.info)
 			continue;
 
@@ -445,7 +443,7 @@ long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 					LOG_INFO("sendCommand failed");
 				goto retry_get_freq;
 			}
-// check the pre data string
+// check the pre data std::string
 			p = 0;
 			pData = 0;
 			if (len1) {
@@ -498,8 +496,8 @@ void rigCAT_setfreq(long long f)
 	if (rigCAT_exit || !xmlrig.xmlok) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -523,7 +521,7 @@ void rigCAT_setfreq(long long f)
 		strCmd.append(modeCmd.str2);
 
 	if (modeCmd.ok.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
+		std::list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
@@ -551,7 +549,7 @@ void rigCAT_setfreq(long long f)
 		LOG_ERROR("%s failed", symbol);
 }
 
-string rigCAT_getmode()
+std::string rigCAT_getmode()
 {
 	const char symbol[] = "GETMODE";
 
@@ -559,10 +557,10 @@ string rigCAT_getmode()
 		return progStatus.noCATmode;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	list<MODE>::iterator mode;
-	list<MODE> *pmode;
-	string strCmd, mData;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::list<MODE>::iterator mode;
+	std::list<MODE> *pmode;
+	std::string strCmd, mData;
 	size_t len;
 
 	itrCmd = commands.begin();
@@ -586,7 +584,7 @@ string rigCAT_getmode()
 
 	if (!modeCmd.info.size()) return "";
 
-	for (list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
+	for (std::list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
 		if (preply->SYMBOL != modeCmd.info)
 			continue;
 
@@ -668,7 +666,7 @@ retry_get_mode: ;
 	return "";
 }
 
-void rigCAT_setmode(const string& md)
+void rigCAT_setmode(const std::string& md)
 {
 	const char symbol[] = "SETMODE";
 
@@ -679,8 +677,8 @@ void rigCAT_setmode(const string& md)
 	if (rigCAT_exit || !xmlrig.xmlok) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -694,8 +692,8 @@ void rigCAT_setmode(const string& md)
 		strCmd.append(modeCmd.str1);
 
 	if ( modeCmd.data.size > 0 ) {
-		list<MODE>::iterator mode;
-		list<MODE> *pmode;
+		std::list<MODE>::iterator mode;
+		std::list<MODE> *pmode;
 		if (lmodes.empty() == false)
 			pmode = &lmodes;
 		else if (lmodeCMD.empty() == false)
@@ -715,7 +713,7 @@ void rigCAT_setmode(const string& md)
 		strCmd.append(modeCmd.str2);
 
 	if (modeCmd.ok.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
+		std::list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
@@ -742,7 +740,7 @@ void rigCAT_setmode(const string& md)
 		LOG_ERROR("%s failed", symbol);
 }
 
-string rigCAT_getwidth()
+std::string rigCAT_getwidth()
 {
 	const char symbol[] = "GETBW";
 
@@ -750,10 +748,10 @@ string rigCAT_getwidth()
 		return progStatus.noCATwidth;
 
 	XMLIOS widthCmd;
-	list<XMLIOS>::iterator itrCmd;
-	list<BW>::iterator bw;
-	list<BW> *pbw;
-	string strCmd, mData;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::list<BW>::iterator bw;
+	std::list<BW> *pbw;
+	std::string strCmd, mData;
 	size_t len = 0, p = 0, pData = 0;
 
 	itrCmd = commands.begin();
@@ -777,7 +775,7 @@ string rigCAT_getwidth()
 
 	if (!widthCmd.info.size()) return "";
 
-	for (list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
+	for (std::list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
 		if (preply->SYMBOL != widthCmd.info)
 			continue;
 
@@ -871,7 +869,7 @@ retry_get_width: ;
 	return "";
 }
 
-void rigCAT_setwidth(const string& w)
+void rigCAT_setwidth(const std::string& w)
 {
 	const char symbol[] = "SETBW";
 
@@ -881,8 +879,8 @@ void rigCAT_setwidth(const string& w)
 	if (rigCAT_exit || !xmlrig.xmlok) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -902,8 +900,8 @@ void rigCAT_setwidth(const string& w)
 
 	if ( modeCmd.data.size > 0 ) {
 
-		list<BW>::iterator bw;
-		list<BW> *pbw;
+		std::list<BW>::iterator bw;
+		std::list<BW> *pbw;
 		if (lbws.empty() == false)
 			pbw = &lbws;
 		else if (lbwCMD.empty() == false)
@@ -923,7 +921,7 @@ void rigCAT_setwidth(const string& w)
 		strCmd.append(modeCmd.str2);
 
 	if (modeCmd.ok.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
+		std::list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
@@ -955,8 +953,8 @@ void rigCAT_pttON()
 	if (rigCAT_exit) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 
 	rigio.SetPTT(1); // always execute the h/w ptt if enabled
 
@@ -982,7 +980,7 @@ void rigCAT_pttON()
 //		if (xmlrig.debug)
 //			LOG_INFO("OK string: %s", str2hex(modeCmd.ok.c_str(), modeCmd.ok.size()) );
 
-		list<XMLIOS>::iterator preply = reply.begin();
+		std::list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
@@ -1015,8 +1013,8 @@ void rigCAT_pttOFF()
 	if (rigCAT_exit) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 
 	rigio.SetPTT(0); // always execute the h/w ptt if enabled
 
@@ -1039,7 +1037,7 @@ void rigCAT_pttOFF()
 		strCmd.append(modeCmd.str2);
 
 	if (modeCmd.ok.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
+		std::list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
@@ -1065,14 +1063,14 @@ void rigCAT_pttOFF()
 	LOG_ERROR("%s failed", symbol);
 }
 
-void rigCAT_sendINIT(const string& icmd, int multiplier)
+void rigCAT_sendINIT(const std::string& icmd, int multiplier)
 {
 	if (rigCAT_exit) return;
 	const char symbol[] = "INIT";
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -1090,7 +1088,7 @@ void rigCAT_sendINIT(const string& icmd, int multiplier)
 		strCmd.append(modeCmd.str2);
 
 	if (modeCmd.ok.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
+		std::list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
@@ -1321,13 +1319,13 @@ void rigCAT_set_qsy(long long f)
 }
 #endif
 
-bool ModeIsLSB(string s)
+bool ModeIsLSB(std::string s)
 {
 	if (connected_to_flrig) return !xmlrpc_USB();
 #if USE_HAMLIB
 	if (hamlib_active()) return !hamlib_USB();
 #endif
-	list<string>::iterator pM = LSBmodes.begin();
+	std::list<std::string>::iterator pM = LSBmodes.begin();
 	while (pM != LSBmodes.end() ) {
 		if (*pM == s)
 			return true;
@@ -1396,8 +1394,8 @@ void rigCAT_get_smeter()
 	if (rigCAT_exit || xmlrig.noserial) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
 	long mtr = 0;
 
@@ -1418,7 +1416,7 @@ void rigCAT_get_smeter()
 	if ( !modeCmd.str2.empty() ) strCmd.append(modeCmd.str2);
 	if ( !modeCmd.info.size() ) return;
 
-	list<XMLIOS>::iterator preply;
+	std::list<XMLIOS>::iterator preply;
 
 	for (preply = reply.begin(); preply != reply.end(); ++preply) {
 		if (preply->SYMBOL == modeCmd.info)
@@ -1548,8 +1546,8 @@ void rigCAT_get_pwrmeter()
 	if (rigCAT_exit || xmlrig.noserial) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
 	long mtr = 0;
 
@@ -1570,7 +1568,7 @@ void rigCAT_get_pwrmeter()
 	if ( !modeCmd.str2.empty() ) strCmd.append(modeCmd.str2);
 	if ( !modeCmd.info.size() ) return;
 
-	list<XMLIOS>::iterator preply;
+	std::list<XMLIOS>::iterator preply;
 
 	for (preply = reply.begin(); preply != reply.end(); ++preply) {
 		if (preply->SYMBOL == modeCmd.info)
@@ -1719,8 +1717,8 @@ bool rigCAT_notchON()
 	if (rigCAT_exit) return 0;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 	size_t len1 = 0;
 
 	itrCmd = commands.begin();
@@ -1740,7 +1738,7 @@ bool rigCAT_notchON()
 	if ( !modeCmd.str2.empty() ) strCmd.append(modeCmd.str2);
 	if ( !modeCmd.info.size() ) return 0;
 
-	list<XMLIOS>::iterator preply;
+	std::list<XMLIOS>::iterator preply;
 
 	for (preply = reply.begin(); preply != reply.end(); ++preply) {
 		if (preply->SYMBOL == modeCmd.info)
@@ -1799,8 +1797,8 @@ void rigCAT_get_notch()
 		return;
 	}
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
 	long ntch = 0;
 
@@ -1821,7 +1819,7 @@ void rigCAT_get_notch()
 	if ( !modeCmd.str2.empty() ) strCmd.append(modeCmd.str2);
 	if ( !modeCmd.info.size() ) return;
 
-	list<XMLIOS>::iterator preply;
+	std::list<XMLIOS>::iterator preply;
 
 	for (preply = reply.begin(); preply != reply.end(); ++preply) {
 		if (preply->SYMBOL == modeCmd.info)
@@ -1899,8 +1897,8 @@ void rigCAT_notch_ON()
 	if (rigCAT_exit) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -1921,7 +1919,7 @@ void rigCAT_notch_ON()
 		strCmd.append(modeCmd.str2);
 
 	if (modeCmd.ok.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
+		std::list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
@@ -1954,8 +1952,8 @@ void rigCAT_notch_OFF()
 	if (rigCAT_exit) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -1976,7 +1974,7 @@ void rigCAT_notch_OFF()
 		strCmd.append(modeCmd.str2);
 
 	if (modeCmd.ok.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
+		std::list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
@@ -2015,8 +2013,8 @@ void rigCAT_set_notch(int freq)
 	rigCAT_notch_ON();
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -2034,7 +2032,7 @@ void rigCAT_set_notch(int freq)
 	if ( modeCmd.str1.empty() == false)
 		strCmd.append(modeCmd.str1);
 
-	string strval = "";
+	std::string strval = "";
 	long long int val = notch_val(freq);
 
 	if (modeCmd.data.size != 0) {
@@ -2061,7 +2059,7 @@ void rigCAT_set_notch(int freq)
 		strCmd.append(modeCmd.str2);
 
 	if (modeCmd.ok.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
+		std::list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
@@ -2176,8 +2174,8 @@ void rigCAT_get_pwrlevel()
 	if (rigCAT_exit || xmlrig.noserial || !xmlrig.xmlok) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
 	long pwr = 0;
 
@@ -2198,7 +2196,7 @@ void rigCAT_get_pwrlevel()
 	if ( !modeCmd.str2.empty() ) strCmd.append(modeCmd.str2);
 	if ( !modeCmd.info.size() ) return;
 
-	list<XMLIOS>::iterator preply;
+	std::list<XMLIOS>::iterator preply;
 
 	for (preply = reply.begin(); preply != reply.end(); ++preply) {
 		if (preply->SYMBOL == modeCmd.info)
@@ -2271,8 +2269,8 @@ void rigCAT_set_pwrlevel(int pwr)
 	if (rigCAT_exit || !xmlrig.use_pwrlevel) return;
 
 	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
+	std::list<XMLIOS>::iterator itrCmd;
+	std::string strCmd;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -2290,7 +2288,7 @@ void rigCAT_set_pwrlevel(int pwr)
 	if ( modeCmd.str1.empty() == false)
 		strCmd.append(modeCmd.str1);
 
-	string strval = "";
+	std::string strval = "";
 	int val = pwrlevel_val(pwr);
 
 	if (modeCmd.data.size != 0) {
@@ -2317,7 +2315,7 @@ void rigCAT_set_pwrlevel(int pwr)
 		strCmd.append(modeCmd.str2);
 
 	if (modeCmd.ok.size()) {
-		list<XMLIOS>::iterator preply = reply.begin();
+		std::list<XMLIOS>::iterator preply = reply.begin();
 		while (preply != reply.end()) {
 			if (preply->SYMBOL == modeCmd.ok) {
 				XMLIOS  rTemp = *preply;
@@ -2356,7 +2354,7 @@ static void *rigCAT_loop(void *args)
 	SET_THREAD_ID(RIGCTL_TID);
 
 	long long freq = 0L;
-	string sWidth, sMode;
+	std::string sWidth, sMode;
 	bool failed;
 
 	for (;;) {

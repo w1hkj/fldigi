@@ -41,10 +41,8 @@
 #include <fstream>
 #include <sys/stat.h>
 
-using namespace std;
-
-static string label[24];
-static string text[24];
+static std::string label[24];
+static std::string text[24];
 
 void newmacros()
 {
@@ -293,20 +291,20 @@ paldata palfiles[] = {
 void create_new_palettes()
 {
 	paldata *pd = palfiles;
-	string Filename;
+	std::string Filename;
 	while (pd->fname) {
 		Filename = PalettesDir;
 		Filename.append(pd->fname);
-		ofstream pfile(Filename.c_str());
-		pfile << pd->rgbstr0 << endl;
-		pfile << pd->rgbstr1 << endl;
-		pfile << pd->rgbstr2 << endl;
-		pfile << pd->rgbstr3 << endl;
-		pfile << pd->rgbstr4 << endl;
-		pfile << pd->rgbstr5 << endl;
-		pfile << pd->rgbstr6 << endl;
-		pfile << pd->rgbstr7 << endl;
-		pfile << pd->rgbstr8 << endl;
+		std::ofstream pfile(Filename.c_str());
+		pfile << pd->rgbstr0 << std::endl;
+		pfile << pd->rgbstr1 << std::endl;
+		pfile << pd->rgbstr2 << std::endl;
+		pfile << pd->rgbstr3 << std::endl;
+		pfile << pd->rgbstr4 << std::endl;
+		pfile << pd->rgbstr5 << std::endl;
+		pfile << pd->rgbstr6 << std::endl;
+		pfile << pd->rgbstr7 << std::endl;
+		pfile << pd->rgbstr8 << std::endl;
 		pfile.close();
 		pd++;
 	}
@@ -314,7 +312,7 @@ void create_new_palettes()
 
 void create_new_macros()
 {
-	string Filename = MacrosDir;
+	std::string Filename = MacrosDir;
 	Filename.append("macros.mdf");
 	newmacros();
 	macros.saveMacros(Filename);
@@ -361,7 +359,7 @@ private:
 
 	Fl_Wizard *wizard;
 	Fl_Button *prev, *next, *done;
-	typedef vector<wizard_tab> tab_t;
+	typedef std::vector<wizard_tab> tab_t;
 	tab_t tabs;
 };
 
@@ -502,7 +500,7 @@ Fl_Group* Wizard::make_intro(void)
 					grpOperator->w(), grpOperator->h(),
 					"");
 
-	ostringstream help_;
+	std::ostringstream help_;
 	help_ << "\n" << 
 _("The wizard will guide you through the basic fldigi settings:") << "\n\n\t- " <<
 _("Operator")                 << "\n\t- " <<

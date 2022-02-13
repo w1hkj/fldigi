@@ -45,8 +45,6 @@
 #include "pixmaps.h"
 #include "configuration.h"
 
-using namespace std;
-
 Fl_Double_Window *MacroEditDialog = (Fl_Double_Window *)0;
 
 Fl_Button	*btnMacroEditApply = (Fl_Button *)0;
@@ -299,7 +297,7 @@ void loadBrowser(Fl_Widget *widget) {
 
 #ifndef __MINGW32__
 	glob_t gbuf;
-	glob(string(ScriptsDir).append("*").c_str(), 0, NULL, &gbuf);
+	glob(std::string(ScriptsDir).append("*").c_str(), 0, NULL, &gbuf);
 	if (gbuf.gl_pathc == 0) {
 		globfree(&gbuf);
 		return;
@@ -369,15 +367,15 @@ void cbInsertMacro(Fl_Widget *, void *)
 {
 	int nbr = macroDefs->value();
 	if (!nbr) return;
-	string edittext = macrotext->value();
-	string text = macroDefs->text(nbr);
+	std::string edittext = macrotext->value();
+	std::string text = macroDefs->text(nbr);
 	size_t tab = text.find('\t');
-	if (tab != string::npos)
+	if (tab != std::string::npos)
 		text.erase(tab);
 	if (text == LINE_SEP)
 		return;
 	if (text == "<FILE:>") {
-		string filters = "Text\t*.txt";
+		std::string filters = "Text\t*.txt";
 		const char* p = FSEL::select(
 			_("Text file to insert"),
 			filters.c_str(),
@@ -387,7 +385,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 		} else
 			text = "";
 	} else if ((text == "<CPS_FILE:>") || (text == "<WAV_FILE:>")) {
-		string filters = "Text\t*.txt";
+		std::string filters = "Text\t*.txt";
 		const char* p = FSEL::select(
 			_("Test text file"),
 			filters.c_str(),
@@ -397,7 +395,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 		} else
 			text = "";
 	} else if (text == "<IMAGE:>") {
-		string filters = "*.{png,jpg,bmp}\t*.png";
+		std::string filters = "*.{png,jpg,bmp}\t*.png";
 		const char *p = FSEL::select(
 			_("MFSK image file"),
 			filters.c_str(),
@@ -407,7 +405,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 		} else
 			text = "";
 	} else if (text == "<MACROS:>") {
-		string filters = "Macrost\t*.mdf";
+		std::string filters = "Macrost\t*.mdf";
 		const char* p = FSEL::select(
 			_("Change to Macro file"),
 			filters.c_str(),
@@ -417,7 +415,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 		} else
 			text = "";
 	} else if (text == "<ALERT:>") {
-		string filters = "Audio file\t*.{mp3,wav}";
+		std::string filters = "Audio file\t*.{mp3,wav}";
 		const char* p = FSEL::select(
 			_("Select audio file"),
 			filters.c_str(),
@@ -427,7 +425,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 		} else
 			text = "";
 	} else if (text == "<AUDIO:>") {
-		string filters = "Audio file\t*.{mp3,wav}";
+		std::string filters = "Audio file\t*.{mp3,wav}";
 		const char* p = FSEL::select(
 			_("Select audio file"),
 			filters.c_str(),
@@ -439,13 +437,13 @@ void cbInsertMacro(Fl_Widget *, void *)
 	}
 #ifdef __MINGW32__
 	else if (text == "<EXEC>") {
-		string filters = "Exe\t*.exe";
+		std::string filters = "Exe\t*.exe";
 		const char* p = FSEL::select(
 			_("Executable file to insert"),
 			filters.c_str(),
 			HomeDir.c_str());
 		if (p && *p) {
-			string exefile = p;
+			std::string exefile = p;
 			exefile.append("</EXEC>");
 			text.insert(6, exefile);
 		} else
@@ -523,7 +521,7 @@ void editMacro(int n, int t, Fl_Input* in)
 	if (!MacroEditDialog)
 		MacroEditDialog = make_macroeditor();
 	if (t == MACRO_EDIT_BUTTON) {
-		string editor_label;
+		std::string editor_label;
 		editor_label.append(_("Macro editor - ")).append(progStatus.LastMacroFile);
 		if (editor_label != MacroEditDialog->label())
 			MacroEditDialog->copy_label(editor_label.c_str());

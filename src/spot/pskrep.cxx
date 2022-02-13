@@ -126,15 +126,13 @@ static pthread_mutex_t pskrep_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // -------------------------------------------------------------------------------------------------
 
-using namespace std;
-
 enum status_t { PSKR_STATUS_NEW, PSKR_STATUS_PENDING, PSKR_STATUS_SENT };
 enum rtype_t { PSKREP_AUTO = 1, PSKREP_LOG = 2, PSKREP_MANUAL = 3 };
 
 struct rcpt_report_t
 {
 	rcpt_report_t(trx_mode m = 0, long long f = 0, time_t t = 0,
-		      rtype_t p = PSKREP_AUTO, string loc = "")
+		      rtype_t p = PSKREP_AUTO, std::string loc = "")
 		: mode(m), freq(f), rtime(t), rtype(p),
 		  status(PSKR_STATUS_NEW), locator(loc) { }
 
@@ -145,40 +143,40 @@ struct rcpt_report_t
 
 	status_t status;
 
-	string locator;
+	std::string locator;
 };
 
 // A band_map_t holds a list of reception reports (for a particular callsign and band)
-typedef deque<rcpt_report_t> band_map_t;
+typedef std::deque<rcpt_report_t> band_map_t;
 // A call_map_t holds reception reports for a particular callsign
 typedef MAP_TYPE<band_t, band_map_t, HASH_TYPE<int> > call_map_t;
 // A container of this type holds all reception reports, sorted by callsign and band
-typedef MAP_TYPE<string, call_map_t> queue_t;
+typedef MAP_TYPE<std::string, call_map_t> queue_t;
 
 class pskrep_sender
 {
 public:
-	pskrep_sender(const string& call, const string& loc, const string& ant,
-		      const string& host_, const string& port_,
-		      const string& long_id_, const string& short_id_);
+	pskrep_sender(const std::string& call, const std::string& loc, const std::string& ant,
+		      const std::string& host_, const std::string& port_,
+		      const std::string& long_id_, const std::string& short_id_);
 	~pskrep_sender();
 
-	bool append(const string& callsign, const band_map_t::value_type& r);
+	bool append(const std::string& callsign, const band_map_t::value_type& r);
 	bool send(void);
 
 private:
 	void write_station_info(void);
 	void write_preamble(void);
 
-	string recv_callsign, recv_locator, recv_antenna;
-	string host, port;
-	string long_id, short_id;
+	std::string recv_callsign, recv_locator, recv_antenna;
+	std::string host, port;
+	std::string long_id, short_id;
 
 	static const unsigned char long_station_info_template[];
 	static const unsigned char short_station_info_template[];
 	static const unsigned char rcpt_record_template[];
-	vector<unsigned char> long_station_info;
-	vector<unsigned char> short_station_info;
+	std::vector<unsigned char> long_station_info;
+	std::vector<unsigned char> short_station_info;
 
 	//uint32_t identifier;
 	uint32_t sequence_number;
@@ -204,9 +202,9 @@ private:
 class pskrep
 {
 public:
-	pskrep(const string& call, const string& loc, const string& ant,
-	       const string& host, const string& port,
-	       const string& long_id, const string& short_id,
+	pskrep(const std::string& call, const std::string& loc, const std::string& ant,
+	       const std::string& host, const std::string& port,
+	       const std::string& long_id, const std::string& short_id,
 	       bool reg_auto, bool reg_log, bool reg_manual);
 	~pskrep();
 
@@ -219,7 +217,7 @@ public:
 	static fre_t locator_re;
 private:
 
-	void append(string call, const char* loc, long long freq, trx_mode mode, time_t rtime, rtype_t rtype);
+	void append(std::string call, const char* loc, long long freq, trx_mode mode, time_t rtime, rtype_t rtype);
 	void gc(void);
 
 	void load_queue(void);
@@ -242,12 +240,12 @@ fre_t pskrep::locator_re("[a-r]{2}[0-9]{2}[a-x]{2}", REG_EXTENDED | REG_NOSUB | 
 
 // -------------------------------------------------------------------------------------------------
 
-static string error_string;
+static std::string error_string;
 
 static bool pskrep_check(void)
 {
 	struct {
-		const string* var;
+		const std::string* var;
 		const char* msg;
 	} check[] = {
 		{ &progdefaults.myCall, "callsign" },
@@ -281,11 +279,11 @@ static void pskrep_progress(void* obj)
 		pskrep_stop();
 }
 
-static void pskrep_make_id(string& id, size_t len)
+static void pskrep_make_id(std::string& id, size_t len)
 {
 	id.resize(len);
 
-	ifstream f("/dev/urandom");
+	std::ifstream f("/dev/urandom");
 	if (f) {
 		for (size_t i = 0; i < len; i++)
 			while ((id[i] = f.get()) != EOF && !isgraph(id[i]));
@@ -311,10 +309,10 @@ bool pskrep_start(void)
 		return false;
 
 	// get identifier
-	string fname = TempDir;
+	std::string fname = TempDir;
 	fname.append(PSKREP_ID_FILE);
-	ifstream in(fname.c_str());
-	string long_id, short_id;
+	std::ifstream in(fname.c_str());
+	std::string long_id, short_id;
 	if (in)
 		in >> long_id >> short_id;
 	if (!in || in.eof()) {
@@ -322,7 +320,7 @@ bool pskrep_start(void)
 		pskrep_make_id(long_id, LONG_ID_SIZE);
 		pskrep_make_id(short_id, SHORT_ID_SIZE);
 
-		ofstream out(fname.c_str());
+		std::ofstream out(fname.c_str());
 		if (out)
 			out << long_id << ' ' << short_id << '\n';
 		else
@@ -353,9 +351,9 @@ unsigned pskrep_count(void)
 
 // -------------------------------------------------------------------------------------------------
 
-pskrep::pskrep(const string& call, const string& loc, const string& ant,
-	       const string& host, const string& port,
-	       const string& long_id, const string& short_id,
+pskrep::pskrep(const std::string& call, const std::string& loc, const std::string& ant,
+	       const std::string& host, const std::string& port,
+	       const std::string& long_id, const std::string& short_id,
 	       bool reg_auto, bool reg_log, bool reg_manual)
 	: sender(call, loc, ant, host, port, long_id, short_id), new_count(0)
 {
@@ -382,7 +380,7 @@ void pskrep::recv(trx_mode mode, int afreq, const char* str, const regmatch_t* c
 	if (unlikely(calls[PSKREP_RE_INDEX].rm_so == -1 || calls[PSKREP_RE_INDEX].rm_eo == -1))
 		return;
 
-	string call(str + calls[PSKREP_RE_INDEX].rm_so, calls[PSKREP_RE_INDEX].rm_eo - calls[PSKREP_RE_INDEX].rm_so);
+	std::string call(str + calls[PSKREP_RE_INDEX].rm_so, calls[PSKREP_RE_INDEX].rm_eo - calls[PSKREP_RE_INDEX].rm_so);
 	long long freq = afreq;
 	if (!wf->USB())
 		freq = -freq;
@@ -405,7 +403,7 @@ void pskrep::manual(const char* call, const char* loc, long long freq, trx_mode 
 	reinterpret_cast<pskrep*>(obj)->append(call, loc, freq, mode, rtime, PSKREP_MANUAL);
 }
 
-void pskrep::append(string call, const char* loc, long long freq, trx_mode mode, time_t rtime, rtype_t rtype)
+void pskrep::append(std::string call, const char* loc, long long freq, trx_mode mode, time_t rtime, rtype_t rtype)
 {
 	if (unlikely(call.empty()))
 		return;
@@ -517,16 +515,16 @@ void pskrep::gc(void)
 	LOG_DEBUG("Removed %u sent report(s)", rm);
 }
 
-static ostream& operator<<(ostream& out, const rcpt_report_t& r);
-static istream& operator>>(istream& in, rcpt_report_t& r);
-static ostream& operator<<(ostream& out, const queue_t& q);
-static istream& operator>>(istream& in, queue_t& q);
+static std::ostream& operator<<(std::ostream& out, const rcpt_report_t& r);
+static std::istream& operator>>(std::istream& in, rcpt_report_t& r);
+static std::ostream& operator<<(std::ostream& out, const queue_t& q);
+static std::istream& operator>>(std::istream& in, queue_t& q);
 
 void pskrep::save_queue(void)
 {
-	string fname = TempDir;
+	std::string fname = TempDir;
 	fname.append(PSKREP_QUEUE_FILE);
-	ofstream out(fname.c_str());
+	std::ofstream out(fname.c_str());
 
 	if (out)
 		out << queue;
@@ -536,9 +534,9 @@ void pskrep::save_queue(void)
 
 void pskrep::load_queue(void)
 {
-	string fname = TempDir;
+	std::string fname = TempDir;
 	fname.append(PSKREP_QUEUE_FILE);
-	ifstream in(fname.c_str());
+	std::ifstream in(fname.c_str());
 	if (!in)
 		return;
 
@@ -558,9 +556,9 @@ void pskrep::load_queue(void)
 // Records must be padded to a multiple of 4
 #define PAD 4
 
-pskrep_sender::pskrep_sender(const string& call, const string& loc, const string& ant,
-			     const string& host_, const string& port_,
-			     const string& long_id_, const string& short_id_)
+pskrep_sender::pskrep_sender(const std::string& call, const std::string& loc, const std::string& ant,
+			     const std::string& host_, const std::string& port_,
+			     const std::string& long_id_, const std::string& short_id_)
 	: recv_callsign(call, 0, MAX_TEXT_SIZE), recv_locator(loc, 0, MAX_TEXT_SIZE),
 	  recv_antenna(ant, 0, MAX_TEXT_SIZE),
 	  host(host_, 0, MAX_TEXT_SIZE), port(port_, 0, MAX_TEXT_SIZE),
@@ -700,7 +698,7 @@ void pskrep_sender::write_preamble(void)
 
 	const unsigned char* station_info_template(long_station_info_template);
 	size_t tlen;
-	vector<unsigned char>* station_info(&long_station_info);
+	std::vector<unsigned char>* station_info(&long_station_info);
 
 	if (template_count == 0 && now - last_template >= TEMPLATE_INTERVAL)
 		template_count = TEMPLATE_THRESHOLD;
@@ -734,7 +732,7 @@ void pskrep_sender::write_preamble(void)
 	dgram_size = p - dgram;
 }
 
-bool pskrep_sender::append(const string& callsign, const band_map_t::value_type& r)
+bool pskrep_sender::append(const std::string& callsign, const band_map_t::value_type& r)
 {
 	guard_lock dsp_lock(&pskrep_mutex);
 
@@ -810,7 +808,7 @@ bool pskrep_sender::send(void)
 
 	// empty dgram or no reports (shouldn't happen)
 	if (dgram_size == 0 || dgram_size == report_offset + 4) {
-		stringstream info;
+		std::stringstream info;
 		info << dgram_size << " " << report_offset;
 		LOG_DEBUG("Not sending empty dgram: %s", info.str().c_str());
 		return false;
@@ -833,7 +831,7 @@ bool pskrep_sender::send(void)
 
 	bool ret;
 	{
-		stringstream info;
+		std::stringstream info;
 		info << "(" << dgram_size << "): \"" << str2hex(dgram, dgram_size) << "\"";
 		LOG_DEBUG("Sending datgram %s", info.str().c_str());
 	}
@@ -863,33 +861,33 @@ size_t pskrep_sender::pad(size_t len, size_t mult)
 
 // -------------------------------------------------------------------------------------------------
 
-static istream& operator>>(istream& in, rtype_t& t)
+static std::istream& operator>>(std::istream& in, rtype_t& t)
 {
 	int i;
 	in >> i;
 	t = static_cast<rtype_t>(i);
 	return in;
 }
-static istream& operator>>(istream& in, status_t& t)
+static std::istream& operator>>(std::istream& in, status_t& t)
 {
 	int i;
 	in >> i;
 	t = static_cast<status_t>(i);
 	return in;
 }
-static istream& operator>>(istream& in, rcpt_report_t& r)
+static std::istream& operator>>(std::istream& in, rcpt_report_t& r)
 {
 	in >> r.mode >> r.freq  >> r.rtime >> r.rtype >> r.status >> r.locator;
 	if (*r.locator.c_str() == '?') r.locator.clear();
 	return in;
 }
 
-static ostream& operator<<(ostream& out, const rcpt_report_t& r)
+static std::ostream& operator<<(std::ostream& out, const rcpt_report_t& r)
 {
 	return out << r.mode << ' ' << r.freq << ' ' << r.rtime << ' '
 		   << r.rtype << ' ' << r.status << ' ' << (r.locator.empty() ? "?" : r.locator);
 }
-static ostream& operator<<(ostream& out, const queue_t& q)
+static std::ostream& operator<<(std::ostream& out, const queue_t& q)
 {
 	for (queue_t::const_iterator i = q.begin(); i != q.end(); ++i)
 		for (call_map_t::const_iterator j = i->second.begin(); j != i->second.end(); ++j)
@@ -898,11 +896,11 @@ static ostream& operator<<(ostream& out, const queue_t& q)
 
 	return out;
 }
-static istream& operator>>(istream& in, queue_t& q)
+static std::istream& operator>>(std::istream& in, queue_t& q)
 {
 	rcpt_report_t rep;
 	int band;
-	string call;
+	std::string call;
 
 	while (in >> rep >> band >> call)
 	 	q[call][static_cast<band_t>(band)].push_back(rep);

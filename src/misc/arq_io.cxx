@@ -66,8 +66,6 @@
 
 LOG_FILE_SOURCE(debug::LOG_ARQCONTROL);
 
-using namespace std;
-
 // =====================================================================
 static pthread_t arq_thread;
 static pthread_mutex_t arq_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -81,11 +79,11 @@ static bool arq_enabled;
 static bool abort_flag = false;
 
 /// Any access to shared variables must be protected.
-static string tosend = "";   // Protected by tosend_mutex
-//static string enroute = "";  // Protected by tosend_mutex
+static std::string tosend = "";   // Protected by tosend_mutex
+//static std::string enroute = "";  // Protected by tosend_mutex
 
-static string arqtext = "";  // Protected by arq_rx_mutex
-static string txstring = ""; // Protected by arq_rx_mutex
+static std::string arqtext = "";  // Protected by arq_rx_mutex
+static std::string txstring = ""; // Protected by arq_rx_mutex
 bool arq_text_available = false; // Protected by arq_rx_mutex
 								 // Beware 'arq_text_available' is accessed by other modules.
 
@@ -126,9 +124,9 @@ static const char *asc[128] = {
 	"|",     "}",     "~",     "<DEL>"
 };
 
-string noctrl(string src)
+std::string noctrl(std::string src)
 {
-	static string retstr;
+	static std::string retstr;
 	retstr.clear();
 	char hexstr[10];
 	int c;
@@ -146,7 +144,7 @@ string noctrl(string src)
 
 //======================================================================
 
-extern void parse_arqtext(string &toparse);
+extern void parse_arqtext(std::string &toparse);
 
 static void set_button(Fl_Button* button, bool value)
 {
@@ -154,11 +152,11 @@ static void set_button(Fl_Button* button, bool value)
 	button->do_callback();
 }
 
-void ParseMode(string src)
+void ParseMode(std::string src)
 {
 LOG_INFO("%s", src.c_str());
-	if ((src.find("XMTTUNE") != string::npos) ||
-		(src.find("PTTTUNE") != string::npos)) {
+	if ((src.find("XMTTUNE") != std::string::npos) ||
+		(src.find("PTTTUNE") != std::string::npos)) {
 		int msecs = 100;
 		if (src.length() > 7) {
 			int ret = sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
@@ -193,7 +191,7 @@ LOG_INFO("%s", src.c_str());
 	WriteARQ('\002');
 }
 
-void ParseRSID(string src)
+void ParseRSID(std::string src)
 {
 	if (src == "ON") {
 //		if (debug_pskmail)
@@ -208,7 +206,7 @@ void ParseRSID(string src)
 }
 
 
-void ParseTxRSID(string src)
+void ParseTxRSID(std::string src)
 {
 	if (src == "ON") {
 //		if (debug_pskmail)
@@ -222,10 +220,10 @@ void ParseTxRSID(string src)
 	}
 }
 
-void parse_arqtext(string &toparse)
+void parse_arqtext(std::string &toparse)
 {
-	static	string strCmdText;
-	static	string strSubCmd;
+	static	std::string strCmdText;
+	static	std::string strSubCmd;
 	unsigned long int idxCmd, idxCmdEnd, idxSubCmd, idxSubCmdEnd;
 
 	if (toparse.empty()) return;
@@ -236,14 +234,14 @@ void parse_arqtext(string &toparse)
 	idxCmd = toparse.find("<cmd>");
 	idxCmdEnd = toparse.find("</cmd>");
 
-	while ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
+	while ( idxCmd != std::string::npos && idxCmdEnd != std::string::npos && idxCmdEnd > idxCmd ) {
 		LOG_VERBOSE("Parsing: %s", noctrl(toparse.substr(idxCmd, idxCmdEnd - idxCmd + 6)).c_str());
 
 		strCmdText = toparse.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
 			mailserver = true;
 			mailclient = false;
-			string PskMailLogName;
+			std::string PskMailLogName;
 			PskMailLogName.assign(PskMailDir);
 			PskMailLogName.append("gMFSK.log");
 			Maillogfile = new cLogfile(PskMailLogName.c_str());
@@ -256,7 +254,7 @@ void parse_arqtext(string &toparse)
 		} else if (strCmdText == "client" && mailclient == false && mailserver == false) {
 			mailclient = true;
 			mailserver = false;
-			string PskMailLogName;
+			std::string PskMailLogName;
 			PskMailLogName.assign(PskMailDir);
 			PskMailLogName.append("gMFSK.log");
 			Maillogfile = new cLogfile(PskMailLogName.c_str());
@@ -274,25 +272,25 @@ void parse_arqtext(string &toparse)
 			REQ(set_button, wf->xmtlock, 0);
 			active_modem->set_freqlock(false);
 			LOG_INFO("%s", "ARQ is reset to normal ops");
-		} else if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
+		} else if ((idxSubCmd = strCmdText.find("<mode>")) != std::string::npos) {
 			idxSubCmdEnd = strCmdText.find("</mode>");
-			if (	idxSubCmdEnd != string::npos &&
+			if (	idxSubCmdEnd != std::string::npos &&
 				idxSubCmdEnd > idxSubCmd ) {
 				strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
 				LOG_INFO("%s %s", "ARQ mode ", strSubCmd.c_str());
 				ParseMode(strSubCmd);
 			}
-		} else if ((idxSubCmd = strCmdText.find("<rsid>")) != string::npos) {
+		} else if ((idxSubCmd = strCmdText.find("<rsid>")) != std::string::npos) {
 			idxSubCmdEnd = strCmdText.find("</rsid>");
-			if (	idxSubCmdEnd != string::npos &&
+			if (	idxSubCmdEnd != std::string::npos &&
 				idxSubCmdEnd > idxSubCmd ) {
 				strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
 				ParseRSID(strSubCmd);
 				LOG_INFO("%s %s", "ARQ rsid ", strSubCmd.c_str());
 			}
-		} else if ((idxSubCmd = strCmdText.find("<txrsid>")) != string::npos) {
+		} else if ((idxSubCmd = strCmdText.find("<txrsid>")) != std::string::npos) {
 			idxSubCmdEnd = strCmdText.find("</txrsid>");
-			if (	idxSubCmdEnd != string::npos &&
+			if (	idxSubCmdEnd != std::string::npos &&
 				idxSubCmdEnd > idxSubCmd ) {
 				strSubCmd = strCmdText.substr(idxSubCmd + 8, idxSubCmdEnd - idxSubCmd - 8);
 				ParseTxRSID(strSubCmd);
@@ -325,9 +323,9 @@ void parse_arqtext(string &toparse)
 // in $HOME
 
 void checkTLF() {
-	static	string TLFfile;
-	static	string TLFlogname;
-	ifstream testFile;
+	static	std::string TLFfile;
+	static	std::string TLFlogname;
+	std::ifstream testFile;
 
 	tlfio = mailserver = mailclient = false;
 
@@ -354,11 +352,11 @@ static bool TLF_arqRx()
 #else
 	time_t start_time, prog_time;
 	static char mailline[1000];
-	static string sAutoFile("");
+	static std::string sAutoFile("");
 	sAutoFile.assign(PskMailDir);
 	sAutoFile.append("gmfsk_autofile");
 
-	ifstream autofile(sAutoFile.c_str());
+	std::ifstream autofile(sAutoFile.c_str());
 	if(autofile) {
 		time(&start_time);
 		while (!autofile.eof()) {
@@ -412,9 +410,9 @@ bool WRAP_auto_arqRx()
 {
 	time_t start_time, prog_time;
 	static char mailline[1000];
-	static string sAutoFile("");
+	static std::string sAutoFile("");
 
-	ifstream autofile;
+	std::ifstream autofile;
 
 	if (sAutoFile.empty()) {
 		sAutoFile.assign(FLMSG_WRAP_auto_dir);
@@ -471,7 +469,7 @@ bool WRAP_auto_arqRx()
 #define CLIENT_TIMEOUT 5 // timeout after 5 secs
 
 struct ARQCLIENT { Socket sock; time_t keep_alive; };
-static string errstring;
+static std::string errstring;
 
 static pthread_t* arq_socket_thread = 0;
 ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
@@ -588,7 +586,7 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 		guard_lock arq_lock(&arq_mutex);
 
 		if (!arqclient.empty()) {
-			for (vector<ARQCLIENT *>::iterator p = arqclient.begin();
+			for (std::vector<ARQCLIENT *>::iterator p = arqclient.begin();
 					p < arqclient.end();
 					p++) {
 				(*p)->sock.close();
@@ -623,8 +621,8 @@ void arq_run(Socket s)
 	client->keep_alive = time(0);
 	arqclient.push_back(client);
 	arqmode = true;
-	vector<ARQCLIENT *>::iterator p = arqclient.begin();
-	ostringstream outs;
+	std::vector<ARQCLIENT *>::iterator p = arqclient.begin();
+	std::ostringstream outs;
 	outs << "Clients: ";
 	while (p != arqclient.end()) {
 		outs << (*p)->sock.fd() << " ";
@@ -638,15 +636,15 @@ void WriteARQsocket(unsigned char* data, size_t len)
 	/// Mutex is unlocked when returning from function
 	guard_lock arq_lock(&arq_mutex);
 	if (arqclient.empty()) return;
-	static string instr;
+	static std::string instr;
 	instr.clear();
 
-	string outs = "";
+	std::string outs = "";
 	for (unsigned int i = 0; i < len; i++)
 		outs += asc[data[i] & 0x7F];
 	LOG_INFO("%s", outs.c_str());
 
-	vector<ARQCLIENT *>::iterator p;
+	std::vector<ARQCLIENT *>::iterator p;
 	for (p = arqclient.begin(); p < arqclient.end(); p++) {
 		try {
 			(*p)->sock.wait(1);
@@ -673,9 +671,9 @@ void test_arq_clients()
 /// Mutex is unlocked when returning from function
 	guard_lock arq_lock(&arq_mutex);
 	if (arqclient.empty()) return;
-	static string instr;
+	static std::string instr;
 	instr.clear();
-	vector<ARQCLIENT *>::iterator p;
+	std::vector<ARQCLIENT *>::iterator p;
 	p = arqclient.begin();
 	time_t now;
 	size_t ret;
@@ -716,8 +714,8 @@ bool Socket_arqRx()
 		guard_lock arq_lock(&arq_mutex);
 		if (arqclient.empty()) return false;
 
-		static string instr;
-		vector<ARQCLIENT *>::iterator p = arqclient.begin();
+		static std::string instr;
+		std::vector<ARQCLIENT *>::iterator p = arqclient.begin();
 		size_t n = 0;
 		instr.clear();
 		while (p != arqclient.end()) {

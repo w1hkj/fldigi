@@ -1,4 +1,4 @@
-string dxspider_cmds = "\n\
+std::string dxspider_cmds = "\n\
 <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n\
 <html>\n\
 <head>\n\

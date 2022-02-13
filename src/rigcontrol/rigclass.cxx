@@ -35,9 +35,6 @@ LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
 #define NUMTRIES 10
 
-using namespace std;
-
-
 Rig::Rig() : rig(0) { }
 
 Rig::Rig(rig_model_t rig_model)

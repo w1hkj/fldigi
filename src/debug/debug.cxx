@@ -32,6 +32,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdarg>
+#include <string>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -70,8 +71,6 @@ static pthread_mutex_t rotate_mutex = PTHREAD_MUTEX_INITIALIZER;
 extern Fl_Double_Window *fl_digi_main;
 extern void update_main_title();
 
-using namespace std;
-
 #define MAX_LINES 65536
 
 static FILE* wfile = 0;
@@ -80,7 +79,7 @@ static int rfd;
 static bool tty;
 
 static Fl_Double_Window* window;
-static string linebuf;
+static std::string linebuf;
 
 debug* debug::inst = 0;
 debug::level_e debug::level = debug::INFO_LEVEL;
@@ -282,7 +281,7 @@ void debug::sync_text(void* arg)
 	if (!window) return;
 
 	size_t p1 = 0, p2 = linebuf.find("\n");
-	while (p2 != string::npos) {
+	while (p2 != std::string::npos) {
 		btext->add(linebuf.substr(p1, p2 - p1).c_str());
 		p1 = p2 + 1;
 		p2 = linebuf.find("\n", p1);

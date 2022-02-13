@@ -81,13 +81,11 @@
 #include <float.h>
 #include "re.h"
 
-//using namespace std;
-
 static pthread_mutex_t	exec_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct CMDS { std::string cmd; void (*fp)(std::string); };
-static queue<CMDS> Tx_cmds;
-static queue<CMDS> Rx_cmds;
+static std::queue<CMDS> Tx_cmds;
+static std::queue<CMDS> Rx_cmds;
 
 bool txque_wait = false;
 
@@ -345,7 +343,7 @@ static std::string ccode = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
 
 bool PERFORM_CPS_TEST = false;
 int  num_cps_chars = 0;
-string testfilename;
+std::string testfilename;
 
 void CPS_report(int samples, int prepost)
 {
@@ -355,7 +353,7 @@ void CPS_report(int samples, int prepost)
 	if (testfilename[0] != '\n')
 		results.append("\n");
 	results.append(testfilename).append("\n");
-	string strout;
+	std::string strout;
 	double xmttime = 1.0 * samples / active_modem->get_samplerate();
 	double overhead = 1.0 * prepost / active_modem->get_samplerate();
 	num_cps_chars--;
@@ -425,13 +423,13 @@ static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 	int s0 = number_of_samples("");
 // sample count for characters ' ' through '~'
 	for(int j = 0; j < 256; j++) {
-		s1[j] = number_of_samples(string(n, j)) - s0;
+		s1[j] = number_of_samples(std::string(n, j)) - s0;
 	}
 	PERFORM_CPS_TEST = false;
 
 // report generator
 	char results[200];
-	string line_out;
+	std::string line_out;
 	snprintf(results, sizeof(results), "\nCPS test\nMode : %s\n", mode_info[active_modem->get_mode()].name);
 	line_out = results;
 	snprintf(results, sizeof(results), "Based on %d character string\n", n);
@@ -504,7 +502,7 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 			PERFORM_CPS_TEST = false;
 
 		} else {
-			string resp = "Could not locate ";
+			std::string resp = "Could not locate ";
 			resp.append(fname).append("\n");
 			if (active_modem->get_mode() == MODE_IFKP)
 				ifkp_rx_text->add(resp.c_str(), FTextBase::ALTR);
@@ -543,7 +541,7 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 	std::string txtbuf = buffer;
 	s.clear();
 	size_t p = buffer.find("\\n");
-	while (p != string::npos) {
+	while (p != std::string::npos) {
 		buffer.replace(p,2,"\n");
 		p = buffer.find("\\n");
 	}
@@ -566,7 +564,7 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 		PERFORM_CPS_TEST = false;
 
 	} else {
-		string resp = "Text not specified";
+		std::string resp = "Text not specified";
 		LOG_WARN("%s", resp.c_str());
 		resp.append("\n");
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -765,7 +763,7 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 			PERFORM_CPS_TEST = false;
 
 		} else {
-			string resp = "Could not locate ";
+			std::string resp = "Could not locate ";
 			resp.append(fname).append("\n");
 			if (active_modem->get_mode() == MODE_IFKP)
 				ifkp_rx_text->add(resp.c_str(), FTextBase::ALTR);
@@ -804,7 +802,7 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 	std::string txtbuf = buffer;
 	s.clear();
 	size_t p = buffer.find("\\n");
-	while (p != string::npos) {
+	while (p != std::string::npos) {
 		buffer.replace(p,2,"\n");
 		p = buffer.find("\\n");
 	}
@@ -825,7 +823,7 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 		number_of_samples(buffer);
 		PERFORM_CPS_TEST = false;
 	} else {
-		string resp = "Text not specified";
+		std::string resp = "Text not specified";
 		LOG_WARN("%s", resp.c_str());
 		resp.append("\n");
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -883,7 +881,7 @@ static void doTIMER(std::string s)
 		int mtime = stop_macro_time();
 		if (mtime >= number) {
 			if (!macro_alert_dialog) macro_alert_dialog = new notify_dialog;
-			ostringstream comment;
+			std::ostringstream comment;
 			comment << "Macro timer must be > macro duration of " << mtime << " secs";
 			macro_alert_dialog->notify(comment.str().c_str(), 5.0);
 			REQ(show_notifier, macro_alert_dialog);
@@ -1080,14 +1078,14 @@ static void pTxQueWPM(std::string &s, size_t &i, size_t endbracket)
 }
 
 struct STRpush {
-	string smode;
+	std::string smode;
 	int    freq;
 	STRpush() { smode = ""; freq = -1; }
 };
 
-stack<STRpush> mf_stack;
+std::stack<STRpush> mf_stack;
 
-//static string mf_stack = "";
+//static std::string mf_stack = "";
 
 static void mMODEM(std::string s)
 {
@@ -1223,7 +1221,7 @@ static void pDIGI(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, mode_info[active_modem->get_mode()].adif_name);
 }
 
-string macrochar = "";
+std::string macrochar = "";
 static void doTxDIGI(std::string s)
 {
 	macrochar = mode_info[active_modem->get_mode()].adif_name;
@@ -1746,7 +1744,7 @@ static void pQSYPLUS(std::string &s, size_t &i, size_t endbracket)
 
 static void pCALL(std::string &s, size_t &i, size_t endbracket)
 {
-	string call = inpCall->value();
+	std::string call = inpCall->value();
 	if (active_modem->get_mode() == MODE_IFKP && progdefaults.ifkp_lowercase_call)
 		for (size_t n = 0; n < call.length(); n++) call[n] = tolower(call[n]);
 	s.replace( i, 6, call );
@@ -1811,7 +1809,7 @@ static void pRST(std::string &s, size_t &i, size_t endbracket)
 
 static void pMYCALL(std::string &s, size_t &i, size_t endbracket)
 {
-	string call = inpMyCallsign->value();
+	std::string call = inpMyCallsign->value();
 	if (active_modem->get_mode() == MODE_IFKP && progdefaults.ifkp_lowercase)
 		for (size_t n = 0; n < call.length(); n++) call[n] = tolower(call[n]);
 	s.replace( i, 8, call );
@@ -2379,7 +2377,7 @@ static void pFLRIG(std::string &s, size_t &i, size_t endbracket)
 	substitute(s, i, endbracket, "");
 }
 
-static void doVIDEO(string s)
+static void doVIDEO(std::string s)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB ||
@@ -2555,7 +2553,7 @@ static void pLOG(std::string &s, size_t &i, size_t endbracket)
 	}
 	size_t start = s.find(':', i);
 	if (start != std::string::npos) {
-		string msg = inpNotes->value();
+		std::string msg = inpNotes->value();
 		if (!msg.empty()) msg.append("\n");
 		msg.append(s.substr(start + 1, endbracket-start-1));
 		inpNotes->value(msg.c_str());
@@ -2572,7 +2570,7 @@ static void pLNW(std::string &s, size_t &i, size_t endbracket)
 	}
 	size_t start = s.find(':', i);
 	if (start != std::string::npos) {
-		string msg = inpNotes->value();
+		std::string msg = inpNotes->value();
 		if (!msg.empty()) msg.append("\n");
 		msg.append(s.substr(start + 1, endbracket-start-1));
 		inpNotes->value(msg.c_str());
@@ -2623,13 +2621,13 @@ static void doIMAGE(std::string s)
 	if (s.length() > 0) {
 
 		bool Greyscale = false;
-		size_t p = string::npos;
-		string fname = s.substr(7);
+		size_t p = std::string::npos;
+		std::string fname = s.substr(7);
 		p = fname.find(">");
 		fname.erase(p);
 		p = fname.find("G,");
-		if (p == string::npos) p = fname.find("g,");
-		if (p != string::npos) {
+		if (p == std::string::npos) p = fname.find("g,");
+		if (p != std::string::npos) {
 			Greyscale = true;
 			fname.erase(p,2);
 		}
@@ -2659,7 +2657,7 @@ static void pTxQueIMAGE(std::string &s, size_t &i, size_t endbracket)
 		substitute(s, i, endbracket, "");
 		return;
 	}
-	string Tx_cmdstr = s.substr(i, endbracket - i + 1);
+	std::string Tx_cmdstr = s.substr(i, endbracket - i + 1);
 	struct CMDS cmd = { Tx_cmdstr, doIMAGE };
 	push_txcmd(cmd);
 	substitute(s, i, endbracket, "^!");
@@ -2670,13 +2668,13 @@ static void doINSERTIMAGE(std::string s)
 	if (s.length() > 0) {
 
 		bool Greyscale = false;
-		size_t p = string::npos;
-		string fname = s.substr(7);
+		size_t p = std::string::npos;
+		std::string fname = s.substr(7);
 		p = fname.find(">");
 		fname.erase(p);
 		p = fname.find("G,");
-		if (p == string::npos) p = fname.find("g,");
-		if (p != string::npos) {
+		if (p == std::string::npos) p = fname.find("g,");
+		if (p != std::string::npos) {
 			Greyscale = true;
 			fname.erase(p,2);
 		}
@@ -2711,18 +2709,18 @@ void TxQueINSERTIMAGE(std::string s)
 		   active_modem->get_cap() & modem::CAP_IMG)
 		return;
 
-	string scmd = "<IMAGE:>";
+	std::string scmd = "<IMAGE:>";
 	scmd.insert(7,s);
 
 	struct CMDS cmd = { scmd, doINSERTIMAGE };
 	push_txcmd(cmd);
 
-	string itext = s;
+	std::string itext = s;
 	size_t p = itext.rfind("\\");
-	if (p == string::npos) p = itext.rfind("/");
-	if (p != string::npos) itext.erase(0, p+1);
+	if (p == std::string::npos) p = itext.rfind("/");
+	if (p != std::string::npos) itext.erase(0, p+1);
 	p = itext.rfind(".");
-	if (p != string::npos) itext.erase(p);
+	if (p != std::string::npos) itext.erase(p);
 	itext.insert(0, "\nImage: ");
 	itext.append(" ^!");
 
@@ -2779,7 +2777,7 @@ static void doMODEM(std::string s)
 	}
 
 	// parse arguments
-	vector<double> args;
+	std::vector<double> args;
 	args.reserve(8);
 	char* end;
 	double d;
@@ -2931,7 +2929,7 @@ static void doMODEM(std::string s)
 				break;
 		}
 	}
-	catch (const exception& e) { }
+	catch (const std::exception& e) { }
 
 	if (active_modem->get_mode() != mode_info[m].mode) {
 		init_modem_sync(mode_info[m].mode);
@@ -2945,12 +2943,12 @@ static void pTxQueMODEM(std::string &s, size_t &i, size_t endbracket)
 		substitute(s, i, endbracket, "");
 		return;
 	}
-	string Tx_cmdstr = s.substr(i, endbracket - i + 1);
+	std::string Tx_cmdstr = s.substr(i, endbracket - i + 1);
 	struct CMDS cmd = { Tx_cmdstr, doMODEM };
-	if (Tx_cmdstr.find("SSB") != string::npos || Tx_cmdstr.find("ANALYSIS") != string::npos) {
+	if (Tx_cmdstr.find("SSB") != std::string::npos || Tx_cmdstr.find("ANALYSIS") != std::string::npos) {
 		LOG_ERROR("Disallowed: %s", Tx_cmdstr.c_str());
 		size_t nowbracket = s.find('<', endbracket);
-		if (nowbracket != string::npos)
+		if (nowbracket != std::string::npos)
 			s.erase(i, nowbracket - i - 1);
 		else
 			s.clear();
@@ -2967,7 +2965,7 @@ static void pRxQueMODEM(std::string &s, size_t &i, size_t endbracket)
 		substitute(s, i, endbracket, "");
 		return;
 	}
-	string rx_cmdstr = s.substr(i, endbracket - i + 1);
+	std::string rx_cmdstr = s.substr(i, endbracket - i + 1);
 	struct CMDS cmd = { rx_cmdstr, doMODEM };
 	push_rxcmd(cmd);
 	substitute(s, i, endbracket, "");
@@ -3025,7 +3023,7 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 	}
 
 	// parse arguments
-	vector<double> args;
+	std::vector<double> args;
 	args.reserve(8);
 	char* end;
 	double d;
@@ -3177,7 +3175,7 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 				break;
 		}
 	}
-	catch (const exception& e) { }
+	catch (const std::exception& e) { }
 
 	if (active_modem->get_mode() != mode_info[m].mode) {
 		init_modem(mode_info[m].mode);
@@ -3575,7 +3573,7 @@ struct rfafmd { int rf; int af; std::string mdname;
 	rfafmd(int a, int b) {rf = a; af = b; mdname = active_modem->get_mode_name();}
 	rfafmd(){rf = af = 0; mdname = active_modem->get_mode_name();}
 };
-static queue<rfafmd> fpairs;
+static std::queue<rfafmd> fpairs;
 
 static void pQSY(std::string &s, size_t &i, size_t endbracket)
 {
@@ -3693,7 +3691,7 @@ static void pTxQueQSY(std::string &s, size_t &i, size_t endbracket)
 }
 
 float  wait_after_mode_change = 0.0;
-static string sFILWID;
+static std::string sFILWID;
 static void delayedFILWID(void *)
 {
 	qso_opBW->value(sFILWID.c_str());
@@ -3753,9 +3751,9 @@ static void pRIGMODE(std::string& s, size_t& i, size_t endbracket)
 	qso_opMODE->value(sMode.c_str());
 	cb_qso_opMODE();
 	substitute(s, i, endbracket, "");
-	if ((s.find("FILWID") != string::npos) ||
-		(s.find("RIGLO") != string::npos) ||
-		(s.find("RIGHI") != string::npos) )
+	if ((s.find("FILWID") != std::string::npos) ||
+		(s.find("RIGLO") != std::string::npos) ||
+		(s.find("RIGHI") != std::string::npos) )
 		wait_after_mode_change = progdefaults.mbw;
 	else
 		wait_after_mode_change = 0;
@@ -3791,7 +3789,7 @@ static void pRxQueRIGMODE(std::string &s, size_t &i, size_t endbracket)
 	substitute(s, i, endbracket, "");
 }
 
-static string sRIGLO;
+static std::string sRIGLO;
 
 static void delayedRIGLO(void *)
 {
@@ -3847,7 +3845,7 @@ static void pRxQueRIGLO(std::string &s, size_t &i, size_t endbracket)
 	substitute(s, i, endbracket, "");
 }
 
-static string sRIGHI;
+static std::string sRIGHI;
 
 static void delayedRIGHI(void *)
 {
@@ -3905,7 +3903,7 @@ static void pRxQueRIGHI(std::string &s, size_t &i, size_t endbracket)
 
 static void pWX(std::string &s, size_t &i, size_t endbracket)
 {
-	string wx;
+	std::string wx;
 	getwx(wx);
 	s.replace(i, 4, wx);
 }
@@ -3913,7 +3911,7 @@ static void pWX(std::string &s, size_t &i, size_t endbracket)
 // <WX:metar>
 static void pWX2(std::string &s, size_t &i, size_t endbracket)
 {
-	string wx;
+	std::string wx;
 	getwx(wx, s.substr(i+4, endbracket - i - 4).c_str());
 	substitute(s, i, endbracket, wx);
 }
@@ -4153,16 +4151,16 @@ void set_macro_env(void)
 	unsetenv("MALLOC_PERTURB_");
 #endif
 
-	string temp;
+	std::string temp;
 	size_t pch;
 	for (size_t j = 0; j < sizeof(env) / sizeof (*env); j++) {
 		temp = env[j].val;
-		while ((pch = temp.find("\n")) != string::npos) temp[pch] = ';';
+		while ((pch = temp.find("\n")) != std::string::npos) temp[pch] = ';';
 		setenv(env[j].var, temp.c_str(), 1);
 	}
 
-	string path = getenv("PATH");
-	string mypath = ScriptsDir;
+	std::string path = getenv("PATH");
+	std::string mypath = ScriptsDir;
 	if (mypath[mypath.length()-1] == '/')
 		mypath.erase(mypath.length()-1, 1);
 	mypath.append(":");
@@ -4243,7 +4241,7 @@ static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 	s.erase(i, end - i + strlen("</EXEC>"));
 
 	char ln[BUFSIZ];
-	string lnbuff = "";
+	std::string lnbuff = "";
 	while (fgets(ln, sizeof(ln), fp)) {
 		lnbuff.append(ln);
 	}
@@ -4489,7 +4487,7 @@ static void doSKED(std::string s)
 	if (exec_time.length() == 4)
 		exec_time.append("00");
 
-	string txt;
+	std::string txt;
 	txt.assign("Next scheduled transmission at ").
 		append(exec_time.substr(0,2)).append(":").
 		append(exec_time.substr(2,2)).append(":").
@@ -4860,7 +4858,7 @@ int MACROTEXT::loadMacros(const std::string& filename)
 	char   szLine[4096];
 	bool   convert = false;
 
-	ifstream mFile(filename.c_str());
+	std::ifstream mFile(filename.c_str());
 
 	if (!mFile) {
 		create_new_macros();
@@ -4919,8 +4917,8 @@ void MACROTEXT::loadDefault()
 	Filename.append("macros.mdf");
 	LOG_INFO("macro file name: %s", progStatus.LastMacroFile.c_str());
 	if (progdefaults.UseLastMacro == true) {
-		if (progStatus.LastMacroFile.find("/") != string::npos ||
-			progStatus.LastMacroFile.find("\\") != string::npos)
+		if (progStatus.LastMacroFile.find("/") != std::string::npos ||
+			progStatus.LastMacroFile.find("\\") != std::string::npos)
 			Filename.assign(progStatus.LastMacroFile);
 		else
 			Filename.assign(MacrosDir).append(progStatus.LastMacroFile);
@@ -4937,14 +4935,14 @@ void MACROTEXT::loadDefault()
 	showMacroSet();
 	if (progdefaults.DisplayMacroFilename) {
 		LOG_INFO("%s", progStatus.LastMacroFile.c_str());
-		string Macroset;
+		std::string Macroset;
 		Macroset.assign("\
 \n================================================\n\
 Read macros from: ").append(progStatus.LastMacroFile).append("\
 \n================================================\n");
 #ifdef __WOE32__
-		size_t p = string::npos;
-		while ( (p = Macroset.find("/")) != string::npos)
+		size_t p = std::string::npos;
+		while ( (p = Macroset.find("/")) != std::string::npos)
 			Macroset[p] = '\\';
 #endif
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -4960,8 +4958,8 @@ void MACROTEXT::openMacroFile()
 {
 	std::string deffilename = MacrosDir;
 
-	if (progStatus.LastMacroFile.find("/") != string::npos ||
-		progStatus.LastMacroFile.find("\\") != string::npos)
+	if (progStatus.LastMacroFile.find("/") != std::string::npos ||
+		progStatus.LastMacroFile.find("\\") != std::string::npos)
 		deffilename.assign(progStatus.LastMacroFile);
 	else
 		deffilename.append(progStatus.LastMacroFile);
@@ -4975,7 +4973,7 @@ void MACROTEXT::openMacroFile()
 		progStatus.LastMacroFile = p;
 		showMacroSet();
 		if (progdefaults.DisplayMacroFilename) {
-			string Macroset;
+			std::string Macroset;
 			Macroset.assign("\nLoaded macros: ").append(progStatus.LastMacroFile).append("\n");
 			if (active_modem->get_mode() == MODE_IFKP)
 				ifkp_rx_text->addstr(Macroset);
@@ -4990,8 +4988,8 @@ void MACROTEXT::openMacroFile()
 void MACROTEXT::writeMacroFile()
 {
 	std::string deffilename = MacrosDir;
-	if (progStatus.LastMacroFile.find("/") != string::npos ||
-		progStatus.LastMacroFile.find("\\") != string::npos)
+	if (progStatus.LastMacroFile.find("/") != std::string::npos ||
+		progStatus.LastMacroFile.find("\\") != std::string::npos)
 		deffilename.assign(progStatus.LastMacroFile);
 	else
 		deffilename.append(progStatus.LastMacroFile);
@@ -5003,8 +5001,8 @@ void MACROTEXT::saveMacroFile()
 {
 	std::string deffilename = MacrosDir;
 
-	if (progStatus.LastMacroFile.find("/") != string::npos ||
-		progStatus.LastMacroFile.find("\\") != string::npos)
+	if (progStatus.LastMacroFile.find("/") != std::string::npos ||
+		progStatus.LastMacroFile.find("\\") != std::string::npos)
 		deffilename.assign(progStatus.LastMacroFile);
 	else
 		deffilename.append(progStatus.LastMacroFile);
@@ -5016,9 +5014,9 @@ void MACROTEXT::saveMacroFile()
 	if (!p) return;
 	if (!*p) return;
 
-	string sp = p;
+	std::string sp = p;
 	if (sp.empty()) return;
-	if (sp.rfind(".mdf") == string::npos) sp.append(".mdf");
+	if (sp.rfind(".mdf") == std::string::npos) sp.append(".mdf");
 	saveMacros(sp.c_str());
 	progStatus.LastMacroFile = sp;
 

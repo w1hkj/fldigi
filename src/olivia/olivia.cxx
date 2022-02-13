@@ -49,8 +49,6 @@ static pthread_mutex_t olivia_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 LOG_FILE_SOURCE(debug::LOG_MODEM);
 
-using namespace std;
-
 double olivia::nco(double freq)
 {
     preamblephase += 2.0 * M_PI * freq / samplerate;
@@ -380,7 +378,7 @@ void olivia::restart()
 	fragmentsize = 1024;
 	set_bandwidth(Tx->Bandwidth - Tx->Bandwidth / Tx->Tones);
 
-	stringstream info;
+	std::stringstream info;
 	info << mode_info[mode].sname;
 	put_MODEstatus("%s", info.str().c_str());
 

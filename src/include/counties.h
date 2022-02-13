@@ -30,8 +30,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 struct STATE_COUNTY_QUAD {
 	std::string state;		// state long name
 	std::string ST;			// state abbreviated
@@ -48,13 +46,13 @@ public:
 
 //	static struct STATE_COUNTY_QUAD vec_SQSO[];
 
-	bool valid_county( string st, string cty );
-	const string names();
-	const string counties(string st);
-	const string county(string st, string cnty);
-	const string cnty_short(string st, string cnty);
-	const string state(string ST);
-	const string state_short(string ST);
+	bool valid_county( std::string st, std::string cty );
+	const std::string names();
+	const std::string counties(std::string st);
+	const std::string county(std::string st, std::string cnty);
+	const std::string cnty_short(std::string st, std::string cnty);
+	const std::string state(std::string ST);
+	const std::string state_short(std::string ST);
 };
 
 extern Cstates states;

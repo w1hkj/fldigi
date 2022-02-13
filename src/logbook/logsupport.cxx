@@ -72,15 +72,13 @@
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Button.H>
 
-using namespace std;
-
-extern vector<int> lotw_recs_sent;
+extern std::vector<int> lotw_recs_sent;
 
 cQsoDb		qsodb;
 cAdifIO		adifFile;
 cTextFile	txtFile;
 
-string		logbook_filename;
+std::string		logbook_filename;
 
 enum sorttype {NONE, SORTCALL, SORTDATE, SORTFREQ, SORTMODE};
 sorttype lastsort = SORTDATE;
@@ -158,8 +156,8 @@ void Export_CSV()
 
 	cQsoRec *rec;
 
-	string title = _("Export to CSV file");
-	string filters = "CSV\t*.csv";
+	std::string title = _("Export to CSV file");
+	std::string filters = "CSV\t*.csv";
 #ifdef __APPLE__
 	filters.append("\n");
 #endif
@@ -175,8 +173,8 @@ void Export_CSV()
 			qsodb.qsoUpdRec (i, rec);
 		}
 	}
-	string sp = p;
-	if (sp.find(".csv") == string::npos) sp.append(".csv");
+	std::string sp = p;
+	if (sp.find(".csv") == std::string::npos) sp.append(".csv");
 	txtFile.writeCSVFile(sp.c_str(), &qsodb);
 }
 
@@ -185,8 +183,8 @@ void Export_TXT()
 	if (chkExportBrowser->nchecked() == 0) return;
 
 	cQsoRec *rec;
-	string title = _("Export to fixed field text file");
-	string filters = "TEXT\t*.txt";
+	std::string title = _("Export to fixed field text file");
+	std::string filters = "TEXT\t*.txt";
 #ifdef __APPLE__
 	filters.append("\n");
 #endif
@@ -202,8 +200,8 @@ void Export_TXT()
 			qsodb.qsoUpdRec (i, rec);
 		}
 	}
-	string sp = p;
-	if (sp.find(".txt") == string::npos) sp.append(".txt");
+	std::string sp = p;
+	if (sp.find(".txt") == std::string::npos) sp.append(".txt");
 	txtFile.writeTXTFile(p, &qsodb);
 }
 
@@ -213,9 +211,9 @@ void Export_ADIF()
 
 	cQsoRec *rec;
 
-	string title = _("Export to ADIF file");
-	string filters;
-	string defname;
+	std::string title = _("Export to ADIF file");
+	std::string filters;
+	std::string defname;
 	filters.assign("ADIF\t*.").append(ADIF_SUFFIX);
 #ifdef __APPLE__
 	filters.append("\n");
@@ -233,11 +231,11 @@ void Export_ADIF()
 			qsodb.qsoUpdRec (i, rec);
 		}
 	}
-	string sp = p;
-	string temp = ".";
+	std::string sp = p;
+	std::string temp = ".";
 	temp.append(ADIF_SUFFIX);
 
-	if (sp.find(temp) == string::npos) sp.append(temp);
+	if (sp.find(temp) == std::string::npos) sp.append(temp);
 	adifFile.writeFile (sp.c_str(), &qsodb);
 }
 
@@ -246,7 +244,7 @@ void Export_ADIF()
 // FLTK UI thread.
 // called by Export_LOTW() and saveRecord()
 
-static string lotwsdate;
+static std::string lotwsdate;
 void refresh_logbook_dialog(void *)
 {
 	inpLOTWsentdate_log->value(lotwsdate.c_str());
@@ -261,7 +259,7 @@ void Export_LOTW()
 
 	if (str_lotw.empty())
 		str_lotw = "Fldigi LoTW upload file\n<ADIF_VER:5>2.2.7\n<EOH>\n";
-	string adifrec;
+	std::string adifrec;
 
 	for (int i = 0; i < chkExportBrowser->FLTK_nitems(); i++) {
 		if (chkExportBrowser->checked(i + 1)) {
@@ -378,8 +376,8 @@ static void dxcc_entity_cache_add(cQsoDb& db);
 void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 	saveLogbook(true);
 
-	string title = _("Create new logbook file");
-	string filter;
+	std::string title = _("Create new logbook file");
+	std::string filter;
 	filter.assign("ADIF\t*.").append(ADIF_SUFFIX);
 #ifdef __APPLE__
 	filter.append("\n");
@@ -392,14 +390,14 @@ void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 	if (!p) return;
 	if (!*p) return;
 
-	string temp = p;
-	string suffix = ".";
+	std::string temp = p;
+	std::string suffix = ".";
 	suffix.append(ADIF_SUFFIX);
-	if (temp.find(suffix) == string::npos) temp.append(suffix);
+	if (temp.find(suffix) == std::string::npos) temp.append(suffix);
 
 	FILE *testopen = fl_fopen(temp.c_str(), "r");
 	if (testopen) {
-		string warn = logbook_filename;
+		std::string warn = logbook_filename;
 		int ans = fl_choice2(
 					_("%s exists, overwrite?"),
 					_("No"), _("Yes"), NULL,
@@ -437,8 +435,8 @@ void adif_read_OK()
 
 void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 {
-	string title = _("Open logbook file");
-	string filter;
+	std::string title = _("Open logbook file");
+	std::string filter;
 	filter.assign("ADIF file\t*.{adi,adif}");
 #ifdef __APPLE__
 	filter.append("\n");
@@ -470,8 +468,8 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 }
 
 void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
-	string title = _("Save logbook file");
-	string filter;
+	std::string title = _("Save logbook file");
+	std::string filter;
 	filter.assign("ADIF\t*.").append(ADIF_SUFFIX);
 #ifdef __APPLE__
 	filter.append("\n");
@@ -485,9 +483,9 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 	if (!*p) return;
 
 	logbook_filename = p;
-	string temp = ".";
+	std::string temp = ".";
 	temp.append(ADIF_SUFFIX);
-	if (logbook_filename.find(temp) == string::npos)
+	if (logbook_filename.find(temp) == std::string::npos)
 		logbook_filename.append(temp);
 
 	progdefaults.logbookfilename = logbook_filename;
@@ -524,8 +522,8 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 pthread_t* MERGE_thread = 0;
 pthread_mutex_t MERGE_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static string mrg_fname;
-static string disptxt;
+static std::string mrg_fname;
+static std::string disptxt;
 static bool   abort_merger;
 static int num_merge_recs;
 static float read_secs;
@@ -643,11 +641,11 @@ static void *merge_thread(void *args)
 	cQsoDb *orig_dups = new cQsoDb;
 	cQsoDb *copy = new cQsoDb(db);
 
-	string mergedir;
-	string mrg_dups_name;
-	string orig_dups_name;
-	string lg_recs_name;
-	string fname;
+	std::string mergedir;
+	std::string mrg_dups_name;
+	std::string orig_dups_name;
+	std::string lg_recs_name;
+	std::string fname;
 	size_t pname;
 
 	cQsoRec *lastrec = 0;
@@ -958,7 +956,7 @@ void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 }
 //======================================================================
 
-static string lotw_download_name = "";
+static std::string lotw_download_name = "";
 static cQsoDb *lotw_db = 0;
 
 extern Fl_Button *btn_view_unmatched;
@@ -969,22 +967,22 @@ void verify_lotw(void *)
 LOG_INFO("VERIFY_LOTW: adifFile.do_readfile(%s", lotw_download_name.c_str());
 	adifFile.do_readfile (lotw_download_name.c_str(), lotw_db);
 
-	stringstream ss_note;
+	std::stringstream ss_note;
 
 	if (lotw_db->nbrRecs() == 0) {
 		LOG_INFO("%s", _("No records in lotw download file"));
 	} else {
 
-		string report_fname = LoTWDir;
+		std::string report_fname = LoTWDir;
 		report_fname.append("unverified.txt");
-		ofstream report_file(report_fname.c_str());
+		std::ofstream report_file(report_fname.c_str());
 
 		int matchrec;
 		cQsoRec *qrec, *lrec;
 		int nverified = 0;
 		int unverified = 0;
-		string date;
-		string qdate;
+		std::string date;
+		std::string qdate;
 
 		for (int i = 0; i < lotw_db->nbrRecs(); i++) {
 			lrec = lotw_db->getRec(i);
@@ -1063,9 +1061,9 @@ void cb_btn_view_unmatched(Fl_Button *, void *) {
 		unmatched_viewer->end();
 		unmatched_viewer->resizable(viewer);
 	}
-	string report_fname = LoTWDir;
+	std::string report_fname = LoTWDir;
 	report_fname.append("unverified.txt");
-	ifstream report_file(report_fname.c_str());
+	std::ifstream report_file(report_fname.c_str());
 	if (report_file) {
 		char linebuff[1025];
 		viewer->buffer()->text("");
@@ -1081,10 +1079,10 @@ void cb_btn_view_unmatched(Fl_Button *, void *) {
 
 void cb_btn_verify_lotw(Fl_Button *, void *) {
 
-	string deffname = LoTWDir;
+	std::string deffname = LoTWDir;
 	deffname.append("lotwreport.adi");
 
-	ifstream f(deffname.c_str());
+	std::ifstream f(deffname.c_str());
 
 	if (!f) {
 		std::string alert = _("\
@@ -1613,7 +1611,7 @@ void saveRecord() {
 	rec.putField(QSO_DATE, inpDate_log->value());
 	rec.putField(QSO_DATE_OFF, inpDateOff_log->value());
 
-	string tm = timestring(inpTimeOn_log->value());
+	std::string tm = timestring(inpTimeOn_log->value());
 	rec.putField(TIME_ON, tm.c_str());
 	inpTimeOn_log->value(timeview(tm.c_str()));
 
@@ -1668,7 +1666,7 @@ void saveRecord() {
 		qso_exchange.clear();
 		qso_time.clear();
 	} else if (!qso_time.empty()) {
-		string myexch = inpMyXchg_log->value();
+		std::string myexch = inpMyXchg_log->value();
 		myexch.append(" ").append(qso_time);
 		rec.putField(MYXCHG, myexch.c_str());
 		qso_time.clear();
@@ -1730,7 +1728,7 @@ void updateRecord() {
 	rec.putField(QSO_DATE, inpDate_log->value());
 	rec.putField(QSO_DATE_OFF, inpDateOff_log->value());
 
-	string tm = timestring(inpTimeOn_log->value());
+	std::string tm = timestring(inpTimeOn_log->value());
 	rec.putField(TIME_ON, tm.c_str());
 	inpTimeOn_log->value(timeview(tm.c_str()));
 
@@ -2174,8 +2172,8 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 {
 	char freq[16] = "";
-	string rst_in, rst_out, exch_in, exch_out, date, time, mode, mycall, call, exch, state, county;
-	string qsoline = "QSO: ";
+	std::string rst_in, rst_out, exch_in, exch_out, date, time, mode, mycall, call, exch, state, county;
+	std::string qsoline = "QSO: ";
 	int ifreq = 0;
 	size_t len = 0;
 	size_t p = 0;
@@ -2237,7 +2235,7 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	}
 
 	if (contestnbr == BARTG_RTTY) {
-		string toff = rec->getField(TIME_OFF);
+		std::string toff = rec->getField(TIME_OFF);
 		if (toff.length() > 4) toff = toff.substr(0,4);
 		toff = toff.append(" ");
 		exch_out.append(toff);
@@ -2276,8 +2274,8 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 
 	if (btnCabXchgIn->value()) {
 		exch = rec->getField(XCHG1);
-		while ((p = exch.find(":")) != string::npos) exch.erase(p,1);
-		while ((p = exch.find("  ")) != string::npos) exch.erase(p,1);
+		while ((p = exch.find(":")) != std::string::npos) exch.erase(p,1);
+		while ((p = exch.find("  ")) != std::string::npos) exch.erase(p,1);
 		if (exch[0] == ' ') exch.erase(0,1);
 		exch_in.append(exch);
 	}
@@ -2310,12 +2308,12 @@ void WriteCabrillo()
 
 	cQsoRec *rec;
 
-	string title = _("Create cabrillo report");
-	string filters = "TEXT\t*.txt";
+	std::string title = _("Create cabrillo report");
+	std::string filters = "TEXT\t*.txt";
 #ifdef __APPLE__
 	filters.append("\n");
 #endif
-	string strContest = "";
+	std::string strContest = "";
 
 	const char* p = FSEL::saveas( title.c_str(), filters.c_str(), "contest.txt");
 
@@ -2330,8 +2328,8 @@ void WriteCabrillo()
 		}
 	}
 
-	string sp = p;
-	if (sp.find(".txt") == string::npos) sp.append(".txt");
+	std::string sp = p;
+	if (sp.find(".txt") == std::string::npos) sp.append(".txt");
     FILE *cabFile = fl_fopen (p, "w");
     if (!cabFile)
         return;
@@ -2433,10 +2431,10 @@ SOAPBOX: \n\n",
 
 #if HAVE_STD_HASH
 #	include <unordered_map>
- 	typedef std::unordered_map<string, unsigned> dxcc_entity_cache_t;
+ 	typedef std::unordered_map<std::string, unsigned> dxcc_entity_cache_t;
 #elif HAVE_STD_TR1_HASH
 #	include <tr1/unordered_map>
- 	typedef tr1::unordered_map<string, unsigned> dxcc_entity_cache_t;
+ 	typedef tr1::unordered_map<std::string, unsigned> dxcc_entity_cache_t;
 #else
 #	error "No std::hash or std::tr1::hash support"
 #endif
@@ -2511,7 +2509,7 @@ bool qsodb_dxcc_entity_find(const char* country)
 // eQSL verification support
 //======================================================================
 
-static string eqsl_download_name = "";
+static std::string eqsl_download_name = "";
 static cQsoDb *eqsl_db = 0;
 
 void verify_eqsl(void *)

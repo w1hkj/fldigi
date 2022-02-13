@@ -73,7 +73,6 @@ LOG_FILE_SOURCE(debug::LOG_KISSCONTROL);
 //#define EXTENED_DEBUG_INFO
 //#undef EXTENED_DEBUG_INFO
 
-using namespace std;
 //======================================================================
 // Socket KISS i/o used on all platforms
 //======================================================================
@@ -81,7 +80,7 @@ using namespace std;
 #define KISSLOOP_TIMING   100 // msec
 #define KISSLOOP_FRACTION 10  // msec
 
-static string errstring;
+static std::string errstring;
 
 // =====================================================================
 static pthread_t kiss_thread;
@@ -346,7 +345,7 @@ EXEC_HARDWARE_CMD_MATCH exec_match[] = {
 
 #ifdef USE_NOCTRL
 
-static std::string noctrl(string src);
+static std::string noctrl(std::string src);
 
 static const char *asc[128] = {
 	"<NUL>", "<SOH>", "<STX>", "<ETX>",
@@ -386,9 +385,9 @@ static const char *asc[128] = {
 /**********************************************************************************
  *
  **********************************************************************************/
-static string noctrl(string src)
+static std::string noctrl(std::string src)
 {
-	static string retstr;
+	static std::string retstr;
 	retstr.clear();
 	char hexstr[10];
 	int c;
@@ -2163,12 +2162,12 @@ static void exec_hardware_command(std::string cmd, std::string arg)
 	int comp_size = 0;
 	int index = 0;
 	int count = sizeof(exec_match) / sizeof(EXEC_HARDWARE_CMD_MATCH);
-	string cmp = "";
+	std::string cmp = "";
 
 	for(index = 0; index < count; index++) {
 		if(exec_match[index].cmd == (char *)0) return;
 		cmp.assign(exec_match[index].cmd);
-		if((pos = cmp.find(cmd)) != (int)(string::npos)) {
+		if((pos = cmp.find(cmd)) != (int)(std::string::npos)) {
 			a = cmp.size();
 			b = cmd.size();
 
@@ -2897,10 +2896,10 @@ static void parse_hardware_frame(std::string frame)
 {
 	if(frame.empty()) return;
 
-	string cmd = "";
-	string arg = "";
+	std::string cmd = "";
+	std::string arg = "";
 	static char buffer[512];
-	string parse_frame = "";
+	std::string parse_frame = "";
 	char bofmsg[] = "Temp Buffer overflow";
 	size_t count = frame.size();
 	size_t index = 0;
@@ -2918,7 +2917,7 @@ static void parse_hardware_frame(std::string frame)
 
 		pos = parse_frame.find(":");
 
-		if(pos == string::npos) return;
+		if(pos == std::string::npos) return;
 
 		j = 0;
 		memset(buffer, 0, sizeof(buffer));
@@ -3193,7 +3192,7 @@ static void WriteToHostARQBuffered(void)
 		to_arq_host.clear();
 	}
 
-	kiss_queue_frame(encap_kiss_frame(arq_data, KISS_RAW, kiss_port_no), string("ARQ"));
+	kiss_queue_frame(encap_kiss_frame(arq_data, KISS_RAW, kiss_port_no), std::string("ARQ"));
 
 }
 
@@ -3205,7 +3204,7 @@ static void *ReadFromHostSocket(void *args)
 	if(!kiss_socket) return (void *)0;
 
 	static char buffer[2048];
-	string str_buffer;
+	std::string str_buffer;
 	size_t count = 0;
 	Socket *tmp_socket = (Socket *)0;
 	memset(buffer, 0, sizeof(buffer));

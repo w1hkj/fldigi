@@ -83,7 +83,7 @@ struct XmlRpcImpl;
 
 LOG_FILE_SOURCE(debug::LOG_RPC_SERVER);
 
-using namespace std;
+//using namespace std;
 using namespace XmlRpc;
 
 /// Not defined the usual way on Mingw
@@ -132,7 +132,7 @@ namespace xmlrpc_c
 			else if(tmp > maxi) tmp = maxi ;
 			return tmp ;
 		}
-		string getString(int i) const { return _params[i]; }
+		std::string getString(int i) const { return _params[i]; }
 		std::vector<unsigned char> getBytestring(int i) const
 		{
 			return _params[i];
@@ -208,7 +208,7 @@ struct rpc_method
 	xmlrpc_c::method * method ;
 	const char* name;
 };
-typedef list<rpc_method> methods_t;
+typedef std::list<rpc_method> methods_t;
 static methods_t* methods = 0;
 
 pthread_t* server_thread;
@@ -252,9 +252,9 @@ void XML_RPC_Server::start(const char* node, const char* service)
 	try {
 		inst->server_impl->fl_open(service);
 		if (pthread_create(server_thread, NULL, thread_func, NULL) != 0)
-			throw runtime_error(strerror(errno));
+			throw std::runtime_error(strerror(errno));
 	}
-	catch (const exception& e) {
+	catch (const std::exception& e) {
 		LOG_ERROR("Could not start XML-RPC server (%s)", e.what());
 		delete server_thread;
 		server_thread = 0;
@@ -287,16 +287,16 @@ void* XML_RPC_Server::thread_func(void*)
 	return NULL;
 }
 
-ostream& XML_RPC_Server::list_methods(ostream& out)
+std::ostream& XML_RPC_Server::list_methods(std::ostream& out)
 {
 	add_methods();
 
-	ios_base::fmtflags f = out.flags(ios::left);
+	std::ios_base::fmtflags f = out.flags(std::ios::left);
 	for (methods_t::const_iterator i = methods->begin(); i != methods->end(); ++i)
-		out << setw(32) << i->name << setw(8) << i->method->signature()
+		out << std::setw(32) << i->name << std::setw(8) << i->method->signature()
 		<< i->method->help() << '\n';
 
-	return out << setiosflags(f);
+	return out << std::setiosflags(f);
 }
 
 // =============================================================================
@@ -318,19 +318,19 @@ static void set_valuator(Fl_Valuator* valuator, double value)
 	valuator->value(value);
 	valuator->do_callback();
 }
-static void set_text(Fl_Input* textw, string& value)
+static void set_text(Fl_Input* textw, std::string& value)
 {
 	textw->value(value.c_str());
 	textw->do_callback();
 }
 
-static void set_text2(Fl_Input2* textw, string& value)
+static void set_text2(Fl_Input2* textw, std::string& value)
 {
 	textw->value(value.c_str());
 	textw->do_callback();
 }
 
-static void set_combo_contents(Fl_ComboBox* box, const vector<string>* items)
+static void set_combo_contents(Fl_ComboBox* box, const std::vector<std::string>* items)
 {
 	box->clear();
 
@@ -341,7 +341,7 @@ static void set_combo_contents(Fl_ComboBox* box, const vector<string>* items)
 		return;
 	}
 
-	for (vector<string>::const_iterator i = items->begin(); i != items->end(); ++i) {
+	for (std::vector<std::string>::const_iterator i = items->begin(); i != items->end(); ++i) {
 		box->add(i->c_str());
 	}
 
@@ -349,13 +349,13 @@ static void set_combo_contents(Fl_ComboBox* box, const vector<string>* items)
 	box->activate();
 }
 
-static void set_combo_value(Fl_ComboBox* box, const string& s)
+static void set_combo_value(Fl_ComboBox* box, const std::string& s)
 {
 	box->value(s.c_str());
 	box->do_callback();
 }
 
-static void get_combo_contents(Fl_ComboBox* box, vector<xmlrpc_c::value>* items)
+static void get_combo_contents(Fl_ComboBox* box, std::vector<xmlrpc_c::value>* items)
 {
 	int n = box->lsize(), p = box->index();
 	items->reserve(n);
@@ -382,9 +382,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		vector<xmlrpc_c::value> help;
+		std::vector<xmlrpc_c::value> help;
 		for (methods_t::const_iterator i = methods->begin(); i != methods->end(); ++i) {
-			map<string, xmlrpc_c::value> item;
+			std::map<std::string, xmlrpc_c::value> item;
 			item["name"] = xmlrpc_c::value_string(i->name);
 			item["signature"] = xmlrpc_c::value_string(i->method->signature());
 			item["help"] = xmlrpc_c::value_string(i->method->help());
@@ -419,7 +419,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		map<string, xmlrpc_c::value> vstruct;
+		std::map<std::string, xmlrpc_c::value> vstruct;
 		vstruct["major"] = xmlrpc_c::value_int(FLDIGI_VERSION_MAJOR);
 		vstruct["minor"] = xmlrpc_c::value_int(FLDIGI_VERSION_MINOR);
 		vstruct["patch"] = xmlrpc_c::value_string(FLDIGI_VERSION_PATCH);
@@ -551,9 +551,9 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		vector<xmlrpc_c::value> names;
+		std::vector<xmlrpc_c::value> names;
 		names.reserve(NUM_MODES);
-		string snames;
+		std::string snames;
 		for (size_t i = 0; i < NUM_MODES; i++) {
 			names.push_back(xmlrpc_c::value_string(mode_info[i].sname));
 			snames.append("\n").append(mode_info[i].sname);
@@ -613,7 +613,7 @@ public:
 		XMLRPC_LOCK;
 		const char* cur = mode_info[active_modem->get_mode()].sname;
 
-		string s = params.getString(0);
+		std::string s = params.getString(0);
 		LOG_INFO("[%s] modem.set_by_name: %s",
 			XmlRpc::client_id.c_str(),
 			s.c_str());
@@ -984,9 +984,9 @@ public:
 			bw = 1000;
 		else
 			bw = 2000;
-			LOG_INFO("[%s] modem.olivia_get_bandwidth: %d",
-				XmlRpc::client_id.c_str(),
-				bw);
+		LOG_INFO("[%s] modem.olivia_get_bandwidth: %d",
+			XmlRpc::client_id.c_str(),
+			bw);
 		*retval = xmlrpc_c::value_int(bw);
 	}
 };
@@ -1100,7 +1100,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		string s = params.getString(0);
+		std::string s = params.getString(0);
 		if (s != "LSB" && s != "USB") {
 			*retval = "Invalid argument";
 			return;
@@ -1142,14 +1142,14 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		string s = params.getString(0);
+		std::string s = params.getString(0);
 		if (s != "USB" && s != "LSB")
 			*retval = "Invalid argument";
 		else
 			REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
-			LOG_INFO("[%s] main.set_wf_sideband %s",
-				 XmlRpc::client_id.c_str(),
-				 s.c_str());
+		LOG_INFO("[%s] main.set_wf_sideband %s",
+			 XmlRpc::client_id.c_str(),
+			 s.c_str());
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1624,7 +1624,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		string st;
+		std::string st;
 		if (btnTune->value())
 			st = "tune";
 		else if (wf->xmtrcv->value())
@@ -1824,7 +1824,7 @@ public:
 		int size;
 		REQ_SYNC(get_rx, &text, &size);
 
-		vector<unsigned char> bytes;
+		std::vector<unsigned char> bytes;
 		if (size) {
 			bytes.resize(size, 0);
 			memcpy(&bytes[0], text, size);
@@ -1837,7 +1837,7 @@ public:
 	}
 };
 
-string flmsg_data;
+std::string flmsg_data;
 
 class flmsg_available : public xmlrpc_c::method
 {
@@ -1870,7 +1870,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		string tempstr = flmsg_data;
+		std::string tempstr = flmsg_data;
 		reset_flmsg();
 		LOG_INFO("[%s] main.flmsg_transfer:\n%s",
 			 XmlRpc::client_id.c_str(),
@@ -1950,7 +1950,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		string tempstr = flmsg_data;
+		std::string tempstr = flmsg_data;
 		reset_flmsg();
 		LOG_INFO("[%s] main.flmsg_transfer:\n%s",
 			 XmlRpc::client_id.c_str(),
@@ -2053,23 +2053,23 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		string st;
+		std::string st;
 		if (trx_state == STATE_TX || trx_state == STATE_TUNE)
 			st = "TX";
 		else if (trx_state == STATE_RX)
 			st = "RX";
 		else
 			st = "OTHER";
-			LOG_INFO("[%s] main.get_trx_state: %s",
-				XmlRpc::client_id.c_str(),
-				st.c_str());
+		LOG_INFO("[%s] main.get_trx_state: %s",
+			XmlRpc::client_id.c_str(),
+			st.c_str());
 		*retval = xmlrpc_c::value_string(st.c_str());
 	}
 };
 
 pthread_mutex_t tx_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static string xmlchars;
+static std::string xmlchars;
 bool xmltest_char_available;
 static size_t pxmlchar = 0;
 static char xml_status_msg[50];
@@ -2098,7 +2098,7 @@ void reset_xmlchars()
 	xmltest_char_available = false;
 }
 
-int number_of_samples( string s)
+int number_of_samples( std::string s)
 {
 	active_modem->XMLRPC_CPS_TEST = true;
 	xmlchars = s;
@@ -2140,9 +2140,9 @@ public:
 		int s0 = 0;//number_of_samples("");
 		int s1 = 0;
 
-		string xmlbuf;
+		std::string xmlbuf;
 		static char result[100];
-		static string  line;
+		static std::string  line;
 		int  chsamples = 0;
 		int i = 0;
 		for (int m = 0; m < 32; m++) {
@@ -2153,13 +2153,13 @@ public:
 				if ( (id >= MODE_PSK31 && id <= MODE_PSK1000R) ||
 					(id >= MODE_4X_PSK63R && id <= MODE_2X_PSK1000R) ||
 					id == MODE_CW || id == MODE_RTTY ) {
-					s1 = number_of_samples(string(1,i));
+					s1 = number_of_samples(std::string(1,i));
 					chsamples = active_modem->char_samples;
 				} else {
-					s0 = number_of_samples(string(1, i));
+					s0 = number_of_samples(std::string(1, i));
 					int j;
 					for(j = 2; j < 32; j++) {
-						s1 = number_of_samples(string(j, i));
+						s1 = number_of_samples(std::string(j, i));
 						if(s1 > s0) break;
 					}
 					chsamples = (s1 - s0) / (j-1);
@@ -2198,7 +2198,7 @@ public:
 		XMLRPC_LOCK;
 		REQ(stopMacroTimer);
 
-		vector<unsigned char> bytes = params.getBytestring(0);
+		std::vector<unsigned char> bytes = params.getBytestring(0);
 		bytes.push_back(0);
 		std::string totest = (const char*)&bytes[0];
 
@@ -2242,20 +2242,20 @@ public:
 		}
 
 		if(fast_flag) {
-			s0 = number_of_samples(string(1,character));
+			s0 = number_of_samples(std::string(1,character));
 			chsamples = active_modem->char_samples;
 			over_head = active_modem->ovhd_samples;
 		} else if(psk_8_flag) { // This doens't seem to work with the MFSK modes
 			int n = 16;
             over_head = number_of_samples("");
-			chsamples = number_of_samples(string(n, character)) - over_head;
+			chsamples = number_of_samples(std::string(n, character)) - over_head;
 			chsamples /= n;
 		} else { // This works for all of the remaining modes.
 			unsigned int s1 = 0, s2 = 0;
 			unsigned int temp = 0, no_of_chars = 1, k = 0;
-			s0 = s1 = s2 = number_of_samples(string(no_of_chars, character));
+			s0 = s1 = s2 = number_of_samples(std::string(no_of_chars, character));
 			for(int i = no_of_chars + 1; i < 32; i++) {
-				s2 = number_of_samples(string(i, character));
+				s2 = number_of_samples(std::string(i, character));
 				if(s2 > s1 && temp++ > min_char) {
 					break;
 				}
@@ -2263,7 +2263,7 @@ public:
 				no_of_chars++;
 			}
 			k = no_of_chars * factor;
-			s1 = number_of_samples(string(k, character));
+			s1 = number_of_samples(std::string(k, character));
 			chsamples = (s1 - s0) / (k - no_of_chars);
 			over_head = s1 - (chsamples * k);
 		}
@@ -2298,7 +2298,7 @@ public:
 			return;
 		}
 		XMLRPC_LOCK;
-		vector<unsigned char> bytes = params.getBytestring(0);
+		std::vector<unsigned char> bytes = params.getBytestring(0);
 		bytes.push_back(0);
 		std::string totest = (const char*)&bytes[0];
 		if (totest.empty() || !active_modem) {
@@ -2331,10 +2331,10 @@ public:
 		_signature = "n:s";
 		_help = "Sets the rig name for xmlrpc rig";
 	}
-	static void set_rig_name(const string& name)
+	static void set_rig_name(const std::string& name)
 	{
 		windowTitle = name;
-		if (main_window_title.find(windowTitle) == string::npos)
+		if (main_window_title.find(windowTitle) == std::string::npos)
 			setTitle();
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
@@ -2342,7 +2342,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] main.set_name: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ(set_rig_name, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2469,15 +2469,15 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		vector<xmlrpc_c::value> v = params.getArray(0);
+		std::vector<xmlrpc_c::value> v = params.getArray(0);
 
-		vector<string> modes;
-		string smodes;
+		std::vector<std::string> modes;
+		std::string smodes;
 		modes.reserve(v.size());
 		// copy
-		for (vector<xmlrpc_c::value>::const_iterator i = v.begin(); i != v.end(); ++i) {
-			modes.push_back(static_cast<string>(xmlrpc_c::value_string(*i)));
-			smodes.append("\n").append(static_cast<string>(xmlrpc_c::value_string(*i)));
+		for (std::vector<xmlrpc_c::value>::const_iterator i = v.begin(); i != v.end(); ++i) {
+			modes.push_back(static_cast<std::string>(xmlrpc_c::value_string(*i)));
+			smodes.append("\n").append(static_cast<std::string>(xmlrpc_c::value_string(*i)));
 		}
 		LOG_INFO("[%s] rig.set_modes:%s",
 			XmlRpc::client_id.c_str(),
@@ -2501,7 +2501,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] rig_set_mode: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ(set_combo_value, qso_opMODE, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2518,12 +2518,12 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		vector<xmlrpc_c::value> modes;
+		std::vector<xmlrpc_c::value> modes;
 		REQ_SYNC(get_combo_contents, qso_opMODE, &modes);
 
-		string smodes;
+		std::string smodes;
 		for (size_t n = 0; n < modes.size(); n++)
-			smodes.append("\n").append(string(modes[n]));
+			smodes.append("\n").append(std::string(modes[n]));
 
 		LOG_INFO("[%s] rig.get_modes:%s",
 			XmlRpc::client_id.c_str(),
@@ -2562,14 +2562,14 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		vector<xmlrpc_c::value> v = params.getArray(0);
+		std::vector<xmlrpc_c::value> v = params.getArray(0);
 
-		vector<string> bws;
-		string s_bws;
+		std::vector<std::string> bws;
+		std::string s_bws;
 		bws.reserve(v.size());
-		for (vector<xmlrpc_c::value>::const_iterator i = v.begin(); i != v.end(); ++i) {
-			bws.push_back(static_cast<string>(xmlrpc_c::value_string(*i)));
-			s_bws.append("\n").append(static_cast<string>(xmlrpc_c::value_string(*i)));
+		for (std::vector<xmlrpc_c::value>::const_iterator i = v.begin(); i != v.end(); ++i) {
+			bws.push_back(static_cast<std::string>(xmlrpc_c::value_string(*i)));
+			s_bws.append("\n").append(static_cast<std::string>(xmlrpc_c::value_string(*i)));
 		}
 		LOG_INFO("[%s] rig.set_bandwidths:%s",
 			XmlRpc::client_id.c_str(),
@@ -2594,7 +2594,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] rig.set_bandwidth: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ(set_combo_value, qso_opBW, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -2611,13 +2611,13 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		vector<xmlrpc_c::value> bws;
+		std::vector<xmlrpc_c::value> bws;
 
 		REQ_SYNC(get_combo_contents, qso_opBW, &bws);
 
-		string sbws;
+		std::string sbws;
 		for (size_t n = 0; n < bws.size(); n++)
-			sbws.append("\n").append(string(bws[n]));
+			sbws.append("\n").append(std::string(bws[n]));
 
 		LOG_INFO("[%s] rig.get_modes:%s",
 			XmlRpc::client_id.c_str(),
@@ -2639,7 +2639,7 @@ public:
 	{
 		LOG_INFO("[%s] rig.get_bandwidth: %s",
 			XmlRpc::client_id.c_str(),
-			string(qso_opBW->value()).c_str());
+			std::string(qso_opBW->value()).c_str());
 		*retval = xmlrpc_c::value_string(qso_opBW->value());
 	}
 };
@@ -2826,7 +2826,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] log.set_call: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 
 		REQ(set_text, inpCall, params.getString(0));
 
@@ -2864,7 +2864,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] log.set_name: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ(set_text, inpName, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
@@ -2884,7 +2884,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] log.set_qth: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ(set_text, inpQth, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
@@ -2904,7 +2904,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] log.set_locator: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ(set_text, inpLoc, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
@@ -2941,7 +2941,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] log.set_rst_in: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ(set_text2, inpRstIn, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
@@ -2978,7 +2978,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] log.set_rst_out: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ(set_text2, inpRstOut, params.getString(0));
 
 		*retval = xmlrpc_c::value_nil();
@@ -3015,7 +3015,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] log.set_serial_number: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ(set_text, inpSerNo, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -3068,7 +3068,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] log.set_exchange: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ(set_text, inpXchgIn, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -3247,7 +3247,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		string s;
+		std::string s;
 		if(data_io_enabled == KISS_IO)
 			s = "KISS";
 		else if(data_io_enabled == ARQ_IO)
@@ -3346,7 +3346,7 @@ public:
 		catch (const xmlrpc_c::fault& f) {
 			*err = new xmlrpc_c::fault(f);
 		}
-		catch (const exception& e) {
+		catch (const std::exception& e) {
 			*err = new xmlrpc_c::fault(e.what(), xmlrpc_c::fault::CODE_INTERNAL);
 		}
 	}
@@ -3364,7 +3364,7 @@ public:
 			throw f;
 		}
 
-		vector<unsigned char> bytes;
+		std::vector<unsigned char> bytes;
 		if (size) {
 			bytes.resize(size, 0);
 			memcpy(&bytes[0], text, size);
@@ -3438,7 +3438,7 @@ public:
 		XMLRPC_LOCK;
 		LOG_INFO("[%s] Text.add_tx: %s",
 			XmlRpc::client_id.c_str(),
-			string(params.getString(0)).c_str());
+			std::string(params.getString(0)).c_str());
 		REQ_SYNC(&FTextTX::add_text, TransmitText, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -3455,12 +3455,12 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		vector<unsigned char> bytes = params.getBytestring(0);
+		std::vector<unsigned char> bytes = params.getBytestring(0);
 		bytes.push_back(0);
 		LOG_INFO("[%s] Text.add_tx_bytes: %s",
 			XmlRpc::client_id.c_str(),
-			string((const char*)&bytes[0]).c_str());
-		REQ_SYNC(&FTextTX::add_text, TransmitText, string((const char*)&bytes[0]));
+			std::string((const char*)&bytes[0]).c_str());
+		REQ_SYNC(&FTextTX::add_text, TransmitText, std::string((const char*)&bytes[0]));
 
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -3508,7 +3508,7 @@ public:
 		int size;
 		REQ_SYNC(get_rxtx, &text, &size);
 
-		vector<unsigned char> bytes;
+		std::vector<unsigned char> bytes;
 		if (size) {
 			bytes.resize(size, 0);
 			memcpy(&bytes[0], text, size);
@@ -3543,7 +3543,7 @@ public:
 		int size;
 		REQ_SYNC(get_rx, &text, &size);
 
-		vector<unsigned char> bytes;
+		std::vector<unsigned char> bytes;
 		if (size) {
 			bytes.resize(size, 0);
 			memcpy(&bytes[0], text, size);
@@ -3578,7 +3578,7 @@ public:
 		int size;
 		REQ_SYNC(get_tx, &text, &size);
 
-		vector<unsigned char> bytes;
+		std::vector<unsigned char> bytes;
 		if (size) {
 			bytes.resize(size, 0);
 			memcpy(&bytes[0], text, size);
@@ -3676,10 +3676,11 @@ static wefax * get_wefax(void)
 	   && ( active_modem->get_mode() <= MODE_WEFAX_LAST ) )
 	{
 		wefax * ptr = dynamic_cast<wefax *>( active_modem );
-		if( ptr == NULL ) throw runtime_error("Inconsistent wefax object");
+		if( ptr == NULL ) throw std::runtime_error("Inconsistent wefax object");
 		return ptr ;
 	}
-	throw runtime_error("Not in wefax mode");
+	throw std::runtime_error("Not in wefax mode");
+	return (wefax *)0;
 }
 
 struct Wefax_state_string : public xmlrpc_c::method
@@ -3691,13 +3692,13 @@ struct Wefax_state_string : public xmlrpc_c::method
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	try
 	{
-		string wfs = get_wefax()->state_string();
+		std::string wfs = get_wefax()->state_string();
 		LOG_INFO("[%s] wefax.state_string: %s",
 			XmlRpc::client_id.c_str(),
 			wfs.c_str());
 		*retval = xmlrpc_c::value_string( wfs.c_str() );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] wefax.state_string: %s",
 			XmlRpc::client_id.c_str(),
@@ -3721,7 +3722,7 @@ struct Wefax_skip_apt : public xmlrpc_c::method
 			"wefax.skip_apt");
 		*retval = xmlrpc_c::value_string( "" );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] wefax.skip_apt: %s",
 			XmlRpc::client_id.c_str(),
@@ -3746,7 +3747,7 @@ struct Wefax_skip_phasing : public xmlrpc_c::method
 			"wefax.skip_phasing");
 		*retval = xmlrpc_c::value_string( "" );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] wefax.skip_phasing: %s",
 			XmlRpc::client_id.c_str(),
@@ -3771,7 +3772,7 @@ struct Wefax_set_tx_abort_flag : public xmlrpc_c::method
 			"wefax.set_tx_abort_flag");
 		*retval = xmlrpc_c::value_string( "" );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] wefax.set_tx_abort_flag: %s",
 			XmlRpc::client_id.c_str(),
@@ -3795,7 +3796,7 @@ struct Wefax_end_reception : public xmlrpc_c::method
 			"wefax.end_reception");
 		*retval = xmlrpc_c::value_string( "" );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] wefax.end_reception: %s",
 			XmlRpc::client_id.c_str(),
@@ -3821,7 +3822,7 @@ struct Wefax_start_manual_reception : public xmlrpc_c::method
 			"wefax.start_manual_reception");
 		*retval = xmlrpc_c::value_string( "" );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] wefax.start_manual_reception: %s",
 			XmlRpc::client_id.c_str(),
@@ -3845,7 +3846,7 @@ struct Wefax_set_adif_log : public xmlrpc_c::method
 			"wefax.set_adif_log");
 		*retval = xmlrpc_c::value_string( "" );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] wefax.set_adif_log: %s",
 			XmlRpc::client_id.c_str(),
@@ -3870,7 +3871,7 @@ struct Wefax_set_max_lines : public xmlrpc_c::method
 			progdefaults.WEFAX_MaxRows);
 		*retval = xmlrpc_c::value_string( "" );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] wefax.set_max_lines: %s",
 			XmlRpc::client_id.c_str(),
@@ -3894,7 +3895,7 @@ struct Wefax_get_received_file : public xmlrpc_c::method
 			filename.c_str());
 		*retval = xmlrpc_c::value_string( filename );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] wefax.get_received_file: %s",
 			XmlRpc::client_id.c_str(),
@@ -3918,7 +3919,7 @@ struct Wefax_send_file : public xmlrpc_c::method
 			status.c_str());
 		*retval = xmlrpc_c::value_string( status );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] wefax.send_file: %s",
 			XmlRpc::client_id.c_str(),
@@ -3936,10 +3937,11 @@ static navtex * get_navtex(void)
 	   && ( active_modem->get_mode() != MODE_SITORB ) )
 	{
 		navtex * ptr = dynamic_cast<navtex *>( active_modem );
-		if( ptr == NULL ) throw runtime_error("Inconsistent navtex object");
+		if( ptr == NULL ) throw std::runtime_error("Inconsistent navtex object");
 		return ptr ;
 	}
-	throw runtime_error("Not in navtex or sitorB mode");
+	throw std::runtime_error("Not in navtex or sitorB mode");
+	return (navtex *)0;
 }
 
 struct Navtex_get_message : public xmlrpc_c::method
@@ -3953,10 +3955,10 @@ struct Navtex_get_message : public xmlrpc_c::method
 	{
 		LOG_INFO("[%s] navtex.get_message: %s",
 			XmlRpc::client_id.c_str(),
-			string( get_navtex()->get_message( params.getInt(0))).c_str());
+			std::string( get_navtex()->get_message( params.getInt(0))).c_str());
 		*retval = xmlrpc_c::value_string( get_navtex()->get_message( params.getInt(0)) );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] navtex.get_message: %s",
 			XmlRpc::client_id.c_str(),
@@ -3980,7 +3982,7 @@ struct Navtex_send_message : public xmlrpc_c::method
 			status.c_str());
 		*retval = xmlrpc_c::value_string( status );
 	}
-	catch( const exception & e )
+	catch( const std::exception & e )
 	{
 		LOG_ERROR("[%s] navtex.send_message: %s",
 			XmlRpc::client_id.c_str(),
@@ -4217,7 +4219,9 @@ void XML_RPC_Server::add_methods(void)
 	else if (!progdefaults.xmlrpc_allow.empty())
 		methods->remove_if(rm_pred(progdefaults.xmlrpc_allow.c_str(), true));
 
-	for( methods_t::iterator it = methods->begin(), en = methods->end(); it != en; ++it )
+	methods_t::iterator it = methods->begin();
+	methods_t::iterator en = methods->end();
+	for( ; it != en; ++it )
 	{
 		XmlRpcServerMethod * mth = it->m_fact( it->name );
 		it->method = dynamic_cast< xmlrpc_c::method * >( mth );

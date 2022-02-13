@@ -57,7 +57,7 @@
 
 static int ptt_state_cmedia = 0;
 
-static map<std::string, std::string> paths;
+static std::map<std::string, std::string> paths;
 static hid_device *ptt_dev = (hid_device *)0;
 
 void test_hid_ptt()

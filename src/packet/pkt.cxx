@@ -34,7 +34,6 @@
 
 #include <config.h>
 #include <iostream>
-using namespace std;
 
 #include "pkt.h"
 

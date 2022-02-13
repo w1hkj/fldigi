@@ -56,8 +56,6 @@
 #include "debug.h"
 #include "timeops.h"
 
-using namespace std;
-
 picture::picture (int X, int Y, int W, int H, int bg_col) :
 	Fl_Widget (X, Y, W, H)
 {
@@ -538,7 +536,7 @@ static FILE* open_file(const char* name, const char* suffix)
 		if (fp) {
 			fclose(fp);
 			const int n = 5; // rename existing image files to keep up to 5 old versions
-			ostringstream oldfn, newfn;
+			std::ostringstream oldfn, newfn;
 			std::streampos p;
 
 			oldfn << name << '.';
@@ -617,7 +615,7 @@ int picture::save_png(const char* filename, bool monochrome, const char *extra_c
 	strftime(z, sizeof(z), "%Y-%m-%dT%H:%M:%SZ", &tm);
 	z[sizeof(z) - 1] = '\0';
 
-	ostringstream comment;
+	std::ostringstream comment;
 	comment << "Program: " PACKAGE_STRING << '\n'
 		<< "Received: " << z << '\n'
 		<< "Modem: " << mode_info[active_modem->get_mode()].name << '\n'
@@ -852,14 +850,14 @@ int picbox::handle(int event)
 	}
 
 	// handle FL_PASTE
-	string text = Fl::event_text();
+	std::string text = Fl::event_text();
 // from dnd event "file:///home/dave/Photos/dave.jpeg"
-	string::size_type p;
-	if ((p = text.find("file://")) != string::npos)
+	std::string::size_type p;
+	if ((p = text.find("file://")) != std::string::npos)
 		text.erase(0, p + strlen("file://"));
-	if ((p = text.find('\r')) != string::npos)
+	if ((p = text.find('\r')) != std::string::npos)
 		text.erase(p);
-	if ((p = text.find('\n')) != string::npos)
+	if ((p = text.find('\n')) != std::string::npos)
 		text.erase(p);
 
 	struct stat st;

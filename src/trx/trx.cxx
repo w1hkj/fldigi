@@ -63,8 +63,6 @@ extern fftmon *fft_modem;
 
 LOG_FILE_SOURCE(debug::LOG_MODEM);
 
-using namespace std;
-
 void	trx_reset_loop();
 void	trx_start_modem_loop();
 void	trx_receive_loop();
@@ -711,7 +709,7 @@ void trx_start_modem(modem* m, int f)
 }
 
 //=============================================================================
-static string reset_loop_msg;
+static std::string reset_loop_msg;
 void show_reset_loop_alert()
 {
 //	if (btnAudioIO[0]) {

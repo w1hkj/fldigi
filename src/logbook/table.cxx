@@ -40,8 +40,6 @@
 #define DAMAGE_HEADER  FL_DAMAGE_ALL
 #define DAMAGE_ROWS  FL_DAMAGE_ALL
 
-using namespace std;
-
 /* 
  * nullptr is not available in gcc < 4.6
  * Redefine to NULL for CentOS 6 and OSX Darwin
@@ -756,9 +754,9 @@ void Table::clear(bool removeColumns) {
   cPos = 0;
 
   // Delete row data.
-  vector<char**>::iterator end = data.end();
+  std::vector<char**>::iterator end = data.end();
   char **row;
-  for (vector<char**>::iterator i = data.begin(); i < end; ++i) {
+  for (std::vector<char**>::iterator i = data.begin(); i < end; ++i) {
     row = *i;
     for (int i = 0; i < nCols; i++)
       free(row[i]);
@@ -768,8 +766,8 @@ void Table::clear(bool removeColumns) {
 
   if (removeColumns) {
     // Delete header data.
-    vector<struct ColumnInfo>::iterator end = header.end();
-    for (vector<struct ColumnInfo>::iterator i = header.begin();
+    std::vector<struct ColumnInfo>::iterator end = header.end();
+    for (std::vector<struct ColumnInfo>::iterator i = header.begin();
         i < end; ++i)
       free((void*)(*i).title);
 
@@ -843,7 +841,7 @@ void Table::valueAt(int row, int column, int data) {
       toBeSorted = true;
     if (this->data[row][column] != NULL)
       free(this->data[row][column]);
-    string temp = "";
+    std::string temp = "";
     temp += data;
     strcpy(this->data[row][column] = (char*)malloc(temp.length()),
         temp.c_str());

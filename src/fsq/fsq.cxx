@@ -55,8 +55,6 @@
 
 #include "test_signal.h"
 
-using namespace std;
-
 #include "fsq_varicode.cxx"
 
 void  clear_xmt_arrays();
@@ -345,7 +343,7 @@ void fsq::toggle_logs()
 		heard_log_fname = progdefaults.fsq_heard_log;
 		std::string sheard = TempDir;
 		sheard.append(heard_log_fname);
-		heard_log.open(sheard.c_str(), ios::app);
+		heard_log.open(sheard.c_str(), std::ios::app);
 
 		heard_log << "==================================================\n";
 		heard_log << "Heard log: " << zdate() << ", " << ztime() << "\n";
@@ -357,7 +355,7 @@ void fsq::toggle_logs()
 		std::string saudit = TempDir;
 		saudit.append(audit_log_fname);
 		audit_log.close();
-		audit_log.open(saudit.c_str(), ios::app);
+		audit_log.open(saudit.c_str(), std::ios::app);
 
 		audit_log << "==================================================\n";
 		audit_log << "Audit log: " << zdate() << ", " << ztime() << "\n";
@@ -404,9 +402,9 @@ bool fsq::fsq_squelch_open()
 	return ch_sqlch_open || metric >= progStatus.sldrSquelchValue;
 }
 
-static string triggers = " !#$%&'()*+,-.;<=>?@[\\]^_{|}~";
-static string allcall = "allcall";
-static string cqcqcq = "cqcqcq";
+static std::string triggers = " !#$%&'()*+,-.;<=>?@[\\]^_{|}~";
+static std::string allcall = "allcall";
+static std::string cqcqcq = "cqcqcq";
 
 static fre_t call("([[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+)", REG_EXTENDED);
 
@@ -426,7 +424,7 @@ int fsq::valid_callsign(std::string s)
 	if (s == allcall) return 2;
 	if (s == cqcqcq) return 4;
 	if (s == mycall) return 1;
-	if (s.find("Heard") != string::npos) return 0;
+	if (s.find("Heard") != std::string::npos) return 0;
 
 	static char sz[21];
 	memset(sz, 0, 21);
@@ -509,7 +507,7 @@ void fsq::parse_rx_text()
 	bool all = false;
 	bool directed = false;
 
-// test next word in string
+// test next word in std::string
 	size_t tr_pos = 0;
 	char tr = rx_text[tr_pos];
 	size_t trigger = triggers.find(tr);
@@ -691,7 +689,7 @@ void fsq::parse_relay()
 	// find trigger
 	size_t p = 0;
 	while ((triggers.find(send_txt[p]) == NIT) && p < send_txt.length()) p++;
-	std::string response = string("[").append(station_calling).append("]");
+	std::string response = std::string("[").append(station_calling).append("]");
 	send_txt.insert(p, response);
 	if ((p = send_txt.find('^')) != NIT) send_txt.insert(p, "^");
 	display_fsq_rx_text(toprint.append(rx_text).append("\n"), FTextBase::FSQ_DIR);
@@ -774,9 +772,9 @@ void fsq::parse_pound(std::string relay)
 	std::ofstream rxfile;
 	fname.insert(0, TempDir);
 	if (progdefaults.always_append) {
-		rxfile.open(fname.c_str(), ios::app);
+		rxfile.open(fname.c_str(), std::ios::app);
 	} else {
-		rxfile.open(fname.c_str(), ios::out);
+		rxfile.open(fname.c_str(), std::ios::out);
 	}
 	if (!rxfile) return;
 	if (progdefaults.add_fsq_msg_dt) {
@@ -827,7 +825,7 @@ void fsq::parse_plus(std::string relay)
 		reply(std::string(station_calling).append(" not found"));
 		return;
 	}
-	stringstream outtext(station_calling);
+	std::stringstream outtext(station_calling);
 	outtext << " [" << fname << "]\n";
 	char ch = txfile.get();
 	while (!txfile.eof()) {
@@ -1528,9 +1526,9 @@ int fsq::tx_process()
 
 static pthread_mutex_t fsq_tx_mutex = PTHREAD_MUTEX_INITIALIZER;
 static float xmt_repeat_try = 6.0;
-static string tx_text_queue = "";
+static std::string tx_text_queue = "";
 
-static vector<string> commands;
+static std::vector<std::string> commands;
 #define NUMCOMMANDS 10
 static size_t next = 0;
 
@@ -1623,7 +1621,7 @@ void try_transmit(void *)
 		return;
 	} else {
 		static const char szsquelch[50] = "Squelch open.  Transmit timed out!";
-		display_fsq_rx_text(string("\n").append(szsquelch).append("\n").c_str(), FTextBase::ALTR);
+		display_fsq_rx_text(std::string("\n").append(szsquelch).append("\n").c_str(), FTextBase::ALTR);
 		tx_text_queue.clear();
 		fsq_que_clear();
 		if (active_modem->fsq_tx_image) active_modem->fsq_tx_image = false;
@@ -1633,7 +1631,7 @@ void try_transmit(void *)
 	return;
 }
 
-inline void _fsq_xmt(string s)
+inline void _fsq_xmt(std::string s)
 {
 	tx_text_queue.clear();
 	if (commands.size() > NUMCOMMANDS)
@@ -1654,7 +1652,7 @@ void fsq_xmt_mt(void *cs = (void *)0)
 	if (active_modem != fsq_modem) return;
     if (!cs) return;
 
-	string s;
+	std::string s;
 	s.assign((char *) cs);
 	delete (char *) cs;
 
@@ -1663,7 +1661,7 @@ void fsq_xmt_mt(void *cs = (void *)0)
     }
 }
 
-void fsq_xmt(string s)
+void fsq_xmt(std::string s)
 {
 	guard_lock tx_proc_lock(&fsq_tx_mutex);
 

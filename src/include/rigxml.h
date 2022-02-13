@@ -25,7 +25,6 @@
 #include <list>
 #include <vector>
 
-using namespace std;
 
 struct MODE {
 	std::string SYMBOL;
@@ -100,7 +99,7 @@ struct XMLRIG {
 	}
 
 	std::string	port;
-	string rigTitle;
+	std::string rigTitle;
 	int		baud;
 	int		stopbits;
 	bool	dtr;
@@ -121,13 +120,13 @@ struct XMLRIG {
 	bool	logstr;
 	int		pollinterval;
 	bool	use_smeter;
-	vector< PAIR > smeter;
+	std::vector< PAIR > smeter;
 	bool	use_pwrmeter;
-	vector< PAIR > pmeter;
+	std::vector< PAIR > pmeter;
 	bool	use_notch;
-	vector< PAIR > notch;
+	std::vector< PAIR > notch;
 	bool	use_pwrlevel;
-	vector< PAIR >pwrlevel;
+	std::vector< PAIR >pwrlevel;
 
 	bool	debug;
 	bool	noserial;

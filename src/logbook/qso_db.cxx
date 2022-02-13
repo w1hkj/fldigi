@@ -35,8 +35,6 @@
 #include "debug.h"
 #include "pthread.h"
 
-using namespace std;
-
 static int compby = COMPDATE;
 static bool date_off = true;
 
@@ -44,7 +42,7 @@ bool cQsoDb::reverse = false;
 
 cQsoRec::cQsoRec() {
 	for (int i=0;i < NUMFIELDS; i++) {
-		qsofield[i] = new string;
+		qsofield[i] = new std::string;
 		qsofield[i]->clear();
 	}
 }
@@ -142,7 +140,7 @@ void cQsoRec::addtoField (int n, const char *s){
 
 void cQsoRec::trimFields () {
 	size_t p;
-	string s;
+	std::string s;
 	for (int i = 0; i < NUMFIELDS; i++) {
 		s = *qsofield[i];
 //right trim string
@@ -301,13 +299,13 @@ static char delim_in = '\t';
 static char delim_out = '\t';
 static bool isVer3 = false;
 
-ostream &operator<< (ostream &output, const cQsoRec &rec) {
+std::ostream &operator<< (std::ostream &output, const cQsoRec &rec) {
 	for (int i = 0; i < EXPORT; i++)
 		output << rec.qsofield[i]->c_str() << delim_out;
 	return output;
 }
 
-istream &operator>> (istream &input, cQsoRec &rec ) {
+std::istream &operator>> (std::istream &input, cQsoRec &rec ) {
 	static char buf[1024]; // Must be big enough for a field.
 	for (int i = 0; i < NUMFIELDS; i++) {
 		input.getline( buf, sizeof(buf), delim_in );
@@ -473,7 +471,7 @@ void cQsoDb::SortByFreq () {
 
 bool cQsoDb::qsoIsValidFile(const char *fname) {
   char buff[256];
-  ifstream inQsoFile (fname, ios::in);
+  std::ifstream inQsoFile (fname, std::ios::in);
   if (!inQsoFile)
     return false;
   inQsoFile.getline (buff, 256);
@@ -487,7 +485,7 @@ bool cQsoDb::qsoIsValidFile(const char *fname) {
 
 int cQsoDb::qsoReadFile (const char *fname) {
 char buff[256];
-  ifstream inQsoFile (fname, ios::in);
+  std::ifstream inQsoFile (fname, std::ios::in);
   if (!inQsoFile)
     return 1;
   inQsoFile.getline (buff, 256);
@@ -510,7 +508,7 @@ char buff[256];
 }
 
 int cQsoDb::qsoWriteFile (const char *fname) {
-  ofstream outQsoFile (fname, ios::out);
+  std::ofstream outQsoFile (fname, std::ios::out);
   if (!outQsoFile) {
     return 1;
   }

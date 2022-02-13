@@ -50,8 +50,6 @@
 
 #include "status.h"
 
-//using namespace std;
-
 // RnA discriminator
 
 #define fmt_DFT_LEN 51200
@@ -115,10 +113,10 @@ static struct timeval fmt_tv;
 static double ufreq = 0, uamp = 0;
 static double rfreq = 0, ramp = 0;
 
-// formatting strings used by csv export method
+// formatting std::strings used by csv export method
 static std::string csv_string;
 static std::string buffered_csv_string;
-// debugging data string
+// debugging data std::string
 static std::string debug_csv_string;
 
 static char comma_format[] = "\

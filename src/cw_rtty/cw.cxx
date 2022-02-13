@@ -63,8 +63,6 @@
 
 #include "audio_alert.h"
 
-using namespace std;
-
 void start_cwio_thread();
 void stop_cwio_thread();
 
@@ -759,7 +757,7 @@ inline int cw::usec_diff(unsigned int earlier, unsigned int later)
 //	If there is no data ready, CW_ERROR is returned.
 //=======================================================================
 
-int cw::handle_event(int cw_event, string &sc)
+int cw::handle_event(int cw_event, std::string &sc)
 {
 	static int space_sent = true;	// for word space logic
 	static int last_element = 0;	// length of last dot/dash
@@ -1061,7 +1059,7 @@ void cw::send_symbol(int bit, int len, int state)
 
 void cw::send_ch(int ch)
 {
-	string code;
+	std::string code;
 
 	float kfactor = CW_SAMPLERATE / 1000.0;
 	float tc = 1200.0 / progdefaults.CWspeed;
@@ -1126,7 +1124,7 @@ void cw::send_ch(int ch)
 	}
 
 	if (ch != -1) {
-		string prtstr = morse.tx_print();
+		std::string prtstr = morse.tx_print();
 		for (size_t n = 0; n < prtstr.length(); n++)
 			put_echo_char(
 				prtstr[n],
@@ -1351,7 +1349,7 @@ static bool cwio_calibrate_flag   = false;
 
 static int cwio_ch;
 static cMorse *cwio_morse = 0;
-static queue<int> fifo;
+static std::queue<int> fifo;
 static std::string cwio_prosigns;
 
 //----------------------------------------------------------------------
@@ -1474,7 +1472,7 @@ void send_cwio(int c)
 		return;
 	}
 
-	string code;
+	std::string code;
 	code = cwio_morse->tx_lookup(c);
 	if (!code.length()) {
 		return;

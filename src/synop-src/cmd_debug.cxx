@@ -42,8 +42,6 @@
 #include "debug.h"
 #include "gettext.h"
 
-using namespace std;
-
 static FILE* wfile = 0;
 static FILE* rfile = 0;
 static int rfd;

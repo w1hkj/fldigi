@@ -46,8 +46,6 @@
 #include "icons.h"
 #include "fl_digi.h"
 
-using namespace std;
-
 //#define DEBUGXML 1
 
 void parseRIGDEF(size_t &);
@@ -114,21 +112,21 @@ void parseDSHIFT(size_t &);
 
 void print(size_t &);
 
-list<XMLIOS>	commands;
-list<XMLIOS>	reply;
-list<MODE> 		lmodes;
-list<BW> 		lbws;
-list<BW>		lbwCMD;
-list<BW>		lbwREPLY;
-list<MODE>		lmodeCMD;
-list<MODE>		lmodeREPLY;
-list<string> 	LSBmodes;
+std::list<XMLIOS>	commands;
+std::list<XMLIOS>	reply;
+std::list<MODE> 		lmodes;
+std::list<BW> 		lbws;
+std::list<BW>		lbwCMD;
+std::list<BW>		lbwREPLY;
+std::list<MODE>		lmodeCMD;
+std::list<MODE>		lmodeREPLY;
+std::list<std::string> 	LSBmodes;
 
 XMLRIG xmlrig;
 
 XMLIOS iosTemp;
 
-string strXML;
+std::string strXML;
 
 TAGS rigdeftags[] = {
 	{"<RIGDEF",		parseRIGDEF},
@@ -228,10 +226,10 @@ size_t tagEnd(size_t p0)
 {
 	size_t p1, p2, p3;
 	p1 = p0;
-	string strtag = "</";
+	std::string strtag = "</";
 	p2 = strXML.find(">", p0);
 	p3 = strXML.find(" ", p0);
-	if (p2 == string::npos) {
+	if (p2 == std::string::npos) {
 		return p2;
 	}
 	if (p3 < p2)
@@ -248,11 +246,11 @@ size_t nextTag(size_t p0)
 	return p0;
 }
 
-string getElement(size_t p0)
+std::string getElement(size_t p0)
 {
 	size_t p1 = strXML.find(">",p0),
 		   p2 = nextTag(p1+1);
-	if (p1 == string::npos || p2 == string::npos)
+	if (p1 == std::string::npos || p2 == std::string::npos)
 		return "";
 	p1++; p2--;
 	while (p1 < p2 && strXML[p1] == ' ') p1++; // skip leading spaces
@@ -262,7 +260,7 @@ string getElement(size_t p0)
 
 int getInt(size_t p0)
 {
-	string stemp = getElement(p0);
+	std::string stemp = getElement(p0);
 	if (stemp.length() == 0)
 		return 0;
 	return atoi(stemp.c_str());
@@ -270,7 +268,7 @@ int getInt(size_t p0)
 
 float getFloat(size_t p0)
 {
-	string stemp = getElement(p0);
+	std::string stemp = getElement(p0);
 	if (stemp.length() == 0)
 		return 0;
 	return atof(stemp.c_str());
@@ -278,7 +276,7 @@ float getFloat(size_t p0)
 
 bool getBool( size_t p0)
 {
-	string stemp = getElement(p0);
+	std::string stemp = getElement(p0);
 	if (stemp.length() == 0)
 		return false;
 	if (strcasecmp(stemp.c_str(), "true") == 0)
@@ -295,12 +293,12 @@ char getByte(size_t p0)
 	return (val & 0xFF);
 }
 
-string getBytes(size_t p0)
+std::string getBytes(size_t p0)
 {
 	unsigned int val;
 	size_t space;
-	string stemp = getElement(p0);
-	string s;
+	std::string stemp = getElement(p0);
+	std::string s;
 	while ( stemp.length() ) {
 		if (sscanf( stemp.c_str(), "%x", &val) != 1) {
 			s = "";
@@ -308,7 +306,7 @@ string getBytes(size_t p0)
 		}
 		s += (char)(val & 0xFF);
 		space = stemp.find(" ");
-		if (space == string::npos) break;
+		if (space == std::string::npos) break;
 		stemp.erase(0, space + 1);
 	}
 	return s;
@@ -332,7 +330,7 @@ bool isByte(size_t p0, char &ch)
 	return true;
 }
 
-bool isBytes( size_t p0, string &s )
+bool isBytes( size_t p0, std::string &s )
 {
 //	p0 = nextTag(p0);
 	if (strXML.find ("<BYTES", p0) != p0)
@@ -341,7 +339,7 @@ bool isBytes( size_t p0, string &s )
 	return true;
 }
 
-bool isString( size_t p0, string &s )
+bool isString( size_t p0, std::string &s )
 {
 //	p0 = nextTag(p0);
 	if (strXML.find("<STRING", p0) != p0)
@@ -350,7 +348,7 @@ bool isString( size_t p0, string &s )
 	return true;
 }
 
-bool isSymbol( size_t p0, string &s)
+bool isSymbol( size_t p0, std::string &s)
 {
 	if (strXML.find("<SYMBOL", p0) != p0)
 		return false;
@@ -358,7 +356,7 @@ bool isSymbol( size_t p0, string &s)
 	return true;
 }
 
-bool tagIs(size_t &p0, string tag)
+bool tagIs(size_t &p0, std::string tag)
 {
 	return (strXML.find(tag,p0) == p0);
 }
@@ -367,27 +365,27 @@ bool tagIs(size_t &p0, string tag)
 // Parse modesTO definitions
 //---------------------------------------------------------------------
 
-void parseMODEdefs(size_t &p0, list<MODE> &lmd)
+void parseMODEdefs(size_t &p0, std::list<MODE> &lmd)
 {
 	size_t pend = tagEnd(p0);
 	size_t elend;
 	char ch;
 	int n;
-	string stemp;
-	string strELEMENT;
-	if (pend == string::npos) {
+	std::string stemp;
+	std::string strELEMENT;
+	if (pend == std::string::npos) {
 		p0++;
 		return;
 	}
 	print(p0,0);
 	p0 = nextTag(p0);
-	while (p0 != string::npos && p0 < pend && tagIs(p0, "<ELEMENT")) {
+	while (p0 != std::string::npos && p0 < pend && tagIs(p0, "<ELEMENT")) {
 		elend = tagEnd(p0);
 		p0 = nextTag(p0);
 		if (isSymbol(p0, strELEMENT)) {
 			p0 = tagEnd(p0);
 			p0 = nextTag(p0);
-			while (p0 != string::npos && p0 < elend) {
+			while (p0 != std::string::npos && p0 < elend) {
 				print(p0,1);
 				if ( isBytes(p0, stemp) ) {
 					lmd.push_back(MODE(strELEMENT,stemp));
@@ -431,7 +429,7 @@ void parseMODEREPLY(size_t &p0)
 void parseLSBMODES(size_t &p0)
 {
 	size_t pend = tagEnd(p0);
-	string sMode;
+	std::string sMode;
 	print(p0,0);
 	p0 = nextTag(p0);
 	while (p0 < pend && isString(p0, sMode)) {
@@ -447,24 +445,24 @@ void parseLSBMODES(size_t &p0)
 // Parse Bandwidth definitions
 //---------------------------------------------------------------------
 
-void parseBWdefs(size_t &p0, list<BW> &lbw)
+void parseBWdefs(size_t &p0, std::list<BW> &lbw)
 {
 	size_t pend = tagEnd(p0);
 	size_t elend;
 	char ch;
 	int n;
-	string strELEMENT;
-	string stemp;
-	if (pend == string::npos) {
+	std::string strELEMENT;
+	std::string stemp;
+	if (pend == std::string::npos) {
 		LOG_ERROR("Unmatched tag %s", strXML.substr(p0, 10).c_str());
 		p0++;
 		return;
 	}
 	print(p0,0);
 	size_t p1 = nextTag(p0);
-	while (p1 != string::npos && p1 < pend && tagIs(p1, "<ELEMENT")) {
+	while (p1 != std::string::npos && p1 < pend && tagIs(p1, "<ELEMENT")) {
 		elend = tagEnd(p1);
-		if (elend == string::npos || elend > pend) {
+		if (elend == std::string::npos || elend > pend) {
 			LOG_ERROR("Unmatched tag %s", "<ELEMENT");
 			p0 = pend;
 			return;
@@ -473,7 +471,7 @@ void parseBWdefs(size_t &p0, list<BW> &lbw)
 		if (isSymbol(p1, strELEMENT)) {
 			p1 = tagEnd(p1);
 			p1 = nextTag(p1);
-			while (p1 != string::npos && p1 < elend) {
+			while (p1 != std::string::npos && p1 < elend) {
 				print(p1,1);
 				if ( isBytes(p1, stemp) ) {
 					lbw.push_back(BW(strELEMENT,stemp));
@@ -583,7 +581,7 @@ void parseASCII(size_t &p0){
 
 void parseBAUDRATE(size_t &p0)
 {
-	string sVal = getElement(p0);
+	std::string sVal = getElement(p0);
 	xmlrig.baud = progdefaults.nBaudRate(sVal.c_str());
 	size_t pend = tagEnd(p0);
 	p0 = pend;
@@ -725,18 +723,18 @@ void parsePOLLINT(size_t &p0) {
 }
 
 void parseSMETER(size_t &p0) {
-	string strmeter = getElement(p0);
+	std::string strmeter = getElement(p0);
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 	xmlrig.smeter.clear();
 	int val, sm;
 	size_t p = strmeter.find(",");
-	while ( !strmeter.empty() && (p != string::npos) ) {
+	while ( !strmeter.empty() && (p != std::string::npos) ) {
 		val = atoi(&strmeter[0]);
 		sm = atoi(&strmeter[p+1]);
 		xmlrig.smeter.push_back(PAIR(val,sm));
 		p = strmeter.find(";");
-		if (p == string::npos) strmeter.clear();
+		if (p == std::string::npos) strmeter.clear();
 		else {
 			strmeter.erase(0, p+1);
 			p = strmeter.find(",");
@@ -746,18 +744,18 @@ void parseSMETER(size_t &p0) {
 }
 
 void parsePMETER(size_t &p0) {
-	string strmeter = getElement(p0);
+	std::string strmeter = getElement(p0);
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 	xmlrig.pmeter.clear();
 	int val, sm;
 	size_t p = strmeter.find(",");
-	while ( !strmeter.empty() && (p != string::npos) ) {
+	while ( !strmeter.empty() && (p != std::string::npos) ) {
 		val = atoi(&strmeter[0]);
 		sm = atoi(&strmeter[p+1]);
 		xmlrig.pmeter.push_back(PAIR(val,sm));
 		p = strmeter.find(";");
-		if (p == string::npos) strmeter.clear();
+		if (p == std::string::npos) strmeter.clear();
 		else {
 			strmeter.erase(0, p+1);
 			p = strmeter.find(",");
@@ -767,18 +765,18 @@ void parsePMETER(size_t &p0) {
 }
 
 void parseNOTCH(size_t &p0) {
-	string strnotch = getElement(p0);
+	std::string strnotch = getElement(p0);
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 	xmlrig.notch.clear();
 	int val, ntch;
 	size_t p = strnotch.find(",");
-	while ( !strnotch.empty() && (p != string::npos) ) {
+	while ( !strnotch.empty() && (p != std::string::npos) ) {
 		val = atoi(&strnotch[0]);
 		ntch = atoi(&strnotch[p+1]);
 		xmlrig.notch.push_back(PAIR(val,ntch));
 		p = strnotch.find(";");
-		if (p == string::npos) strnotch.clear();
+		if (p == std::string::npos) strnotch.clear();
 		else {
 			strnotch.erase(0, p+1);
 			p = strnotch.find(",");
@@ -788,21 +786,21 @@ void parseNOTCH(size_t &p0) {
 }
 
 void parsePWRLEVEL(size_t &p0) {
-	string strpwrlevel = getElement(p0);
+	std::string strpwrlevel = getElement(p0);
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 	xmlrig.pwrlevel.clear();
 	int val, pwr;
 	float min = 500, max = 0;
 	size_t p = strpwrlevel.find(",");
-	while ( !strpwrlevel.empty() && (p != string::npos) ) {
+	while ( !strpwrlevel.empty() && (p != std::string::npos) ) {
 		val = atoi(&strpwrlevel[0]);
 		pwr = atoi(&strpwrlevel[p+1]);
 		if (pwr < min) min = pwr;
 		if (pwr > max) max = pwr;
 		xmlrig.pwrlevel.push_back(PAIR(val,pwr));
 		p = strpwrlevel.find(";");
-		if (p == string::npos) strpwrlevel.clear();
+		if (p == std::string::npos) strpwrlevel.clear();
 		else {
 			strpwrlevel.erase(0, p+1);
 			p = strpwrlevel.find(",");
@@ -929,28 +927,28 @@ void parseIOSdata(size_t &p0)
 
 void parseIOSinfo(size_t &p0)
 {
-	string strR = getElement(p0);
+	std::string strR = getElement(p0);
 	if (strR.empty()) return;
 	iosTemp.info = strR;
 }
 
 void parseIOSok(size_t &p0)
 {
-	string strR = getElement(p0);
+	std::string strR = getElement(p0);
 	if (strR.empty()) return;
 	iosTemp.ok = strR;
 }
 
 void parseIOSbad(size_t &p0)
 {
-	string strR = getElement(p0);
+	std::string strR = getElement(p0);
 	if (strR.empty()) return;
 	iosTemp.bad = strR;
 }
 
 void parseIOSsymbol(size_t &p0)
 {
-	string strR = getElement(p0);
+	std::string strR = getElement(p0);
 	if (strR.empty()) return;
 	iosTemp.SYMBOL = strR;
 }
@@ -1012,14 +1010,14 @@ void parseRIGDEF(size_t &p0)
 {
 	print(p0,0);
 	size_t p1 = tagEnd(p0);
-	if (p1 != string::npos)
+	if (p1 != std::string::npos)
 		strXML.erase(p1);
 }
 
 void parseDISCARD(size_t &p0)
 {
 	size_t pend = tagEnd(p0);
-	if (pend == string::npos) p0++;
+	if (pend == std::string::npos) p0++;
 	else p0 = pend;
 }
 
@@ -1029,7 +1027,7 @@ void parseXML()
 	TAGS *pValid = rigdeftags;
 
 	p0 = strXML.find("<");
-	while (p0 != string::npos) {
+	while (p0 != std::string::npos) {
 		pValid = rigdeftags;
 		while (pValid->tag) {
 			if (strXML.find(pValid->tag, p0) == p0)
@@ -1052,15 +1050,15 @@ bool remove_comments()
 	size_t p1 = 0;
 
 // remove comments from xml text
-	while ((p0 = strXML.find("<!--")) != string::npos) {
+	while ((p0 = strXML.find("<!--")) != std::string::npos) {
 		p1 = strXML.find("-->", p0);
-		if (p1 == string::npos) {
+		if (p1 == std::string::npos) {
 			fl_alert2("Corrupt rig XML definition file\nMismatched comment tags!");
 			return false;
 		}
 		strXML.erase(p0, p1 - p0 + 3);
 	}
-	if (strXML.find("-->") != string::npos) {
+	if (strXML.find("-->") != std::string::npos) {
 		fl_alert2("Corrupt rig XML definition file\nMismatched comment tags!");
 		return false;
 	}
@@ -1090,7 +1088,7 @@ bool readRigXML()
 	LSBmodes.clear();
 	strXML = "";
 
-	ifstream xmlfile(progdefaults.XmlRigFilename.c_str(), ios::in);
+	std::ifstream xmlfile(progdefaults.XmlRigFilename.c_str(), std::ios::in);
 	if (xmlfile) {
 		while (!xmlfile.eof()) {
 			lines++;
@@ -1110,7 +1108,7 @@ bool readRigXML()
 
 void selectRigXmlFilename()
 {
-	string deffilename;
+	std::string deffilename;
 	deffilename = progdefaults.XmlRigFilename;
 	const char *p = FSEL::select(_("Open rig xml file"), _("Fldigi rig xml definition file\t*.xml"), deffilename.c_str());
 	if (!p) return;

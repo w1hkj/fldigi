@@ -39,13 +39,10 @@
 
 #endif
 
-
-using namespace std;
-
 namespace icons {
 
 #if USE_IMAGE_LABELS
-typedef map<Fl_Multi_Label*, Fl_Image**> imap_t;
+typedef std::map<Fl_Multi_Label*, Fl_Image**> imap_t;
 static imap_t* imap = 0;
 #endif
 

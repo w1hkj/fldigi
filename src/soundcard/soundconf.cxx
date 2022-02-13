@@ -45,8 +45,6 @@
 
 LOG_FILE_SOURCE(debug::LOG_AUDIO);
 
-using namespace std;
-
 double std_sample_rates[] = { 8000.0, 9600.0, 11025.0, 12000.0, 16000.0, 22050.0, 24000.0,
 	32000.0, 44100.0, 48000.0, 88200.0, 96000.0, 192000.0, -1.0 };
 
@@ -104,7 +102,7 @@ static void init_oss(void)
 
 #if USE_PORTAUDIO
 
-map<PaHostApiTypeId, unsigned> pa_api_prio;
+std::map<PaHostApiTypeId, unsigned> pa_api_prio;
 
 struct padev
 {
@@ -189,7 +187,7 @@ static void init_portaudio(void)
 	pa_api_prio[paOSS] = 2;
 #endif
 
-	list<padev> devlist;
+	std::list<padev> devlist;
 	int devnbr = 0;
 	for (SoundPort::device_iterator idev = SoundPort::devices().begin();
 		 idev != SoundPort::devices().end(); ++idev) {
@@ -201,10 +199,10 @@ static void init_portaudio(void)
 
 	str_pa_devices.assign("\nPortaudio devices:\n");
 	PaHostApiTypeId first_api = devlist.begin()->api;
-	for (list<padev>::const_iterator ilist = devlist.begin();
+	for (std::list<padev>::const_iterator ilist = devlist.begin();
 		 ilist != devlist.end(); ilist++) {
-		string menu_item;
-		string::size_type i = 0;
+		std::string menu_item;
+		std::string::size_type i = 0;
 		if (ilist->api != first_api) { // add a submenu
 			menu_item.append(Pa_GetHostApiInfo(ilist->dev->hostApi)->name).append(" devices/");
 			i = menu_item.length();
@@ -214,7 +212,7 @@ static void init_portaudio(void)
 		str_pa_devices.append(menu_item).append("\n");
 
 		// backslash-escape any slashes in the device name
-		while ((i = menu_item.find('/', i)) != string::npos) {
+		while ((i = menu_item.find('/', i)) != std::string::npos) {
 			menu_item.insert(i, 1, '\\');
 			i += 2;
 		}
@@ -525,7 +523,7 @@ void sound_update(unsigned idx)
 			Fl_ListBox* listbox[2] = { menuInSampleRate, menuOutSampleRate };
 			for (size_t i = 0; i < 2; i++) {
 				char* label = strdup(listbox[i]->value());
-				const vector<double>& srates = SoundPort::get_supported_rates(scDevice[i], i);
+				const std::vector<double>& srates = SoundPort::get_supported_rates(scDevice[i], i);
 
 				switch (srates.size()) {
 					case 0: // startup; no devices initialised yet

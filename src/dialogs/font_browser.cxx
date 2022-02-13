@@ -42,8 +42,6 @@
 #include "threads.h"
 #include "debug.h"
 
-using namespace std;
-
 void find_fonts();
 
 Font_Browser* font_browser;

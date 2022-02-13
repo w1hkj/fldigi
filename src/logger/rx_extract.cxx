@@ -44,8 +44,6 @@
 
 #include "audio_alert.h"
 
-using namespace std;
-
 static const char *wrap_beg = "[WRAP:beg]";
 static const char *wrap_end = "[WRAP:end]";
 static const char *flmsg = "<flmsg>";
@@ -66,9 +64,9 @@ Save tags and all enclosed text to date-time stamped file, ie:\n\
 #endif
 
 #define   bufsize  64
-string rx_extract_buff;
-string rx_buff;
-string rx_extract_msg;
+std::string rx_extract_buff;
+std::string rx_buff;
+std::string rx_extract_msg;
 
 bool extract_wrap = false;
 bool extract_flamp = false;
@@ -112,7 +110,7 @@ void rx_remove_timer()
 
 void invoke_flmsg()
 {
-	string cmd = progdefaults.flmsg_pathname;
+	std::string cmd = progdefaults.flmsg_pathname;
 
 	REQ(rx_remove_timer);
 	struct tm tim;
@@ -121,11 +119,11 @@ void invoke_flmsg()
 	gmtime_r(&t, &tim);
 	strftime(dttm, sizeof(dttm), "%Y%m%d-%H%M%S", &tim);
 
-	string outfilename = FLMSG_WRAP_recv_dir;
+	std::string outfilename = FLMSG_WRAP_recv_dir;
 	outfilename.append("extract-");
 	outfilename.append(dttm);
 	outfilename.append(".wrap");
-	ofstream extractstream(outfilename.c_str(), ios::binary);
+	std::ofstream extractstream(outfilename.c_str(), std::ios::binary);
 	if (extractstream) {
 		extractstream << rx_buff;
 		extractstream.close();
@@ -148,7 +146,7 @@ void invoke_flmsg()
 		open_recv_folder(FLMSG_WRAP_recv_dir.c_str());
 
 	if ((progdefaults.open_flmsg || progdefaults.open_flmsg_print) &&
-		(rx_buff.find(flmsg) != string::npos) &&
+		(rx_buff.find(flmsg) != std::string::npos) &&
 		!progdefaults.flmsg_pathname.empty()) {
 
 #ifdef __MINGW32__
@@ -174,12 +172,12 @@ void invoke_flmsg()
 		CloseHandle(pi.hThread);
 		free (cmdstr);
 #else
-		string params = "";
-		static string ap[10];// = cmd;//"";
-		string param = "";
+		std::string params = "";
+		static std::string ap[10];// = cmd;//"";
+		std::string param = "";
 
 		size_t p = cmd.find(" -");
-		if (p != string::npos) {
+		if (p != std::string::npos) {
 			param.assign(cmd.substr(p));
 			cmd = cmd.substr(0,p);
 		}
@@ -293,7 +291,7 @@ void invoke_flmsg()
 
 void start_flmsg()
 {
-	string cmd = progdefaults.flmsg_pathname;
+	std::string cmd = progdefaults.flmsg_pathname;
 
 #ifdef __MINGW32__
 	char *cmdstr = strdup(cmd.c_str());
@@ -345,7 +343,7 @@ void rx_extract_add(int c)
 	size_t p2 = rx_extract_buff.find(";");
 	size_t p3 = rx_extract_buff.find("~4");
 
-	if ( (p1 != string::npos) && (p2 != string::npos) && (p3 != string::npos) &&
+	if ( (p1 != std::string::npos) && (p2 != std::string::npos) && (p3 != std::string::npos) &&
 		 (p1 < p2) && (p2 < p3)) {
 		if (!flmsg_is_online) start_flmsg();
 		rx_extract_buff.assign(' ', bufsize);
@@ -353,7 +351,7 @@ void rx_extract_add(int c)
 	}
 
 	if (!extract_arq &&
-		(rx_extract_buff.find("ARQ:FILE::FLMSG_XFR") != string::npos) ) {
+		(rx_extract_buff.find("ARQ:FILE::FLMSG_XFR") != std::string::npos) ) {
 		extract_arq = true;
 		REQ(rx_remove_timer);
 		REQ(rx_add_timer);
@@ -368,7 +366,7 @@ void rx_extract_add(int c)
 			rx_extract_reset();
 		return;
 	} else if (!extract_flamp &&
-			   (rx_extract_buff.find(flamp_beg) != string::npos) ) {
+			   (rx_extract_buff.find(flamp_beg) != std::string::npos) ) {
 		extract_flamp = true;
 		rx_extract_buff.assign(' ', bufsize);
 		rx_extract_msg = "Extracting FLAMP";
@@ -377,11 +375,11 @@ void rx_extract_add(int c)
 	} else if (extract_flamp) {
 		REQ(rx_remove_timer);
 		REQ(rx_add_timer);
-		if (rx_extract_buff.find(flamp_end) != string::npos)
+		if (rx_extract_buff.find(flamp_end) != std::string::npos)
 			rx_extract_reset();
 		return;
 	} else if (!extract_wrap &&
-			   (rx_extract_buff.find(wrap_beg) != string::npos) ) {
+			   (rx_extract_buff.find(wrap_beg) != std::string::npos) ) {
 		rx_buff.assign(wrap_beg);
 		rx_extract_msg = "Extracting WRAP/FLMSG";
 		put_status(rx_extract_msg.c_str());
@@ -393,7 +391,7 @@ void rx_extract_add(int c)
 		rx_buff += ch;
 		REQ(rx_remove_timer);
 		REQ(rx_add_timer);
-		if (rx_extract_buff.find(wrap_end) != string::npos) {
+		if (rx_extract_buff.find(wrap_end) != std::string::npos) {
 			invoke_flmsg();
 			rx_extract_reset();
 		}
@@ -409,7 +407,7 @@ void select_flmsg_pathname()
 	open_recv_folder("/Applications/");
 	return;
 #else
-	string deffilename = progdefaults.flmsg_pathname;
+	std::string deffilename = progdefaults.flmsg_pathname;
 #  ifdef __MINGW32__
 	if (deffilename.empty())
 		deffilename = "C:\\Program Files\\";
@@ -433,19 +431,19 @@ void select_flmsg_pathname()
 // not Windoze or
 // OS X to find binaries in the /Applications/ directory structure
 
-bool find_pathto_exectable(string &binpath, string executable)
+bool find_pathto_exectable(std::string &binpath, std::string executable)
 {
 	size_t endindex = 0;
 
 	binpath.clear();
 
-// Get the PATH environment variable as pointer to string
-// The strings in the environment list are of the form name=value.
-// As  typically  implemented, getenv() returns a pointer to a string within
-// the environment list.  The caller must take care not to modify this string,
+// Get the PATH environment variable as pointer to std::string
+// The std::strings in the environment list are of the form name=value.
+// As  typically  implemented, getenv() returns a pointer to a std::string within
+// the environment list.  The caller must take care not to modify this std::string,
 // since that would  change the environment of the process.
 //
-// The  implementation of getenv() is not required to be reentrant.  The string
+// The  implementation of getenv() is not required to be reentrant.  The std::string
 // pointed to by the return value of getenv() may be statically allocated, and
 // can be modified by a  subsequent call to getenv(), putenv(3), setenv(3), or
 // unsetenv(3).
@@ -454,12 +452,12 @@ bool find_pathto_exectable(string &binpath, string executable)
 
 	if (environment == NULL) return false;
 
-	string env = environment;
-	string testpath = "";
+	std::string env = environment;
+	std::string testpath = "";
 
 	char endchar = ':';
 
-	// Parse single PATH string into directories
+	// Parse single PATH std::string into directories
 	while (!env.empty()) {
 		endindex = env.find(endchar);
 		testpath = env.substr(0, endindex);
@@ -475,7 +473,7 @@ bool find_pathto_exectable(string &binpath, string executable)
 			binpath = testpath;
 			return true;
 		}
-		if (endindex == string::npos)
+		if (endindex == std::string::npos)
 			env.clear();
 		else
 			env.erase(0, endindex + 1);
@@ -483,7 +481,7 @@ bool find_pathto_exectable(string &binpath, string executable)
 	return false;
 }
 
-string select_binary_pathname(string deffilename)
+std::string select_binary_pathname(std::string deffilename)
 {
 #ifdef __APPLE__
 	open_recv_folder("/Applications/");
@@ -496,10 +494,10 @@ string select_binary_pathname(string deffilename)
 	deffilename = "/usr/local/bin/";
 	const char *p = FSEL::select(_("Locate binary"), _("*"), deffilename.c_str());
 # endif
-	string executable = "";
+	std::string executable = "";
 	if (p && *p) executable = p;
 // do not allow recursion !!
-	if (executable.find("fldigi") != string::npos) return "";
+	if (executable.find("fldigi") != std::string::npos) return "";
 	return executable;
 #endif
 }

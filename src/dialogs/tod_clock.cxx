@@ -58,8 +58,6 @@
 
 LOG_FILE_SOURCE(debug::LOG_FD);
 
-using namespace std;
-
 static pthread_t TOD_thread;
 static pthread_mutex_t TX_mutex     = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t time_mutex   = PTHREAD_MUTEX_INITIALIZER;

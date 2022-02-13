@@ -53,8 +53,6 @@
 
 #include "test_signal.h"
 
-using namespace std;
-
 #include "ifkp_varicode.cxx"
 
 #define IFKP_SR 16000
@@ -62,8 +60,8 @@ using namespace std;
 #include "ifkp-pic.cxx"
 
 static fre_t call("([[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+)", REG_EXTENDED);
-static string teststr = "";
-static string allowed = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/";
+static std::string teststr = "";
+static std::string allowed = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/";
 static char sz[21];
 
 static bool enable_audit_log = false;
@@ -71,7 +69,7 @@ static bool enable_heard_log = false;
 
 int ifkp::IMAGEspp = IMAGESPP;
 
-static string valid_callsign(char ch)
+static std::string valid_callsign(char ch)
 {
 	if (allowed.find(ch) == std::string::npos) ch = ' ';
 	teststr += tolower(ch);
@@ -320,7 +318,7 @@ void ifkp::toggle_logs()
 		heard_log_fname = progdefaults.ifkp_heard_log;
 		std::string sheard = TempDir;
 		sheard.append(heard_log_fname);
-		heard_log.open(sheard.c_str(), ios::app);
+		heard_log.open(sheard.c_str(), std::ios::app);
 
 		heard_log << "==================================================\n";
 		heard_log << "Heard log: " << zdate() << ", " << ztime() << "\n";
@@ -333,7 +331,7 @@ void ifkp::toggle_logs()
 		std::string saudit = TempDir;
 		saudit.append(audit_log_fname);
 		audit_log.close();
-		audit_log.open(saudit.c_str(), ios::app);
+		audit_log.open(saudit.c_str(), std::ios::app);
 
 		audit_log << "==================================================\n";
 		audit_log << "Audit log: " << zdate() << ", " << ztime() << "\n";

@@ -42,8 +42,6 @@
 #include "confdialog.h"
 #include "main.h"
 
-using namespace std;
-
 #if HAVE_STD_HASH
 #	include <unordered_map>
 	using std::unordered_map;
@@ -64,16 +62,16 @@ dxcc::dxcc(const char* cn, int cq, int itu, const char* ct, float lat, float lon
 	continent[2] = '\0';
 }
 
-typedef unordered_map<string, dxcc*> dxcc_map_t;
-typedef vector<dxcc*> dxcc_list_t;
+typedef std::unordered_map<std::string, dxcc*> dxcc_map_t;
+typedef std::vector<dxcc*> dxcc_list_t;
 static dxcc_map_t* cmap = 0;
 static dxcc_list_t* clist = 0;
-static vector<string>* cnames = 0;
+static std::vector<std::string>* cnames = 0;
 
-static list<string> lnames;
-string cbolist;
+static std::list<std::string> lnames;
+std::string cbolist;
 
-static void add_prefix(string& prefix, dxcc* entry);
+static void add_prefix(std::string& prefix, dxcc* entry);
 
 extern std::string s_ctydat;
 
@@ -95,7 +93,7 @@ bool dxcc_internal_data()
 
 	std::string tempfname = HomeDir;
 	tempfname.append("/temp/ctydat.txt");
-	ofstream out(tempfname.c_str());
+	std::ofstream out(tempfname.c_str());
 	if (!out) {
 		LOG_INFO("Could not write temp file %s", tempfname.c_str());
 		return false;
@@ -103,7 +101,7 @@ bool dxcc_internal_data()
 	out << s_ctydat;
 	out.close();
 
-	ifstream in(tempfname.c_str());
+	std::ifstream in(tempfname.c_str());
 	if (!in) {
 		LOG_INFO("Could not read temp file %s", tempfname.c_str());
 		return false;
@@ -112,7 +110,7 @@ bool dxcc_internal_data()
 	LOG_INFO("Using internal cty.dat data");
 
 	cmap = new dxcc_map_t;
-	cnames = new vector<string>;
+	cnames = new std::vector<std::string>;
 
 // this MUST be greater than the actual number of dcxx entities or
 // the Windows gcc string library will move all of the strings and
@@ -125,11 +123,11 @@ bool dxcc_internal_data()
 	clist->reserve(500);
 
 	dxcc* entry;
-	string record;
+	std::string record;
 
 	unsigned nrec = 0;
 	while (getline(in, record, ';')) {
-		istringstream is(record);
+		std::istringstream is(record);
 		entry = new dxcc;
 		nrec++;
 
@@ -146,7 +144,7 @@ bool dxcc_internal_data()
 		// itu zone
 		(is >> entry->itu_zone).ignore();
 		// continent
-		(is >> ws).get(entry->continent, 3).ignore();
+		(is >> std::ws).get(entry->continent, 3).ignore();
 
 		// latitude
 		(is >> entry->latitude).ignore();
@@ -157,9 +155,9 @@ bool dxcc_internal_data()
 
 		// prefixes and exceptions
 		int c;
-		string prefix;
+		std::string prefix;
 		while ((c = is.peek()) == ' ' || c == '\n') {
-			is >> ws;
+			is >> std::ws;
 
 			while (getline(is, prefix, ',')) {
 				add_prefix(prefix, entry);
@@ -183,20 +181,20 @@ bool dxcc_internal_data()
 			lnames.push_back("USA");
 		}
 
-		in >> ws;
+		in >> std::ws;
 
 	}
 	lnames.sort(compare_nocase);
 
 	cbolist.clear();
-	list<string>::iterator p = lnames.begin();
+	std::list<std::string>::iterator p = lnames.begin();
 	while (p != lnames.end()) {
 		cbolist.append(*p);
 		p++;
 		if (p != lnames.end()) cbolist.append("|");
 	}
 
-	stringstream info;
+	std::stringstream info;
 	info << "\nLoaded " << cmap->size() << " prefixes for " << nrec
 	     << " countries from internal cty.dat\n"
 		 << "You should download the latest from http://www.country-files.com";
@@ -214,14 +212,14 @@ bool dxcc_open(const char* filename)
 		return true;
 	}
 
-	ifstream in(filename);
+	std::ifstream in(filename);
 	if (!in) {
 		LOG_INFO("Could not read contest country file \"%s\"", filename);
 		return dxcc_internal_data();
 	}
 
 	cmap = new dxcc_map_t;
-	cnames = new vector<string>;
+	cnames = new std::vector<std::string>;
 
 // this MUST be greater than the actual number of dcxx entities or
 // the Windows gcc string library will move all of the strings and
@@ -234,11 +232,11 @@ bool dxcc_open(const char* filename)
 	clist->reserve(500);
 
 	dxcc* entry;
-	string record;
+	std::string record;
 
 	unsigned nrec = 0;
 	while (getline(in, record, ';')) {
-		istringstream is(record);
+		std::istringstream is(record);
 		entry = new dxcc;
 		nrec++;
 
@@ -255,7 +253,7 @@ bool dxcc_open(const char* filename)
 		// itu zone
 		(is >> entry->itu_zone).ignore();
 		// continent
-		(is >> ws).get(entry->continent, 3).ignore();
+		(is >> std::ws).get(entry->continent, 3).ignore();
 
 		// latitude
 		(is >> entry->latitude).ignore();
@@ -266,9 +264,9 @@ bool dxcc_open(const char* filename)
 
 		// prefixes and exceptions
 		int c;
-		string prefix;
+		std::string prefix;
 		while ((c = is.peek()) == ' ' || c == '\r' || c == '\n') {
-			is >> ws;
+			is >> std::ws;
 
 			while (getline(is, prefix, ',')) {
 				add_prefix(prefix, entry);
@@ -292,20 +290,20 @@ bool dxcc_open(const char* filename)
 			lnames.push_back("USA");
 		}
 
-		in >> ws;
+		in >> std::ws;
 
 	}
 	lnames.sort(compare_nocase);
 
 	cbolist.clear();
-	list<string>::iterator p = lnames.begin();
+	std::list<std::string>::iterator p = lnames.begin();
 	while (p != lnames.end()) {
 		cbolist.append(*p);
 		p++;
 		if (p != lnames.end()) cbolist.append("|");
 	}
 
-	stringstream info;
+	std::stringstream info;
 	info << "Loaded " << cmap->size() << " prefixes for " << nrec << " countries";
 	LOG_VERBOSE("%s", info.str().c_str());
 
@@ -323,9 +321,9 @@ void dxcc_close(void)
 		return;
 	delete cnames;
 	cnames = 0;
-	map<dxcc*, bool> rm;
+	std::map<dxcc*, bool> rm;
 	for (dxcc_map_t::iterator i = cmap->begin(); i != cmap->end(); ++i)
-		if (rm.insert(make_pair(i->second, true)).second)
+		if (rm.insert(std::make_pair(i->second, true)).second)
 			delete i->second;
 	delete cmap;
 	cmap = 0;
@@ -333,7 +331,7 @@ void dxcc_close(void)
 	clist = 0;
 }
 
-const vector<dxcc*>* dxcc_entity_list(void)
+const std::vector<dxcc*>* dxcc_entity_list(void)
 {
 	return clist;
 }
@@ -343,7 +341,7 @@ const dxcc* dxcc_lookup(const char* callsign)
 	if (!cmap || !callsign || !*callsign)
 		return NULL;
 
-	string sstr;
+	std::string sstr;
 	sstr.resize(strlen(callsign) + 1);
 	transform(callsign, callsign + sstr.length() - 1, sstr.begin() + 1, static_cast<int (*)(int)>(toupper));
 
@@ -360,7 +358,7 @@ const dxcc* dxcc_lookup(const char* callsign)
 // accomodate special case for KG4... calls
 // all two letter suffix KG4 calls are Guantanamo
 // all others are US non Guantanamo
-	if (sstr.find("KG4") != string::npos) {
+	if (sstr.find("KG4") != std::string::npos) {
 		if (len == 4 || len == 6) {
 			sstr = "K";
 			len = 1;
@@ -377,20 +375,20 @@ const dxcc* dxcc_lookup(const char* callsign)
 	return NULL;
 }
 
-static void add_prefix(string& prefix, dxcc* entry)
+static void add_prefix(std::string& prefix, dxcc* entry)
 {
-	string::size_type i = prefix.find_first_of("([<{");
-	if (likely(i == string::npos)) {
+	std::string::size_type i = prefix.find_first_of("([<{");
+	if (likely(i == std::string::npos)) {
 		(*cmap)[prefix] = entry;
 		return;
 	}
 
-	string::size_type j = i, first = i;
+	std::string::size_type j = i, first = i;
 	do {
 		entry = new struct dxcc(*entry);
 		switch (prefix[i++]) { // increment i past opening bracket
 		case '(':
-			if ((j = prefix.find(')', i)) == string::npos) {
+			if ((j = prefix.find(')', i)) == std::string::npos) {
 				delete entry;
 				return;
 			}
@@ -398,7 +396,7 @@ static void add_prefix(string& prefix, dxcc* entry)
 			entry->cq_zone = atoi(prefix.data() + i);
 			break;
 		case '[':
-			if ((j = prefix.find(']', i)) == string::npos) {
+			if ((j = prefix.find(']', i)) == std::string::npos) {
 				delete entry;
 				return;
 			}
@@ -406,13 +404,13 @@ static void add_prefix(string& prefix, dxcc* entry)
 			entry->itu_zone = atoi(prefix.data() + i);
 			break;
 		case '<':
-			if ((j = prefix.find('/', i)) == string::npos) {
+			if ((j = prefix.find('/', i)) == std::string::npos) {
 				delete entry;
 				return;
 			}
 			prefix[j] = '\0';
 			entry->latitude = atof(prefix.data() + i);
-			if ((j = prefix.find('>', j)) == string::npos) {
+			if ((j = prefix.find('>', j)) == std::string::npos) {
 				delete entry;
 				return;
 			}
@@ -420,43 +418,43 @@ static void add_prefix(string& prefix, dxcc* entry)
 			entry->longitude = atof(prefix.data() + i);
 			break;
 		case '{':
-			if ((j = prefix.find('}', i)) == string::npos) {
+			if ((j = prefix.find('}', i)) == std::string::npos) {
 				delete entry;
 				return;
 			}
 			memcpy(entry->continent, prefix.data() + i, 2);
 			break;
 		}
-	} while ((i = prefix.find_first_of("([<{", j)) != string::npos);
+	} while ((i = prefix.find_first_of("([<{", j)) != std::string::npos);
 
 	prefix.erase(first);
 	(*cmap)[prefix] = entry;
 }
 
-typedef unordered_map<string, unsigned char> qsl_map_t;
+typedef std::unordered_map<std::string, unsigned char> qsl_map_t;
 static qsl_map_t* qsl_calls;
 static unsigned char qsl_open_;
 const char* qsl_names[] = { "LoTW", "eQSL" };
 
 bool qsl_open(const char* filename, qsl_t qsl_type)
 {
-	ifstream in(filename);
+	std::ifstream in(filename);
 	if (!in)
 		return false;
 	if (!qsl_calls)
 		qsl_calls = new qsl_map_t;
 
 	size_t n = qsl_calls->size();
-	string::size_type p;
-	string s;
+	std::string::size_type p;
+	std::string s;
 	s.reserve(32);
 	while (getline(in, s)) {
-		if ((p = s.rfind('\r')) != string::npos)
+		if ((p = s.rfind('\r')) != std::string::npos)
 			s.erase(p);
 		(*qsl_calls)[s] |= (1 << qsl_type);
 	}
 
-	stringstream info;
+	std::stringstream info;
 	info << "Added " << qsl_calls->size() - n
 		 << " " << qsl_names[qsl_type]
 		 << " callsigns from \"" << filename << "\"";
@@ -483,7 +481,7 @@ unsigned char qsl_lookup(const char* callsign)
 	if (qsl_calls == 0)
 		return 0;
 
-	string str;
+	std::string str;
 	str.resize(strlen(callsign));
 	transform(callsign, callsign + str.length(), str.begin(), static_cast<int (*)(int)>(toupper));
 
@@ -494,11 +492,11 @@ unsigned char qsl_lookup(const char* callsign)
 void reload_cty_dat()
 {
 	dxcc_close();
-	dxcc_open(string(progdefaults.cty_dat_pathname).append("cty.dat").c_str());
+	dxcc_open(std::string(progdefaults.cty_dat_pathname).append("cty.dat").c_str());
 	qsl_close();
-	qsl_open(string(progdefaults.cty_dat_pathname).append("lotw1.txt").c_str(), QSL_LOTW);
-	if (!qsl_open(string(progdefaults.cty_dat_pathname).append("eqsl.txt").c_str(), QSL_EQSL))
-		qsl_open(string(progdefaults.cty_dat_pathname).append("AGMemberList.txt").c_str(), QSL_EQSL);
+	qsl_open(std::string(progdefaults.cty_dat_pathname).append("lotw1.txt").c_str(), QSL_LOTW);
+	if (!qsl_open(std::string(progdefaults.cty_dat_pathname).append("eqsl.txt").c_str(), QSL_EQSL))
+		qsl_open(std::string(progdefaults.cty_dat_pathname).append("AGMemberList.txt").c_str(), QSL_EQSL);
 }
 
 void default_cty_dat_pathname()
@@ -509,19 +507,19 @@ void default_cty_dat_pathname()
 
 void select_cty_dat_pathname()
 {
-	string deffilename = progdefaults.cty_dat_pathname;
+	std::string deffilename = progdefaults.cty_dat_pathname;
 	const char *p = FSEL::select(_("Locate cty.dat folder"), _("cty.dat\t*"), deffilename.c_str());
 	if (p) {
-		string nupath = p;
+		std::string nupath = p;
 		size_t ptr;
 //crappy win32 again
 		ptr = nupath.find("\\");
-		while (ptr != string::npos) {
+		while (ptr != std::string::npos) {
 			nupath[ptr] = '/';
 			ptr = nupath.find("\\");
 		}
 		size_t endslash = nupath.rfind("/");
-		if ((endslash != string::npos) && (endslash != (nupath.length()-1)))
+		if ((endslash != std::string::npos) && (endslash != (nupath.length()-1)))
 			nupath.erase(endslash + 1);
 		progdefaults.cty_dat_pathname = nupath;
 		progdefaults.changed = true;

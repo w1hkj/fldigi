@@ -33,7 +33,6 @@
 static pthread_mutex_t mt63_mutex = PTHREAD_MUTEX_INITIALIZER;
 //------------------------------------------------------------------------------
 
-using namespace std;
 bool startflag = true;
 
 void mt63::tx_init()

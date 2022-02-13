@@ -53,8 +53,6 @@
 
 #include "debug.h"
 
-using namespace std;
-
 int * F_Edit::p_editpos;
 
 Fl_Menu_Item F_Edit::menu[] = {
@@ -197,7 +195,7 @@ void F_Edit::clear(void)
 	bkspaces = 0;
 }
 
-void F_Edit::add_text(string s)
+void F_Edit::add_text(std::string s)
 {
 	for (size_t n = 0; n < s.length(); n++) {
 		if (s[n] == '\b') {

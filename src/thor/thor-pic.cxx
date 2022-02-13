@@ -79,7 +79,7 @@ std::string thor::imageheader;
 std::string thor::avatarheader;
 int thor::IMAGEspp = THOR_IMAGESPP;
 
-static string thor_fname;
+static std::string thor_fname;
 
 void thor_correct_video()
 {
@@ -151,7 +151,7 @@ void thor_save_raw_video()
 
 	thor_fname.assign(PicsDir).append("THOR").append(sztime);
 
-	FILE *raw = fl_fopen(string(thor_fname).append(".raw").c_str(), "wb");
+	FILE *raw = fl_fopen(std::string(thor_fname).append(".raw").c_str(), "wb");
 	fwrite(&thor_image_type, 1, 1, raw);
 	fwrite(thor_rawvideo, 1, RAWSIZE, raw);
 	fclose(raw);
@@ -161,7 +161,7 @@ void thor_load_raw_video()
 {
 // abort & close any Rx video processing
 	int image_type = 0;
-	string image_types = "TtSsLlFVvPpMm";
+	std::string image_types = "TtSsLlFVvPpMm";
 
 	if (!thorpicRxWin)
 		thor_createRxViewer();
@@ -184,7 +184,7 @@ void thor_load_raw_video()
 		return;
 	}
 
-	if (image_types.find(thor_image_type) != string::npos) {
+	if (image_types.find(thor_image_type) != std::string::npos) {
 
 		thor_showRxViewer(image_type);
 
@@ -205,7 +205,7 @@ void thor_load_raw_video()
 
 void cb_btnthorRxSave(Fl_Widget *, void *)
 {
-	thorpicRx->save_png(string(thor_fname).append(".png").c_str());
+	thorpicRx->save_png(std::string(thor_fname).append(".png").c_str());
 }
 
 void cb_btnthorRxClose(Fl_Widget *, void *)
@@ -367,7 +367,7 @@ void thor_load_scaled_image(std::string fname, bool gray)
 	int winH = 512;
 	int thorpicX = 0;
 	int thorpicY = 0;
-	string picmode = "pic% \n";
+	std::string picmode = "pic% \n";
 
 	if (thorTxImg) {
 		thorTxImg->release();

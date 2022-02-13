@@ -27,8 +27,6 @@
 
 #include "adif_def.h"
 
-using namespace std;
-
 enum COMPTYPE {COMPTIME, COMPDATE, COMPCALL, COMPFREQ, COMPMODE};
 
 class cQsoDb;
@@ -45,7 +43,7 @@ friend std::ostream &operator<<( std::ostream &, const cQsoRec &);
 friend std::istream &operator>>( std::istream &, cQsoRec & );
 
 private:
-	string *qsofield[NUMFIELDS];
+	std::string *qsofield[NUMFIELDS];
 	//bool normal; // sort ordering
 public:
 	cQsoRec ();

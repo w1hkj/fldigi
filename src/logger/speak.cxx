@@ -37,16 +37,14 @@
 #include "socket.h"
 #include "icons.h"
 
-using namespace std;
-
 const char *txtTalkInfo = _("\
 Save all received text, one character at a time to the following file:\n\n\
     fldigi.files\\talk\\textout.txt (Windows)\n\
     ~/.fldigi/talk/textout.txt (Linux, OS X, Free BSD)");
 
-string speakfname = "";
-ofstream speakout;
-string speakbuffer = "";
+std::string speakfname = "";
+std::ofstream speakout;
+std::string speakbuffer = "";
 
 #ifndef __WIN32__
 void open_talker() {}
@@ -57,10 +55,10 @@ void toggle_talker() {}
 #ifdef __WIN32__
 #include "confdialog.h"
 
-string talkbuffer = "";
+std::string talkbuffer = "";
 Socket *talker_tcpip = 0;
-string talker_address =  "127.0.0.1";
-string talker_port = "1111";
+std::string talker_address =  "127.0.0.1";
+std::string talker_port = "1111";
 bool   can_talk = true;
 
 void open_talker()
@@ -108,7 +106,7 @@ void speak(int c)
 		speakbuffer += (char)c;
 // Windows is not able to handle continuously open/close of the append file
 // the file might or might not be written to.
-		if (!speakout) speakout.open(speakfname.c_str(), ios::app);
+		if (!speakout) speakout.open(speakfname.c_str(), std::ios::app);
 		if (speakout) {
 			for (size_t i = 0; i < speakbuffer.length(); i++)
 				speakout.put(speakbuffer[i]);
@@ -148,7 +146,7 @@ void speak(int c)
 
 	speakbuffer += c;
 
-	speakout.open(speakfname.c_str(), ios::app);
+	speakout.open(speakfname.c_str(), std::ios::app);
 	if (!speakout) return;
 
 	for (size_t i = 0; i < speakbuffer.length(); i++)

@@ -55,8 +55,6 @@
 #define SOFTPROFILE false
 //#define SOFTPROFILE true
 
-using namespace std;
-
 char thormsg[80];
 char confidence[80];
 

@@ -42,7 +42,7 @@ std::vector<STATE_COUNTY_QUAD> vec_SQSO;
 std::vector<STATE_COUNTY_QUAD> vec_6QP;
 std::vector<STATE_COUNTY_QUAD> vec_7QP;
 
-void load_from_string(std::string &str, vector<STATE_COUNTY_QUAD> &vec)
+void load_from_string(std::string &str, std::vector<STATE_COUNTY_QUAD> &vec)
 {
 	size_t ptr1 = 0;
 	size_t ptr2 = 0;
@@ -91,7 +91,7 @@ void load_from_string(std::string &str, vector<STATE_COUNTY_QUAD> &vec)
 	LOG_INFO("Read %d records", (int)vec.size());
 }
 
-void load_from_file( std::string &fname, vector<STATE_COUNTY_QUAD> &vec) 
+void load_from_file( std::string &fname, std::vector<STATE_COUNTY_QUAD> &vec) 
 {
 	std::ifstream csvfile(fname.c_str());
 	if (!csvfile) return;
@@ -276,11 +276,11 @@ void load_counties()
 
 //----------------------------------------------------------------------
 
-bool Cstates::valid_county( string st, string cnty )
+bool Cstates::valid_county( std::string st, std::string cnty )
 {
-	string ST = ucasestr(st);
-	string CNTY = ucasestr(cnty);
-	string dST, dCNTY, dCOUNTY;
+	std::string ST = ucasestr(st);
+	std::string CNTY = ucasestr(cnty);
+	std::string dST, dCNTY, dCOUNTY;
 
 
 	if (std::string(QSOparties.qso_parties[progdefaults.SQSOcontest].state) == "7QP") {
@@ -316,10 +316,10 @@ bool Cstates::valid_county( string st, string cnty )
 	return false;
 }
 
-const string Cstates::names()
+const std::string Cstates::names()
 {
-	string _names = vec_SQSO[0].state;
-	string _st = vec_SQSO[0].ST;
+	std::string _names = vec_SQSO[0].state;
+	std::string _st = vec_SQSO[0].ST;
 	for (size_t n = 0; n < vec_SQSO.size(); n++) {
 		if (_st != vec_SQSO[n].ST && !vec_SQSO[n].ST.empty()) {
 			_names.append("|").append(vec_SQSO[n].state);
@@ -329,7 +329,7 @@ const string Cstates::names()
 	return _names;
 }
 
-const string Cstates::state_short(string ST)  // ST can be either short or long form
+const std::string Cstates::state_short(std::string ST)  // ST can be either short or long form
 {
 	for (size_t n = 0; n < vec_SQSO.size(); n++)
 		if (ST == vec_SQSO[n].ST || ST == vec_SQSO[n].state)
@@ -337,7 +337,7 @@ const string Cstates::state_short(string ST)  // ST can be either short or long 
 	return "";
 }
 
-const string Cstates::state(string ST) // ST can be either short or long form
+const std::string Cstates::state(std::string ST) // ST can be either short or long form
 {
 	for (size_t n = 0; n < vec_SQSO.size(); n++)
 		if (ST == vec_SQSO[n].ST || ST == vec_SQSO[n].state)
@@ -345,9 +345,9 @@ const string Cstates::state(string ST) // ST can be either short or long form
 	return "";
 }
 
-const string Cstates::counties(string ST)
+const std::string Cstates::counties(std::string ST)
 {
-	string _counties = "";
+	std::string _counties = "";
 	if (ST == "NIL") return _counties;
 	size_t n = 0;
 
@@ -385,12 +385,12 @@ const string Cstates::counties(string ST)
 	return _counties;
 }
 
-const string Cstates::cnty_short( string st, string cnty) // st/cnty can be either short or long
+const std::string Cstates::cnty_short( std::string st, std::string cnty) // st/cnty can be either short or long
 {
-	string ST = ucasestr(st);
-	string CNTY = ucasestr(cnty);
-	string dSTATE, dST, dCNTY, dCOUNTY;
-	string answer = "";
+	std::string ST = ucasestr(st);
+	std::string CNTY = ucasestr(cnty);
+	std::string dSTATE, dST, dCNTY, dCOUNTY;
+	std::string answer = "";
 	size_t n = 0;
 	bool OK = false;
 	if (std::string(QSOparties.qso_parties[progdefaults.SQSOcontest].state) == "7QP") {
@@ -464,11 +464,11 @@ const string Cstates::cnty_short( string st, string cnty) // st/cnty can be eith
 	return answer;
 }
 
-const string Cstates::county( string st, string cnty) // st/cnty can be either short or long
+const std::string Cstates::county( std::string st, std::string cnty) // st/cnty can be either short or long
 {
-	string ST = ucasestr(st);
-	string CNTY = ucasestr(cnty);
-	string dST, dCNTY, dCOUNTY;
+	std::string ST = ucasestr(st);
+	std::string CNTY = ucasestr(cnty);
+	std::string dST, dCNTY, dCOUNTY;
 	size_t n = 0;
 
 	if (std::string(QSOparties.qso_parties[progdefaults.SQSOcontest].state) == "7QP") {
@@ -522,9 +522,9 @@ const string Cstates::county( string st, string cnty) // st/cnty can be either s
 	return "";
 }
 
-static string __counties;
+static std::string __counties;
 
-const string counties()
+const std::string counties()
 {
 	load_counties();
 	if (vec_SQSO.empty())
@@ -539,7 +539,7 @@ const string counties()
 }
 
 /*
-const string seven_qp_counties()
+const std::string seven_qp_counties()
 {
 	load_7qp();
 	if (vec_7QP.empty())
@@ -553,7 +553,7 @@ const string seven_qp_counties()
 	return __counties;
 }
 
-const string six_qp_counties()
+const std::string six_qp_counties()
 {
 	load_neqp();
 	if (vec_6QP.empty())

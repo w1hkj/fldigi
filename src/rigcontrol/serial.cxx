@@ -43,8 +43,6 @@ LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
 #include <memory>
 
-using namespace std;
-
 Cserial::Cserial() {
 	device = "/dev/ttyS0";
 	baud = 1200;
@@ -361,8 +359,6 @@ void Cserial::FlushBuffer()
 
 #define HCOMM_DEBUG 1
 
-using namespace std;
-
 ///////////////////////////////////////////////////////
 // Function name	: Cserial::OpenPort
 // Description		: Opens the port specified by strPortName
@@ -371,7 +367,7 @@ using namespace std;
 ///////////////////////////////////////////////////////
 BOOL Cserial::OpenPort()
 {
-	string COMportname = "//./";
+	std::string COMportname = "//./";
 
 	tty_to_com(device);
 	COMportname += device;
@@ -857,12 +853,12 @@ void Cserial::SetRTS(bool b)
 #include "re.h"
 
 // convert COMx to /dev/ttySy with y = x - 1
-void com_to_tty(string& port)
+void com_to_tty(std::string& port)
 {
 	re_t re("com([0-9]+)", REG_EXTENDED | REG_ICASE);
 	if (!(re.match(port.c_str()) && re.nsub() == 2))
 		return;
-	stringstream ss;
+	std::stringstream ss;
 	int n;
 	ss << re.submatch(1);
 	ss >> n;
@@ -875,12 +871,12 @@ void com_to_tty(string& port)
 }
 
 // convert  /dev/ttySx to COMy with y = x + 1
-void tty_to_com(string& port)
+void tty_to_com(std::string& port)
 {
 	re_t re("/dev/tty.([0-9]+)", REG_EXTENDED | REG_ICASE);
 	if (!(re.match(port.c_str()) && re.nsub() == 2))
 		return;
-	stringstream ss;
+	std::stringstream ss;
 	int n;
 	ss << re.submatch(1);
 	ss >> n;

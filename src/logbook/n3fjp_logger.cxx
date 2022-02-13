@@ -64,8 +64,6 @@
 
 LOG_FILE_SOURCE(debug::LOG_N3FJP);
 
-using namespace std;
-
 static void send_log_data();
 
 //======================================================================
@@ -81,26 +79,26 @@ pthread_mutex_t send_this_mutex		= PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t report_mutex		= PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t n3fjp_socket_mutex	= PTHREAD_MUTEX_INITIALIZER;
 
-static string send_this = "";
-static string pathname;
-static stringstream result;
+static std::string send_this = "";
+static std::string pathname;
+static std::stringstream result;
 
 bool n3fjp_connected = false;
 bool n3fjp_enabled   = false;
 bool n3fjp_exit      = false;
 
-string n3fjp_ip_address = "";
-string n3fjp_ip_port    = "";
+std::string n3fjp_ip_address = "";
+std::string n3fjp_ip_port    = "";
 
-string n3fjp_rxbuffer;
-string connected_to;
+std::string n3fjp_rxbuffer;
+std::string connected_to;
 
 enum {UNKNOWN, N3FJP, FLDIGI};
 
 bool n3fjp_bool_add_record = false;
 int n3fjp_has_xcvr_control = UNKNOWN;
 
-string tracked_freq = "";
+std::string tracked_freq = "";
 int  tracked_mode = -1;
 
 enum {
@@ -278,30 +276,30 @@ bool n3fjp_in_state = false;
 
 int n3fjp_wait = 0;
 
-void adjust_freq(string s);
-void n3fjp_parse_response(string s);
-void n3fjp_disp_report(string s, string fm = "", bool tofile = true);
-void n3fjp_send(string cmd, bool tofile = true);
-void n3fjp_rcv(string &rx, bool tofile = true);
+void adjust_freq(std::string s);
+void n3fjp_parse_response(std::string s);
+void n3fjp_disp_report(std::string s, std::string fm = "", bool tofile = true);
+void n3fjp_send(std::string cmd, bool tofile = true);
+void n3fjp_rcv(std::string &rx, bool tofile = true);
 void n3fjp_send_freq_mode();
 void n3fjp_clear_record();
 void n3fjp_getfields();
-void n3fjp_get_record(string call);
-static string ParseField(string &record, string fieldtag);
-static string ParseTextField(string &record, string fieldtag);
-static string ucasestr(string s);
-static void n3fjp_parse_data_stream(string buffer);
-static void n3fjp_parse_calltab_event(string buffer);
-string fmt_date(string date);
-string fmt_time(string time);
-string field_rec(string fld, string val);
-static string n3fjp_tstmode();
-static string n3fjp_opmode();
-static string n3fjp_opband();
-static string n3fjp_freq();
-static void send_control(const string ctl, string val);
-static void send_action(const string action);
-static void send_command(const string command, string val="");
+void n3fjp_get_record(std::string call);
+static std::string ParseField(std::string &record, std::string fieldtag);
+static std::string ParseTextField(std::string &record, std::string fieldtag);
+static std::string ucasestr(std::string s);
+static void n3fjp_parse_data_stream(std::string buffer);
+static void n3fjp_parse_calltab_event(std::string buffer);
+std::string fmt_date(std::string date);
+std::string fmt_time(std::string time);
+std::string field_rec(std::string fld, std::string val);
+static std::string n3fjp_tstmode();
+static std::string n3fjp_opmode();
+static std::string n3fjp_opband();
+static std::string n3fjp_freq();
+static void send_control(const std::string ctl, std::string val);
+static void send_action(const std::string action);
+static void send_command(const std::string command, std::string val="");
 static void send_data();
 static void send_data_norig();
 void get_n3fjp_frequency();
@@ -309,7 +307,7 @@ void do_n3fjp_add_record_entries();
 void n3fjp_set_freq(long f);
 void n3fjp_set_ptt(int on);
 void n3fjp_add_record(cQsoRec &record);
-void n3fjp_parse_response(string tempbuff);
+void n3fjp_parse_response(std::string tempbuff);
 void n3fjp_rcv_data();
 static bool connect_to_n3fjp_server();
 void n3fjp_start();
@@ -332,11 +330,11 @@ static std::string strip(std::string s)
 //
 //======================================================================
 
-void adjust_freq(string sfreq)
+void adjust_freq(std::string sfreq)
 {
 	long freq;
 	size_t pp = sfreq.find(".");
-	if (pp == string::npos) return;
+	if (pp == std::string::npos) return;
 
 	while ((sfreq.length() - pp) < 7) sfreq.append("0");
 	sfreq.erase(pp,1);
@@ -401,7 +399,7 @@ void set_connect_box()
 
 }
 
-void n3fjp_print(string s)
+void n3fjp_print(std::string s)
 {
 	if (bEXITING) return;
 
@@ -433,22 +431,22 @@ void n3fjp_show(std::string s)
 	txt_N3FJP_data->redraw();
 }
 
-void n3fjp_disp_report(string s, string fm, bool tofile)
+void n3fjp_disp_report(std::string s, std::string fm, bool tofile)
 {
 	guard_lock report_lock(&report_mutex);
 
 	if (s.empty()) return;
 
-	string report = fm.append("\n").append(s);
+	std::string report = fm.append("\n").append(s);
 
 	size_t p;
 	p = report.find("\r\n");
-	while (p != string::npos) {
+	while (p != std::string::npos) {
 		report.replace(p,2,"<crlf>\n");
 		p = report.find("\r\n");
 	}
 	p = report.find("</CMD><CMD>");
-	while (p != string::npos) {
+	while (p != std::string::npos) {
 		report.replace(p, 11, "</CMD>\n<CMD>");
 		p = report.find("</CMD><CMD>");
 	}
@@ -460,7 +458,7 @@ void n3fjp_disp_report(string s, string fm, bool tofile)
 }
 
 
-void n3fjp_send(string cmd, bool tofile)
+void n3fjp_send(std::string cmd, bool tofile)
 {
 	guard_lock send_lock(&n3fjp_socket_mutex);
 	if (!n3fjp_socket) {
@@ -481,7 +479,7 @@ void n3fjp_send(string cmd, bool tofile)
 	} catch (...) { throw; }
 }
 
-void n3fjp_rcv(string &rx, bool tofile)
+void n3fjp_rcv(std::string &rx, bool tofile)
 {
 	guard_lock read_lock(&n3fjp_socket_mutex);
 	if (!n3fjp_socket) return;
@@ -502,7 +500,7 @@ void n3fjp_send_freq_mode()
 {
 	if (!active_modem) return;
 
-	string cmd;
+	std::string cmd;
 	char szfreq[20];
 	double freq = atof(inpFreq->value()) / 1e3;
 	snprintf(szfreq, sizeof(szfreq), "%f", freq);
@@ -647,7 +645,7 @@ void n3fjp_clear_record()
 	if(!n3fjp_socket) return;
 	if (!n3fjp_connected) return;
 
-	string cmd = "<CMD><ACTION><VALUE>CLEAR</VALUE></CMD>";
+	std::string cmd = "<CMD><ACTION><VALUE>CLEAR</VALUE></CMD>";
 	try {
 		n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
 		n3fjp_wait = 100;
@@ -665,7 +663,7 @@ bool n3fjp_calltab = false;
 
 void n3fjp_getfields()
 {
-	string cmd ="<CMD><ALLFIELDSWITHVALUES></CMD>";
+	std::string cmd ="<CMD><ALLFIELDSWITHVALUES></CMD>";
 	try {
 		n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
 		n3fjp_wait = 100;
@@ -677,14 +675,14 @@ void n3fjp_getfields()
 	} catch (...) { throw; }
 }
 
-void n3fjp_get_record(string call)
+void n3fjp_get_record(std::string call)
 {
 	if(!n3fjp_socket) return;
 	if (!n3fjp_connected) return;
 
 	if (!n3fjp_calltab) return;
 
-	string cmd0, cmd1, cmd2;
+	std::string cmd0, cmd1, cmd2;
 
 	cmd0.assign("<CMD><ACTION><VALUE>CLEAR</VALUE></CMD>");
 
@@ -714,17 +712,17 @@ void n3fjp_get_record(string call)
 // parse string containing value, e.g.
 // <FREQ>14.01310</FREQ>
 //======================================================================
-static string ParseField(string &record, string fieldtag)
+static std::string ParseField(std::string &record, std::string fieldtag)
 {
-	string fld_tag_start, fld_tag_end;
+	std::string fld_tag_start, fld_tag_end;
 	fld_tag_start.assign("<").append(fieldtag).append(">");
 	fld_tag_end.assign("</").append(fieldtag).append(">");
 	size_t p1 = record.find(fld_tag_start);
-	if (p1 == string::npos) return "";
+	if (p1 == std::string::npos) return "";
 	p1 += fld_tag_start.length();
 
 	size_t p2 = record.find(fld_tag_end, p1);
-	if (p2 == string::npos) return "";
+	if (p2 == std::string::npos) return "";
 	return record.substr(p1, p2 - p1);
 }
 
@@ -732,17 +730,17 @@ static string ParseField(string &record, string fieldtag)
 // parse string containing text entry values, e.g.
 // <CONTROL>TXTENTRYCOUNTYR</CONTROL><VALUE>Saint Louis City</VALUE></CMD>
 //======================================================================
-static string ParseTextField(string &record, string fieldtag)
+static std::string ParseTextField(std::string &record, std::string fieldtag)
 {
-	string fld_tag_start;
+	std::string fld_tag_start;
 	fld_tag_start.assign("<CONTROL>TXTENTRY").append(fieldtag).append("</CONTROL>");
 	size_t p1 = record.find(fld_tag_start);
-	if (p1 == string::npos) return "";
+	if (p1 == std::string::npos) return "";
 	size_t p2 = record.find("<VALUE>", p1);
-	if (p2 == string::npos) return "";
+	if (p2 == std::string::npos) return "";
 	p2 += strlen("<VALUE>");
 	size_t p3 = record.find("</VALUE>", p2);
-	if (p3 == string::npos) return "";
+	if (p3 == std::string::npos) return "";
 	return record.substr(p2, p3 - p2);
 }
 
@@ -750,20 +748,20 @@ static string ParseTextField(string &record, string fieldtag)
 // parse value contents
 // <VALUE>valuestring</VALUE>
 //======================================================================
-static string ParseValueField(string field, string &record)
+static std::string ParseValueField(std::string field, std::string &record)
 {
-	string start = "<";
+	std::string start = "<";
 	start.append(field).append("><VALUE>");
-	string endvalue = "</VALUE>";
+	std::string endvalue = "</VALUE>";
 	size_t p1 = record.find(start);
 	size_t p2 = record.find(endvalue, p1);
-	if ((p1 == string::npos) || (p2 == string::npos) ||
+	if ((p1 == std::string::npos) || (p2 == std::string::npos) ||
 		(p2 < p1) ) return "";
 	p1 += start.length();
 	return record.substr(p1, p2 - p1);
 }
 
-static string ucasestr(string s)
+static std::string ucasestr(std::string s)
 {
 	for (size_t n = 0; n < s.length(); n++) s[n] = toupper(s[n]);
 	return s;
@@ -772,9 +770,9 @@ static string ucasestr(string s)
 //======================================================================
 //
 //======================================================================
-static void n3fjp_parse_data_stream(string buffer)
+static void n3fjp_parse_data_stream(std::string buffer)
 {
-	string field;
+	std::string field;
 	field = ParseTextField(buffer, "NAMER");
 	if (!field.empty() && ucasestr(field) != ucasestr(inpName->value())) {
 		for (size_t n = 1; n < field.length(); n++) field[n] = tolower(field[n]);
@@ -807,7 +805,7 @@ static void n3fjp_parse_data_stream(string buffer)
 	field = ParseTextField(buffer, "COMMENTS");
 	if (!field.empty()) {
 		size_t p = field.find(" - ");
-		while (p != string::npos) {
+		while (p != std::string::npos) {
 			field.replace(p, 3, "\n");
 			p = field.find(" - ");
 		}
@@ -823,7 +821,7 @@ static void n3fjp_parse_data_stream(string buffer)
 //  <COUNTRY>Belgium</COUNTRY>
 //</CMD>
 //======================================================================
-static void n3fjp_parse_calltab_event(string buffer)
+static void n3fjp_parse_calltab_event(std::string buffer)
 {
 //	inpCall->value(ParseField(buffer, "CALL").c_str());
 	cboCountry->value(ParseField(buffer, "COUNTRY").c_str());
@@ -833,30 +831,30 @@ static void n3fjp_parse_calltab_event(string buffer)
 //======================================================================
 //
 //======================================================================
-string fmt_date(string date)
+std::string fmt_date(std::string date)
 {
 	if (date.length() > 6) date.insert(6,"/");
 	if (date.length() > 4) date.insert(4,"/");
 	return date;
 }
 
-string fmt_time(string time)
+std::string fmt_time(std::string time)
 {
 	if (time.length() > 4) time.insert(4,":");
 	if (time.length() > 2) time.insert(2,":");
 	return time;
 }
 
-string field_rec(string fld, string val)
+std::string field_rec(std::string fld, std::string val)
 {
-	string s;
+	std::string s;
 	s.assign("<").append(fld).append(">");
 	s.append(val);
 	s.append("</").append(fld).append(">");
 	return s;
 }
 
-static string n3fjp_tstmode()
+static std::string n3fjp_tstmode()
 {
 	if (!active_modem)
 		return "PH";
@@ -873,7 +871,7 @@ static string n3fjp_tstmode()
 	return "";
 }
 
-static string n3fjp_opmode()
+static std::string n3fjp_opmode()
 {
 	if (!active_modem)
 		return "PH";
@@ -890,7 +888,7 @@ static string n3fjp_opmode()
 	return "";
 }
 
-static string n3fjp_opband()
+static std::string n3fjp_opband()
 {
 	if (!active_modem) return "";
 
@@ -913,7 +911,7 @@ static string n3fjp_opband()
 	return "";
 }
 
-static string n3fjp_freq()
+static std::string n3fjp_freq()
 {
 	if (!active_modem) return "";
 	float freq = qsoFreqDisp->value();
@@ -934,9 +932,9 @@ static string n3fjp_freq()
 	return szfreq;
 }
 
-static void send_control(const string ctl, string val)
+static void send_control(const std::string ctl, std::string val)
 {
-	string cmd;
+	std::string cmd;
 	cmd.assign("<CMD><UPDATE><CONTROL>TXTENTRY").append(ctl);
 	cmd.append("</CONTROL><VALUE>");
 	cmd.append(val);
@@ -947,9 +945,9 @@ static void send_control(const string ctl, string val)
 	} catch (...) { throw; }
 }
 
-static void send_action(const string action)
+static void send_action(const std::string action)
 {
-	string cmd;
+	std::string cmd;
 	cmd.assign("<CMD><ACTION><VALUE>");
 	cmd.append(action);
 	cmd.append("</VALUE></CMD>");
@@ -959,9 +957,9 @@ static void send_action(const string action)
 	} catch (...) { throw; }
 }
 
-static void send_command(const string command, string val)
+static void send_command(const std::string command, std::string val)
 {
-	string cmd;
+	std::string cmd;
 	cmd.assign("<CMD><").append(command).append(">");
 	if (!val.empty())
 		cmd.append("<VALUE>").append(val).append("</VALUE>");
@@ -1260,7 +1258,7 @@ static void n3fjp_send_NEQP()
 // AZ ID OR MT NV WA WY
 static void n3fjp_send_7QP()
 {
-	static string st7QP = "AZ ID OR MT NV WA WY UT";
+	static std::string st7QP = "AZ ID OR MT NV WA WY UT";
 	try {
 		std::string st = rec.getField(STATE);
 		std::string cnty = rec.getField(CNTY);
@@ -1730,7 +1728,7 @@ static void n3fjp_check_NEQP()
 static void n3fjp_check_7QP()
 {
 	try {
-		static string st7QP = "AZ ID OR MT NV WA WY UT";
+		static std::string st7QP = "AZ ID OR MT NV WA WY UT";
 		std::string st = inpState->value();
 		std::string cnty = inpCounty->value();
 
@@ -1817,7 +1815,7 @@ static void n3fjp_check_QP3()
 		if (n3fjp_in_state) {
 			if (inpState->value()[0]) {
 				send_spcnum(inpState->value());
-//				string county = states.county(inpState->value(), inpCounty->value());
+//				std::string county = states.county(inpState->value(), inpCounty->value());
 //				if (!county.empty())
 //					send_county(county);
 			}
@@ -2029,12 +2027,12 @@ int n3fjp_dupcheck()
 {
 	guard_lock rx_lock(&n3fjp_mutex);
 
-	string chkcall = inpCall->value();
+	std::string chkcall = inpCall->value();
 
 	if (chkcall.length() < 3) return false;
 	if ((chkcall.length() == 3) && isdigit(chkcall[2])) return false;
 
-	string cmd;
+	std::string cmd;
 
 	try {
 		send_call(chkcall);
@@ -2164,7 +2162,7 @@ static void enter_log_data()
 		send_log_data();
 		send_action("ENTER");
 //		if (n3fjp_contest != FJP_SS) {
-//			string other = "XCVR:";
+//			std::string other = "XCVR:";
 //			char szfreq[6];
 //			snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
 //			other.append(ModeIsLSB(rec.getField(ADIF_MODE)) ? "LSB" : "USB");
@@ -2199,7 +2197,7 @@ static void send_data()
 static void send_data_norig()
 {
 	try {
-		string cmd;
+		std::string cmd;
 
 		send_call(rec.getField(CALL));
 		cmd = "<CMD><CHANGEBM>";
@@ -2225,7 +2223,7 @@ void do_n3fjp_add_record_entries()
 	if(!n3fjp_socket) return;
 	if (!n3fjp_connected) return;
 
-	string cmd, response, val;
+	std::string cmd, response, val;
 
 	try {
 		if (n3fjp_has_xcvr_control == N3FJP)
@@ -2246,11 +2244,11 @@ void n3fjp_set_freq(long f)
 {
 	char szfreq[20];
 	snprintf(szfreq, sizeof(szfreq), "%ld", f);
-	string freq = szfreq;
+	std::string freq = szfreq;
 	while (freq.length() < 7) freq.insert(0, "0");
 	freq.insert(freq.length() - 6, ".");
 
-	string cmd;
+	std::string cmd;
 
 	cmd.assign("<CMD><CHANGEFREQ><VALUE>");
 	cmd.append(freq);
@@ -2265,7 +2263,7 @@ void n3fjp_set_ptt(int on)
 {
 	if (n3fjp_has_xcvr_control != N3FJP) return;
 
-	string cmd = "<CMD>";
+	std::string cmd = "<CMD>";
 	if (on) {
 		if (progdefaults.enable_N3FJP_RIGTX)
 			cmd.append("<RIGTX>");
@@ -2293,7 +2291,7 @@ void n3fjp_add_record(cQsoRec &record)
 
 std::string n3fjp_serno = "";
 
-void n3fjp_parse_next_serial(string buff)
+void n3fjp_parse_next_serial(std::string buff)
 {
 	n3fjp_serno = ParseValueField("NEXTSERIALNUMBERRESPONSE", buff);
 	updateOutSerNo();
@@ -2302,18 +2300,18 @@ void n3fjp_parse_next_serial(string buff)
 //======================================================================
 //
 //======================================================================
-void n3fjp_parse_response(string tempbuff)
+void n3fjp_parse_response(std::string tempbuff)
 {
 	if (tempbuff.empty()) return;
-	size_t p1 = string::npos, p2 = string::npos;
+	size_t p1 = std::string::npos, p2 = std::string::npos;
 
-	if (tempbuff.find("RIGRESPONSE") != string::npos) {
+	if (tempbuff.find("RIGRESPONSE") != std::string::npos) {
 		size_t p0 = tempbuff.find("<RIG>");
-		if (p0 != string::npos) {
+		if (p0 != std::string::npos) {
 			p0 += strlen("<RIG>");
-			string rigname = tempbuff.substr(p0);
+			std::string rigname = tempbuff.substr(p0);
 			p0 = rigname.find("</RIG>");
-			if (p0 != string::npos) {
+			if (p0 != std::string::npos) {
 				rigname.erase(p0);
 				if (rigname != "None" && rigname != "Client API") {
 					n3fjp_has_xcvr_control = N3FJP;
@@ -2325,36 +2323,36 @@ void n3fjp_parse_response(string tempbuff)
 	}
 
 	if (n3fjp_has_xcvr_control == N3FJP) {
-		if ((p1 = tempbuff.find("<CHANGEFREQ><VALUE>")) != string::npos) {
+		if ((p1 = tempbuff.find("<CHANGEFREQ><VALUE>")) != std::string::npos) {
 			p1 += strlen("<CHANGEFREQ><VALUE>");
 			p2 = tempbuff.find("</VALUE>", p1);
-			if (p2 == string::npos) return;
-			string sfreq = tempbuff.substr(p1, p2 - p1);
+			if (p2 == std::string::npos) return;
+			std::string sfreq = tempbuff.substr(p1, p2 - p1);
 			REQ(adjust_freq, sfreq);
-		} else if (tempbuff.find("<READBMFRESPONSE>") != string::npos) {
-			string sfreq = ParseField(tempbuff, "FREQ");
+		} else if (tempbuff.find("<READBMFRESPONSE>") != std::string::npos) {
+			std::string sfreq = ParseField(tempbuff, "FREQ");
 			REQ(adjust_freq, sfreq);
 		}
 	}
 
-	if (tempbuff.find("<CALLTABEVENT>") != string::npos) {
+	if (tempbuff.find("<CALLTABEVENT>") != std::string::npos) {
 		n3fjp_rxbuffer = tempbuff;
 		REQ(n3fjp_parse_calltab_event, tempbuff);
 	}
 
-	if (tempbuff.find("ALLFIELDSWVRESPONSE") != string::npos) {
+	if (tempbuff.find("ALLFIELDSWVRESPONSE") != std::string::npos) {
 		REQ(n3fjp_parse_data_stream, tempbuff);
 	}
-	if (tempbuff.find("<ENTEREVENT>") != string::npos) {
+	if (tempbuff.find("<ENTEREVENT>") != std::string::npos) {
 		send_command("NEXTSERIALNUMBER");
 	}
-	if (tempbuff.find("<NEXTSERIALNUMBERRESPONSE>") != string::npos) {
+	if (tempbuff.find("<NEXTSERIALNUMBERRESPONSE>") != std::string::npos) {
 		REQ(n3fjp_parse_next_serial, tempbuff);
 	}
 
-	if (tempbuff.find("CALLTABDUPEEVENT") != string::npos &&
-		tempbuff.find("Duplicate") != string::npos) {
-			if (tempbuff.find("Possible") != string::npos)
+	if (tempbuff.find("CALLTABDUPEEVENT") != std::string::npos &&
+		tempbuff.find("Duplicate") != std::string::npos) {
+			if (tempbuff.find("Possible") != std::string::npos)
 				REQ(show_dup, (void*)2);
 			else
 				REQ(show_dup, (void*)1);
@@ -2366,7 +2364,7 @@ void n3fjp_parse_response(string tempbuff)
 //======================================================================
 void n3fjp_rcv_data()
 {
-	string tempbuff = "";
+	std::string tempbuff = "";
 	try {
 		n3fjp_rcv(tempbuff, progdefaults.enable_N3FJP_log);
 		n3fjp_parse_response(tempbuff);
@@ -2492,9 +2490,9 @@ static bool connect_to_n3fjp_server()
 			connect_tries = 0;
 		}
 
-		string buffer;
+		std::string buffer;
 
-		string cmd = "<CMD><PROGRAM></CMD>";
+		std::string cmd = "<CMD><PROGRAM></CMD>";
 		n3fjp_send(cmd, true);
 
 		buffer.clear();
@@ -2508,7 +2506,7 @@ static bool connect_to_n3fjp_server()
 			return false;
 		}
 
-		string info = ParseField(buffer, "PGM");
+		std::string info = ParseField(buffer, "PGM");
 		connected_to = info;
 
 		n3fjp_contest = FJP_NONE;
@@ -2531,7 +2529,7 @@ static bool connect_to_n3fjp_server()
 			}
 		}
 		if (n == sizeof(n3fjp_logger) / sizeof(*n3fjp_logger)) {
-			n3fjp_print(string(info).append(" not supported by fldigi"));
+			n3fjp_print(std::string(info).append(" not supported by fldigi"));
 			return false;
 		}
 		else
@@ -2541,7 +2539,7 @@ static bool connect_to_n3fjp_server()
 
 		info.insert(0, "Connected to ");
 
-		string ver = ParseField(buffer, "VER");
+		std::string ver = ParseField(buffer, "VER");
 		info.append(", Ver ").append(ver);
 
 		n3fjp_connected = true;
@@ -2692,7 +2690,7 @@ void *n3fjp_loop(void *args)
 					if (loopcount == 0) {
 						guard_lock send_lock(&send_this_mutex);
 						std::string buffer;
-						string cmd = "<CMD><PROGRAM></CMD>";
+						std::string cmd = "<CMD><PROGRAM></CMD>";
 						n3fjp_send(cmd, false);
 						size_t n;
 						for (n = 0; n < 10; n++) {
