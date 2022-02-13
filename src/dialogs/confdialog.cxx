@@ -6673,6 +6673,12 @@ static void cb_btn_flrig_auto_shutdown(Fl_Check_Button* o, void*) {
 progdefaults.changed=true;
 }
 
+Fl_Counter2 *val_flrig_poll=(Fl_Counter2 *)0;
+
+static void cb_val_flrig_poll(Fl_Counter2* o, void*) {
+  progdefaults.flrig_poll = o->value();
+}
+
 Fl_Group *grpRigCat=(Fl_Group *)0;
 
 Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
@@ -16776,6 +16782,26 @@ i.e. localhost"));
           btn_flrig_auto_shutdown->callback((Fl_Callback*)cb_btn_flrig_auto_shutdown);
           o->value(progdefaults.flrig_auto_shutdown);
         } // Fl_Check_Button* btn_flrig_auto_shutdown
+        { Fl_Counter2* o = val_flrig_poll = new Fl_Counter2(620, 107, 130, 24, _("Poll Interval (msec)"));
+          val_flrig_poll->tooltip(_("Request updates every \'poll interval\' milliseconds"));
+          val_flrig_poll->box(FL_UP_BOX);
+          val_flrig_poll->color(FL_BACKGROUND_COLOR);
+          val_flrig_poll->selection_color(FL_INACTIVE_COLOR);
+          val_flrig_poll->labeltype(FL_NORMAL_LABEL);
+          val_flrig_poll->labelfont(0);
+          val_flrig_poll->labelsize(14);
+          val_flrig_poll->labelcolor(FL_FOREGROUND_COLOR);
+          val_flrig_poll->minimum(50);
+          val_flrig_poll->maximum(5000);
+          val_flrig_poll->step(10);
+          val_flrig_poll->value(1);
+          val_flrig_poll->callback((Fl_Callback*)cb_val_flrig_poll);
+          val_flrig_poll->align(Fl_Align(FL_ALIGN_LEFT));
+          val_flrig_poll->when(FL_WHEN_CHANGED);
+          o->value(progdefaults.flrig_poll);
+          o->labelsize(FL_NORMAL_SIZE);
+          o->lstep(100);
+        } // Fl_Counter2* val_flrig_poll
         o->end();
       } // Fl_Group* o
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/flrig"));

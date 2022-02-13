@@ -473,6 +473,9 @@
         ELEM_(bool, use_FLRIG_FSK, "FLRIG_FSK",                                         \
               "True - enable; False - disable",                                         \
               false)                                                                    \
+        ELEM_(double, flrig_poll, "FLRIG_POLL",                                         \
+              "range 50 to 5000 msecs",                                                 \
+              200)                                                                      \
 /* end of FSK elements */                                                               \
         ELEM_(bool, kml_enabled, "KMLSERVER_ENABLED",                                   \
               "Enable kml server threads",                                              \

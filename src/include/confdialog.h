@@ -779,6 +779,7 @@ extern Fl_Input2 *txt_flrig_ip_port_mirror;
 extern Fl_Button *btn_reconnect_flrig_server_mirror;
 extern Fl_Check_Button *btn_fldigi_client_to_flrig;
 extern Fl_Check_Button *btn_flrig_auto_shutdown;
+extern Fl_Counter2 *val_flrig_poll;
 extern Fl_Group *grpRigCat;
 extern Fl_Check_Button *chkUSERIGCAT;
 extern Fl_Group *grpRigCAT;

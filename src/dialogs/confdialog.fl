@@ -4250,7 +4250,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/nanoIO} selected
+      label {Modem/CW/nanoIO}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/nanoIO"));}
       code1 {config_pages.push_back(p);}
@@ -8479,7 +8479,7 @@ progdefaults.changed = true;} open
       }
     }
     Fl_Group grpRigFlrig {
-      label {Rig Control/flrig}
+      label {Rig Control/flrig} open
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/flrig"));}
       code1 {config_pages.push_back(p);}
@@ -8565,10 +8565,19 @@ progdefaults.changed=true;}
           tooltip {Disable if flrig not used.} xywh {234 112 70 15} down_box DOWN_BOX
           code0 {o->value(progdefaults.flrig_auto_shutdown);}
         }
+        Fl_Counter val_flrig_poll {
+          label {Poll Interval (msec)}
+          callback {progdefaults.flrig_poll = o->value();} selected
+          tooltip {Request updates every 'poll interval' milliseconds} xywh {620 107 130 24} align 4 minimum 50 maximum 5000 step 10 value 1
+          code0 {o->value(progdefaults.flrig_poll);}
+          code1 {o->labelsize(FL_NORMAL_SIZE);}
+          code2 {o->lstep(100);}
+          class Fl_Counter2
+        }
       }
     }
     Fl_Group grpRigCat {
-      label {Rig Control/CAT (rigcat)}
+      label {Rig Control/CAT (rigcat)} open
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/CAT (rigcat)"));}
       code1 {config_pages.push_back(p);}
