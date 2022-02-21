@@ -848,7 +848,7 @@ void DXcluster_select()
 // search for a mode name in the remarks
 // change to that mode if discovered
 	dxcline = ucasestr(dxcline);
-	for (int i = 0; i < NUM_MODES-3; i++) {
+	for (int i = 0; i < NUM_RXTX_MODES; i++) {
 		if (dxcline.find(mode_info[i].adif_name) != std::string::npos) {
 			if (active_modem->get_mode() != mode_info[i].mode)
 				init_modem_sync(mode_info[i].mode);
@@ -868,7 +868,9 @@ void DXcluster_select()
 		if (p == 2)
 			freq += atoi(dxcline.c_str());
 	}
-	long af = 1500;
+	long af = progdefaults.PSKsweetspot;
+	if (active_modem->get_mode() == MODE_CW) af = progdefaults.CWsweetspot;
+	if (active_modem->get_mode() == MODE_RTTY) af = progdefaults.RTTYsweetspot;
 
 	rf_af(freq, af);
 	qsy(freq, af);
