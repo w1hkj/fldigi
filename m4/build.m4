@@ -79,7 +79,7 @@ $BFD_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEBUG_CFLAGS"
     FLARQ_BUILD_CXXFLAGS="$FLARQ_BUILD_CXXFLAGS -I\$(srcdir)/xmlrpcpp"
   fi
 
-  if test "x$ac_cv_libmbedtls" == "xyes"; then
+  if test "x$ac_cv_libmbedtls" = "xyes"; then
     FLDIGI_BUILD_LDADD="$FLDIGI_BUILD_LDADD $LIBMBEDTLS_LDFLAGS"
   fi
 
