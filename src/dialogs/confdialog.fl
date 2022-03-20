@@ -4442,27 +4442,25 @@ chk_nanoIO_FSK_io->value(0);}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/DTR-RTS keying}
+      label {Modem/CW/DTR-RTS keying} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/DTR-RTS keying"));}
       code1 {config_pages.push_back(p);}
       code2 {tab_tree->add(_("Modem/CW/DTR-RTS keying"));}
     } {
       Fl_Group {} {open
-        xywh {205 25 590 130} box ENGRAVED_BOX
+        xywh {205 25 590 79} box ENGRAVED_BOX
       } {
         Fl_Box {} {
-          label {DTR/RTS keying may be assigned to flrig,
-
-Share the RigCat serial port, share the Separate PTT serial
-port, or be assigned to separate serial port.
+          label {DTR/RTS keying may be assigned to flrig, share the RigCat serial port,
+share the Separate PTT serial port, or be assigned to separate serial port.
 
 No settings for baud, stops bits, etc are needed.}
-          xywh {210 31 580 116} align 20
+          xywh {208 27 580 72} align 20
         }
       }
       Fl_Group {} {open
-        xywh {205 157 590 40} box ENGRAVED_FRAME
+        xywh {205 107 590 40} box ENGRAVED_FRAME
       } {
         Fl_Check_Button btn_CW_KEYLINE_flrig {
           label {Use flrig DTR/CTS keying}
@@ -4475,7 +4473,7 @@ if (val) {
   btn_CW_KEYLINE_shared_PTT->value(0);
 }
 progdefaults.CW_KEYLINE_changed = true;}
-          xywh {215 170 23 15} down_box DOWN_BOX align 8
+          xywh {215 120 23 15} down_box DOWN_BOX align 8
           code0 {o->value(progdefaults.use_FLRIGkeying);}
         }
         Fl_Check_Button btn_FLRIG_CW_disable_ptt {
@@ -4484,12 +4482,12 @@ progdefaults.CW_KEYLINE_changed = true;}
 btn_CAT_CW_disable_ptt->value(o->value());
 progdefaults.changed = true;}
           tooltip {Required for some transceivers
-e.g. TS-480} xywh {475 170 70 14} down_box DOWN_BOX
+e.g. TS-480} xywh {475 120 70 14} down_box DOWN_BOX
           code0 {o->value(progdefaults.CATkeying_disable_ptt);}
         }
       }
       Fl_Group {} {open
-        xywh {205 199 590 145} box ENGRAVED_FRAME
+        xywh {205 151 590 195} box ENGRAVED_FRAME
       } {
         Fl_Check_Button btn_CW_KEYLINE_catport {
           label {Share RIGCAT port}
@@ -4502,7 +4500,7 @@ if (val) {
   btn_CW_KEYLINE_flrig->value(0);
 }
 progdefaults.CW_KEYLINE_changed = true;}
-          xywh {215 215 23 15} down_box DOWN_BOX align 8
+          xywh {215 167 23 15} down_box DOWN_BOX align 8
           code0 {o->value(progdefaults.CW_KEYLINE_on_cat_port);}
         }
         Fl_Check_Button btn_CW_KEYLINE_shared_PTT {
@@ -4516,22 +4514,32 @@ if (val) {
   btn_CW_KEYLINE_flrig->value(0);
 }
 progdefaults.CW_KEYLINE_changed = true;}
-          xywh {215 246 23 15} down_box DOWN_BOX align 8
+          xywh {215 199 23 15} down_box DOWN_BOX align 8
           code0 {o->value(progdefaults.CW_KEYLINE_on_ptt_port);}
         }
         Fl_Group listbox_CW_KEYLINE {
           label {CW Keyline}
           callback {progdefaults.CW_KEYLINE = o->index();} open
-          xywh {487 210 90 24} box DOWN_BOX color 7 align 4
+          xywh {454 162 90 24} box DOWN_BOX color 7 align 8
           code0 {o->add("None|RTS|DTR");}
           code1 {o->index(progdefaults.CW_KEYLINE);}
           class Fl_ListBox
         } {}
+        Fl_Counter cntCWkeycomp {
+          label {Keying compensation (msec)}
+          callback {progdefaults.CWkeycomp =o->value();
+progdefaults.changed = true;}
+          tooltip {Dot / Space timing increment} xywh {454 194 125 24} align 8 minimum -10 maximum 10 step 0.01
+          code0 {o->value(progdefaults.CWkeycomp);}
+          code1 {o->labelsize(FL_NORMAL_SIZE);}
+          code2 {o->lstep(1.0);}
+          class Fl_Counter2
+        }
         Fl_Group listbox_PTT_KEYLINE {
           label {PTT keyline}
           callback {progdefaults.PTT_KEYLINE = o->index();
 progdefaults.changed = true;} open
-          xywh {693 227 90 24} box DOWN_BOX color 7 align 4 hide
+          xywh {693 162 90 24} box DOWN_BOX color 7 align 4 hide
           code0 {o->add("None|RTS|DTR");}
           code1 {o->index(0);//progdefaults.PTT_KEYLINE);}
           class Fl_ListBox
@@ -4549,7 +4557,7 @@ if (progStatus.useCW_KEYLINE) {
     progStatus.useCW_KEYLINE = 1;
 }
 progdefaults.CW_KEYLINE_changed = true;} open
-          tooltip {nanoIO serial port} xywh {210 295 470 24} box DOWN_BOX color 55 align 5
+          tooltip {nanoIO serial port} xywh {215 241 470 24} box DOWN_BOX color 55 align 5
           code0 {\#include "combo.h"}
           code1 {\#include "nanoIO.h"}
           code2 {o->value(progdefaults.CW_KEYLINE_serial_port_name.c_str());}
@@ -4575,17 +4583,17 @@ progdefaults.CW_KEYLINE_changed = true;} open
   close_CW_KEYLINE();
   progStatus.useCW_KEYLINE = 0;
 }}
-          tooltip {Connect / Disconnect from nanoIO} xywh {692 295 90 24}
+          tooltip {Connect / Disconnect from nanoIO} xywh {698 241 90 24}
           code0 {o->value(progStatus.useCW_KEYLINE);}
         }
         Fl_Light_Button btn_cw_dtr_calibrate {
           label {Speed test}
           callback {calibrate_cwio();}
-          tooltip {1 minute 'PARIS '} xywh {687 212 100 24} selection_color 6
+          tooltip {1 minute 'PARIS '} xywh {215 305 100 24} selection_color 6
         }
         Fl_Output cwio_test_result {
           label Result
-          xywh {487 241 300 25}
+          xywh {376 305 300 24}
         }
       }
     }
@@ -8479,7 +8487,7 @@ progdefaults.changed = true;} open
       }
     }
     Fl_Group grpRigFlrig {
-      label {Rig Control/flrig} open
+      label {Rig Control/flrig}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/flrig"));}
       code1 {config_pages.push_back(p);}
@@ -8567,7 +8575,7 @@ progdefaults.changed=true;}
         }
         Fl_Counter val_flrig_poll {
           label {Poll Interval (msec)}
-          callback {progdefaults.flrig_poll = o->value();} selected
+          callback {progdefaults.flrig_poll = o->value();}
           tooltip {Request updates every 'poll interval' milliseconds} xywh {620 107 130 24} align 4 minimum 50 maximum 5000 step 10 value 1
           code0 {o->value(progdefaults.flrig_poll);}
           code1 {o->labelsize(FL_NORMAL_SIZE);}
@@ -8577,7 +8585,7 @@ progdefaults.changed=true;}
       }
     }
     Fl_Group grpRigCat {
-      label {Rig Control/CAT (rigcat)} open
+      label {Rig Control/CAT (rigcat)}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Rig Control/CAT (rigcat)"));}
       code1 {config_pages.push_back(p);}

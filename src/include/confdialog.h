@@ -401,6 +401,7 @@ extern Fl_Check_Button *btn_FLRIG_CW_disable_ptt;
 extern Fl_Check_Button *btn_CW_KEYLINE_catport;
 extern Fl_Check_Button *btn_CW_KEYLINE_shared_PTT;
 extern Fl_ListBox *listbox_CW_KEYLINE;
+extern Fl_Counter2 *cntCWkeycomp;
 extern Fl_ListBox *listbox_PTT_KEYLINE;
 extern Fl_ComboBox *select_CW_KEYLINE_CommPort;
 extern Fl_Light_Button *btn_CW_KEYLINE_connect;
