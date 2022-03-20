@@ -3570,6 +3570,13 @@ static void cb_listbox_CW_KEYLINE(Fl_ListBox* o, void*) {
   progdefaults.CW_KEYLINE = o->index();
 }
 
+Fl_Counter2 *cntCWkeycomp=(Fl_Counter2 *)0;
+
+static void cb_cntCWkeycomp(Fl_Counter2* o, void*) {
+  progdefaults.CWkeycomp =o->value();
+progdefaults.changed = true;
+}
+
 Fl_ListBox *listbox_PTT_KEYLINE=(Fl_ListBox *)0;
 
 static void cb_listbox_PTT_KEYLINE(Fl_ListBox* o, void*) {
@@ -12723,24 +12730,24 @@ ded Morse characters."));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
-      { Fl_Group* o = new Fl_Group(205, 25, 590, 130);
+      { Fl_Group* o = new Fl_Group(205, 25, 590, 79);
         o->box(FL_ENGRAVED_BOX);
-        { Fl_Box* o = new Fl_Box(210, 31, 580, 116, _("DTR/RTS keying may be assigned to flrig,\n\nShare the RigCat serial port, sha\
-re the Separate PTT serial\nport, or be assigned to separate serial port.\n\nN\
-o settings for baud, stops bits, etc are needed."));
+        { Fl_Box* o = new Fl_Box(208, 27, 580, 72, _("DTR/RTS keying may be assigned to flrig, share the RigCat serial port,\nshare\
+ the Separate PTT serial port, or be assigned to separate serial port.\n\nNo s\
+ettings for baud, stops bits, etc are needed."));
           o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
         } // Fl_Box* o
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(205, 157, 590, 40);
+      { Fl_Group* o = new Fl_Group(205, 107, 590, 40);
         o->box(FL_ENGRAVED_FRAME);
-        { Fl_Check_Button* o = btn_CW_KEYLINE_flrig = new Fl_Check_Button(215, 170, 23, 15, _("Use flrig DTR/CTS keying"));
+        { Fl_Check_Button* o = btn_CW_KEYLINE_flrig = new Fl_Check_Button(215, 120, 23, 15, _("Use flrig DTR/CTS keying"));
           btn_CW_KEYLINE_flrig->down_box(FL_DOWN_BOX);
           btn_CW_KEYLINE_flrig->callback((Fl_Callback*)cb_btn_CW_KEYLINE_flrig);
           btn_CW_KEYLINE_flrig->align(Fl_Align(FL_ALIGN_RIGHT));
           o->value(progdefaults.use_FLRIGkeying);
         } // Fl_Check_Button* btn_CW_KEYLINE_flrig
-        { Fl_Check_Button* o = btn_FLRIG_CW_disable_ptt = new Fl_Check_Button(475, 170, 70, 14, _("Disable flrig CW PTT"));
+        { Fl_Check_Button* o = btn_FLRIG_CW_disable_ptt = new Fl_Check_Button(475, 120, 70, 14, _("Disable flrig CW PTT"));
           btn_FLRIG_CW_disable_ptt->tooltip(_("Required for some transceivers\ne.g. TS-480"));
           btn_FLRIG_CW_disable_ptt->down_box(FL_DOWN_BOX);
           btn_FLRIG_CW_disable_ptt->callback((Fl_Callback*)cb_btn_FLRIG_CW_disable_ptt);
@@ -12748,21 +12755,21 @@ o settings for baud, stops bits, etc are needed."));
         } // Fl_Check_Button* btn_FLRIG_CW_disable_ptt
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(205, 199, 590, 145);
+      { Fl_Group* o = new Fl_Group(205, 151, 590, 195);
         o->box(FL_ENGRAVED_FRAME);
-        { Fl_Check_Button* o = btn_CW_KEYLINE_catport = new Fl_Check_Button(215, 215, 23, 15, _("Share RIGCAT port"));
+        { Fl_Check_Button* o = btn_CW_KEYLINE_catport = new Fl_Check_Button(215, 167, 23, 15, _("Share RIGCAT port"));
           btn_CW_KEYLINE_catport->down_box(FL_DOWN_BOX);
           btn_CW_KEYLINE_catport->callback((Fl_Callback*)cb_btn_CW_KEYLINE_catport);
           btn_CW_KEYLINE_catport->align(Fl_Align(FL_ALIGN_RIGHT));
           o->value(progdefaults.CW_KEYLINE_on_cat_port);
         } // Fl_Check_Button* btn_CW_KEYLINE_catport
-        { Fl_Check_Button* o = btn_CW_KEYLINE_shared_PTT = new Fl_Check_Button(215, 246, 23, 15, _("Share Separate PTT port"));
+        { Fl_Check_Button* o = btn_CW_KEYLINE_shared_PTT = new Fl_Check_Button(215, 199, 23, 15, _("Share Separate PTT port"));
           btn_CW_KEYLINE_shared_PTT->down_box(FL_DOWN_BOX);
           btn_CW_KEYLINE_shared_PTT->callback((Fl_Callback*)cb_btn_CW_KEYLINE_shared_PTT);
           btn_CW_KEYLINE_shared_PTT->align(Fl_Align(FL_ALIGN_RIGHT));
           o->value(progdefaults.CW_KEYLINE_on_ptt_port);
         } // Fl_Check_Button* btn_CW_KEYLINE_shared_PTT
-        { Fl_ListBox* o = listbox_CW_KEYLINE = new Fl_ListBox(487, 210, 90, 24, _("CW Keyline"));
+        { Fl_ListBox* o = listbox_CW_KEYLINE = new Fl_ListBox(454, 162, 90, 24, _("CW Keyline"));
           listbox_CW_KEYLINE->box(FL_DOWN_BOX);
           listbox_CW_KEYLINE->color(FL_BACKGROUND2_COLOR);
           listbox_CW_KEYLINE->selection_color(FL_BACKGROUND_COLOR);
@@ -12771,13 +12778,32 @@ o settings for baud, stops bits, etc are needed."));
           listbox_CW_KEYLINE->labelsize(14);
           listbox_CW_KEYLINE->labelcolor(FL_FOREGROUND_COLOR);
           listbox_CW_KEYLINE->callback((Fl_Callback*)cb_listbox_CW_KEYLINE);
-          listbox_CW_KEYLINE->align(Fl_Align(FL_ALIGN_LEFT));
+          listbox_CW_KEYLINE->align(Fl_Align(FL_ALIGN_RIGHT));
           listbox_CW_KEYLINE->when(FL_WHEN_RELEASE);
           o->add("None|RTS|DTR");
           o->index(progdefaults.CW_KEYLINE);
           listbox_CW_KEYLINE->end();
         } // Fl_ListBox* listbox_CW_KEYLINE
-        { Fl_ListBox* o = listbox_PTT_KEYLINE = new Fl_ListBox(693, 227, 90, 24, _("PTT keyline"));
+        { Fl_Counter2* o = cntCWkeycomp = new Fl_Counter2(454, 194, 125, 24, _("Keying compensation (msec)"));
+          cntCWkeycomp->tooltip(_("Dot / Space timing increment"));
+          cntCWkeycomp->box(FL_UP_BOX);
+          cntCWkeycomp->color(FL_BACKGROUND_COLOR);
+          cntCWkeycomp->selection_color(FL_INACTIVE_COLOR);
+          cntCWkeycomp->labeltype(FL_NORMAL_LABEL);
+          cntCWkeycomp->labelfont(0);
+          cntCWkeycomp->labelsize(14);
+          cntCWkeycomp->labelcolor(FL_FOREGROUND_COLOR);
+          cntCWkeycomp->minimum(-10);
+          cntCWkeycomp->maximum(10);
+          cntCWkeycomp->step(0.01);
+          cntCWkeycomp->callback((Fl_Callback*)cb_cntCWkeycomp);
+          cntCWkeycomp->align(Fl_Align(FL_ALIGN_RIGHT));
+          cntCWkeycomp->when(FL_WHEN_CHANGED);
+          o->value(progdefaults.CWkeycomp);
+          o->labelsize(FL_NORMAL_SIZE);
+          o->lstep(1.0);
+        } // Fl_Counter2* cntCWkeycomp
+        { Fl_ListBox* o = listbox_PTT_KEYLINE = new Fl_ListBox(693, 162, 90, 24, _("PTT keyline"));
           listbox_PTT_KEYLINE->box(FL_DOWN_BOX);
           listbox_PTT_KEYLINE->color(FL_BACKGROUND2_COLOR);
           listbox_PTT_KEYLINE->selection_color(FL_BACKGROUND_COLOR);
@@ -12793,7 +12819,7 @@ o settings for baud, stops bits, etc are needed."));
           o->index(0);//progdefaults.PTT_KEYLINE);
           listbox_PTT_KEYLINE->end();
         } // Fl_ListBox* listbox_PTT_KEYLINE
-        { Fl_ComboBox* o = select_CW_KEYLINE_CommPort = new Fl_ComboBox(210, 295, 470, 24, _("Use Separate Keying Serial Port"));
+        { Fl_ComboBox* o = select_CW_KEYLINE_CommPort = new Fl_ComboBox(215, 241, 470, 24, _("Use Separate Keying Serial Port"));
           select_CW_KEYLINE_CommPort->tooltip(_("nanoIO serial port"));
           select_CW_KEYLINE_CommPort->box(FL_DOWN_BOX);
           select_CW_KEYLINE_CommPort->color((Fl_Color)55);
@@ -12808,17 +12834,17 @@ o settings for baud, stops bits, etc are needed."));
           o->value(progdefaults.CW_KEYLINE_serial_port_name.c_str());
           select_CW_KEYLINE_CommPort->end();
         } // Fl_ComboBox* select_CW_KEYLINE_CommPort
-        { Fl_Light_Button* o = btn_CW_KEYLINE_connect = new Fl_Light_Button(692, 295, 90, 24, _("Connect"));
+        { Fl_Light_Button* o = btn_CW_KEYLINE_connect = new Fl_Light_Button(698, 241, 90, 24, _("Connect"));
           btn_CW_KEYLINE_connect->tooltip(_("Connect / Disconnect from nanoIO"));
           btn_CW_KEYLINE_connect->callback((Fl_Callback*)cb_btn_CW_KEYLINE_connect);
           o->value(progStatus.useCW_KEYLINE);
         } // Fl_Light_Button* btn_CW_KEYLINE_connect
-        { btn_cw_dtr_calibrate = new Fl_Light_Button(687, 212, 100, 24, _("Speed test"));
+        { btn_cw_dtr_calibrate = new Fl_Light_Button(215, 305, 100, 24, _("Speed test"));
           btn_cw_dtr_calibrate->tooltip(_("1 minute \'PARIS \'"));
           btn_cw_dtr_calibrate->selection_color((Fl_Color)6);
           btn_cw_dtr_calibrate->callback((Fl_Callback*)cb_btn_cw_dtr_calibrate);
         } // Fl_Light_Button* btn_cw_dtr_calibrate
-        { cwio_test_result = new Fl_Output(487, 241, 300, 25, _("Result"));
+        { cwio_test_result = new Fl_Output(376, 305, 300, 24, _("Result"));
         } // Fl_Output* cwio_test_result
         o->end();
       } // Fl_Group* o

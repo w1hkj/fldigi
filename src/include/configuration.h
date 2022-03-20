@@ -298,6 +298,11 @@
               "Note: ptt on DTR, keying on RTS or\n"                                    \
               "      ptt on RTS, keying on DTR",                                        \
               false)                                                                    \
+        ELEM_(double, CWkeycomp, "CWkeycomp",                                           \
+              "Dot to Space ratio compensate for transceiver keying delays\n"           \
+              "in millisecond. (-) decrease dot, (+) increase dot\n"                    \
+              "limited to 1/2 default dot / space interval",                            \
+              0.0)                                                                      \
         ELEM_(bool, WaterfallHistoryDefault, "WATERFALLHISTORYDEFAULT",                 \
               "Replay audio history when changing frequency by clicking on\n"           \
               "the waterfall",                                                          \

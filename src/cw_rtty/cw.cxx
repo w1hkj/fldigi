@@ -1477,6 +1477,7 @@ static FILE *cwio_test = 0;
 
 void cwio_bit(int bit, double msecs)
 {
+std::cout << bit << " : " << msecs << std::endl;
 #ifdef CW_TTEST
 	if (!cwio_test) cwio_test = fopen("cwio_test.txt", "a");
 #endif
@@ -1578,18 +1579,22 @@ void send_cwio(int c)
 		return;
 	}
 
+	double xcvr_corr = progdefaults.CWkeycomp;
+	if (xcvr_corr < -tc / 2) xcvr_corr = - tc / 2;
+	else if (xcvr_corr > tc / 2) xcvr_corr = tc / 2;
+
 	guard_lock lk(&cwio_ptt_mutex);
 
 	for (size_t n = 0; n < code.length(); n++) {
 		if (code[n] == '.') {
-			cwio_bit(1, tc);
+			cwio_bit(1, tc + xcvr_corr);
 		} else {
-			cwio_bit(1, 3*tc);
+			cwio_bit(1, 3*tc + xcvr_corr);
 		}
 		if (n < code.length() -1) {
-			cwio_bit(0, tc);
+			cwio_bit(0, tc - xcvr_corr);
 		} else {
-			cwio_bit(0, tch);
+			cwio_bit(0, tch - xcvr_corr);
 		}
 	}
 
