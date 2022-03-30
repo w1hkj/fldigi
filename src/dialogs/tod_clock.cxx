@@ -231,6 +231,9 @@ static void show_ztimer()
 
 	update_tx_timer();
 
+	sTime_off = zshowtime();
+	sDate_off = zdate();
+
 	inpTimeOff1->value(zshowtime());
 	inpTimeOff2->value(zshowtime());
 	inpTimeOff3->value(zshowtime());
