@@ -540,6 +540,43 @@ public:
 	}
 };
 
+class Modem_get_mode : public xmlrpc_c::method
+{
+public:
+	Modem_get_mode()
+	{
+		_signature = "s:n";
+		_help = "Returns the ADIF mode for the current modem.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		std::string adif_mode = mode_info[active_modem->get_mode()].export_mode;
+		std::string adif_submode = mode_info[active_modem->get_mode()].export_submode;
+		LOG_INFO("[%s] modem.get_mode: %s",
+			XmlRpc::client_id.c_str(),
+			adif_mode.c_str());
+		*retval = xmlrpc_c::value_string(adif_mode);
+	}
+};
+
+class Modem_get_submode : public xmlrpc_c::method
+{
+public:
+	Modem_get_submode()
+	{
+		_signature = "s:n";
+		_help = "Returns the ADIF submode for the current modem.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		std::string adif_submode = mode_info[active_modem->get_mode()].export_submode;
+		LOG_INFO("[%s] modem.get_mode: %s",
+			XmlRpc::client_id.c_str(),
+			adif_submode.c_str());
+		*retval = xmlrpc_c::value_string(adif_submode);
+	}
+};
+
 class Modem_get_names : public xmlrpc_c::method
 {
 public:
@@ -2799,6 +2836,23 @@ public:
 	}
 };
 
+class Log_get_date_on : public xmlrpc_c::method
+{
+public:
+	Log_get_date_on()
+	{
+		_signature = "s:n";
+		_help = "Returns the date associated with time_on field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		LOG_INFO("[%s] log.get_date_on: %s",
+			XmlRpc::client_id.c_str(),
+			sDate_on.c_str());
+		*retval = xmlrpc_c::value_string(sDate_on);
+	}
+};
+
 class Log_get_time_off : public xmlrpc_c::method
 {
 public:
@@ -2813,6 +2867,23 @@ public:
 			XmlRpc::client_id.c_str(),
 			inpTimeOff->value());
 		*retval = xmlrpc_c::value_string(inpTimeOff->value());
+	}
+};
+
+class Log_get_date_off : public xmlrpc_c::method
+{
+public:
+	Log_get_date_off()
+	{
+		_signature = "s:n";
+		_help = "Returns the date associated with time_off field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		LOG_INFO("[%s] log.get_date_on: %s",
+			XmlRpc::client_id.c_str(),
+			sDate_off.c_str());
+		*retval = xmlrpc_c::value_string(sDate_off);
 	}
 };
 
@@ -3233,6 +3304,40 @@ public:
 			XmlRpc::client_id.c_str(),
 			inpAZ->value());
 		*retval = xmlrpc_c::value_string(inpAZ->value());
+	}
+};
+
+class Logbook_last_record: public xmlrpc_c::method{
+public:
+	Logbook_last_record()
+	{
+		_signature = "s:n";
+		_help = "Returns the ADIF record of the last logbook record.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		std::string adif_str = last_adif_record();
+		LOG_INFO("[%s] logbook.last_record: %s",
+			XmlRpc::client_id.c_str(),
+			last_adif_record().c_str());
+		*retval = xmlrpc_c::value_string(adif_str);
+	}
+};
+
+class Logbook_all_records: public xmlrpc_c::method{
+public:
+	Logbook_all_records()
+	{
+		_signature = "s:n";
+		_help = "Returns the entire ADIF logbook currently opened.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		std::string adif_str = all_adif_records();
+		LOG_INFO("[%s] logbook.all_adif_records export size %lu",
+			XmlRpc::client_id.c_str(),
+			adif_str.length());
+		*retval = xmlrpc_c::value_string(adif_str);
 	}
 };
 
@@ -4025,6 +4130,8 @@ ELEM_(Fldigi_name_version, "fldigi.name_version")                      \
 ELEM_(Fldigi_config_dir, "fldigi.config_dir")                          \
 ELEM_(Fldigi_terminate, "fldigi.terminate")                            \
 \
+ELEM_(Modem_get_mode, "modem.get_mode")                                \
+ELEM_(Modem_get_submode, "modem.get_submode")                          \
 ELEM_(Modem_get_name, "modem.get_name")                                \
 ELEM_(Modem_get_names, "modem.get_names")                              \
 ELEM_(Modem_get_id, "modem.get_id")                                    \
@@ -4140,6 +4247,8 @@ ELEM_(Rig_enable_qsy, "rig.enable_qsy")                                \
 ELEM_(Log_get_freq, "log.get_frequency")                               \
 ELEM_(Log_get_time_on, "log.get_time_on")                              \
 ELEM_(Log_get_time_off, "log.get_time_off")                            \
+ELEM_(Log_get_date_on, "log.get_date_on")                              \
+ELEM_(Log_get_date_off, "log.get_date_off")                            \
 ELEM_(Log_get_call, "log.get_call")                                    \
 ELEM_(Log_get_name, "log.get_name")                                    \
 ELEM_(Log_get_rst_in, "log.get_rst_in")                                \
@@ -4160,6 +4269,7 @@ ELEM_(Log_get_sb, "log.get_sideband")                                  \
 ELEM_(Log_get_notes, "log.get_notes")                                  \
 ELEM_(Log_get_locator, "log.get_locator")                              \
 ELEM_(Log_get_az, "log.get_az")                                        \
+\
 ELEM_(Log_clear, "log.clear")                                          \
 ELEM_(Log_set_call, "log.set_call")                                    \
 ELEM_(Log_set_name, "log.set_name")                                    \
@@ -4167,6 +4277,9 @@ ELEM_(Log_set_qth, "log.set_qth")                                      \
 ELEM_(Log_set_locator, "log.set_locator")                              \
 ELEM_(Log_set_rst_in, "log.set_rst_in")                                \
 ELEM_(Log_set_rst_out, "log.set_rst_out")                              \
+\
+ELEM_(Logbook_last_record, "logbook.last_record")                      \
+ELEM_(Logbook_all_records, "logbook.all_records")                      \
 \
 ELEM_(Main_flmsg_online, "main.flmsg_online")                          \
 ELEM_(Main_flmsg_available, "main.flmsg_available")                    \

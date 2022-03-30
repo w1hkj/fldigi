@@ -258,7 +258,7 @@ void Export_LOTW()
 	cQsoRec *rec;
 
 	if (str_lotw.empty())
-		str_lotw = "Fldigi LoTW upload file\n<ADIF_VER:5>2.2.7\n<EOH>\n";
+		str_lotw = "Fldigi LoTW upload file\n<ADIF_VER:5>3.1.2\n<EOH>\n";
 	std::string adifrec;
 
 	for (int i = 0; i < chkExportBrowser->FLTK_nitems(); i++) {
@@ -575,22 +575,23 @@ void close_MERGE_thread (void *)
 
 }
 
-// for testing only
-/*
-static char recfield[200];
-
-static std::string adif_record(cQsoRec *rec)
+std::string adif_record(cQsoRec *rec)
 {
+	static char recfield[200];
 	static std::string record;
 	static std::string sFld;
+
 	record.clear();
+	sFld.clear();
+
 	for (int j = 0; fields[j].type != NUMFIELDS; j++) {
 		if (strcmp(fields[j].name,"MYXCHG") == 0) continue;
 		if (strcmp(fields[j].name,"XCHG1") == 0) continue;
 		sFld = rec->getField(fields[j].type);
 		if (!sFld.empty()) {
+			memset(recfield, 0, 200);
 			snprintf(recfield, sizeof(recfield),
-				"<%s:%d>",
+				"<%s:%lu>",
 				fields[j].name,
 				sFld.length());
 			record.append(recfield).append(sFld);
@@ -600,28 +601,30 @@ static std::string adif_record(cQsoRec *rec)
 	return record;
 }
 
-static void writeLog(std::string fname, cQsoDb *db)
+std::string last_adif_record()
 {
-	FILE *adiFile = fl_fopen (fname.c_str(), "wb");
+	if (qsodb.nbrRecs() < 1) return "NONE";
+	cQsoRec *rec = qsodb.getRec(qsodb.nbrRecs() - 1);
+	return adif_record(rec);
+}
 
+// entire logbook in adif standard format
+
+std::string all_adif_records()
+{
 	cQsoRec *rec;
-
 	std::string records;
 
-	records.clear();
-	for (int i = 0; i < db->nbrRecs(); i++) {
-		rec = db->getRec(i);
+	records.assign("Fldigi logbook records\n<ADIF_VER:5>3.1.2\n<EOH>\n");
+
+	for (int i = 0; i < qsodb.nbrRecs(); i++) {
+		rec = qsodb.getRec(i);
 		records.append(adif_record(rec));
 	}
+	records.append("<EOH>\n");
 
-	fprintf (adiFile, "%s\n<EOH>\n", fl_filename_name(fname.c_str()));
-	fprintf (adiFile, "%s", records.c_str());
-
-	fclose (adiFile);
-
-	return;
+	return records;
 }
-*/
 
 static void *merge_thread(void *args)
 {

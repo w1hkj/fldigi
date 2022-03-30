@@ -132,4 +132,9 @@ extern bool qsodb_dxcc_entity_find(const char* country);
 
 extern void adif_read_OK();
 
+extern std::string adif_record(cQsoRec *rec);
+extern std::string last_adif_record();
+extern std::string all_adif_records();
+extern void writeLog(std::string fname, cQsoDb *db);
+
 #endif
