@@ -383,7 +383,7 @@ static void send_IPC_log(cQsoRec &rec)
 	int mm, dd, yyyy;
 	char szdate[9];
 	char sztime[5];
-	strncpy(szdate, rec.getField(QSO_DATE_OFF), 8);
+	strncpy(szdate, rec.getField(QSO_DATE), 8);
 	szdate[8] = 0;
 	sscanf(&szdate[6], "%d", &dd); szdate[6] = 0;
 	sscanf(&szdate[4], "%d", &mm); szdate[4] = 0;
