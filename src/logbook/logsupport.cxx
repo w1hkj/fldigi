@@ -2437,7 +2437,7 @@ SOAPBOX: \n\n",
  	typedef std::unordered_map<std::string, unsigned> dxcc_entity_cache_t;
 #elif HAVE_STD_TR1_HASH
 #	include <tr1/unordered_map>
- 	typedef tr1::unordered_map<std::string, unsigned> dxcc_entity_cache_t;
+ 	typedef std::tr1::unordered_map<std::string, unsigned> dxcc_entity_cache_t;
 #else
 #	error "No std::hash or std::tr1::hash support"
 #endif

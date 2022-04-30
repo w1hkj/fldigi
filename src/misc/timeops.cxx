@@ -30,8 +30,6 @@
 #if !HAVE_CLOCK_GETTIME
 #  ifdef __APPLE__
 #    include <mach/mach_time.h>
-#    define CLOCK_REALTIME 0
-#    define CLOCK_MONOTONIC 6
 #  endif
 #  if TIME_WITH_SYS_TIME
 #    include <sys/time.h>

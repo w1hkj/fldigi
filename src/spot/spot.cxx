@@ -70,8 +70,8 @@ typedef std::list<callback_t*> callback_p_list_t;
 	typedef std::unordered_map<fre_t*, callback_p_list_t, fre_hash, fre_comp> rcblist_t;
 	static std::unordered_map<int, std::string> buffers;
 #elif HAVE_STD_TR1_HASH
-	typedef tr1::unordered_map<fre_t*, callback_p_list_t, fre_hash, fre_comp> rcblist_t;
-	static tr1::unordered_map<int, std::string> buffers;
+	typedef std::tr1::unordered_map<fre_t*, callback_p_list_t, fre_hash, fre_comp> rcblist_t;
+	static std::tr1::unordered_map<int, std::string> buffers;
 #endif
 
 static cblist_t cblist;

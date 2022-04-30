@@ -131,8 +131,8 @@ size_t re_t::hash(void) const
 	size_t h = std::hash<std::string>()(pattern);
 	return h ^ (std::hash<int>()(cflags) + 0x9e3779b9 + (h << 6) + (h >> 2));
 #elif HAVE_STD_TR1_HASH
-	size_t h = tr1::hash<std::string>()(pattern);
-	return h ^ (tr1::hash<int>()(cflags) + 0x9e3779b9 + (h << 6) + (h >> 2));
+	size_t h = std::tr1::hash<std::string>()(pattern);
+	return h ^ (std::tr1::hash<int>()(cflags) + 0x9e3779b9 + (h << 6) + (h >> 2));
 #endif
 }
 
