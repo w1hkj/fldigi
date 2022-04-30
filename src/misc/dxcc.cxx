@@ -45,9 +45,13 @@
 #if HAVE_STD_HASH
 #	include <unordered_map>
 	using std::unordered_map;
+	typedef std::unordered_map<std::string, dxcc*> dxcc_map_t;
+	typedef std::unordered_map<std::string, unsigned char> qsl_map_t;
 #elif HAVE_STD_TR1_HASH
 #	include <tr1/unordered_map>
-	using tr1::unordered_map;
+	using std::tr1::unordered_map;
+	typedef std::tr1::unordered_map<std::string, dxcc*> dxcc_map_t;
+	typedef std::tr1::unordered_map<std::string, unsigned char> qsl_map_t;
 #else
 #	error "No std::hash or std::tr1::hash support"
 #endif
@@ -62,7 +66,6 @@ dxcc::dxcc(const char* cn, int cq, int itu, const char* ct, float lat, float lon
 	continent[2] = '\0';
 }
 
-typedef std::unordered_map<std::string, dxcc*> dxcc_map_t;
 typedef std::vector<dxcc*> dxcc_list_t;
 static dxcc_map_t* cmap = 0;
 static dxcc_list_t* clist = 0;
@@ -431,7 +434,6 @@ static void add_prefix(std::string& prefix, dxcc* entry)
 	(*cmap)[prefix] = entry;
 }
 
-typedef std::unordered_map<std::string, unsigned char> qsl_map_t;
 static qsl_map_t* qsl_calls;
 static unsigned char qsl_open_;
 const char* qsl_names[] = { "LoTW", "eQSL" };

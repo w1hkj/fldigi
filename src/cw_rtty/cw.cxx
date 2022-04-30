@@ -35,6 +35,17 @@
 #include <fstream>
 #include <cstdlib>
 
+#include "timeops.h"
+#ifdef __MINGW32__
+#  include "compat.h"
+#endif
+
+#if !HAVE_CLOCK_GETTIME
+#  ifdef __APPLE__
+#    include <mach/mach_time.h>
+#  endif
+#endif
+
 #include "digiscope.h"
 #include "waterfall.h"
 #include "fl_digi.h"
