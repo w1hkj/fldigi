@@ -1,6 +1,44 @@
-2021-08-04  dave-w1hkj  <w1hkj@bellsouth.net>
+2022-05-03  dave-w1hkj  <w1hkj@bellsouth.net>
 
-	5e5a5ba1d: Version 4.1.20
+	7436b1570: Version 4.1.21
+	cc666964c: APPLE PortAudio
+	17c3cb1f3: Lion compilation
+	4f5fa6c71: IPC log report
+	55f971801: xmlrpc methods
+	929908c8b: CW h/w weight
+
+2022-03-01  Greg Troxel  <gdt@lexort.com>
+
+	ee24e4ddf: build m4 script
+
+2022-02-26  dave-w1hkj  <w1hkj@bellsouth.net>
+
+	609da6a24: trx fft
+	bb7fb9b31: dxcluster
+	08f627ab5: flrig poll
+	9fc6aab80: log macro
+	3b41124d3: flarq using fix
+	7a8690834: WinKeyer
+	ea5b9c1c1: RsID EOT
+	f9f49d160: using namespace std
+	7653576ad: CW/FSK
+	080f6d306: psk reporter
+	6fd1c4179: Documentation
+	ae5aea7aa: FFT Monitor update
+	dbe3622cc: CW multi-channel
+	daac9d2be: FSK keying
+	9ed9d3461: fmt debug file
+	c061a5783: PO translator recognition
+	2c65740a9: IFKP Avatar
+	16425a772: xmlrpc QSY
+	6649972a6: Mode Parameters
+	f3042689d: Documentation update
+	edb907267: MAPIT macro
+	799d376af: Polish translation update
+	7c38b8a35: KNWD cat keying
+	49e404d93: synop event reporting
+	44553d121: MacOS Lion seg fault
+	feddecc77: Version 4.1.20
 	fe8262fca: Cosmetic changes
 	0fdaa3870: xmlrpc id
 	8caa7f8e0: Gleam scheme
