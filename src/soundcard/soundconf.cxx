@@ -27,7 +27,6 @@
 #  include <map>
 #  include <list>
 #endif
-#include <iostream>
 
 #include <cstdlib>
 #include <cstring>
@@ -174,7 +173,7 @@ static void init_portaudio(void)
 	}
 
 	pa_api_prio.clear();
-#ifdef __APPLE__
+#if defined(__APPLE__)
 	pa_api_prio[paASIO] = 0;
 	pa_api_prio[paCoreAudio] = 1;
 #elif defined(__WOE32__)
@@ -200,10 +199,6 @@ static void init_portaudio(void)
 
 	str_pa_devices.assign("\nPortaudio devices:\n");
 	PaHostApiTypeId first_api = devlist.begin()->api;
-
-#ifdef __APPLE__
-	char szname[100];
-#endif
 	for (std::list<padev>::const_iterator ilist = devlist.begin();
 		 ilist != devlist.end(); ilist++) {
 		std::string menu_item;
@@ -212,12 +207,8 @@ static void init_portaudio(void)
 			menu_item.append(Pa_GetHostApiInfo(ilist->dev->hostApi)->name).append(" devices/");
 			i = menu_item.length();
 		}
-#ifdef __APPLE__
-		snprintf(szname, sizeof(szname),"%s #%d", ilist->dev->name, ilist->idx);
-		menu_item.append(szname);
-#else
 		menu_item.append(ilist->dev->name);
-#endif
+
 		str_pa_devices.append(menu_item).append("\n");
 
 		// backslash-escape any slashes in the device name
