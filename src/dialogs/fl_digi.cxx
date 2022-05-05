@@ -4225,6 +4225,7 @@ void cbAFC(Fl_Widget *w, void *vi)
 	Fl_Button *b = (Fl_Button *)w;
 	int v = b->value();
 	progStatus.afconoff = v;
+	set_mode_afc(active_modem->get_mode(), progStatus.afconoff);
 }
 
 void cbSQL(Fl_Widget *w, void *vi)
