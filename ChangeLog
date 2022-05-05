@@ -1,6 +1,9 @@
-2022-05-03  dave-w1hkj  <w1hkj@bellsouth.net>
+2022-05-05  dave-w1hkj  <w1hkj@bellsouth.net>
 
-	7436b1570: Version 4.1.21
+	2f88a13cc: Version 4.1.22
+	a6415f6cb: Save/Restore AFC by mode
+	cc66d4bc7: Revert "APPLE PortAudio"
+	5196f8a20: Version 4.1.21
 	cc666964c: APPLE PortAudio
 	17c3cb1f3: Lion compilation
 	4f5fa6c71: IPC log report
