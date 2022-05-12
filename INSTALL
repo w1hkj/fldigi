@@ -16,6 +16,8 @@ To compile fldigi you will need:
 
   * The libxft library.
 
+  * The libudev-dev library.
+
 You should read and follow the instructions for building on various OS
 platforms that are on the fldigi wiki:
 
