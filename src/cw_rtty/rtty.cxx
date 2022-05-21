@@ -1150,9 +1150,16 @@ int rtty::tx_process()
 	int c = get_tx_char();
 
 	if (progdefaults.use_FLRIG_FSK) {
+		if (preamble) {
+			start_deadman();
+			flrig_fsk_send('[');
+			preamble = false;
+		}
 		if (c == GET_TX_CHAR_ETX || stopflag) {
 			stopflag = false;
+			flrig_fsk_send(']');
 			put_echo_char('\n');
+			stop_deadman();
 			return -1;
 		}
 		if (c == GET_TX_CHAR_NODATA) {
@@ -1194,6 +1201,7 @@ int rtty::tx_process()
 		if (preamble) {
 			start_deadman();
 			sig_start = true;
+			nano_send_char('[');
 			for (int i = 0; i < progdefaults.TTY_LTRS; i++)
 				nano_send_char(-1);
 			preamble = false;
@@ -1204,6 +1212,7 @@ int rtty::tx_process()
 		if (c == GET_TX_CHAR_ETX || stopflag) {
 			stopflag = false;
 			stop_deadman();
+			nano_send_char(']');
 			return -1;
 		}
 // send idle character if c == -1
