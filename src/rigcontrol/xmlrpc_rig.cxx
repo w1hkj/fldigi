@@ -1179,19 +1179,6 @@ void xmlrpc_shutdown_flrig()
 	} catch (...) {}
 }
 
-//void flrig_cwio_ptt(int on)
-//{
-//	if (!connected_to_flrig) return;
-//	XmlRpcValue val, result;
-//	try {
-//		guard_lock flrig_lock(&mutex_flrig);
-//		val = (int)on;
-//		flrig_client->execute("rig.cwio_send", val, result, 0.20);//timeout);
-//	} catch (...) {
-//}
-//	return;
-//}
-
 void flrig_cwio_send_text(std::string s)
 {
 	if (!connected_to_flrig) return;
