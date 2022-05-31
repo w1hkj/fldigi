@@ -59,7 +59,6 @@ struct status {
 	int		int_reflevel;
 	double	ampspan;
 	int		int_ampspan;
-	unsigned int	VIEWERnchars;
 	unsigned int	VIEWERxpos;
 	unsigned int	VIEWERypos;
 	unsigned int	VIEWERwidth;

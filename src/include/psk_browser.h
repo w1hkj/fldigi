@@ -65,8 +65,6 @@ private:
 	int siz;
 	int cols[2];
 	char szLine[32];
-	size_t nchars;
-	size_t linechars[32];
 
 public:
 	static int cwidth;
@@ -96,6 +94,7 @@ public:
 	void columns(int a) { cols[0] = a; cols[1] = 0; column_widths(cols); }
 	void resize(int x, int y, int w, int h);
 	void addchr(int ch, int freq, unsigned char c, int md, bool alert = false);
+	void set_input_encoding(int encoding_id);
 	std::string freqformat (int i);
 	void set_freq(int i, int freq);
 	void clearline(int i) { bwsrline[i] = ""; }
@@ -104,8 +103,6 @@ public:
 	void clear();
 	void clearch(int n, int freq);
 	void swap(int, int);
-	int  numchars() { return nchars; }
-	void set_input_encoding(int encoding_id);
 };
 
 #endif
