@@ -81,12 +81,8 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 		bwsrfreq[i] = NULLFREQ;
 		bline = freqformat(i);
 		if ( i < progdefaults.VIEWERchannels) add(bline.c_str());
-		linechars[i] = 0;
 		new(&cdistiller[i]) CharsetDistiller;
 	}
-	nchars = (w - cols[0] - (sbarwidth + 2*BWSR_BORDER)) / cwidth;
-	nchars = nchars < 1 ? 1 : nchars;
-
 }
 
 pskBrowser::~pskBrowser()
@@ -177,15 +173,12 @@ void pskBrowser::resize(int x, int y, int w, int h)
 	if (w) {
 		Fl_Hold_Browser::resize(x,y,w,h);
 		evalcwidth();
-		nchars = (w - cols[0] - (sbarwidth + 2*BWSR_BORDER)) / cwidth;
-		nchars = nchars < 1 ? 1 : nchars; 
 		std::string bline;
 		Fl_Hold_Browser::clear();
 		for (int i = 0, j = 0; i < progdefaults.VIEWERchannels; i++) {
 			if (progdefaults.VIEWERascend) j = progdefaults.VIEWERchannels - 1 - i;
 			else j = i;
 			bwsrline[j].clear();
-			linechars[j] = 0;
 			bline = freqformat(j);
 			if (seek_re  && seek_re->match(bwsrline[j].c_str(), REG_NOTBOL | REG_NOTEOL))
 				bline.append(hilite_color_1);
@@ -227,33 +220,27 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md, bool signal_a
 	if (c == '\n') c = ' ';
 	if (c < ' ') return;
 
-	nchars = (w() - cols[0] - (sbarwidth + 2*BWSR_BORDER)) / cwidth;
-	nchars = nchars < 1 ? 1 : nchars; 
-
 	bwsrfreq[ch] = freq;
 
 	if (bwsrline[ch].length() == 1 && bwsrline[ch][0] == ' ') {
 		bwsrline[ch].clear();
-		linechars[ch] = 0;
 	}
 	
 	cdistiller[ch].rx(c);
 
 	if (cdistiller[ch].data_length() > 0) {
 		bwsrline[ch] += cdistiller[ch].data();
-		linechars[ch] += cdistiller[ch].num_chars();
 		cdistiller[ch].clear();
 	}
 
-	if (linechars[ch] > nchars) {
+	fl_font(fnt, siz);
+	size_t available = (w() - cols[0] - (sbarwidth + 2*BWSR_BORDER));
+	size_t linewidth = fl_width(bwsrline[ch].c_str());
+	if (linewidth > available) {
 		if (progdefaults.VIEWERmarquee) {
-			while (linechars[ch] > nchars) {
-				bwsrline[ch].erase(0, fl_utf8len1(bwsrline[ch][0]));
-				linechars[ch]--;
-			}
+			bwsrline[ch].erase(0, fl_utf8len1(bwsrline[ch][0]));
 		} else {
 			bwsrline[ch].clear();
-			linechars[ch] = 0;
 		}
 	}
 

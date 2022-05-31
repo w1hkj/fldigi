@@ -113,7 +113,6 @@ status progStatus = {
 	-2000,				// int_reflevel
 	70,					// ampspan
 	7000,				// int_ampspan
-	30,					// uint	VIEWERnchars
 	50,					// uint	VIEWERxpos
 	50,					// uint	VIEWERypos
 	200,				// uint VIEWERwidth
@@ -410,7 +409,6 @@ void status::saveLastState()
 	}
 
 	VIEWERvisible = dlgViewer->visible();
-	VIEWERnchars = brwsViewer->numchars();
 	if (VIEWERvisible) {
 		VIEWERxpos = dlgViewer->x();
 		VIEWERypos = dlgViewer->y();
@@ -553,8 +551,6 @@ if (!bWF_only) {
 	spref.set("int_viewer_psksq", (int)round(VIEWER_psksquelch * 100));
 	spref.set("int_viewer_rttysq", (int)round(VIEWER_rttysquelch * 100));
 	spref.set("int_viewer_cwsq", (int)round(VIEWER_cwsquelch * 100));
-
-	spref.set("viewer_nchars", static_cast<int>(VIEWERnchars));
 
 	spref.set("fsq_monitor_x", static_cast<int>(fsqMONITORxpos));
 	spref.set("fsq_monitor_y", static_cast<int>(fsqMONITORypos));
@@ -860,8 +856,6 @@ void status::loadLastState()
 	VIEWER_rttysquelch = int_VIEWER_rttysquelch / 100.0;
 	spref.get("int_viewer_cwsq", int_VIEWER_cwsquelch, int_VIEWER_cwsquelch);
 	VIEWER_cwsquelch = int_VIEWER_cwsquelch / 100.0;
-
-	spref.get("viewer_nchars", i, VIEWERnchars); VIEWERnchars = i;
 
 	spref.get("fsq_monitor_x", i, fsqMONITORxpos); fsqMONITORxpos = i;
 	spref.get("fsq_monitor_y", i, fsqMONITORypos); fsqMONITORypos = i;

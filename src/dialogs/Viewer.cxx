@@ -272,8 +272,6 @@ Fl_Double_Window* createViewer(void)
 	pskBrowser::cwidth = (int)fl_width("W");
 	pskBrowser::cheight = fl_height();
 
-	progStatus.VIEWERnchars = progStatus.VIEWERnchars > 30 ? progStatus.VIEWERnchars : 30;
-
 	int pad = BWSR_BORDER / 2;
 
 	int viewerwidth = progStatus.VIEWERwidth - 2*BWSR_BORDER;
