@@ -1201,30 +1201,23 @@ int rtty::tx_process()
 		if (preamble) {
 			start_deadman();
 			sig_start = true;
-			nano_send_char('[');
 			for (int i = 0; i < progdefaults.TTY_LTRS; i++)
 				nano_send_char(-1);
 			preamble = false;
 			nano_send_char(-1);
 			nano_send_char(-1);
 		}
-
 		if (c == GET_TX_CHAR_ETX || stopflag) {
 			stopflag = false;
 			stop_deadman();
-			nano_send_char(']');
 			return -1;
 		}
-// send idle character if c == -1
-// nanoIO does not return an idle character in it's buffer so fldigi
-// must insert a suitable time delay to account for the idle
+
+		nano_send_char(c);
 		if (c == GET_TX_CHAR_NODATA) {
-			wait_one_byte(
-				progdefaults.nanoIO_baud,
-				1.5);
 			return 0;
 		}
-		nano_send_char(c);
+
 		put_echo_char(c);
 		return 0;
 	}

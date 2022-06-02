@@ -211,14 +211,16 @@ void nano_send_cw_char(int c)
 
 void nano_send_tty_char(int c)
 {
-	if (c == GET_TX_CHAR_NODATA) {
-		MilliSleep(50);
-		return;
-	}
 	int msec = 165; // msec for start + 5 data + 1.5 stop bits @ 45.45
 	if (progdefaults.nanoIO_baud == 50.0) msec = 150;
 	if (progdefaults.nanoIO_baud == 75.0) msec = 100;
 	if (progdefaults.nanoIO_baud == 100.0) msec = 75;
+
+	if (c == GET_TX_CHAR_NODATA) {
+		MilliSleep(msec);
+		return;
+	}
+
 	nano_serial_write(c);
 	msec += 20;
 	c = nano_read_byte(msec);
