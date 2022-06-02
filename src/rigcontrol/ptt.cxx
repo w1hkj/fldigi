@@ -186,12 +186,11 @@ void PTT::set(bool ptt)
 		}
 		break;
 	default:
-		{
-			nano_PTT(ptt);
-			if (n3fjp_connected)
-				n3fjp_set_ptt(ptt);
-		}
+		if (n3fjp_connected)
+			n3fjp_set_ptt(ptt);
 	}
+
+	nano_PTT(ptt);
 
 	if (ptt && progdefaults.PTT_on_delay)
 		MilliSleep(progdefaults.PTT_on_delay);
