@@ -97,7 +97,7 @@ status progStatus = {
 	false,				// bool tbar_is_docked;
 //	50,					// int RxTextHeight;
 	WMIN/2,				// int tiled_group_x;
-	false,				// bool show_channels;
+	true,				// bool show_channels;
 	50,					// int rigX;
 	50,					// int rigY;
 	560,				// int rigW
