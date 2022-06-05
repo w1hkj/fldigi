@@ -36,7 +36,7 @@
 
 #include "morse.h"
 
-#define VCW_MAXCH		20
+#define VCW_MAXCH		30
 
 class view_cw;
 
@@ -44,8 +44,7 @@ struct CW_CHANNEL {
 
 	static cMorse	*morse;
 
-//	fftfilt			*VCW_filter; // sinc / matched filter
-	C_FIR_filter	*VCW_filter;
+	fftfilt			*VCW_filter; // linear phase finite impulse response bpf
 	Cmovavg			bitfilter;
 	Cmovavg			trackingfilter;
 
@@ -107,7 +106,7 @@ struct CW_CHANNEL {
 
 	int		decode_state(int cw_event);
 	void	detect_tone();
-	void 	rx_process(int who, const double *value, int len);
+	void 	rx_process(const double *value, int len);
 
 	double	avg_signal() { return sig_avg; }
 	double	get_metric() { return metric; }
@@ -133,9 +132,7 @@ private:
 
 	double		bandwidth;
 
-//	int			nchannels;
-
-	unsigned int	smpl_ctr;
+	int			nchannels;
 
 public:
 	CW_CHANNEL	channel[VCW_MAXCH];

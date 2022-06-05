@@ -234,7 +234,11 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md, bool signal_a
 	}
 
 	fl_font(fnt, siz);
-	size_t available = (w() - cols[0] - (sbarwidth + 2*BWSR_BORDER));
+	int bX, bY, bW, bH;
+	bbox(bX, bY, bW, bH);
+	size_t available = bW - cols[0];
+//	size_t available = (w() - cols[0] - (sbarwidth + 2*BWSR_BORDER));
+
 	size_t linewidth = fl_width(bwsrline[ch].c_str());
 	if (linewidth > available) {
 		if (progdefaults.VIEWERmarquee) {
