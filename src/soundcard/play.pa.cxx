@@ -16,9 +16,9 @@
 #include "dr_mp3.h"
 
 #define CHANNELS                  2
-#define SCRATE                 8000
-#define FRAMES_PER_BUFFER      1024 // lower values causes audio distortion on pi3
-#define RBUFF_SIZE            16384 // 4096
+#define SCRATE                44100  // 8000
+#define FRAMES_PER_BUFFER      4096  // 1024  // lower than 1023 values causes audio distortion on pi3
+#define RBUFF_SIZE            32768  // 16384  // 4096
 
 static pthread_t       alert_pthread;
 static pthread_cond_t  alert_cond;
