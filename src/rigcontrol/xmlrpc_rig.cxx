@@ -861,6 +861,7 @@ static void xmlrpc_rig_set_smeter(void *data)
 			smeter->show();
 		}
 		int val = reinterpret_cast<intptr_t>(data);
+		LOG_VERBOSE("xmlrpc_rig_set_smeter: %d", val);
 		smeter->value(val);
 	}
 }
