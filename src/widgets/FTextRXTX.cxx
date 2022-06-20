@@ -1803,15 +1803,15 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 	}
 
 	if (qso) {
-		const char* info[] = {
-			qso->getField(NAME), qso->getField(QTH), qso->getField(QSO_DATE),
-			qso->getField(BAND), qso->getField(ADIF_MODE)
-		};
-		// name & qth
-		if (*info[0])
-			join(stip << "* ", info, 2, _(" in "), true) << '\n';
-		// other info
-		join(stip << "* " << _("Last QSO") << ": ", info+2, 3, ", ", true) << '\n';
+		if (qso->getField(NAME)[0]) {
+			stip << "* " << qso->getField(NAME);
+			if (qso->getField(QTH)[0]) stip << _(" in ") << qso->getField(QTH);
+			stip << "\n";
+		}
+		if (qso->getField(QSO_DATE)[0]) stip << "* " << _("Last QSO") << ": " << qso->getField(QSO_DATE);
+		if (qso->getField(BAND)[0]) stip << ", " << qso->getField(BAND);
+		if (qso->getField(ADIF_MODE)[0]) stip << ", " << qso->getField(ADIF_MODE);
+		stip << "\n";
 	}
 	if (qsl) {
 		stip << "* QSL: ";
