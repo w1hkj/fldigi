@@ -9075,6 +9075,12 @@ int get_tx_char(void)
 		return c;
 	}
 
+	if (xmltest_char_available) {
+		num_cps_chars++;
+		start_deadman();
+		return xmltest_char();
+	}
+
 	if (data_io_enabled == ARQ_IO && arq_text_available) {
 		start_deadman();
 		c = arq_get_char();
@@ -9103,6 +9109,21 @@ int get_tx_char(void)
 		return(c);
 	}
 
+	if ((progStatus.repeatMacro > -1) && text2repeat.length()) {
+		std::string repeat_content;
+		int utf8size = fl_utf8len1(text2repeat[repeatchar]);
+		for (int i = 0; i < utf8size; i++)
+			repeat_content += text2repeat[repeatchar + i];
+		repeatchar += utf8size;
+		tx_encoder.push(repeat_content);
+
+		if (repeatchar >= text2repeat.length()) {
+			text2repeat.clear();
+			macros.repeat(progStatus.repeatMacro);
+		}
+		goto transmit;
+	}
+
 	disable_lowercase = false;
 	if (xmltest_char_available) {
 		num_cps_chars++;
@@ -9110,15 +9131,12 @@ int get_tx_char(void)
 		c = xmltest_char();
 		disable_lowercase = true;
 	}
-	else if (active_modem->get_mode() == MODE_IFKP) {
+	else if (active_modem->get_mode() == MODE_IFKP)
 		c = ifkp_tx_text->nextChar();
-	}
-	else if ((c = next_buffered_macro_char()) == 0) { // preference given to buffered macro chars
+	else if ((c = next_buffered_macro_char()) == 0) // preference given to buffered macro chars
 		c = TransmitText->nextChar();
-	}
 
 	if (c == GET_TX_CHAR_ETX) {
-		active_modem->set_CW_EOT();
 		return c;
 	}
 
