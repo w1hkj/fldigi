@@ -1,6 +1,18 @@
-2022-05-05  dave-w1hkj  <w1hkj@bellsouth.net>
+2022-06-23  dave-w1hkj  <w1hkj@bellsouth.net>
 
-	2f88a13cc: Version 4.1.22
+	19c12f097: Version 4.1.23
+	ce88da596: Deprecated code
+	5dd676f6b: Correct errors caused by commit 9c035e809b
+	4213bfaec: xmlrpc notch
+	bd2b4e0e1: audio alerts / monitor
+	e6da5c5ef: cw browser
+	c9a74fb13: nanoIO ptt
+	bf321f312: Signal browser
+	cea496b7a: cw via flrig
+	2e4a8517d: scripts
+	65a6da643: FSK via flrig / nanoIO
+	20a799a5a: INSTALL update
+	ee14f55cf: Version 4.1.22
 	a6415f6cb: Save/Restore AFC by mode
 	cc66d4bc7: Revert "APPLE PortAudio"
 	5196f8a20: Version 4.1.21
