@@ -6189,9 +6189,9 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-
+#if USE_PORTAUDIO
 { icons::make_icon_label(_("Rx Audio Dialog")), 'a', (Fl_Callback*)cb_mnuRxAudioDialog, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-
+#endif
 { icons::make_icon_label(_("View/Hide Channels")), 'c', (Fl_Callback*)cb_view_hide_channels, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Signal browser")), 'b', (Fl_Callback*)cb_mnuViewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 

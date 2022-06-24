@@ -15,6 +15,8 @@
 #define DR_MP3_IMPLEMENTATION
 #include "dr_mp3.h"
 
+#if USE_PORTAUDIO
+
 #define CHANNELS                  2
 #define SCRATE                44100  // 8000
 #define FRAMES_PER_BUFFER      4096  // 1024  // lower than 1023 values causes audio distortion on pi3
@@ -786,4 +788,6 @@ static void stop_filelist_thread(void)
 	filelist_thread_running   = false;
 	filelist_terminate_flag   = false;
 }
+
+#endif
 

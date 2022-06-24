@@ -452,6 +452,7 @@ void sound_init(void)
 #if !USE_PORTAUDIO
 	AudioPort->deactivate();
 	btnAudioIO[SND_IDX_PORT]->deactivate();
+	AudioAlerts->deactivate();
 #endif
 #if !USE_PULSEAUDIO
 	AudioPulse->deactivate();

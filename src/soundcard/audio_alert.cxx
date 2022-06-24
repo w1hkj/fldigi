@@ -2,10 +2,15 @@
 //
 // play various canned play_sounds or wav file using port audio interface
 
+#include "config.h"
+
 #include "audio_alert.h"
+
 #include "configuration.h"
 #include "confdialog.h"
 #include "rxmon.h"
+
+#if USE_PORTAUDIO
 
 #define SC_RATE 8000
 #define PHONERING 15000
@@ -236,3 +241,13 @@ void reset_audio_alerts()
 		LOG_INFO("Closed audio alert device %s", progdefaults.AlertDevice.c_str());
 	}
 }
+
+#else
+
+Caudio_alert *audio_alert;
+
+void reset_audio_alerts() {}
+
+void center_rxfilt_at_track() {}
+
+#endif
