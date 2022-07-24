@@ -1074,6 +1074,33 @@ case Step: for (int row = 0; row < image_height; row++) { \
 	}
 #undef UPD_LOOP
 
+	if (progdefaults.mon_wf_display && 
+		progdefaults.mon_xcvr_audio &&
+		progdefaults.mon_dsp_audio) {
+
+		int trk_low = progdefaults.RxFilt_low;
+		int trk_high = progdefaults.RxFilt_high;
+		RGBI *pos1 = fft_img + trk_low / step;
+		RGBI *pos2 = fft_img + trk_high / step;
+		if (likely(pos1 >= fft_img && pos2 < fft_img + disp_width)) {
+				if (progdefaults.mon_wide_tracks) {
+					for (int y = 0; y < image_height; y ++) {
+						*(pos1 + 1) = *pos1 = progdefaults.monitorRGBI;
+						*(pos2 - 1) = *pos2 = progdefaults.monitorRGBI;
+						pos1 += disp_width;
+						pos2 += disp_width;
+					}
+				} else {
+					for (int y = 0; y < image_height; y ++) {
+						*pos1 = progdefaults.monitorRGBI;
+						*pos2 = progdefaults.monitorRGBI;
+						pos1 += disp_width;
+						pos2 += disp_width;
+					}
+				}
+		}
+	}
+
 	if (active_modem && progdefaults.UseBWTracks) {
 		trx_mode mode = active_modem->get_mode();
 		if (mode == MODE_FMT) {

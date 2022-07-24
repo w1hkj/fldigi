@@ -962,14 +962,14 @@
         ELEM_(bool, UseBWTracks, "USEBWTRACKS",                                         \
               "Draw bandwidth marker with vertical lines",                              \
               true)                                                                     \
-        ELEM_(bool, UseWideTracks, "USEWIDETRACKS",                                     \
-              "Draw bandwidth marker with 3x vertical lines",                           \
-              false)                                                                    \
         ELEM_(bool, UseWideCursor, "USEWIDECURSOR",                                     \
               "Draw cursor with 3x vertical lines",                                     \
               false)                                                                    \
         ELEM_(bool, UseWideCenter, "USEWIDECENTER",                                     \
               "Draw center line marker with 3x vertical lines",                         \
+              false)                                                                    \
+        ELEM_(bool, UseWideTracks, "USEWIDETRACKS",                                     \
+              "Draw bandwidth marker with 3x vertical lines",                           \
               false)                                                                    \
         ELEM_(RGBI, cursorLineRGBI, "CLCOLORS",                                         \
               "Color of cursor lines (RGBI)",                                           \
@@ -986,6 +986,12 @@
         ELEM_(RGBI, rttymarkRGBI, "RTTYMARKRGBI",                                       \
               "Color of RTTY MARK freq marker (RGBI)",                                  \
               {255, 120, 0, 255})                                                       \
+        ELEM_(RGBI, monitorRGBI, "MONITORRGBI",                                         \
+              "Color of audio filter bandwidth (RGBI)",                                 \
+              {0, 255, 0, 255})                                                         \
+        ELEM_(bool, UseWideMonitor, "USEWIDEMONITOR",                                   \
+              "Draw bandwidth lines with 3x vertical lines",                            \
+              false)                                                                    \
         ELEM_(int, feldfontnbr, "FELDFONTNBR",                                          \
               "Index of raster font used for transmission",                             \
               4)                                                                        \
@@ -1154,6 +1160,18 @@
         ELEM_(int, mon_dsp_audio, "mon_dsp_audio",                                      \
               "monitor dsp filter output for selected modem @ waterfall frequency",     \
               0)                                                                        \
+        ELEM_(bool, mon_wf_display, "MON_WF_DISPLAY",                                   \
+              "Display monitor filter",                                                 \
+              true)                                                                     \
+        ELEM_(bool, mon_wide_tracks, "WIDEMONITORTRACKS",                               \
+              "Draw bandwidth lines with 3x vertical lines",                            \
+              false)                                                                    \
+        ELEM_(int, mon_xmt_audio, "mon_xmt_audio",                                      \
+              "monitor transmit audio on alert audio device",                           \
+              true)                                                                     \
+        ELEM_(double, mon_tx_vol, "mon_tx_vol",                                         \
+              "monitor transmit monitor volume level",                                  \
+              25.0)                                                                     \
         ELEM_(int, RxFilt_vol, "RxFilt_vol",                                            \
               "Audio stream volume",                                                    \
               50)                                                                       \

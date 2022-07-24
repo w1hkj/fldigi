@@ -582,12 +582,20 @@ int modem::update_quality(int value, int mode)
 bool disable_modem = false;
 #define SIGLIMIT 0.95
 
+double tx_mon_buffer[16384];
+
 void modem::ModulateXmtr(double *buffer, int len)
 {
 	if (unlikely(!TXscard)) return;
 	if (disable_modem) return;
 
 	tx_sample_count += len;
+
+	if (audio_alert && progdefaults.mon_xmt_audio ) {
+		for (int i = 0; i < len; i++)
+			tx_mon_buffer[i] = progdefaults.mon_tx_vol * buffer[i] / 100.0;
+		audio_alert->monitor(tx_mon_buffer, len, samplerate );
+	}
 
 	if (sig_start) {
 		int num = len / 2;

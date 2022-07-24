@@ -19,7 +19,7 @@
 
 #define CHANNELS                  2
 #define SCRATE                44100  // 8000
-#define FRAMES_PER_BUFFER      4096  // 1024  // lower than 1023 values causes audio distortion on pi3
+#define FRAMES_PER_BUFFER      8192 // 4096  // 1024  // lower than 1023 values causes audio distortion on pi3
 #define RBUFF_SIZE            32768  // 16384  // 4096
 
 static pthread_t       alert_pthread;
@@ -295,8 +295,8 @@ c_portaudio::c_portaudio()
 	}
 
 	stream = 0;
-	fbuffer = new float[1024];
-	nubuffer = new float[1024 * 6];
+	fbuffer = new float[8192];
+	nubuffer = new float[8192 * 6];
 	data_frames = new float[ FRAMES_PER_BUFFER * CHANNELS ];
 
 	paStreamParameters.device = -1;
@@ -648,7 +648,6 @@ void c_portaudio::mon_write(double *buffer, int len, int mon_sr)
 			monitor_rb->write(nubuffer, 2 * len);
 			return;
 		}
-
 
 // sample rates not equal; resample monophonic
 		else {
