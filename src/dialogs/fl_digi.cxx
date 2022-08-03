@@ -1604,8 +1604,6 @@ void startup_modem(modem* m, int f)
 		wf->btnRev->value(0);
 		wf->btnRev->deactivate();
 	}
-	
-
 }
 
 void cb_mnuOpenMacro(Fl_Menu_*, void*) {
@@ -1647,7 +1645,7 @@ void remove_windows()
 	Fl_Double_Window *w[] = {
 		scopeview, dlgRecordLoader,
 		dxcluster_viewer, dxcc_window,
-		dlgViewer, dlgLogbook, lotw_review_dialog,  
+		dlgViewer, dlgLogbook, lotw_review_dialog,
 		wExport, wCabrillo,
 		dlgConfig, notify_window,
 		picRxWin, picTxWin,
@@ -1904,8 +1902,8 @@ void init_modem(trx_mode mode, int freq)
 		quick_change = quick_change_8psk;
 //		modem_config_tab = tabPSK;
 		break;
-		
-		
+
+
 	case MODE_OFDM_500F:
 	case MODE_OFDM_750F:
 	case MODE_OFDM_2000F:
@@ -1916,8 +1914,8 @@ void init_modem(trx_mode mode, int freq)
 		quick_change = quick_change_ofdm;
 		//		modem_config_tab = tabPSK;
 		break;
-		
-		
+
+
 	case MODE_PSK125R: case MODE_PSK250R: case MODE_PSK500R:
 	case MODE_PSK1000R:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -2383,9 +2381,9 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 			open_config(TAB_MT63);
 			break;
 		case MODE_OLIVIA:
-		case MODE_OLIVIA_4_125:   case MODE_OLIVIA_4_250:   case MODE_OLIVIA_4_500: 
+		case MODE_OLIVIA_4_125:   case MODE_OLIVIA_4_250:   case MODE_OLIVIA_4_500:
 		case MODE_OLIVIA_4_1000:  case MODE_OLIVIA_4_2000:
-		case MODE_OLIVIA_8_125:   case MODE_OLIVIA_8_250:   case MODE_OLIVIA_8_500: 
+		case MODE_OLIVIA_8_125:   case MODE_OLIVIA_8_250:   case MODE_OLIVIA_8_500:
 		case MODE_OLIVIA_8_1000:  case MODE_OLIVIA_8_2000:
 		case MODE_OLIVIA_16_500:  case MODE_OLIVIA_16_1000: case MODE_OLIVIA_16_2000:
 		case MODE_OLIVIA_32_1000: case MODE_OLIVIA_32_2000:
@@ -2393,9 +2391,9 @@ void cb_mnuConfigModems(Fl_Menu_*, void*) {
 			open_config(TAB_OLIVIA);
 			break;
 		case MODE_CONTESTIA:
-		case MODE_CONTESTIA_4_125:   case MODE_CONTESTIA_4_250:   case MODE_CONTESTIA_4_500: 
+		case MODE_CONTESTIA_4_125:   case MODE_CONTESTIA_4_250:   case MODE_CONTESTIA_4_500:
 		case MODE_CONTESTIA_4_1000:  case MODE_CONTESTIA_4_2000:
-		case MODE_CONTESTIA_8_125:   case MODE_CONTESTIA_8_250:   case MODE_CONTESTIA_8_500: 
+		case MODE_CONTESTIA_8_125:   case MODE_CONTESTIA_8_250:   case MODE_CONTESTIA_8_500:
 		case MODE_CONTESTIA_8_1000:  case MODE_CONTESTIA_8_2000:
 		case MODE_CONTESTIA_16_250:  case MODE_CONTESTIA_16_500:
 		case MODE_CONTESTIA_16_1000: case MODE_CONTESTIA_16_2000:
@@ -5756,7 +5754,7 @@ UI_return:
 		int Y = status_group->y();
 		int psm_width = progdefaults.show_psm_btn ? bwSqlOnOff : 0;
 
-		int vuw = 
+		int vuw =
 			fl_digi_main->w() - Status2->x() - Status2->w() - 2 -
 			bwTxLevel -  // tx level control
 			Wwarn -      // Warn indicator
@@ -5765,7 +5763,7 @@ UI_return:
 			psm_width -  // psm button, bwSqlOnOff / 0
 			corner_box->w();
 
-		StatusBar->resize( 
+		StatusBar->resize(
 			Status2->x() + Status2->w() + 2, Y, vuw, StatusBar->h());
 
 		VuMeter->resize(
@@ -6607,7 +6605,7 @@ void do_pskreporter_popup()
 	int t = Fl_Tooltip::enabled();
 	const Fl_Menu_Item* p = (Fl_Menu_Item *)0;
 
-	put_status(""); 
+	put_status("");
 
 	Fl_Tooltip::disable();
 	p = pskrep_menu->popup(
@@ -6623,6 +6621,8 @@ void do_pskreporter_popup()
 
 void *do_pskreporter_lookup(void *)  // thread action
 {
+	SET_THREAD_ID(ACTIVITY_TID);
+
 	pskrep_working = true;
 	pskrep_data.clear();
 	pskrep_url.assign("https://pskreporter.info/cgi-bin/psk-freq.pl");
@@ -6679,6 +6679,8 @@ void *do_pskreporter_lookup(void *)  // thread action
 		popup_title.append("~/.fldigi/debug/network_debug.txt");
 #endif
 	}
+
+
 	REQ(do_pskreporter_popup);
 	pskrep_working = false;
 	return NULL;
@@ -6693,7 +6695,7 @@ void cb_qso_inpAct(Fl_Widget*, void*)
 		LOG_ERROR("%s", "pthread_create failed");
 		return;
 	}
-	put_status("Fetching PSK Reporter data", 15); 
+	put_status("Fetching PSK Reporter data", 15);
 }
 //======================================================================
 
@@ -8583,7 +8585,7 @@ static pthread_mutex_t rx_data_mutex = PTHREAD_MUTEX_INITIALIZER;
 char *get_rx_data()
 {
 //	ENSURE_THREAD(FLMAIN_TID);
-	
+
 	guard_lock datalock(&rx_data_mutex);
 	memset(rx_raw_chars, 0, RAW_BUFF_LEN+1);
 	strcpy(rx_raw_chars, rx_raw_buff);
