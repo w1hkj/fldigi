@@ -6623,6 +6623,8 @@ void do_pskreporter_popup()
 
 void *do_pskreporter_lookup(void *)  // thread action
 {
+	SET_THREAD_ID(ACTIVITY_TID);
+	
 	pskrep_working = true;
 	pskrep_data.clear();
 	pskrep_url.assign("https://pskreporter.info/cgi-bin/psk-freq.pl");

@@ -961,6 +961,10 @@ int main (int argc, char *argv[])
 				cbq[i]->attach(i, "WKEY_TID");
 				break;
 
+			case ACTIVITY_TID:
+				cbq[i]->attach(i, "ACTIVITY_TID");
+				break;
+
 			case FLMAIN_TID:
 				cbq[i]->attach(i, "FLMAIN_TID");
 				break;
