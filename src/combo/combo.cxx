@@ -44,6 +44,7 @@ Fl_PopBrowser::Fl_PopBrowser (int X, int Y, int W, int H, const char *label)
 	popbrwsr->callback ( (Fl_Callback*)popbrwsr_cb);
 	popbrwsr->align(FL_ALIGN_INSIDE);
 	parentCB = 0;
+	parentWindow = 0;
 	end();
 	set_modal();
 }
