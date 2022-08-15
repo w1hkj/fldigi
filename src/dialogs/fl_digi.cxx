@@ -6592,9 +6592,9 @@ void *do_pskreporter_lookup(void *)  // thread action
 	pskrep_url.assign("https://pskreporter.info/cgi-bin/psk-freq.pl");
 	pskrep_url.append("?mode=").append(mode_info[active_modem->get_mode()].export_mode);
 	if (qso_inpAct->size())
-		pskrep_url.append("&?grid=").append(qso_inpAct->value());
+		pskrep_url.append("&grid=").append(qso_inpAct->value());
 	else if (progdefaults.myLocator.length() > 2)
-		pskrep_url.append("&?grid=").append(progdefaults.myLocator, 0, 2);
+		pskrep_url.append("&grid=").append(progdefaults.myLocator, 0, 2);
 
 	if (get_http(pskrep_url, pskrep_data, 20.0) != MBEDTLS_EXIT_SUCCESS) {
 		LOG_ERROR("Error while fetching \"%s\": %s", pskrep_url.c_str(), pskrep_data.c_str());
