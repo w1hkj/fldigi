@@ -41,14 +41,11 @@
 #include "main.h"
 #include "fl_digi.h"
 #include "trx.h"
-
 #include "configuration.h"
-
 #include "globals.h"
-
 #include "debug.h"
-
 #include "gettext.h"
+#include "status.h"
 
 extern void n3fjp_set_freq(long);
 extern bool n3fjp_connected;
@@ -426,6 +423,9 @@ void qso_movFreq(Fl_Widget* w, void *data)
 	}
 
 	sendFreq(f);
+
+	modeband.band_mode_change();
+
 	if (restore == 1)
 		restoreFocus();
 	return;

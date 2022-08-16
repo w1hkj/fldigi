@@ -45,6 +45,7 @@
 #include "qrunner.h"
 #include "debug.h"
 #include "status.h"
+#include "squelch_status.h"
 #include "icons.h"
 
 LOG_FILE_SOURCE(debug::debug::LOG_RPC_CLIENT);
@@ -279,6 +280,7 @@ LOG_VERBOSE("xmlrpc_rig_show_freq %lu", freq);
 	wf->rfcarrier(freq);
 	wf->movetocenter();
 	show_frequency(freq);
+	modeband.band_mode_change();
 }
 
 void set_flrig_freq(unsigned long int fr)
