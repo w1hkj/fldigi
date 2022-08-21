@@ -1374,16 +1374,14 @@ int smeter_data(DATA d, size_t p)
 
 static void rigcat_set_smeter(void *data)
 {
-	if (pwrlevel_grp->visible()) return;
-	if (!smeter && !pwrmeter) return;
-
-	if (smeter && progStatus.meters) {
-		if (!smeter->visible()) {
-			pwrmeter->hide();
-			smeter->show();
-		}
+	if (smeter) {
 		int val = reinterpret_cast<intptr_t>(data);
 		smeter->value(val);
+		if (pwrlevel_grp->visible()) return;
+		if (progStatus.meters && !smeter->visible()) {
+			if (pwrmeter) pwrmeter->hide();
+			smeter->show();
+		}
 	}
 }
 
@@ -1526,16 +1524,16 @@ int pmeter_data(DATA d, size_t p)
 
 static void rigcat_set_pmeter(void *data)
 {
-	if (pwrlevel_grp->visible()) return;
-	if (!smeter && !pwrmeter) return;
-
-	if (pwrmeter && progStatus.meters) {
-		if (!pwrmeter->visible()) {
-			smeter->hide();
-			pwrmeter->show();
-		}
+	if (pwrmeter) {
 		int val = reinterpret_cast<intptr_t>(data);
 		pwrmeter->value(val);
+		if (pwrlevel_grp->visible())
+			return;
+		if (progStatus.meters) {
+			if (smeter) smeter->hide();
+			pwrmeter->show();
+			pwrmeter->redraw();
+		}
 	}
 }
 
@@ -2157,14 +2155,7 @@ int pwrlevel_val(int pwr)
 static void rigCAT_update_pwrlevel(const long v)
 {
 	long pwr = v;
-	char szpwr[10];
-	snprintf(szpwr, sizeof(szpwr), "%ld", pwr);
-	progdefaults.mytxpower = szpwr;
-
-	inpMyPower->value(szpwr);
 	pwr_level->value(pwr);
-
-//	if (xmlrig.debug) LOG_INFO("Read power level %s", szpwr);
 }
 
 void rigCAT_get_pwrlevel()

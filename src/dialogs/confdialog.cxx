@@ -2536,6 +2536,13 @@ static void cb_btnDisplayLogbookRead(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_log_power_meter=(Fl_Check_Button *)0;
+
+static void cb_btn_log_power_meter(Fl_Check_Button* o, void*) {
+  progdefaults.log_power_meter=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnCWuseSOMdecoding=(Fl_Check_Button *)0;
 
 static void cb_btnCWuseSOMdecoding(Fl_Check_Button* o, void*) {
@@ -11372,7 +11379,7 @@ work!"));
         btn_reload_cty_dat->tooltip(_("Reload cty.dat"));
         btn_reload_cty_dat->callback((Fl_Callback*)cb_btn_reload_cty_dat);
       } // Fl_Button* btn_reload_cty_dat
-      { Fl_Input2* o = inpMyPower = new Fl_Input2(671, 241, 50, 24, _("Transmit Power"));
+      { Fl_Input2* o = inpMyPower = new Fl_Input2(368, 286, 50, 24, _("Transmit Power"));
         inpMyPower->tooltip(_("Tx power used for logbook entries"));
         inpMyPower->box(FL_DOWN_BOX);
         inpMyPower->color(FL_BACKGROUND2_COLOR);
@@ -11393,6 +11400,13 @@ work!"));
         btnDisplayLogbookRead->callback((Fl_Callback*)cb_btnDisplayLogbookRead);
         o->value(progdefaults.DisplayLogbookRead);
       } // Fl_Check_Button* btnDisplayLogbookRead
+      { Fl_Check_Button* o = btn_log_power_meter = new Fl_Check_Button(444, 288, 155, 20, _("Log power meter "));
+        btn_log_power_meter->tooltip(_("Bug me about saving log entries"));
+        btn_log_power_meter->down_box(FL_DOWN_BOX);
+        btn_log_power_meter->value(1);
+        btn_log_power_meter->callback((Fl_Callback*)cb_btn_log_power_meter);
+        o->value(progdefaults.log_power_meter);
+      } // Fl_Check_Button* btn_log_power_meter
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/QSO logging"));
       config_pages.push_back(p);
       tab_tree->add(_("Logging/QSO logging"));

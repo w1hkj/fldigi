@@ -273,6 +273,7 @@ extern Fl_Button *btn_default_cty_dat;
 extern Fl_Button *btn_reload_cty_dat;
 extern Fl_Input2 *inpMyPower;
 extern Fl_Check_Button *btnDisplayLogbookRead;
+extern Fl_Check_Button *btn_log_power_meter;
 extern Fl_Check_Button *btnCWuseSOMdecoding;
 extern Fl_Check_Button *btnCWrcvTrack;
 extern Fl_Value_Slider2 *sldrCWbandwidth;

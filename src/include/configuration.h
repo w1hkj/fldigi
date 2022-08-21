@@ -1824,6 +1824,9 @@
         ELEM_(std::string, mytxpower, "TXPOWER",                                        \
               "TX power used for logbook entries",                                      \
               "")                                                                       \
+        ELEM_(bool, log_power_meter, "LOG_POWER_METER",                                 \
+             "Use power meter reading for logged TX power",                             \
+             true)                                                                      \
         ELEM_(std::string, my_FD_call, "FD_CALL",                                       \
               "Field Day call sign",                                                    \
               "")                                                                       \
