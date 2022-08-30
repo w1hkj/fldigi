@@ -397,7 +397,7 @@ void cFreqControl::value(unsigned long int lv)
 
 unsigned long int cFreqControl::maximum(void)
 {
-	return (unsigned long int)(pow(2.0, 32) - 1);
+	return 9999999999L;//(unsigned long int)(pow(2.0, 32) - 1);
 }
 
 
@@ -675,7 +675,7 @@ void cFreqControl::set_ndigits(int nbr)
 
 	minVal = 0;
 	double fmaxval = (pow(10.0, nD) - 1) * precision;
-	unsigned long int UMAX = (unsigned long int)(pow(2.0, 32) - 1);
+	unsigned long int UMAX = maximum();//(unsigned long int)(pow(2.0, 32) - 1);
 	if (fmaxval > UMAX) fmaxval = UMAX;
 	maxVal = fmaxval;
 	fmaxval /= 1000.0;

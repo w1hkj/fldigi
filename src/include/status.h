@@ -51,7 +51,7 @@ struct status {
 	int		rigW;
 	int		rigH;
 	int		carrier;
-	int		noCATfreq;
+	long long	noCATfreq;
 	std::string	noCATmode;
 	std::string noCATwidth;
 	int		mag;
