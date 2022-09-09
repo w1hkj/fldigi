@@ -1116,6 +1116,9 @@ int main (int argc, char *argv[])
 
 	Fl::lock();  // start the gui thread!!
 	Fl::visual(FL_RGB); // insure 24 bit color operation
+	// DST This call highly recommended by fltk 31.26.1 to enable
+	// Xdbe on servers where double buffering does not exist for every visual.
+	Fl::visual(FL_DOUBLE|FL_INDEX);
 
 	fl_register_images();
 	Fl::set_fonts(0);
