@@ -137,17 +137,17 @@ void PTT::set(bool ptt)
 		pttdev == PTT_UHROUTER ? "UHROUTER" : "UNKNOWN";
 	LOG_INFO("PTT via %s : %s", ptt_temp.c_str(), ptt ? "ON" : "OFF");
 
+	// Let  WinKeyer handle PTT when it is the CW modem, so we don't lose QSK.
+	if (active_modem == cw_modem && progStatus.WK_online) {
+		return;
+	}
+
 // add milliseconds - no audio to clear virtual audio card used by Flex systems
 	if (!ptt && progdefaults.PTT_off_delay)
 		MilliSleep(progdefaults.PTT_off_delay);
 
 	if (active_modem == cw_modem && (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)) {
 		guard_lock lk(&cwio_ptt_mutex);
-	}
-
-	// When active, let WinKeyer handle PTT so we don't lose QSK.
-	if (active_modem == cw_modem && progStatus.WK_online) {
-		return;
 	}
 
 	switch (pttdev) {
