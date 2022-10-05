@@ -348,10 +348,12 @@ void feld::FSKH_rx(cmplx z)
 
 	vid = CLAMP(0.5*(f + 1), 0.0, 1.0);
 
-	if (reverse)
-		vid = 1.0 - vid;
-	if (progdefaults.HellBlackboard)
-		vid = 1.0 - vid;
+	if (!progdefaults.FH_color_raster) {
+		if (reverse)
+			vid = 1.0 - vid;
+		if (progdefaults.HellBlackboard)
+			vid = 1.0 - vid;
+	}
 
 	col_data[col_pointer + RxColumnLen] = (int)(vid * 255.0);
 	col_pointer++;
@@ -418,13 +420,19 @@ void feld::rx(cmplx z)
 	metric = CLAMP(1000*agc, 0.0, 100.0);
 	display_metric(metric);
 
-	if (!progdefaults.HellBlackboard)
-		ix = 255 - ix;
+	if (!progdefaults.FH_color_raster) {
+		if (reverse)
+			ix = 255 - ix;
+		if (progdefaults.HellBlackboard)
+			ix = 255 - ix;
+	}
 
 	col_data[col_pointer + RxColumnLen] = ix;
 	col_pointer++;
 	if (col_pointer >= RxColumnLen) {
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
+			if (progdefaults.FH_color_raster) FHdisp->color_raster();
+			else                              FHdisp->bw_raster();
 			switch (progdefaults.HellRcvWidth) {
 				case 4:
 					REQ(put_rx_data, col_data, 2 * RxColumnLen);

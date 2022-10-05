@@ -3812,17 +3812,17 @@ static void cb_listboxHellPulse(Fl_ListBox* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnFeldHellIdle=(Fl_Check_Button *)0;
-
-static void cb_btnFeldHellIdle(Fl_Check_Button* o, void*) {
-  progdefaults.HellXmtIdle=o->value();
-progdefaults.changed = true;
-}
-
 Fl_Value_Slider *valHellXmtWidth=(Fl_Value_Slider *)0;
 
 static void cb_valHellXmtWidth(Fl_Value_Slider* o, void*) {
   progdefaults.HellXmtWidth=(int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnFeldHellIdle=(Fl_Check_Button *)0;
+
+static void cb_btnFeldHellIdle(Fl_Check_Button* o, void*) {
+  progdefaults.HellXmtIdle=o->value();
 progdefaults.changed = true;
 }
 
@@ -3866,6 +3866,83 @@ Fl_Value_Slider *val_hellagc=(Fl_Value_Slider *)0;
 static void cb_val_hellagc(Fl_Value_Slider* o, void*) {
   progdefaults.hellagc=(int)o->value();
 progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnFHcolor_raster=(Fl_Check_Button *)0;
+
+static void cb_btnFHcolor_raster(Fl_Check_Button* o, void*) {
+  progdefaults.FH_color_raster = o->value();
+if (o->value())
+	FHdisp->color_raster();
+else
+	FHdisp->bw_raster();
+progdefaults.changed = true;
+}
+
+colorbox *FH_Palette=(colorbox *)0;
+
+static void cb_FH_Palette(colorbox*, void*) {
+  progdefaults.changed = true;
+}
+
+static void cb_btn_FH_Color(Fl_Button*, void*) {
+  selectFHColor(0);
+progdefaults.changed = true;
+}
+
+static void cb_btn_FH_Color1(Fl_Button*, void*) {
+  selectFHColor(1);
+progdefaults.changed = true;
+}
+
+static void cb_btn_FH_Color2(Fl_Button*, void*) {
+  selectFHColor(2);
+progdefaults.changed = true;
+}
+
+static void cb_btn_FH_Color3(Fl_Button*, void*) {
+  selectFHColor(3);
+progdefaults.changed = true;
+}
+
+static void cb_btn_FH_Color4(Fl_Button*, void*) {
+  selectFHColor(4);
+progdefaults.changed = true;
+}
+
+static void cb_btn_FH_Color5(Fl_Button*, void*) {
+  selectFHColor(5);
+progdefaults.changed = true;
+}
+
+static void cb_btn_FH_Color6(Fl_Button*, void*) {
+  selectFHColor(6);
+progdefaults.changed = true;
+}
+
+static void cb_btn_FH_Color7(Fl_Button*, void*) {
+  selectFHColor(7);
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_FH_Color[9]={(Fl_Button *)0};
+
+static void cb_btn_FH_Color8(Fl_Button*, void*) {
+  selectFHColor(8);
+progdefaults.changed = true;
+}
+
+Fl_Button *btnLoadFHPalette=(Fl_Button *)0;
+
+static void cb_btnLoadFHPalette(Fl_Button*, void*) {
+  loadFHPalette();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnSaveFHPalette=(Fl_Button *)0;
+
+static void cb_btnSaveFHPalette(Fl_Button*, void*) {
+  saveFHPalette();
 }
 
 Fl_ListBox *listbox_fmt_sr=(Fl_ListBox *)0;
@@ -13079,10 +13156,10 @@ ver a +/- 10 WPM range.  Calibration/Test is 1 minute of\n\'PARIS \'."));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
-      { Fl_Group* o = new Fl_Group(247, 31, 500, 133, _("Hell Transmit Parameters"));
+      { Fl_Group* o = new Fl_Group(206, 31, 589, 86, _("Hell Transmit Parameters"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_ListBox* o = listboxHellFont = new Fl_ListBox(262, 56, 225, 22, _("Transmit font"));
+        { Fl_ListBox* o = listboxHellFont = new Fl_ListBox(211, 56, 210, 22, _("Transmit font"));
           listboxHellFont->tooltip(_("Select TX raster font"));
           listboxHellFont->box(FL_DOWN_BOX);
           listboxHellFont->color(FL_BACKGROUND2_COLOR);
@@ -13099,7 +13176,7 @@ ver a +/- 10 WPM range.  Calibration/Test is 1 minute of\n\'PARIS \'."));
                        o->labelsize(FL_NORMAL_SIZE);
           listboxHellFont->end();
         } // Fl_ListBox* listboxHellFont
-        { Fl_ListBox* o = listboxHellPulse = new Fl_ListBox(262, 104, 150, 22, _("Pulse shape"));
+        { Fl_ListBox* o = listboxHellPulse = new Fl_ListBox(536, 56, 150, 22, _("Pulse shape"));
           listboxHellPulse->tooltip(_("Raised cosine pulse shape factor"));
           listboxHellPulse->box(FL_DOWN_BOX);
           listboxHellPulse->color(FL_BACKGROUND2_COLOR);
@@ -13109,21 +13186,14 @@ ver a +/- 10 WPM range.  Calibration/Test is 1 minute of\n\'PARIS \'."));
           listboxHellPulse->labelsize(14);
           listboxHellPulse->labelcolor(FL_FOREGROUND_COLOR);
           listboxHellPulse->callback((Fl_Callback*)cb_listboxHellPulse);
-          listboxHellPulse->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          listboxHellPulse->align(Fl_Align(FL_ALIGN_RIGHT));
           listboxHellPulse->when(FL_WHEN_RELEASE);
           o->add(_("Slow (4 msec)|Med (2 msec)|Fast (1 msec)|Hard Keying"));
           o->index(progdefaults.HellPulseFast);
                        o->labelsize(FL_NORMAL_SIZE);
           listboxHellPulse->end();
         } // Fl_ListBox* listboxHellPulse
-        { Fl_Check_Button* o = btnFeldHellIdle = new Fl_Check_Button(262, 139, 230, 20, _("Transmit periods (.) when idle"));
-          btnFeldHellIdle->tooltip(_("Transmits a diddle dot when no keyboard activity"));
-          btnFeldHellIdle->down_box(FL_DOWN_BOX);
-          btnFeldHellIdle->value(1);
-          btnFeldHellIdle->callback((Fl_Callback*)cb_btnFeldHellIdle);
-          o->value(progdefaults.HellXmtIdle);
-        } // Fl_Check_Button* btnFeldHellIdle
-        { Fl_Value_Slider* o = valHellXmtWidth = new Fl_Value_Slider(443, 104, 150, 22, _("Tx Width Multiplier"));
+        { Fl_Value_Slider* o = valHellXmtWidth = new Fl_Value_Slider(211, 85, 150, 22, _("Tx Width Multiplier"));
           valHellXmtWidth->tooltip(_("Range 1...3"));
           valHellXmtWidth->type(5);
           valHellXmtWidth->color(FL_LIGHT3);
@@ -13136,24 +13206,31 @@ ver a +/- 10 WPM range.  Calibration/Test is 1 minute of\n\'PARIS \'."));
           valHellXmtWidth->align(Fl_Align(FL_ALIGN_RIGHT));
           o->value(progdefaults.HellXmtWidth);
         } // Fl_Value_Slider* valHellXmtWidth
+        { Fl_Check_Button* o = btnFeldHellIdle = new Fl_Check_Button(536, 85, 230, 20, _("Transmit periods (.) when idle"));
+          btnFeldHellIdle->tooltip(_("Transmits a diddle dot when no keyboard activity"));
+          btnFeldHellIdle->down_box(FL_DOWN_BOX);
+          btnFeldHellIdle->value(1);
+          btnFeldHellIdle->callback((Fl_Callback*)cb_btnFeldHellIdle);
+          o->value(progdefaults.HellXmtIdle);
+        } // Fl_Check_Button* btnFeldHellIdle
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(247, 167, 500, 173, _("Hell Receive Parameters"));
+      { Fl_Group* o = new Fl_Group(205, 121, 589, 139, _("Hell Receive Parameters"));
         o->box(FL_ENGRAVED_FRAME);
         o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_Check_Button* o = btnBlackboard = new Fl_Check_Button(262, 191, 125, 20, _("Reverse video"));
+        { Fl_Check_Button* o = btnBlackboard = new Fl_Check_Button(223, 146, 147, 20, _("Reverse video"));
           btnBlackboard->tooltip(_("Display RX in reverse video"));
           btnBlackboard->down_box(FL_DOWN_BOX);
           btnBlackboard->callback((Fl_Callback*)cb_btnBlackboard);
           o->value(progdefaults.HellBlackboard);
         } // Fl_Check_Button* btnBlackboard
-        { Fl_Check_Button* o = btnHellMarquee = new Fl_Check_Button(447, 191, 125, 20, _("Marquee text"));
+        { Fl_Check_Button* o = btnHellMarquee = new Fl_Check_Button(441, 146, 147, 20, _("Marquee text"));
           btnHellMarquee->tooltip(_("Display RX as a scrolling marquee"));
           btnHellMarquee->down_box(FL_DOWN_BOX);
           btnHellMarquee->callback((Fl_Callback*)cb_btnHellMarquee);
           o->value(progdefaults.HellMarquee);
         } // Fl_Check_Button* btnHellMarquee
-        { Fl_Value_Slider* o = valHellRcvWidth = new Fl_Value_Slider(262, 227, 120, 22, _("Rx Width Multiplier"));
+        { Fl_Value_Slider* o = valHellRcvWidth = new Fl_Value_Slider(223, 170, 141, 22, _("Rx Width Multiplier"));
           valHellRcvWidth->tooltip(_("Range 1...4"));
           valHellRcvWidth->type(5);
           valHellRcvWidth->color(FL_LIGHT3);
@@ -13166,7 +13243,7 @@ ver a +/- 10 WPM range.  Calibration/Test is 1 minute of\n\'PARIS \'."));
           valHellRcvWidth->align(Fl_Align(FL_ALIGN_RIGHT));
           o->value(progdefaults.HellRcvWidth);
         } // Fl_Value_Slider* valHellRcvWidth
-        { Fl_Value_Slider* o = valHellRcvHeight = new Fl_Value_Slider(262, 266, 250, 22, _("Rx Height in pixels"));
+        { Fl_Value_Slider* o = valHellRcvHeight = new Fl_Value_Slider(223, 198, 294, 22, _("Rx Height in pixels"));
           valHellRcvHeight->tooltip(_("May require resizing the Rx/Tx panel"));
           valHellRcvHeight->type(5);
           valHellRcvHeight->color(FL_LIGHT3);
@@ -13179,7 +13256,7 @@ ver a +/- 10 WPM range.  Calibration/Test is 1 minute of\n\'PARIS \'."));
           valHellRcvHeight->align(Fl_Align(FL_ALIGN_RIGHT));
           o->value(progdefaults.HellRcvHeight);
         } // Fl_Value_Slider* valHellRcvHeight
-        { Fl_Value_Slider2* o = sldrHellBW = new Fl_Value_Slider2(262, 305, 250, 22, _("Receive filter bandwidth"));
+        { Fl_Value_Slider2* o = sldrHellBW = new Fl_Value_Slider2(223, 226, 202, 22, _("Receive filter bandwidth"));
           sldrHellBW->tooltip(_("Adjust the DSP bandwidth"));
           sldrHellBW->type(1);
           sldrHellBW->box(FL_DOWN_BOX);
@@ -13200,7 +13277,7 @@ ver a +/- 10 WPM range.  Calibration/Test is 1 minute of\n\'PARIS \'."));
           o->value(progdefaults.HELL_BW);
           o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
         } // Fl_Value_Slider2* sldrHellBW
-        { Fl_Value_Slider* o = val_hellagc = new Fl_Value_Slider(527, 227, 120, 22, _("Rx AGC"));
+        { Fl_Value_Slider* o = val_hellagc = new Fl_Value_Slider(535, 170, 141, 22, _("Rx AGC"));
           val_hellagc->tooltip(_("1 - Slow, 2 - Medium, 3 - Fast"));
           val_hellagc->type(5);
           val_hellagc->color(FL_LIGHT3);
@@ -13213,6 +13290,75 @@ ver a +/- 10 WPM range.  Calibration/Test is 1 minute of\n\'PARIS \'."));
           val_hellagc->align(Fl_Align(FL_ALIGN_RIGHT));
           o->value(progdefaults.hellagc);
         } // Fl_Value_Slider* val_hellagc
+        { Fl_Check_Button* o = btnFHcolor_raster = new Fl_Check_Button(619, 227, 148, 20, _("Color raster"));
+          btnFHcolor_raster->tooltip(_("Transmits a diddle dot when no keyboard activity"));
+          btnFHcolor_raster->down_box(FL_DOWN_BOX);
+          btnFHcolor_raster->callback((Fl_Callback*)cb_btnFHcolor_raster);
+          o->value(progdefaults.FH_color_raster);
+        } // Fl_Check_Button* btnFHcolor_raster
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(205, 264, 589, 81, _("Color Spectrum"));
+        o->box(FL_ENGRAVED_BOX);
+        o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+        { colorbox* o = FH_Palette = new colorbox(235, 291, 456, 24, _("Color spectrum"));
+          FH_Palette->box(FL_DOWN_BOX);
+          FH_Palette->color(FL_FOREGROUND_COLOR);
+          FH_Palette->selection_color(FL_BACKGROUND_COLOR);
+          FH_Palette->labeltype(FL_NORMAL_LABEL);
+          FH_Palette->labelfont(0);
+          FH_Palette->labelsize(12);
+          FH_Palette->labelcolor(FL_FOREGROUND_COLOR);
+          FH_Palette->callback((Fl_Callback*)cb_FH_Palette);
+          FH_Palette->align(Fl_Align(FL_ALIGN_TOP));
+          FH_Palette->when(FL_WHEN_RELEASE);
+          o->label(progdefaults.FHPaletteName.c_str());
+          o->labelsize(FL_NORMAL_SIZE);
+        } // colorbox* FH_Palette
+        { btn_FH_Color[0] = new Fl_Button(235, 317, 20, 24);
+          btn_FH_Color[0]->tooltip(_("Change color"));
+          btn_FH_Color[0]->callback((Fl_Callback*)cb_btn_FH_Color);
+        } // Fl_Button* btn_FH_Color[0]
+        { btn_FH_Color[1] = new Fl_Button(289, 317, 20, 24);
+          btn_FH_Color[1]->tooltip(_("Change color"));
+          btn_FH_Color[1]->callback((Fl_Callback*)cb_btn_FH_Color1);
+        } // Fl_Button* btn_FH_Color[1]
+        { btn_FH_Color[2] = new Fl_Button(344, 317, 20, 24);
+          btn_FH_Color[2]->tooltip(_("Change color"));
+          btn_FH_Color[2]->callback((Fl_Callback*)cb_btn_FH_Color2);
+        } // Fl_Button* btn_FH_Color[2]
+        { btn_FH_Color[3] = new Fl_Button(398, 317, 20, 24);
+          btn_FH_Color[3]->tooltip(_("Change color"));
+          btn_FH_Color[3]->callback((Fl_Callback*)cb_btn_FH_Color3);
+        } // Fl_Button* btn_FH_Color[3]
+        { btn_FH_Color[4] = new Fl_Button(453, 317, 20, 24);
+          btn_FH_Color[4]->tooltip(_("Change color"));
+          btn_FH_Color[4]->callback((Fl_Callback*)cb_btn_FH_Color4);
+        } // Fl_Button* btn_FH_Color[4]
+        { btn_FH_Color[5] = new Fl_Button(507, 317, 20, 24);
+          btn_FH_Color[5]->tooltip(_("Change color"));
+          btn_FH_Color[5]->callback((Fl_Callback*)cb_btn_FH_Color5);
+        } // Fl_Button* btn_FH_Color[5]
+        { btn_FH_Color[6] = new Fl_Button(562, 317, 20, 24);
+          btn_FH_Color[6]->tooltip(_("Change color"));
+          btn_FH_Color[6]->callback((Fl_Callback*)cb_btn_FH_Color6);
+        } // Fl_Button* btn_FH_Color[6]
+        { btn_FH_Color[7] = new Fl_Button(616, 317, 20, 24);
+          btn_FH_Color[7]->tooltip(_("Change color"));
+          btn_FH_Color[7]->callback((Fl_Callback*)cb_btn_FH_Color7);
+        } // Fl_Button* btn_FH_Color[7]
+        { btn_FH_Color[8] = new Fl_Button(671, 317, 20, 24);
+          btn_FH_Color[8]->tooltip(_("Change color"));
+          btn_FH_Color[8]->callback((Fl_Callback*)cb_btn_FH_Color8);
+        } // Fl_Button* btn_FH_Color[8]
+        { btnLoadFHPalette = new Fl_Button(700, 291, 70, 24, _("Load..."));
+          btnLoadFHPalette->tooltip(_("Load a new palette"));
+          btnLoadFHPalette->callback((Fl_Callback*)cb_btnLoadFHPalette);
+        } // Fl_Button* btnLoadFHPalette
+        { btnSaveFHPalette = new Fl_Button(700, 317, 70, 24, _("Save..."));
+          btnSaveFHPalette->tooltip(_("Save this palette"));
+          btnSaveFHPalette->callback((Fl_Callback*)cb_btnSaveFHPalette);
+        } // Fl_Button* btnSaveFHPalette
         o->end();
       } // Fl_Group* o
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/Feld Hell"));

@@ -430,15 +430,21 @@ extern Fl_Counter2 *valDominoEX_PATHS;
 #include "fontdef.h"
 extern Fl_ListBox *listboxHellFont;
 extern Fl_ListBox *listboxHellPulse;
-extern Fl_Check_Button *btnFeldHellIdle;
 #include <FL/Fl_Value_Slider.H>
 extern Fl_Value_Slider *valHellXmtWidth;
+extern Fl_Check_Button *btnFeldHellIdle;
 extern Fl_Check_Button *btnBlackboard;
 extern Fl_Check_Button *btnHellMarquee;
 extern Fl_Value_Slider *valHellRcvWidth;
 extern Fl_Value_Slider *valHellRcvHeight;
 extern Fl_Value_Slider2 *sldrHellBW;
 extern Fl_Value_Slider *val_hellagc;
+extern Fl_Check_Button *btnFHcolor_raster;
+#include "colorbox.h"
+extern colorbox *FH_Palette;
+extern Fl_Button *btn_FH_Color[9];
+extern Fl_Button *btnLoadFHPalette;
+extern Fl_Button *btnSaveFHPalette;
 #include "fmt_dialog.h"
 extern Fl_ListBox *listbox_fmt_sr;
 extern Fl_Counter *cnt_fmt_rx_ppm;
@@ -1005,7 +1011,6 @@ extern Fl_Check_Button *btnWF_UIqsy;
 extern Fl_Check_Button *btnWF_UIxmtlock;
 extern Fl_Button *btn_wf_enable_all;
 extern Fl_Button *btn_wf_disable_all;
-#include "colorbox.h"
 extern colorbox *WF_Palette;
 extern Fl_Button *btnColor[9];
 extern Fl_Button *btnLoadPalette;

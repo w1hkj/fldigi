@@ -25,11 +25,13 @@
 
 #include <FL/Fl_Widget.H>
 #include "feld.h"
+#include "waterfall.h"
 
 class Raster : public Fl_Widget {
 public:
 private:
-	unsigned char *vidbuf;
+	unsigned char	*vidbuf;
+	RGB 			*color_vid;
 	int		width;
 	int		height;
 	int		col;
@@ -42,6 +44,10 @@ private:
 	int		yp;
 	bool	marquee;
 	bool	_reverse;
+	bool	_use_color;
+
+	RGB mag2RGB[256];
+
 public:
 	Raster(int X, int Y, int W, int H, int rh = 2, bool rv = false);
 	~Raster();
@@ -57,7 +63,11 @@ public:
 	void	hide() { Fl_Widget::hide();}
 	void	set_marquee(bool val) { marquee = val; }
 	bool	get_marquee() { return marquee; }
-	void	reverse(bool val) { _reverse = val; }
+	void	do_reverse();
+	void	reverse(bool val) { _reverse = val; do_reverse(); }
+	void	set_colors(RGB *rgb);
+	void	color_raster() {_use_color = true; redraw(); }
+	void	bw_raster() { _use_color = false; redraw(); }
 };
 
 #endif

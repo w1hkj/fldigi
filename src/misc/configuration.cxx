@@ -444,15 +444,25 @@ void configuration::saveDefaults()
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
-	memcpy(&cfgpal0, &palette[0], sizeof(cfgpal0));
-	memcpy(&cfgpal1, &palette[1], sizeof(cfgpal1));
-	memcpy(&cfgpal2, &palette[2], sizeof(cfgpal2));
-	memcpy(&cfgpal3, &palette[3], sizeof(cfgpal3));
-	memcpy(&cfgpal4, &palette[4], sizeof(cfgpal4));
-	memcpy(&cfgpal5, &palette[5], sizeof(cfgpal5));
-	memcpy(&cfgpal6, &palette[6], sizeof(cfgpal6));
-	memcpy(&cfgpal7, &palette[7], sizeof(cfgpal7));
-	memcpy(&cfgpal8, &palette[8], sizeof(cfgpal8));
+	cfgpal0 = palette[0];
+	cfgpal1 = palette[1];
+	cfgpal2 = palette[2];
+	cfgpal3 = palette[3];
+	cfgpal4 = palette[4];
+	cfgpal5 = palette[5];
+	cfgpal6 = palette[6];
+	cfgpal7 = palette[7];
+	cfgpal8 = palette[8];
+
+	FH_cfgpal0 = FHpalette[0];
+	FH_cfgpal1 = FHpalette[1];
+	FH_cfgpal2 = FHpalette[2];
+	FH_cfgpal3 = FHpalette[3];
+	FH_cfgpal4 = FHpalette[4];
+	FH_cfgpal5 = FHpalette[5];
+	FH_cfgpal6 = FHpalette[6];
+	FH_cfgpal7 = FHpalette[7];
+	FH_cfgpal8 = FHpalette[8];
 
 	RxFontName = Fl::get_font_name(RxFontnbr);
 	TxFontName = Fl::get_font_name(TxFontnbr);
@@ -681,15 +691,34 @@ int configuration::setDefaults()
 	wf->setPrefilter(wfPreFilter);
 	btnWFaveraging->value(WFaveraging);
 
-	memcpy(&palette[0], &cfgpal0, sizeof(palette[0]));
-	memcpy(&palette[1], &cfgpal1, sizeof(palette[1]));
-	memcpy(&palette[2], &cfgpal2, sizeof(palette[2]));
-	memcpy(&palette[3], &cfgpal3, sizeof(palette[3]));
-	memcpy(&palette[4], &cfgpal4, sizeof(palette[4]));
-	memcpy(&palette[5], &cfgpal5, sizeof(palette[5]));
-	memcpy(&palette[6], &cfgpal6, sizeof(palette[6]));
-	memcpy(&palette[7], &cfgpal7, sizeof(palette[7]));
-	memcpy(&palette[8], &cfgpal8, sizeof(palette[8]));
+	palette[0] = cfgpal0;
+	palette[1] = cfgpal1;
+	palette[2] = cfgpal2;
+	palette[3] = cfgpal3;
+	palette[4] = cfgpal4;
+	palette[5] = cfgpal5;
+	palette[6] = cfgpal6;
+	palette[7] = cfgpal7;
+	palette[8] = cfgpal8;
+	WF_Palette->mag_RGBcolors(palette);
+	setColorButtons();
+
+	FHpalette[0] = FH_cfgpal0;
+	FHpalette[1] = FH_cfgpal1;
+	FHpalette[2] = FH_cfgpal2;
+	FHpalette[3] = FH_cfgpal3;
+	FHpalette[4] = FH_cfgpal4;
+	FHpalette[5] = FH_cfgpal5;
+	FHpalette[6] = FH_cfgpal6;
+	FHpalette[7] = FH_cfgpal7;
+	FHpalette[8] = FH_cfgpal8;
+	setFH_ColorButtons();
+
+	if (FH_Palette)
+		FH_Palette->palette_to_mag(FHpalette);
+
+	if (FHdisp) 
+		FHdisp->set_colors(FHpalette);
 
 	wf->setcolors();
 	setColorButtons();
@@ -714,6 +743,12 @@ int configuration::setDefaults()
 #else
 	listbox_language->hide();
 #endif
+
+	btnFHcolor_raster->value(progdefaults.FH_color_raster);
+	if (progdefaults.FH_color_raster)
+		FHdisp->color_raster();
+	else
+		FHdisp->bw_raster();
 
 	return 1;
 }

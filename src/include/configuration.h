@@ -702,6 +702,39 @@
         ELEM_(int, hellagc, "HELLAGC",                                                  \
               "1 - slow, 2 - medium, 3 - fast",                                         \
               2)                                                                        \
+        ELEM_(bool, FH_color_raster, "FH_color_raster",                                 \
+              "video raster uses color spectra",                                        \
+              false)                                                                    \
+        ELEM_(std::string, FHPaletteName, "FHPaletteName",                              \
+              "name of palette file with FH color values",                              \
+              "FHdefault.pal")                                                          \
+        ELEM_(RGB, FH_cfgpal0, "FHPALETTE0",                                            \
+              "FH Custom palette 0",                                                    \
+              { 0,0,0 })                                                                \
+        ELEM_(RGB, FH_cfgpal1, "FHPALETTE1",                                            \
+              "FH Custom palette 1",                                                    \
+              { 0,0,136 })                                                              \
+        ELEM_(RGB, FH_cfgpal2, "FHPALETTE2",                                            \
+              "FH Custom palette 2",                                                    \
+              { 0,19,198 })                                                             \
+        ELEM_(RGB, FH_cfgpal3, "FHPALETTE3",                                            \
+              "FH Custom palette 3",                                                    \
+              { 0,32,239 })                                                             \
+        ELEM_(RGB, FH_cfgpal4, "FHPALETTE4",                                            \
+              "FH Custom palette 4",                                                    \
+              { 172,167,105 })                                                          \
+        ELEM_(RGB, FH_cfgpal5, "FHPALETTE5",                                            \
+              "FH Custom palette 5",                                                    \
+              { 194,198,49 })                                                           \
+        ELEM_(RGB, FH_cfgpal6, "FHPALETTE6",                                            \
+              "FH Custom palette 6",                                                    \
+              { 225,228,107 })                                                          \
+        ELEM_(RGB, FH_cfgpal7, "FHPALETTE7",                                            \
+              "FH Custom palette 7",                                                    \
+              { 255,255,0 })                                                            \
+        ELEM_(RGB, FH_cfgpal8, "FHPALETTE8",                                            \
+              "FH Custom palette 8",                                                    \
+              { 251,51,0 })                                                             \
         /* OLIVIA */                                                                    \
         ELEM_(int, oliviatones, "OLIVIATONES",                                          \
               "Number of tones. Values are as follows:\n"                               \

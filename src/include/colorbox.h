@@ -23,17 +23,32 @@
 
 #include <FL/Fl_Button.H>
 
+#include "waterfall.h"
+
 extern void loadPalette();
 extern void savePalette();
 extern void selectColor(int);
 extern void setColorButtons();
 
+extern void selectFHColor(int);
+extern void loadFHPalette();
+extern void saveFHPalette();
+extern void setFH_ColorButtons();
+
+extern RGB FHpalette[];
+
 class colorbox : public Fl_Button  {
+	RGB mag[256];
 	void draw();
 public:
 	colorbox(int x, int y, int w, int h, const char *label = 0) : Fl_Button(x,y,w,h,label) {
 		Fl_Button::box(FL_DOWN_BOX);
+		for (int i = 0; i < 256; i++) mag[i].R = mag[i].G = mag[i].B = 0;
 	};
+	void mag_RGBcolors(RGB *rgb);
+	void mag_RGBIcolors(RGBI *rgbi);
+	void palette_to_mag(RGB *pal);
+
 	void end(){};
 };
 

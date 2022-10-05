@@ -453,6 +453,8 @@ void WFdisp::setcolors() {
 			mag2RGBI[i + 32*n].B = b;
 		}
 	}
+	if (WF_Palette)
+		WF_Palette->mag_RGBIcolors(mag2RGBI);
 }
 
 
