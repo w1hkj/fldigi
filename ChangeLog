@@ -1,6 +1,26 @@
-2022-06-23  dave-w1hkj  <w1hkj@bellsouth.net>
+2022-09-06  dave-w1hkj  <w1hkj@bellsouth.net>
 
-	19c12f097: Version 4.1.23
+	519b02ca8: alpha
+	70e65372f: HTML5 escape sequence
+	6db3cf3dc: noCATfreq
+	c9baf33c2: Tx Power Logging
+	a510c3901: Mode State
+
+2022-08-15  Dave Tillman  <blennie96@verizon.net>
+
+	d99388684: Fixed County combo box crash to desktop
+	54ae0844a: Fixed 30 meter CW shortcut in frequencies2.txt
+	a11b9a110: Fixed grid locator spec in pskreporter query
+	a6f434d0d: Activity Query Fix
+
+2022-07-27  dave-w1hkj  <w1hkj@bellsouth.net>
+
+	01c48ccda: rtty squelch
+	9c8907e91: K4 qrq CW
+	35f639d9a: Macro Editor modal state
+	9039a0724: Audio Filter
+	5ca1a6a50: Sans Portaudio
+	61b97f413: Version 4.1.23
 	ce88da596: Deprecated code
 	5dd676f6b: Correct errors caused by commit 9c035e809b
 	4213bfaec: xmlrpc notch
@@ -3284,7 +3304,7 @@
 
 2009-05-05  David Freese  <w1hkj@w1hkj.com>
 
-	b4112dedc: Added <RSID:on|off|t>, <AFC:on:off|t> macro tags
+	b4112dedc: Added <RSID:on
 	5a3132e5d: Version 3.12AE
 	7ae826f67: RTTY pseudo output, corrected stop bit inversion
 
@@ -3744,7 +3764,7 @@
 	98e63fc54: Modifed search routines for psk viewer
 	2712de8ba: QRZ callback modification
 	9728d0d86: Add fixed field text report generator for logbook
-	b51ef6c3f: Add .,;| to white space characters for word capture in Rx pane
+	b51ef6c3f: Add .,;
 	5d305c971: Macro tag changes
 	5af4ad7e0: Logbook field transfer
 	bd3a8a292: Logbook file open/close changes
@@ -4322,7 +4342,7 @@
 	a60ca6ed9: Merge with upstream
 	c836b738c: Upstream version 2.09F
 	4c06b8317: Merge with upstream
-	c57b41130: Add regex support Add a beep button. Insert "@." when resizing Set inpSeek to constant width font Extend character range to include { | } ~
+	c57b41130: Add regex support Add a beep button. Insert "@." when resizing Set inpSeek to constant width font Extend character range to include { 
 	ad9f2d6a3: sprintf considered harmful Also fix a bug in putadif() where strings longer than the max field size would be truncated to one less than that size. Add a configure-time check for snprintf and vsnprintf because flstring.h looks for HAVE_SNPRINTF and HAVE_VSNPRINTF
 	c40dccc5b: Upstream version 2.09E
 	58839a1a4: Adjust PSK Viewer colours Also set window class and insert end-of-formatting char
