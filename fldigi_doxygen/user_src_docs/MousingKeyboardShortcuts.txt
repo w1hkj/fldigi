@@ -146,23 +146,17 @@ Most of fldigi's unusual shortcuts are specific to this widget.
 	</ul>
 </ul>
 
-\subsubsection digiscope_display Digiscope display
+\subsection digiscope_display Digiscope display
 
 <ul>
 	<li>Mouse wheel - Change AFC/BW, same as Ctrl-mouse wheel on the waterfall</li>
 </ul>
 
-\subsubsection rig_control_window Rig control window
-
-There are some shortcuts in addition to those described in the \ref rig_control_page "Rig Control"
-
+\subsection rig_control_window Rig control window
 
 \subsubsection frequency_display Frequency display
 
-<ul>
-	<li>   Left/Right arrow key - change the frequency by one 1 Hz</li>
-	<li>   Up/Down arrow key - change the frequency by 10 Hz </li>
-</ul>
+See \ref rig_control_page "Rig Control".
 
 \subsubsection frequency_list Frequency list
 

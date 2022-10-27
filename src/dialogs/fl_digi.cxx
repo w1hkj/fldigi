@@ -6769,7 +6769,7 @@ void cb_qso_opBrowser(Fl_Browser*, void*)
 	}
 }
 
-void _show_frequency(long long freq)
+void _show_frequency(unsigned long long freq)
 {
 	if (!qsoFreqDisp1 || !qsoFreqDisp2 || !qsoFreqDisp3)
 		return;
@@ -6779,7 +6779,7 @@ void _show_frequency(long long freq)
 //	if (FD_logged_on) FD_band_check();
 }
 
-void show_frequency(long long freq)
+void show_frequency(unsigned long long freq)
 {
 	REQ(_show_frequency, freq);
 }
@@ -9443,9 +9443,9 @@ void set_rx_only()
 	wf->xmtrcv->deactivate();
 }
 
-void qsy(long long rfc, int fmid)
+void qsy(unsigned long long rfc, int fmid)
 {
-	if (rfc <= 0LL) {
+	if (rfc <= 0ULL) {
 		rfc = wf->rfcarrier();
 	}
 
@@ -9469,7 +9469,7 @@ void qsy(long long rfc, int fmid)
 		REQ(hamlib_set_qsy, rfc);
 #endif
 	else
-		qso_selectFreq((long int) rfc, fmid);
+		qso_selectFreq(rfc, fmid);
 
 	std::string testmode = qso_opMODE->value();
 	bool xcvr_useFSK = (testmode.find("RTTY") != std::string::npos);
@@ -9482,7 +9482,7 @@ void qsy(long long rfc, int fmid)
 std::map<std::string, qrg_mode_t> qrg_marks;
 qrg_mode_t last_marked_qrg;
 
-void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode, long long rfc, int afreq)
+void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode, unsigned long long rfc, int afreq)
 {
 	qrg_mode_t m;
 	m.rfcarrier = (rfc ? rfc : wf->rfcarrier());

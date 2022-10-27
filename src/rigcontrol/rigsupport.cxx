@@ -41,14 +41,11 @@
 #include "main.h"
 #include "fl_digi.h"
 #include "trx.h"
-
 #include "configuration.h"
-
 #include "globals.h"
-
 #include "debug.h"
-
 #include "gettext.h"
+#include "status.h"
 
 extern void n3fjp_set_freq(long);
 extern bool n3fjp_connected;
@@ -199,7 +196,7 @@ void updateSelect()
 	}
 }
 
-size_t updateList(long rf, int freq, std::string rmd, trx_mode md, std::string usage = "")
+size_t updateList(unsigned long long rf, int freq, std::string rmd, trx_mode md, std::string usage = "")
 {
 	qrg_mode_t m;
 	m.rmode = rmd;
@@ -219,7 +216,7 @@ size_t updateList(long rf, int freq, std::string rmd, trx_mode md, std::string u
 
 }
 
-size_t addtoList(long val)
+size_t addtoList(unsigned long long val)
 {
 	qrg_mode_t m;
 
@@ -310,22 +307,22 @@ void build_frequencies2_list()
 	if (readFreqList() == true)
 		return;
 
-	updateList (1807000L, 1000, "USB", MODE_PSK31 );
-	updateList (3505000L, 800, "USB", MODE_CW);
-	updateList (3580000L, 1000, "USB", MODE_PSK31 );
-	updateList (7005000L, 800, "USB", MODE_CW);
-	updateList (7030000L, 1000, "USB", MODE_PSK31 );
-	updateList (7070000L, 1000, "USB", MODE_PSK31 );
-	updateList (10105000L, 800, "USB", MODE_CW);
-	updateList (10135000L, 1000, "USB", MODE_PSK31 );
-	updateList (14005000L, 800, "USB", MODE_CW);
-	updateList (14070000L, 1000, "USB", MODE_PSK31 );
-	updateList (18100000L, 1000, "USB", MODE_PSK31 );
-	updateList (21005000L, 800, "USB", MODE_CW);
-	updateList (21070000L, 1000, "USB", MODE_PSK31 );
-	updateList (24920000L, 1000, "USB", MODE_PSK31 );
-	updateList (28005000L, 800, "USB", MODE_CW);
-	updateList (28120000, 1000, "USB", MODE_PSK31 );
+	updateList (1807000ULL, 1000, "USB", MODE_PSK31 );
+	updateList (3505000ULL, 800, "USB", MODE_CW);
+	updateList (3580000ULL, 1000, "USB", MODE_PSK31 );
+	updateList (7005000ULL, 800, "USB", MODE_CW);
+	updateList (7030000ULL, 1000, "USB", MODE_PSK31 );
+	updateList (7070000ULL, 1000, "USB", MODE_PSK31 );
+	updateList (10105000ULL, 800, "USB", MODE_CW);
+	updateList (10135000ULL, 1000, "USB", MODE_PSK31 );
+	updateList (14005000ULL, 800, "USB", MODE_CW);
+	updateList (14070000ULL, 1000, "USB", MODE_PSK31 );
+	updateList (18100000ULL, 1000, "USB", MODE_PSK31 );
+	updateList (21005000ULL, 800, "USB", MODE_CW);
+	updateList (21070000ULL, 1000, "USB", MODE_PSK31 );
+	updateList (24920000ULL, 1000, "USB", MODE_PSK31 );
+	updateList (28005000ULL, 800, "USB", MODE_CW);
+	updateList (28120000ULL, 1000, "USB", MODE_PSK31 );
 	updateSelect();
 
 }
@@ -391,7 +388,7 @@ int cb_qso_opBW2()
 	return 0;
 }
 
-void sendFreq(long int f)
+void sendFreq(unsigned long long f)
 {
 	if (connected_to_flrig)
 		set_flrig_freq(f);
@@ -411,7 +408,7 @@ void sendFreq(long int f)
 void qso_movFreq(Fl_Widget* w, void *data)
 {
 	cFreqControl *fc = (cFreqControl *)w;
-	long int f;
+	unsigned long long f;
 	long restore = reinterpret_cast<intptr_t>(data);
 	f = fc->value();
 	if (fc == qsoFreqDisp1) {
@@ -431,7 +428,7 @@ void qso_movFreq(Fl_Widget* w, void *data)
 	return;
 }
 
-void qso_selectFreq(long int rfcarrier, int carrier)
+void qso_selectFreq(unsigned long long rfcarrier, int carrier)
 {
 	if (rfcarrier > 0) {
 		qsoFreqDisp1->value(rfcarrier);
@@ -441,7 +438,7 @@ void qso_selectFreq(long int rfcarrier, int carrier)
 	}
 
 	if (carrier > 0) {
-		active_modem->set_freq(carrier);
+		active_modem->set_freq((double)carrier);
 	}
 }
 
@@ -472,7 +469,7 @@ void qso_selectFreq()
 	}
 }
 
-void qso_setFreq(long int f)
+void qso_setFreq(unsigned long long f)
 {
 	// transceiver frequency
 	if (f > 0) {
@@ -503,7 +500,7 @@ void qso_delFreq()
 
 void qso_addFreq()
 {
-	long freq = qsoFreqDisp->value();
+	unsigned long long freq = qsoFreqDisp->value();
 	if (freq) {
 		size_t pos = addtoList(freq);
 		qso_opBrowser->insert(pos+1, freqlist[pos].str().c_str());

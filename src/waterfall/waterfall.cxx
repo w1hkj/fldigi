@@ -1893,11 +1893,11 @@ void waterfall::Carrier(int f)
 	if (active_modem) active_modem->set_freq(f);
 }
 
-void waterfall::rfcarrier(long long cf) {
+void waterfall::rfcarrier(unsigned long long cf) {
 	wfdisp->rfcarrier(cf);
 }
 
-long long waterfall::rfcarrier() {
+unsigned long long waterfall::rfcarrier() {
 	return wfdisp->rfcarrier();
 }
 

@@ -550,7 +550,7 @@ static void cb_btnBackgroundColor(Fl_Button*, void*) {
     FDdisplay->redraw();
 
     if (qsoFreqDisp) {
-        qsoFreqDisp->SetONOFFCOLOR(
+        qsoFreqDisp->SetCOLORS(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),
@@ -581,7 +581,7 @@ static void cb_btnForegroundColor(Fl_Button*, void*) {
     FDdisplay->redraw();
 
     if (qsoFreqDisp) {
-        qsoFreqDisp->SetONOFFCOLOR(
+        qsoFreqDisp->SetCOLORS(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),
@@ -618,7 +618,7 @@ static void cb_btnFD_SystemColor(Fl_Button*, void*) {
     progdefaults.FDforeground.B = b;
 
     if (qsoFreqDisp) {
-        qsoFreqDisp->SetONOFFCOLOR(
+        qsoFreqDisp->SetCOLORS(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),

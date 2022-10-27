@@ -24,47 +24,144 @@ operating mode of the transceiver.
 <br>
 
 The combo box on the right will allow the selection and control of the
-transceiver bandwidth.
+transceiver's receive filter bandwidth.
 <br>
 
-The frequency display is in fact a set of special buttons.  Each
-digit may be increment by clicking/pressing on the upper half of the digit and
-decrement by clicking/pressing the lower half of the digit.  The leading
-digits will follow suit if a decade rollover occurs.  You can also place the
-mouse cursor on a digit and then use the mouse wheel to roll the frequency
-up and down.
-<br>
+The frequency display is also a control; it displays frequency in kHz.  In
+addition to allowing you to set the rig frequency, it will track with changes
+made on the rig itself.
 
-The frequency display becomes the focus of keyboard activity once a digit
-has been accessed with the mouse (above).  You can then modify the current
-frequency entry a number of ways:
+The number of digits that may be entered displayed is currently hardcoded to
+seven digits to the left of the decimal and three to the right.
+
+If you are using rigCAT (i.e., a rig XML file containing command definitions and
+minimum and maximum allowable frequencies), an entry outside the limits will
+not be sent to the rig - the display will revert to the rig frequency following
+the next rig poll cycle.
+
+If you are using flrig for rig control, an entry outside the limits will be sent to
+the rig; the rig should reject the command and the flrig and fldigi displays
+should revert to the current rig frequency.
+
+If you don't use rig control, the maximum frequency is 9,999,999.999 kHz.
+
+The maximum frequency <B><I>based on the number of digits displayed</I></B> is given in the tooltip.
+Note that this may be greater than the maximum frequency possible for your rig.
+
+You can set the frequency two ways without the
+control being in "focus" and several more ways with it in focus.
+
+<B> With or without Focus </B>
+
 <ul>
-<li>right / left arrow keys: +/- 1 Hz</li>
-<li>up / down arrow keys:- +/- 10 Hz</li>
-<li>shift right / left arrow keys: +/- 100 Hz</li>
-<li>shift up / down arrow keys: +/- 1000 Hz</li>
-<li>direct entry of desired frequency</li>
+<li>Move the mouse cursor over a digit and roll the wheel
+<li>Highlight a numeric frequency in text in the application and
+then move the mouse cursor over the control and press the middle mouse button to paste selection
 </ul>
 
-Use the numeric keys for direct entry of the frequency (in Khz). Press 
-\<return\> or \<enter\> to complete the entry and return the
-frequency display to an active state.  Don't forget the decimal point if 
-you are entering a fractional KHz value, (i.e. 14070.125).
+<B> With Focus </B>
 
-The frequency display will reverse it's color scheme when in the direct
-frequency entry mode, and the decimal point will occult.
-\image html FreqControl_normal.png "Normal Frequency Control Appearance"
-\image latex FreqControl_normal.png "Normal Frequency Control Appearance" width=2.0in
+Click (left mouse button) in the control to set focus.  The foreground and background
+colors reverse to indicate the control has focus.
+
 <br>
-\image html FreqControl_entry_mode.png "Entry Mode Frequency Control Appearance"
-\image latex FreqControl_entry_mode.png "Entry Mode Frequency Control Appearance" width=2.0in
+<center>
+\image latex freq-control-focus.png "Frequency Control with focus" width=4.6in
+\image html freq-control-focus.png "Frequency Control with focus"
+</center>
 <br>
-Don't forget to complete the numeric entry with the \"Enter\" key.
+
+
+Each digit is sensitive to the mouse.  Clicking the left or right button over
+the top half of a digit increments it while clicking over the lower half decrements it.
+Holding the mouse button down will cause the number to rapidly increase or decrease.  Alternatively,
+you can roll the mouse wheel with the pointer over a digit and it will scroll the digit.
+In all cases the numbers "roll over" - i.e., you can change the digit you point to
+and all digits to the left of it.
+
+Arrow and Page Up / Page Down Keys can be used to increment and decrement digits.
+Digits are numbered 0-9, right to left, with the digit's significance matching that of the rig's display.
+For example, if the rig's resolution is 1 Hz, D0's range is 0-9 Hz.
 <br>
+
+<center>
+<table style="width: 80%">
+	<tr>
+		<th>Keys</th>
+		<th>Normal</th>
+		<th>SHIFT + key</th>
+		<th>CTRL + key</th>
+	</tr>
+	<tr>
+		<td><center>right / left arrow</center></td>
+		<td><center>+/- D0</center></td>
+		<td><center>+/- D1</center></td>
+		<td><center>+/- D2</center></td>
+	<tr>
+		<td><center>up / down arrow</center></td>
+		<td><center>+/- D3</center></td>
+		<td><center>+/- D4</center></td>
+		<td><center>+/- D5</center></td>
+	</tr>
+	<tr>
+		<td><center>Page Up / Page Down</center></td>
+		<td><center>+/- D6</center></td>
+		<td><center>+/- D7</center></td>
+		<td><center>+/- D8</center></td>
+	</tr>
+</table>
+</center>
+<br>
+
+All of the foregoing change techniques result in immediate changes to the
+frequency of a controlled rig.
+
+There are two additional ways to set the frequency when the control has focus:
+<B>PASTE from clipboard</B> and <B>direct keyboard entry</B>.
+
+You can paste from the clipboard (Ctrl/Meta-v) in addition to from the Selection buffer (middle mouse button).
+When pasting from a selection (highlighted number), the selection must be from text within
+the application whereas the clipboard paste will paste values copied from any application.
+The value pasted is expected to be numeric in units of kHz and can include a decimal point.
+If the value being pasted would exceed the maximum frequency allowed, the Paste action is silently ignored.
+Paste actions result in an immediate command to set the frequency on a controlled rig.
+
+Lastly, you may enter a frequency directly from the number keys or keypad of a keyboard.
+Enter the frequency in kHz, including decimal point if there are non-zero decimal components,
+using either the number keys or the keypad.  You may use any legal floating point format.
+For example:
+
+<ul>
+<li>7070
+<li>14070.235
+<li>14.07e3 (Remember that the numeric value is in kHz so this example is 14070 kHz or 14.070 MHz)
+</ul>
+
+
+When you press the first number, the decimal point in the display will blink to indicate
+you are in numeric entry mode.  While in numeric entry mode, all other entry modes are
+disabled (i.e., no mouse clicks, rolls, or pastes are possible).
+
+Continue to enter numbers, and optionally a decimal and more numbers.  The value does NOT
+get sent to a controlled rig until you press the ENTER key.  Pressing the ENTER key
+sends the value to the rig and exits the numeric entry mode.
+
+If you want to make changes as you are entering numbers, you can use the backspace key
+to delete undesired numbers digit by digit, or Ctrl/Meta-Backspace to clear all digits
+on the side of the decimal point you are currently entering; use Ctrl/Meta-Backspace again
+to clear the left of decimal numbers as well if you have already entered a digit to the
+right of the decimal point, and then resume entering numbers.
+
+If you attempt to enter more digits on either side of the decimal than there are
+digits available, the excess digit entries are ignored.
+
+If you want to abort the process you can press the ESC (escape) key or click outside
+the control in a widget that will take focus (like a text field) or outside the application
+and the frequency will remain as it was; this exits numeric entry mode.
 
 The Smeter / Power-meter display is only active if fldigi is configured for xmlrpc
 control with flrig.  The transceiver must support the smeter and power out CAT query.
-fldigi does not try to estimate the smeter reading based on the audio stream.
+fldigi does not try to estimate the Smeter reading based on the audio stream.
 You can toggle viewing the Smeter / Power-meter display using the button just to
 the right of the shared space used by the "Smeter/Power-meter" and the "Mode/Bandwidth"
 controls.  Be sure to save the configuration for this to persist the next
@@ -74,8 +171,8 @@ time fldigi is executed.
 The mode combobox, the bandwidth combobox and the frequency display
 also annunciate the current transceiver status.  If you change
 operating mode on the transceiver, that will be annunciated in the
-respective combobox and FLDigi will adjust any internal parameters
-accordingly.  FLDigi queries the transceiver 10 times per second
+respective combobox and fldigi will adjust any internal parameters
+accordingly.  fldigi queries the transceiver 10 times per second
 to maintain a lock step with the transceiver.
 <br>
 
@@ -90,26 +187,29 @@ original logging panel.
 \image latex view_frequencies.png "Frequency Pick List" width=3.0in
 
 The pick list buttons control selecting, adding and deleting entries in
-the frequency/mode list.
+the frequency/mode list.  From left to right, top to bottom:
 <br>
 
 <ul>
-	<li>add the current frequency / mode / audio track point to the list</li>
-	<li>select the current list entry</li>
-	<li>delete the highlighted entry from the list</li>
+	<li>load the parameters highlighted in the current list entry</li>
+	<li>add an entry containing the current rig frequency / rig mode / modem type /
+	modem audio center frequency to the list</li>
 	<li>delete all entries from the list (a warning prompt will appear)</li>
-	<li>show active frequencies based on either the entry field to the
-	right or the stations locator,
-	see \ref psk_reporter_page "pskreporter/spotter".</li>
-	<li>entry field for active frequencies search, for example "EM."</li>
+	<li>delete the highlighted entry from the list</li>
+	<li>pop up menu with active frequencies based on spots reported from spotters
+	in the Maidenhead grid locator entered for the station during fldigi configuration
+	or a locator specified in the entry field to the right
+	(see \ref psk_reporter_page "pskreporter/spotter")</li>
+	<li>entry field for Maidenhead grid locator spotter filter for active
+	frequencies search; for example "EM"</li>
 </ul>
 
 
-The browser list contains frequency, sideband, modem type, audio
-frequency, and a text describing usage.  To edit the usage string:
+The browser list contains rig frequency, rig mode, modem type, modem audio
+center frequency, and text describing usage.  To edit the usage string:
 <ul>
 <li>highlight the entry to be edited</li>
-<li>press the combination of SHIFT and right arrow while pointing to the line</li>
+<li>press the combination of SHIFT and right mouse button while pointing to the line</li>
 </ul>
 This will hide the frequencies browser and display the data relative to that line
 

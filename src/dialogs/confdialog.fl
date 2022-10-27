@@ -741,7 +741,7 @@ font_browser->show();}
     FDdisplay->redraw();
 
     if (qsoFreqDisp) {
-        qsoFreqDisp->SetONOFFCOLOR(
+        qsoFreqDisp->SetCOLORS(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),
@@ -771,7 +771,7 @@ font_browser->show();}
     FDdisplay->redraw();
 
     if (qsoFreqDisp) {
-        qsoFreqDisp->SetONOFFCOLOR(
+        qsoFreqDisp->SetCOLORS(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),
@@ -807,7 +807,7 @@ font_browser->show();}
     progdefaults.FDforeground.B = b;
 
     if (qsoFreqDisp) {
-        qsoFreqDisp->SetONOFFCOLOR(
+        qsoFreqDisp->SetCOLORS(
           fl_rgb_color(	progdefaults.FDforeground.R,
                         progdefaults.FDforeground.G,
                         progdefaults.FDforeground.B),

@@ -72,7 +72,7 @@ int Fl_PopBrowser::handle(int event)
 	if (!Fl::event_inside(0, 0, this->w(), this->h()) && event == FL_PUSH) {
 		pophide();
 		return 1;
- 	}
+	}
 
 	if (event == FL_KEYDOWN) {
 		int kbd = Fl::event_key();
@@ -185,19 +185,21 @@ void Fl_PopBrowser::popshow (int x, int y)
 	if (i >= 0 && i < parentCB->listsize) {
 		for (i = 0; i < parentCB->listsize; i++) {
 			if (parentCB->type_ == COMBOBOX) {
-				if ((parentCB->listtype & FL_COMBO_UNIQUE_NOCASE) == FL_COMBO_UNIQUE_NOCASE)
+				if ((parentCB->listtype & FL_COMBO_UNIQUE_NOCASE) == FL_COMBO_UNIQUE_NOCASE) {
 					if (!strcasecmp(parentCB->val->value(), parentCB->datalist[i]->s))
 						break;
-				else // case sensitive test
+				} else { // case sensitive test
 					if (!strcmp(parentCB->val->value(), parentCB->datalist[i]->s))
 						break;
+				}
 			} else { // LISTBOX case
-				if ((parentCB->listtype & FL_COMBO_UNIQUE_NOCASE) == FL_COMBO_UNIQUE_NOCASE)
+				if ((parentCB->listtype & FL_COMBO_UNIQUE_NOCASE) == FL_COMBO_UNIQUE_NOCASE) {
 					if (!strcasecmp(parentCB->valbox->label(), parentCB->datalist[i]->s))
 						break;
-				else // case sensitive test
+				} else { // case sensitive test
 					if (!strcmp(parentCB->valbox->label(), parentCB->datalist[i]->s))
 						break;
+				}
 			}
 		}
 		if (i == parentCB->listsize)

@@ -55,13 +55,13 @@ extern void qso_setMode();
 extern void setTitle();
 
 extern int  fwidths[];
-extern void sendFreq(long int f);
+extern void sendFreq(unsigned long long f);
 extern void qso_addFreq();
 extern void qso_delFreq();
 extern void qso_selectFreq();
-extern void qso_selectFreq(long int rfcarrier, int carrier);
+extern void qso_selectFreq(unsigned long long rfcarrier, int carrier);
 extern void qso_setFreq();
-extern void qso_setFreq(long int f);
+extern void qso_setFreq(unsigned long long f);
 extern void qso_clearList();
 extern void saveFreqList();
 extern void qso_updateEntry(int i, std::string usage);
@@ -84,7 +84,7 @@ extern bool hamlib_active();
 
 extern bool connected_to_flrig;
 
-extern void xmlrpc_rig_set_qsy(long long rfc);
+extern void xmlrpc_rig_set_qsy(unsigned long long rfc);
 extern bool xmlrpc_USB();
 extern void xmlrpc_send_command(std::string cmd);
 extern void xmlrpc_priority(std::string cmd);
@@ -96,7 +96,7 @@ extern void FLRIG_start_flrig_thread();
 extern void stop_flrig_thread();
 extern void reconnect_to_flrig();
 extern void set_flrig_ptt(int on);
-extern void set_flrig_freq(unsigned long int fr);
+extern void set_flrig_freq(unsigned long long fr);
 extern void set_flrig_mode(const char *md);
 extern void set_flrig_bw(int bw1, int bw2 = 0);
 extern void set_flrig_notch();

@@ -43,8 +43,8 @@ struct BW {
 struct DATA {
 	std::string dtype;
 	int size;
-	int max;
-	int min;
+	unsigned long long max;
+	unsigned long long min;
 	float resolution;
 	bool reverse;
 	int	andmask;

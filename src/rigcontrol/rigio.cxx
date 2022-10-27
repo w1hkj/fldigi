@@ -60,7 +60,6 @@ static bool			rigCAT_open = false;
 
 static std::string		sRigWidth = "";
 static std::string		sRigMode = "";
-static long long	llFreq = 0;
 
 static void *rigCAT_loop(void *args);
 
@@ -175,7 +174,7 @@ bool sendCommand (std::string cmd, std::string s, int retnbr, int waitval)
 	return (numread == retnbr);
 }
 
-std::string to_bcd_be(long long freq, int len)
+std::string to_bcd_be(unsigned long long freq, int len)
 {
 	std::string bcd = "";
 	unsigned char a;
@@ -192,7 +191,7 @@ std::string to_bcd_be(long long freq, int len)
 	return bcd;
 }
 
-std::string to_bcd(long long freq, int len)
+std::string to_bcd(unsigned long long freq, int len)
 {
 	std::string bcd = "";
 	std::string bcd_be = to_bcd_be(freq, len);
@@ -202,10 +201,10 @@ std::string to_bcd(long long freq, int len)
 	return bcd;
 }
 
-long long fm_bcd (size_t p, int len)
+unsigned long long fm_bcd (size_t p, int len)
 {
 	int i;
-	long long f = 0;
+	unsigned long long f = 0;
 	int numchars = len/2;
 	if (len & 1) numchars ++;
 	for (i = 0; i < numchars; i++) {
@@ -218,7 +217,7 @@ long long fm_bcd (size_t p, int len)
 }
 
 
-long long fm_bcd_be(size_t p, int len)
+unsigned long long fm_bcd_be(size_t p, int len)
 {
 	unsigned char temp;
 	int numchars = len/2;
@@ -231,7 +230,7 @@ long long fm_bcd_be(size_t p, int len)
 	return fm_bcd(p, len);
 }
 
-std::string to_binary_be(long long freq, int len)
+std::string to_binary_be(unsigned long long freq, int len)
 {
 	std::string bin = "";
 	for (int i = 0; i < len; i++) {
@@ -241,7 +240,7 @@ std::string to_binary_be(long long freq, int len)
 	return bin;
 }
 
-std::string to_binary(long long freq, int len)
+std::string to_binary(unsigned long long freq, int len)
 {
 	std::string bin = "";
 	std::string bin_be = to_binary_be(freq, len);
@@ -251,10 +250,10 @@ std::string to_binary(long long freq, int len)
 	return bin;
 }
 
-long long fm_binary(size_t p, int len)
+unsigned long long fm_binary(size_t p, int len)
 {
 	int i;
-	long long f = 0;
+	unsigned long long f = 0;
 	for (i = 0; i < len; i++) {
 		f *= 256;
 		f += replybuff[p + i];
@@ -262,7 +261,7 @@ long long fm_binary(size_t p, int len)
 	return f;
 }
 
-long long fm_binary_be(size_t p, int len)
+unsigned long long fm_binary_be(size_t p, int len)
 {
 	unsigned char temp;
 	int numchars = len/2;
@@ -275,7 +274,7 @@ long long fm_binary_be(size_t p, int len)
 	return fm_binary(p, len);
 }
 
-std::string to_decimal_be(long long d, int len)
+std::string to_decimal_be(unsigned long long d, int len)
 {
 	std::string sdec_be = "";
 	for (int i = 0; i < len; i++) {
@@ -285,7 +284,7 @@ std::string to_decimal_be(long long d, int len)
 	return sdec_be;
 }
 
-std::string to_decimal(long long d, int len)
+std::string to_decimal(unsigned long long d, int len)
 {
 	std::string sdec = "";
 	std::string sdec_be = to_decimal_be(d, len);
@@ -295,9 +294,9 @@ std::string to_decimal(long long d, int len)
 	return sdec;
 }
 
-long long fm_decimal(size_t p, int len)
+unsigned long long fm_decimal(size_t p, int len)
 {
-	long long d = 0;
+	unsigned long long d = 0;
 	for (int i = 0; i < len; i++) {
 		d *= 10;
 		d += replybuff[p + i] - '0';
@@ -305,7 +304,7 @@ long long fm_decimal(size_t p, int len)
 	return d;
 }
 
-long long fm_decimal_be(size_t p, int len)
+unsigned long long fm_decimal_be(size_t p, int len)
 {
 	unsigned char temp;
 	int numchars = len/2;
@@ -318,7 +317,7 @@ long long fm_decimal_be(size_t p, int len)
 	return fm_decimal(p, len);
 }
 
-std::string to_freqdata(DATA d, long long f)
+std::string to_freqdata(DATA d, unsigned long long f)
 {
 	int num, den;
 	num = 100;
@@ -326,49 +325,49 @@ std::string to_freqdata(DATA d, long long f)
 	if (d.size == 0) return "";
 	if (d.dtype == "BCD") {
 		if (d.reverse == true)
-			return to_bcd_be((long long int)(f * num / den), d.size);
+			return to_bcd_be((unsigned long long)(f * num / den), d.size);
 		else
-			return to_bcd((long long int)(f * num / den), d.size);
+			return to_bcd((unsigned long long)(f * num / den), d.size);
 	} else if (d.dtype == "BINARY") {
 		if (d.reverse == true)
-			return to_binary_be((long long int)(f * num / den), d.size);
+			return to_binary_be((unsigned long long)(f * num / den), d.size);
 		else
-			return to_binary((long long int)(f * num / den), d.size);
+			return to_binary((unsigned long long)(f * num / den), d.size);
 	} else if (d.dtype == "DECIMAL") {
 		if (d.reverse == true)
-			return to_decimal_be((long long int)(f * num / den), d.size);
+			return to_decimal_be((unsigned long long)(f * num / den), d.size);
 		else
-			return to_decimal((long long int)(f * num / den), d.size);
+			return to_decimal((unsigned long long)(f * num / den), d.size);
 	}
 	return "";
 }
 
-long long fm_freqdata(DATA d, size_t p)
+unsigned long long fm_freqdata(DATA d, size_t p)
 {
 	int num, den;
 	num = (int)(d.resolution * 100);
 	den = 100;
-	long long fret = 0;
+	unsigned long long fret = 0;
 	if (d.dtype == "BCD") {
 		if (d.reverse == true)
-			fret = (long long int)(fm_bcd_be(p, d.size) * num / den);
+			fret = (unsigned long long)(fm_bcd_be(p, d.size) * num / den);
 		else
-			fret = (long long int)(fm_bcd(p, d.size)  * num / den);
+			fret = (unsigned long long)(fm_bcd(p, d.size)  * num / den);
 	} else if (d.dtype == "BINARY") {
 		if (d.reverse == true)
-			fret = (long long int)(fm_binary_be(p, d.size)  * num / den);
+			fret = (unsigned long long)(fm_binary_be(p, d.size)  * num / den);
 		else
-			fret = (long long int)(fm_binary(p, d.size)  * num / den);
+			fret = (unsigned long long)(fm_binary(p, d.size)  * num / den);
 	} else if (d.dtype == "DECIMAL") {
 		if (d.reverse == true)
-			fret = (long long int)(fm_decimal_be(p, d.size)  * num / den);
+			fret = (unsigned long long)(fm_decimal_be(p, d.size)  * num / den);
 		else
-			fret = (long long int)(fm_decimal(p, d.size)  * num / den);
+			fret = (unsigned long long)(fm_decimal(p, d.size)  * num / den);
 	}
 	return fret;
 }
 
-long long rigCAT_getfreq(int retries, bool &failed, int waitval)
+unsigned long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 {
 	const char symbol[] = "GETFREQ";
 	failed = false;
@@ -382,7 +381,7 @@ long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 	std::list<XMLIOS>::iterator itrCmd;
 	std::string strCmd;
 	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
-	long long f = 0;
+	unsigned long long f = 0;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -475,9 +474,14 @@ long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 			}
 // convert the data field
 			f = fm_freqdata(rTemp.data, pData);
-			if ( f >= rTemp.data.min && f <= rTemp.data.max)
+			if ( f >= rTemp.data.min && f <= rTemp.data.max) {
+				LOG_VERBOSE("freq: %llu", f);
 				return f;
-			LOG_VERBOSE("freq: %d", static_cast<int>(f));
+			} else {
+				LOG_ERROR("Retrieved freq %llu Hz outside bounds specified in <rig>.xml file"
+					" of %llu to %llu", f, rTemp.data.min, rTemp.data.max);
+				return 0;
+			}
 retry_get_freq: ;
 		}
 	}
@@ -487,7 +491,7 @@ retry_get_freq: ;
 	return 0;
 }
 
-void rigCAT_setfreq(long long f)
+void rigCAT_setfreq(unsigned long long f)
 {
 	const char symbol[] = "SETFREQ";
 	if (rigCAT_exit || xmlrig.noserial || !xmlrig.xmlok) {
@@ -511,6 +515,12 @@ void rigCAT_setfreq(long long f)
 	}
 
 	modeCmd = *itrCmd;
+
+	if ( f < modeCmd.data.min || f > modeCmd.data.max) {
+		LOG_ERROR("Ordered freq %llu Hz outside bounds specified in <rig>.xml file of %llu to %llu", 
+		f, modeCmd.data.min, modeCmd.data.max);
+		return;
+	}
 
 	if ( modeCmd.str1.empty() == false)
 		strCmd.append(modeCmd.str1);
@@ -1239,8 +1249,6 @@ echo	   : %c\n",
 			LOG_INFO("Passed serial port test");
 	}
 
-	llFreq = 0;
-
 	if (pthread_create(&rigCAT_thread, NULL, rigCAT_loop, NULL) < 0) {
 		LOG_ERROR("%s", "pthread_create failed");
 		if (xmlrig.xmlok && !xmlrig.noserial)
@@ -1307,7 +1315,7 @@ void rigCAT_set_ptt(int ptt)
 }
 
 #ifndef RIGCATTEST
-void rigCAT_set_qsy(long long f)
+void rigCAT_set_qsy(unsigned long long f)
 {
 	if (rigCAT_open == false)
 		return;
@@ -2353,7 +2361,7 @@ static void *rigCAT_loop(void *args)
 {
 	SET_THREAD_ID(RIGCTL_TID);
 
-	long long freq = 0L;
+	unsigned long long freq = 0UL;
 	std::string sWidth, sMode;
 	bool failed;
 
@@ -2372,8 +2380,7 @@ static void *rigCAT_loop(void *args)
 			freq = rigCAT_getfreq(progdefaults.RigCatRetries, failed);
 			if (rigCAT_exit) continue;
 
-			if ((freq > 0) && (freq != llFreq)) {
-				llFreq = freq;
+			if ((freq > 0) && (freq != qsoFreqDisp1->value())) {
 				show_frequency(freq);
 				wf->rfcarrier(freq);
 			}

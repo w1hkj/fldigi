@@ -105,16 +105,18 @@ static double timeout = 5.0;
 
 static int wait_bws_timeout = 0;
 
+static unsigned long long fr_show = 0;
+
 //======================================================================
 
-void xmlrpc_rig_set_qsy(long long rfc)
+void xmlrpc_rig_set_qsy(unsigned long long rfc)
 {
-	unsigned long int freq = static_cast<unsigned long int>(rfc);
+	unsigned long long freq = rfc;
 	set_flrig_freq(freq);
 	wf->rfcarrier(freq);
 	wf->movetocenter();
 	show_frequency(freq);
-	LOG_VERBOSE("set qsy: %lu", freq);
+	LOG_VERBOSE("set qsy: %llu", freq);
 }
 
 //======================================================================
@@ -266,7 +268,7 @@ LOG_VERBOSE("set wpm %f", progdefaults.CWspeed);
 
 static bool wait_freq = false; // wait for transceiver to respond
 static int  wait_freq_timeout = 5; // 5 polls and then disable wait
-static unsigned long int  xcvr_freq = 0;
+static unsigned long long  xcvr_freq = 0;
 
 pthread_mutex_t mutex_flrig_freq = PTHREAD_MUTEX_INITIALIZER;
 
@@ -274,14 +276,14 @@ void xmlrpc_rig_show_freq(void * fr)
 {
 	guard_lock flrig_lock(&mutex_flrig_freq);
 	if (!wf) return;
-	unsigned long int freq = reinterpret_cast<intptr_t>(fr);
-LOG_VERBOSE("xmlrpc_rig_show_freq %lu", freq);
+	unsigned long long freq = *(static_cast<unsigned long long*>(fr));
+LOG_VERBOSE("xmlrpc_rig_show_freq %llu", freq);
 	wf->rfcarrier(freq);
 	wf->movetocenter();
 	show_frequency(freq);
 }
 
-void set_flrig_freq(unsigned long int fr)
+void set_flrig_freq(unsigned long long fr)
 {
 	if (!connected_to_flrig) return;
 
@@ -294,7 +296,7 @@ void set_flrig_freq(unsigned long int fr)
 			ret = flrig_client->execute("rig.set_vfo", val, result, timeout);
 		}
 		if (ret) {
-			LOG_VERBOSE("set freq: %lu", fr);
+			LOG_VERBOSE("set freq: %llu", fr);
 			return;
 		}
 		LOG_ERROR("%s", "rig.set_vfo failed");
@@ -317,14 +319,14 @@ void flrig_get_frequency()
 		}
 		if (ret) {
 			str_freq = (std::string)result;
-			unsigned long int fr = atoll(str_freq.c_str());
+			fr_show = strtoull(str_freq.c_str(), NULL, 10);
 
-			if (!wait_freq && (fr != xcvr_freq)) {
-				xcvr_freq = fr;
+			if (!wait_freq && (fr_show != xcvr_freq)) {
+				xcvr_freq = fr_show;
 				guard_lock flrig_lock(&mutex_flrig_freq);
-				Fl::awake(xmlrpc_rig_show_freq, reinterpret_cast<void*>(fr));
-				LOG_VERBOSE("get freq: %lu", fr);
-			} else if (wait_freq && (fr == xcvr_freq)) {
+				Fl::awake(xmlrpc_rig_show_freq, static_cast<void*>(&fr_show));
+				LOG_VERBOSE("get freq: %llu", fr_show);
+			} else if (wait_freq && (fr_show == xcvr_freq)) {
 				wait_freq = false;
 				wait_freq_timeout = 0;
 			} else if (wait_freq_timeout == 0) {
