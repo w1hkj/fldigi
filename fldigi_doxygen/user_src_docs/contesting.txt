@@ -474,69 +474,172 @@ connected Windows host computer.  The fldigi/N3FJP combination has been
 tested on a single Windows 7/8/10 computer, and on a LAN with fldigi running
 on a second Windows computer, a Linux computer, and an Apple OS-X computer.<br>
 
-Although the contests are varied, certain parts of the set up are the same 
-for all. These include the Sound Card (Rig Interface such as Rig Blaster, 
-Signalink, or home brew) and the API (Application Program Interface.), and
-transceiver control.  Both fldigi and the N3FJP program can provide transceiver
-control.  You should use fldigi / flrig for transceiver control as then can
-provide a broader range of control functions.<br>
+Although the contests are varied, certain parts of the setup are the same
+for all. These include the Sound Card (Rig Interface such as Rig Blaster,
+Signalink, or home brew) and the API (Application Program Interface), and
+transceiver control.  Either fldigi or the N3FJP program can provide transceiver
+control, but use of the fldigi / flrig combination for transceiver control
+is recommended as it can provide a broader range of control functions.<br>
 
 The N3FJP logger will maintain and provide the SENT serial number to fldigi.
 That serial number will be used in all macros which reference the sent serial number.<br>
 
 The N3FJP logger software is independently sold and distributed by Scott 
-and Kimberly Davis. Download the appropriate logging software from 
+and Kimberly Davis. Download the appropriate logging software from the "Contest Logs" menu at
 http://www.n3fjp.com. <br>
 
-Either fldigi or the N3FJP logger can be started first.  When so configure
+Either fldigi or the N3FJP logger can be started first.  When so configured
 fldigi will periodically attempt to connect to the logger.  The two programs
 can reside on a single or multiple computers with LAN access.  The N3FJP
-logger will only run on an MS operating system.  fldigi can be on any of the
+logger will only run on a Microsoft Windows operating system; fldigi can be running on any of its
 supported operating systems.  The connection has been tested between Linux,
-OS X, and MS operating systems.
+OS X, and Windows operating systems.
 
 \subsection n3fjp_setup N3FJP logger setup
 
 <ul>
-<li>Click on Setup and configure your station information.</li>
-<li>Set up API.  This is necessary even if both fldigi and the logger
-are on the same machine.  Select API from the Setup menu.<br>
-Check the box in the upper section for API port 1100.</li>
+  <li>Configure your station information</li>
+      <ul>
+          <li>Click on Settings->Setup...</li>
+      </ul>
+  <li>Enable the API Server</li>
+      <ul>
+          <li>Click on Settings->Application Programming Interface (API) to configure and
+              enable its server.<br>
+              This is necessary even if both fldigi and the logger
+              are on the same machine.</li>
+          <li>Check the <B>TCP API Enabled (Server)</B> checkbox in the upper
+              section for API port 1100 and click the <B>Done</B> button.</li>
+      </ul>
+  <li> [<I> Optional/Not Recommended </I>] Enable N3FJP rig control </li>
+      <ul>
+          <li> fldigi/flrig for rig control is a more powerful combination, but the fldigi/N3FJP
+               combination can provide limited rig control from fldigi by taking the
+               following steps <B><I> before </I></B> enabling the fldigi-N3FJP server connection
+               described in the next subsection</li>
+               <ul>
+                   <li> Start the N3FJP program</li>
+                   <li> Enable its rig control </li>
+                      <ul>
+                        <li> Click on Settings->Rig Interface ...</li>
+                        <li> Select a basic rig configuration file as a starting point</li>
+                        <li> Select the COM port to use</li>
+                        <li> Modify parameters as necessary for your specific rig</li>
+                        <li> Set <B> Mode Determined By </B> to <B> Rig </B> and set your rig to
+                             an appropriate mode for fldigi use </li>
+                        <li> Click on the <B>Test</B> button and verify you have successful rig polling</li>
+                        <li> Do NOT click on the <B>End Test</B> button since that will disable control</li>
+                        <li> Click the <B>Done</B> button to exit the window</li>
+                      </ul>
+                </ul>
+          <li> When you enable the interface from fldigi, fldigi will receive an indication
+               from the N3FJP application that it has rig control and fldigi will adjust its
+               messaging accordingly. </li>
+          <li> Control capabilities from fldigi in this configuration:</li>
+            <ul>
+                <li> Can: </li>
+                  <ul>
+                    <li> Set frequency via the Frequency Control</li>
+                    <li> Transmit </li>
+                  </ul>
+                <li> Cannot: </li>
+                  <ul>
+                    <li> Set the receiver filter bandwidth* </li>
+                    <li> Set the transceiver mode** </li>
+                    <li> etc </li>
+                  </ul>
+            </ul>
+        </ul>
 </ul>
+
+
+'*' N3FJP API supports sending any "raw" rig command, but the
+detailed knowledge of each rig type's command structure and processing are
+embedded in flrig so it is not practical for fldigi to take advantage of this.
+
+'**' N3FJP API supports a high level command to set mode but does not recognize
+the specialized mode options present in recent rigs that are
+often used by fldigi (e.g., USB-D1); that is why "Mode Determined By: Rig" needs
+to be set in the configuration.
+
+<B> WARNING 1: </B> If you change the N3FJP program's role from controlling to non-controlling
+or vice versa, you MUST disable and re-enable the fldigi connection from its Logging/N3FJP logs
+configuration page in order for fldigi to be aware of the change.
+
+<B> WARNING 2: </B> N3FJP programs will continue to report that they are in control as
+long as a rig other than "None" is highlighted in the Select Rig column.  Be sure to
+select "None" on that page and click the "Done" button when you are done using the
+N3FJP program for control.
 
 \subsection fldigi_setup Fldigi setup
 
 <ul>
-<li>Open configuration dialog to the UI/Logs/N3FJP... tab
-<br>
+  <li>Open the fldigi configuration dialog to the Logging/N3FJP logs tab <br><br>
 
-\image html config-ui-log-n3fjp.png "N3FJP connect"
-\image latex config-ui-log-n3fjp.png "N3FJP connect"  width=5.0in
-</li>
-<li>Enter the LAN address, either as the machine name or it's numeric
-uniform resource locator, i.e: LENOVO-DUALBOOT (192.168.1.81)<br>
-If both fldigi and the N3FJP logger are on the same Windows computer, then
-the machine address is 127.0.0.1.
-</li>
-<li>Check the box "Enable data stream" to view the connect and data transfer
-process.
-</li>
-<li>Check the "Connect" box
-</li>
+      \image html config-ui-log-n3fjp.png "N3FJP connect"
+      \image latex config-ui-log-n3fjp.png "N3FJP connect"  width=5.0in
+
+  </li>
+  <li>Enter the LAN address using either the machine name or IP address; e.g.,
+      LENOVO-DUALBOOT or 192.168.1.81.<br>
+      If both fldigi and the N3FJP logger are on the same Windows computer, then
+      the machine address is 127.0.0.1.
+  </li>
+  <li>Check the "Enable Data Stream" box to view the connect and data transfer
+      process in the TCP/IP Data Stream window.
+  </li>
+  <li>Check the "Connect" box.
+  </li>
 </ul>
 
-fldigi should connect to the logger with a few seconds.  You will see the
-connect stream processing as above, and the GREEN connect triangle should\
-illuminate.<br>
+fldigi should connect to the logger within a few seconds and will briefly display a popup
+dialog to that effect.  The "Connected" diamond indicator should turn GREEN and if you enabled the
+data stream viewing you will see the messages exchanged in the TCP/IP Data Stream window.<br>
 
 Disconnecting is as simple as unchecking the "Connect" box.<br>
+
+Two additional options are available with respect to data exchange between fldigi and the
+N3FJP logging program:
+
+<ul>
+  <li> <B> Center DXspot freq at sweet spot </B> </li>
+  <ul>
+      <li> When using the N3FJP DX spotting capability, clicking on a spot sends the
+           frequency to fldigi; with this box checked, fldigi will adjust its settings
+           so that the signal falls on the default or user-defined sweet spot relative
+           to the transceiver's receive and transmit filter bandwidths.
+      </li>
+  </ul>
+  <li> <B> Report actual modem RF frequency </B> </li>
+  <ul>
+      <li> The user can opt to report either fldigi's carrier frequency (from the Frequency Control)
+           or the actual modem frequency (carrier + center of audio modulation) for
+           <B> logging </B> purposes; rig control is always in terms of carrier frequency.
+      </li>
+  </ul>
+</ul>
+<br>
+There is an additional control option applicable only if you plan to use an N3FJP program for rig control:
+
+<ul>
+  <li> <B> PTT via \<RIGTX\> and \<RIGRX\> </B> </li>
+  <ul>
+      <li> By default, N3FJP programs use \<CWCOMPORTKEYDOWN\> ... \<CWCOMPORTKEYUP\> to key
+           the transmitter (equivalent to DTR).  You
+           can change this to use \<RIGTX\> ... \<RIGRX\> (i.e., PTT using your rig's software
+           command) by clicking the checkbox.
+      </li>
+  </ul>
+</ul>
+
+
 
 fldigi's contest selectors will be set by the initial information exchange
 with the N3FJP logger.  Exiting the N3FJP logger and starting a different one
 will be reflected in fldigi's contest configuration almost immediately.   The
 fldigi main dialog title bar and the fldigi logging controls will reflect the change
 in contest usage.  Here is an example for an automatic connection to the
-CQ WW DX contest
+CQ WW DX contest:
 
 \image html contest-cq-wwdx.png "CQ WWDX contest"
 \image latex contest-cq-wwdx.png "CQ WWDX contest"  width=6.0in

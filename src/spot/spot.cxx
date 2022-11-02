@@ -124,7 +124,7 @@ void spot_recv(char c, int decoder, int afreq, int md)
 		buf.clear();
 }
 
-static void get_log_details(long long& freq, trx_mode& mode, time_t& rtime)
+static void get_log_details(unsigned long long& freq, trx_mode& mode, time_t& rtime)
 {
 	if (mode == NUM_MODES)
 		mode = active_modem->get_mode();
@@ -141,7 +141,7 @@ static void get_log_details(long long& freq, trx_mode& mode, time_t& rtime)
 		rtime = time(NULL);
 }
 
-void spot_log(const char* callsign, const char* locator, long long freq, trx_mode mode, time_t rtime)
+void spot_log(const char* callsign, const char* locator, unsigned long long freq, trx_mode mode, time_t rtime)
 {
 	get_log_details(freq, mode, rtime);
 std::cout << callsign << ", " << locator << ", " << freq << ", " << mode_info[mode].adif_name << ", " << mode_info[mode].adif_name << std::endl;
@@ -150,7 +150,7 @@ std::cout << callsign << ", " << locator << ", " << freq << ", " << mode_info[mo
 			i->lcb(callsign, locator, freq, mode, rtime, i->data);
 }
 
-void spot_manual(const char* callsign, const char* locator, long long freq, trx_mode mode, time_t rtime)
+void spot_manual(const char* callsign, const char* locator, unsigned long long freq, trx_mode mode, time_t rtime)
 {
 	get_log_details(freq, mode, rtime);
 	for (cblist_t::const_iterator i = cblist.begin(); i != cblist.end(); ++i)

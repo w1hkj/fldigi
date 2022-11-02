@@ -4,7 +4,7 @@ const char* szBeginner = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
 <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n\
 <head>\n\
 <meta http-equiv=\"Content-Type\" content=\"application/xhtml+xml; charset=UTF-8\" />\n\
-<meta name=\"generator\" content=\"AsciiDoc 9.0.0rc2\" />\n\
+<meta name=\"generator\" content=\"AsciiDoc 10.1.2\" />\n\
 <title>Beginners' Guide to Fldigi</title>\n\
 <style type=\"text/css\">\n\
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */\n\
@@ -2039,17 +2039,17 @@ numeric keypad&#8217;s 0-9 the sequence will be discarded.</p></div>\n\
 <div id=\"footer\">\n\
 <div id=\"footer-text\">\n\
 Last updated\n\
- 2021-08-17 20:21:22 \n\
+ 2022-10-27 20:10:33 \n\
 </div>\n\
 <div id=\"footer-badges\">\n\
-<a href=\"http://validator.w3.org/check?uri=referer\">\n\
+<a href=\"https://validator.w3.org/check?uri=referer\">\n\
   <img style=\"border:0;width:88px;height:31px\"\n\
-    src=\"http://www.w3.org/Icons/valid-xhtml11-blue\"\n\
+    src=\"https://www.w3.org/Icons/valid-xhtml11-blue\"\n\
     alt=\"Valid XHTML 1.1\" height=\"31\" width=\"88\" />\n\
 </a>\n\
-<a href=\"http://jigsaw.w3.org/css-validator/\">\n\
+<a href=\"https://jigsaw.w3.org/css-validator/\">\n\
   <img style=\"border:0;width:88px;height:31px\"\n\
-    src=\"http://jigsaw.w3.org/css-validator/images/vcss-blue\"\n\
+    src=\"https://jigsaw.w3.org/css-validator/images/vcss-blue\"\n\
     alt=\"Valid CSS!\" />\n\
 </a>\n\
 </div>\n\

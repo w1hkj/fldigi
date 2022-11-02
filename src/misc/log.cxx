@@ -75,8 +75,8 @@ void cLogfile::log_to_file(log_t type, const std::string& s)
 			gmtime_r(&t, &tm);
 			strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%MZ", &tm);
 			char freq[20];
-			snprintf(freq, sizeof(freq), "%d", 
-					static_cast<int>( wf->rfcarrier() + 
+			snprintf(freq, sizeof(freq), "%llu",
+					static_cast<unsigned long long>( wf->rfcarrier() +
 										(wf->USB() ? active_modem->get_freq()
 										: -active_modem->get_freq() ) ) );
 			const char *logmode = mode_info[active_modem->get_mode()].adif_name;

@@ -1,48 +1,15 @@
 /**
-\page  n3fjp_logs_page  N3FJP Log/Contest Setup
+\page  n3fjp_logs_page  N3FJP Log Operations
 
 \tableofcontents
 
-\section n3fjp_ACL N3FJP ACL
+\section n3fjp_interface_setup N3FJP Interface Setup
 
-<b>Starting N3FJP loggers with fldigi</b>
-
-You should start the N3FJP ACL or contest software before starting fldigi. 
-The logging program ACL and the N3FJP contest logs are tcpip socket servers.
-fldigi will recognize the N3FJP logger that is being used, whether ACL or
-one of the contest logs.
-
-<b>Exiting the programs</b>
-
-You should exit fldigi before exiting the logging program.
-
-<b>Setting up fldigi for use with ACL</b>
-
-Open the configuration dialog and select the N3FJP_logger from tree menu:
-
-\image html N3FJP_logs_configuration.png ""
-\image latex N3FJP_logs_configuration.png "" width=5.0in
+Please see \ref n3fjp_logger "Contesting with N3FJP logger connection" for detailed information
+on the setup of the fldigi logging interface with N3FJP logging programs.
 <br>
 
-The default address, 127.0.0.1 (localhost) is used when both fldigi and 
-ACL are on the same computer.  The values shown above are for the instance 
-where fldigi and ACL are running on different machines on the same local 
-area network. Fldigi is on a Linux machine and ACL on a Windows 7 machine.
-
-You can observe the two way socket communications between the two programs 
-by enabling the “Enable Data Stream” check box.
-
-Open the Settings / Application Program Interface (API) menu item on ACL. 
-Make sure that the box TCP API Enabled (Server) is checked and that the 
-Port 1100 corresponds to the Port setting in the above dialog.
-
-Enable the “Connect” check box and fldigi should find ACL and begin data 
-exchanges.
-
-The command pair \<CWCOMPORTKEYDOWN\> ... \<CWCOMPORTKEYUP\> is sent to change
-the PTT state if the N3FJP software is used for transceiver control.  You
-can change this to \<RIGTX\> ... \<RIGRX\> by enabling the check box control,
-"PTT via \<RIGTX\> and \<RIGRX\>."
+\section n3fjp_ACL N3FJP ACL
 
 <b>Capturing Rx text in fldigi</b>
 

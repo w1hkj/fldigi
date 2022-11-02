@@ -743,8 +743,8 @@ private:
 public:
 	/// If the delay is exceeded, returns with an error message.
 	std::string send_file(const std::string & filnam, double max_seconds) {
-		LOG_VERBOSE("%s rf_carried = %d carrier = %d", filnam.c_str(),
-				static_cast<int>(wf->rfcarrier()), m_carrier);
+		LOG_VERBOSE("%s rf_carrier = %llu carrier = %d", filnam.c_str(),
+				wf->rfcarrier(), m_carrier);
 
 		bool is_acquired = transmit_lock_acquire(filnam, max_seconds);
 		if (! is_acquired) return "Timeout sending " + filnam ;
@@ -1535,16 +1535,16 @@ std::string fax_implementation::generate_filename(const char *extra_msg) const
 	localtime_r(&tmp_time, &tmp_tm);
 
 	char buf_fil_nam[256] ;
-	long long tmp_fl = wf->rfcarrier() ;
+	unsigned long long tmp_fl = wf->rfcarrier() ;
 	snprintf(buf_fil_nam, sizeof(buf_fil_nam),
-		"wefax_%04d%02d%02d_%02d%02d%02d_%d_%s.png",
+		"wefax_%04d%02d%02d_%02d%02d%02d_%llu_%s.png",
 		1900 + tmp_tm.tm_year,
 		1 + tmp_tm.tm_mon,
 		tmp_tm.tm_mday,
 		tmp_tm.tm_hour,
 		tmp_tm.tm_min,
 		tmp_tm.tm_sec,
-		static_cast<int>(tmp_fl),
+		tmp_fl,
 		extra_msg);
 
 	return buf_fil_nam ;

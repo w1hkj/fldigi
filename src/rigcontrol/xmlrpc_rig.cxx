@@ -111,12 +111,11 @@ static unsigned long long fr_show = 0;
 
 void xmlrpc_rig_set_qsy(unsigned long long rfc)
 {
-	unsigned long long freq = rfc;
-	set_flrig_freq(freq);
-	wf->rfcarrier(freq);
+	set_flrig_freq(rfc);
+	wf->rfcarrier(rfc);
 	wf->movetocenter();
-	show_frequency(freq);
-	LOG_VERBOSE("set qsy: %llu", freq);
+	show_frequency(rfc);
+	LOG_VERBOSE("set qsy: %llu", rfc);
 }
 
 //======================================================================
@@ -277,7 +276,7 @@ void xmlrpc_rig_show_freq(void * fr)
 	guard_lock flrig_lock(&mutex_flrig_freq);
 	if (!wf) return;
 	unsigned long long freq = *(static_cast<unsigned long long*>(fr));
-LOG_VERBOSE("xmlrpc_rig_show_freq %llu", freq);
+	LOG_VERBOSE("xmlrpc_rig_show_freq %llu", freq);
 	wf->rfcarrier(freq);
 	wf->movetocenter();
 	show_frequency(freq);

@@ -3334,7 +3334,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		std::string adif_str = all_adif_records();
-		LOG_INFO("[%s] logbook.all_adif_records export size %lu",
+		LOG_INFO("[%s] logbook.all_adif_records export size %u",
 			XmlRpc::client_id.c_str(),
 			adif_str.length());
 		*retval = xmlrpc_c::value_string(adif_str);

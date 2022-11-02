@@ -522,6 +522,8 @@ void rigCAT_setfreq(unsigned long long f)
 		return;
 	}
 
+	wf->rfcarrier(f);
+
 	if ( modeCmd.str1.empty() == false)
 		strCmd.append(modeCmd.str1);
 
@@ -2380,7 +2382,7 @@ static void *rigCAT_loop(void *args)
 			freq = rigCAT_getfreq(progdefaults.RigCatRetries, failed);
 			if (rigCAT_exit) continue;
 
-			if ((freq > 0) && (freq != qsoFreqDisp1->value())) {
+			if ((freq > 0) && (freq != qsoFreqDisp->value())) {
 				show_frequency(freq);
 				wf->rfcarrier(freq);
 			}

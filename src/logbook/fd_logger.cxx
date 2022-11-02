@@ -381,7 +381,7 @@ static std::string FD_opband()
 {
 	if (!active_modem) return "40";
 
-	float freq = qsoFreqDisp->value();
+	double freq = qsoFreqDisp->value();
 	freq /= 1e6;
 
 	if (freq >= 1.8 && freq < 3.5) return "160";

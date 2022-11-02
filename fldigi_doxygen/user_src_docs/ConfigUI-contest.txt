@@ -38,7 +38,7 @@ State QSO parties
 <ul>
 <li>Alabama QSO Party, ALQP (Out of State)</li>
 <li>Arizona QSO Party, AZQP (Out of State)</li>
-<li><li>Arkansas QSO Party, ARQP (Out of State)</li>
+<li>Arkansas QSO Party, ARQP (Out of State)</li>
 <li>British Columbia QSO Party, BCQP (Out of Province)</li>
 <li>California QSO Party, CAQP (Out of State)</li>
 <li>Colorado QSO Party, COQP (Out of State)</li>
@@ -111,76 +111,6 @@ You can check for duplicates by any combination of the specified named
 fields. You can also specify that the duplicate had to occur with a
 given time interval. Some VHF contests allow a duplicate CALL after
 a given time interval.
-<br>
-
-\section n3fjp_logger N3FJP logger connection
-
-Fldigi and the N3FJP logging software have been interfaced to form a 
-very powerful combination that allows the avid contester to perform CW 
-and digital communications in the most popular ARRL, National, International, 
-and State contests. This combination also assists the Handi-ham in communicating 
-in CW. They allow the operator to send and receive contest exchanges as well 
-as control their rig.  The N3FJP logger behaves as a log data base server
-and fldigi the modem client for the purposes of data exchange.
-
-Since the contests differ greatly in their exchanges, these instructions 
-will be rather lengthy and will have many screen shots. These instructions 
-will be broken down by contests that are similar and require similar settings.
-
-Although the contests are varied, certain parts of the set up are the same 
-for all. These include the Sound Card (Rig Interface such as Rig Blaster, 
-Signalink, or home brew) and the API (Application Program Interface.) 
-
-The first thing that you will need to do is to bring up the N3FJP program 
-for the contest that you want to participate in. To do this go to 
-http://www.n3fjp.com and select it from the Contest Logs drop down menu. 
-The N3FJP logger software is independently sold and distributed by Scott 
-and Kimberly Davis. 
-
-Either fldigi or the N3FJP logger can be started first.  When so configure
-fldigi will periodically attempt to connect to the logger.  The two programs
-can reside on a single or multiple computers with LAN access.  The N3FJP
-logger will only run on an MS operating system.  fldigi can be on any of the
-supported operating systems.  The connection has been tested between Linux,
-OS X, and MS operating systems.
-
-\subsection n3fjp_setup N3FJP logger setup
-
-<ul>
-<li>Click on Setup and configure your station information.</li>
-<li>Set up API.  This is necessary even if both fldigi and the logger
-are on the same machine.  Select API from the Setup menu.<br>
-Check the box in the upper section for API port 1100.</li>
-</ul>
-
-\subsection fldigi_setup Fldigi setup
-
-<ul>
-<li>Open configuration dialog to the UI/Logs/N3FJP... tab</li>
-<br>
-\image html config-ui-log-n3fjp.png "N3FJP connect"
-\image latex config-ui-log-n3fjp.png "N3FJP connect"  width=5.0in
-<br>
-<li>Enter the LAN address, either as the machine name or it's numeric
-uniform resource locator, i.e: LENOVO-DUALBOOT (192.168.1.81)</li>
-<li>Check the box "Enable data stream" to view the connect and data transfer
-process.</li>
-<li>Check the "Connect" box</li>
-</ul>
-
-fldigi should connect to the logger with a few seconds.  You will see the
-connect stream processing as above, and the GREEN connect triangle should\
-illuminate.
-
-Disconnect is as simple as unchecking the "Connect" box.
-
-fldigi will follow suite as you stop and start various N3FJP loggers.  The
-fldigi main dialog title bar and it's logging controls will reflect the change
-in contest usage.  Here is an example for an automatic connection to the
-CQ WW DX contest
-<br>
-\image html contest-cq-wwdx.png "CQ WWDX contest"
-\image latex contest-cq-wwdx.png "CQ WWDX contest"  width=6.0in
 <br>
 
 \ref ui_configuration_contest_page "Return to Top of Page"

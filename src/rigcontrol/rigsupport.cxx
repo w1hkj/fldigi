@@ -47,7 +47,7 @@
 #include "gettext.h"
 #include "status.h"
 
-extern void n3fjp_set_freq(long);
+extern void n3fjp_set_freq(unsigned long long);
 extern bool n3fjp_connected;
 
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
@@ -403,6 +403,7 @@ void sendFreq(unsigned long long f)
 
 	if (n3fjp_connected)
 		n3fjp_set_freq(f);
+
 }
 
 void qso_movFreq(Fl_Widget* w, void *data)

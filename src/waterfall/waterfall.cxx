@@ -809,10 +809,10 @@ void WFdisp::handle_sig_data()
 				else
 					dfreq = rfc - afreq - offset;
 			}
-			snprintf(szFrequency, sizeof(szFrequency), "%-.3f", dfreq / 1000.0);
+			snprintf(szFrequency, sizeof(szFrequency), "%-.3lf", dfreq / 1000.0);
 		} else {
 			dfreq = active_modem->get_txfreq();
-			snprintf(szFrequency, sizeof(szFrequency), "%-.0f", dfreq);
+			snprintf(szFrequency, sizeof(szFrequency), "%-.0lf", dfreq);
 		}
 		inpFreq->value(szFrequency);
 

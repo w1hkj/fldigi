@@ -126,7 +126,7 @@ static std::string debug_csv_string;
 static char comma_format[] = "\
 \"T %02d:%02d:%02d.%02d\",\
 \"%6.2f\",\
-\"%13.3f\",\
+\"%13.3lf\",\
 \"%13.4f\",\
 \"%0.4f\",\
 \"%6.4f\",\
@@ -141,7 +141,7 @@ static char comma_format[] = "\
 static char tab_format[] = "\
 \"T %02d:%02d:%02d.%02d\"\t\
 \"%6.2f\"\t\
-\"%13.3f\"\t\
+\"%13.3lf\"\t\
 \"%13.4f\"\t\
 \"%0.4f\"\t\
 \"%6.4f\"\t\
@@ -522,7 +522,7 @@ void fmt_write_file()
 					(progdefaults.FMT_use_tabs ? tab_format : comma_format),
 					hrs, mins, secs, ticks % 100,
 					ticks * 0.01,
-					1.0 * qsoFreqDisp->value(),
+					1.0 * (double) qsoFreqDisp->value(),
 					progdefaults.FMT_freq_corr,
 					(record_ref ? progStatus.FMT_ref_freq : 0),
 					rfreq, 

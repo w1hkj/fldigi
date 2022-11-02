@@ -748,7 +748,7 @@ public:
 		std::string::operator=( alt_string );
 		cleanup();
 
-		long long currFreq = wf->rfcarrier();
+		unsigned long long currFreq = wf->rfcarrier();
 
 		if( ! progdefaults.NVTX_AdifLog && ! progdefaults.NVTX_KmlLog ) {
 			return ;
@@ -756,10 +756,10 @@ public:
 
 		const NavtexRecord * ptrNavRec = NavtexCatalog::InstCatalog().FindStation(currFreq, m_origin, progdefaults.myLocator, *this );
 		if( ptrNavRec != NULL ) {
-			LOG_INFO("Locator=%s Origin=%c freq=%d name=%s lon=%lf lat=%lf",
+			LOG_INFO("Locator=%s Origin=%c freq=%llu name=%s lon=%lf lat=%lf",
 				progdefaults.myLocator.c_str(),
 				m_origin,
-				static_cast<int>(currFreq),
+				currFreq,
 				ptrNavRec->name().c_str(),
 				ptrNavRec->coordinates().longitude().angle(),
 				ptrNavRec->coordinates().latitude().angle() );

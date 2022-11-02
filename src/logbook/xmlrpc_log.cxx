@@ -237,7 +237,7 @@ void xml_add_record()
 	adif_str(TIME_OFF, sTime_off.c_str());
 	adif_str(CALL, inpCall->value());
 	{
-		snprintf(Mhz, sizeof(Mhz), "%-f", atof(inpFreq->value()) / 1000.0);
+		snprintf(Mhz, sizeof(Mhz), "%-.6lf", atof(inpFreq->value()) / 1000.0);
 		inpFreq_log->value(Mhz);
 		adif_str(FREQ, Mhz);
 	}
