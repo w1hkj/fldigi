@@ -246,7 +246,7 @@ void anal::writeFile()
 // Changed /added new .csv fields 
 //	header is: fprintf(out, "UTC,Freq,Freq Err,Vpk,dBV(Vpk)\n");
 
-	fprintf(out, "%02d:%02d:%02d, %13.3llu, %6.3f, %8.6f, %6.2f\n",
+	fprintf(out, "%02d:%02d:%02d, %13.3lf, %6.3f, %8.6f, %6.2f\n",
 		tm.tm_hour, tm.tm_min, tm.tm_sec,
 		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout) + progdefaults.RIT), fout + progdefaults.RIT, 
 		amp, 20.0 * log10( (amp == 0 ? 1e-6 : amp) ) );
@@ -311,9 +311,9 @@ int anal::rx_process(const double *buf, int len)
 				set_scope(pipe, PIPE_LEN, false);
 
 				if (wf->USB())
-					snprintf(msg1, sizeof(msg1), "%13.3llu", wf->rfcarrier() + frequency + fout + progdefaults.RIT);
+					snprintf(msg1, sizeof(msg1), "%13.3lf", wf->rfcarrier() + frequency + fout + progdefaults.RIT);
 				else
-					snprintf(msg1, sizeof(msg1), "%13.3llu", wf->rfcarrier() - frequency - fout + progdefaults.RIT);
+					snprintf(msg1, sizeof(msg1), "%13.3lf", wf->rfcarrier() - frequency - fout + progdefaults.RIT);
 				put_Status2(msg1, 2.0);
 				writeFile();
 			}

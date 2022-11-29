@@ -411,25 +411,25 @@ void Cserial::ClosePort()
 {
 	if (hComm == INVALID_HANDLE_VALUE)
 		return;
-if (HCOMM_DEBUG)
-	LOG_INFO("Closing COM port, handle = %p", hComm);
+	if (HCOMM_DEBUG)
+		LOG_INFO("Closing COM port, handle = %p", hComm);
 	if (restore_tio) {
-if (HCOMM_DEBUG)
-	LOG_INFO("Closing COM port#1, handle = %p", hComm);
+		if (HCOMM_DEBUG)
+			LOG_INFO("Closing COM port#1, handle = %p", hComm);
 		bPortReady = SetCommTimeouts (hComm, &CommTimeoutsSaved);
-}
-	if (CloseHandle(hComm) == 0) {
-if (HCOMM_DEBUG)
-	LOG_INFO("Closing COM port#2, handle = %p", hComm);
-		errno = GetLastError();
-if (HCOMM_DEBUG)
-	LOG_INFO("Closing COM port#3, handle = %p", hComm);
-		LOG_PERROR(win_error_string(errno).c_str());
-if (HCOMM_DEBUG)
-	LOG_INFO("Closing COM port#4, handle = %p", hComm);
 	}
-if (HCOMM_DEBUG)
-	LOG_INFO("Closing COM port#5, handle = %p", hComm);
+	if (CloseHandle(hComm) == 0) {
+		if (HCOMM_DEBUG)
+			LOG_INFO("Closing COM port#2, handle = %p", hComm);
+		errno = GetLastError();
+		if (HCOMM_DEBUG)
+			LOG_INFO("Closing COM port#3, handle = %p", hComm);
+		LOG_PERROR(win_error_string(errno).c_str());
+		if (HCOMM_DEBUG)
+			LOG_INFO("Closing COM port#4, handle = %p", hComm);
+	}
+	if (HCOMM_DEBUG)
+		LOG_INFO("Closing COM port#5, handle = %p", hComm);
 
 	hComm = INVALID_HANDLE_VALUE;
 	return;
