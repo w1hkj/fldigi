@@ -513,6 +513,8 @@ Fl_Double_Window* make_macroeditor(void)
 
 	loadBrowser(macroDefs);
 
+	w->set_non_modal();
+
 	return w;
 }
 
