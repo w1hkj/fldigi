@@ -751,17 +751,29 @@ void WFdisp::handle_sig_data()
 
 		for (int n = 0; n < WF_FFTLEN - WF_BLOCKSIZE; n++)
 			circbuff[n] = circbuff[n + WF_BLOCKSIZE];
+
 		{
 // this block guarded by data_mutex
 			guard_lock data_lock(&data_mutex);
 			current = audio_blocks.front();
 			audio_blocks.pop();
 		}
+		double fftavg = 0;
 		for (int n = 0; n < WF_BLOCKSIZE; n++)
-			circbuff[n + WF_FFTLEN - WF_BLOCKSIZE - 1] = current.sig[n];
+			fftavg += fabs(circbuff[n + WF_FFTLEN - WF_BLOCKSIZE - 1] = current.sig[n]);
+
+		{
+			sig_vumeter->wsjtx_meter_face( progdefaults.use_wsjtx_vumeter_scale );
+			sig_vumeter2->wsjtx_meter_face( progdefaults.use_wsjtx_vumeter_scale );
+			VuMeter->wsjtx_meter_face( progdefaults.use_wsjtx_vumeter_scale );
+			fftavg /= WF_BLOCKSIZE;
+			sig_vumeter->value(fftavg);
+			sig_vumeter2->value(fftavg);
+			VuMeter->value(fftavg);
+		}
 
 		overload = false;
-		double overval = 0, peak = 0.0;
+		double overval = 0.0, peak = 0.0;
 		for (int i = WF_FFTLEN - WF_BLOCKSIZE; i < WF_FFTLEN; i++) {
 			overval = fabs(circbuff[i]);
 			if (overval > peak) peak = overval;

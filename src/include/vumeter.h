@@ -54,7 +54,9 @@ private:
 	Fl_Color scale_color;
 	Fl_Color peak_color;
 
-	static const char *meter_face;
+	static const char *meter_face_A;
+	static const char *meter_face_B;
+	const char *meter_face;
 
 	void (*cbFunc)(Fl_Widget *, void *);
 
@@ -98,6 +100,19 @@ public:
 		if (cbFunc) cbFunc(this, (void*)0);
 	}
 
+	void wsjtx_meter_face (bool on) {
+		if (on) {
+			meter_face = meter_face_B;
+			minimum_ = 0.0;
+			maximum_ = 90.0;
+			value_ = 50;
+		} else {
+			meter_face = meter_face_A;
+			minimum_ = -100.0;
+			maximum_ = 0.0;
+			value_ = -50;
+		}
+	}
 };
 
 #endif // !vumeter

@@ -129,6 +129,7 @@ extern Fl_Button *btnOverSignal;
 #include "vumeter.h"
 extern vumeter *sig_vumeter;
 extern Fl_Button *btn_default_signal_levels;
+extern Fl_Check_Button *btn_use_wsjtx_vumeter_scale;
 #include "contest.h"
 extern Fl_ListBox *listbox_contest;
 extern Fl_ListBox *listbox_QP_contests;
@@ -933,6 +934,7 @@ extern Fl_Counter *cnt_over_signal_level2;
 extern Fl_Button *btnOverSignal2;
 extern vumeter *sig_vumeter2;
 extern Fl_Button *btn_default_signal_levels2;
+extern Fl_Check_Button *btn_use_wsjtx_vumeter_scale2;
 extern Fl_ListBox *listbox_wav_samplerate;
 extern Fl_Check_Button *btn_record_both;
 extern Fl_Spinner2 *cntChannels;

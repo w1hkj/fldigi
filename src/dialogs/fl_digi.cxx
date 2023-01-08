@@ -1567,7 +1567,7 @@ void startup_modem(modem* m, int f)
 	if (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST) {
 		m->set_sigsearch(SIGSEARCH);
 	}
-
+/*
 	if (progdefaults.sqlch_by_mode) {
 		progStatus.sldrSquelchValue = get_mode_squelch(mode);
 		progStatus.sqlonoff = get_mode_squelch_onoff(mode);
@@ -1595,7 +1595,7 @@ void startup_modem(modem* m, int f)
 		progStatus.reverse = get_mode_reverse(mode);
 	else
 		progStatus.reverse = wf->Reverse();
-
+*/
 	if (m->get_cap() & modem::CAP_REV) {
 		wf->btnRev->value(progStatus.reverse);
 		wf->btnRev->activate();
@@ -8915,10 +8915,6 @@ void put_Status1(const char *msg, double timeout, status_timeout action)
 
 void put_WARNstatus(double v)
 {
-	sig_vumeter->value(v);
-	sig_vumeter2->value(v);
-	VuMeter->value(v);
-
 	double val = 20 * log10(v == 0 ? 1e-9 : v);
 	if (val < progdefaults.normal_signal_level)
 		WARNstatus->color(progdefaults.LowSignal);

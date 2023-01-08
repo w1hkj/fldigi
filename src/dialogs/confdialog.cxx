@@ -1574,6 +1574,13 @@ cnt_over_signal_level->value(
   progdefaults.over_signal_level = -3.0);
 }
 
+Fl_Check_Button *btn_use_wsjtx_vumeter_scale=(Fl_Check_Button *)0;
+
+static void cb_btn_use_wsjtx_vumeter_scale(Fl_Check_Button* o, void*) {
+  progdefaults.use_wsjtx_vumeter_scale=o->value();
+btn_use_wsjtx_vumeter_scale2->value(o->value());
+}
+
 Fl_ListBox *listbox_contest=(Fl_ListBox *)0;
 
 static void cb_listbox_contest(Fl_ListBox* o, void*) {
@@ -8433,6 +8440,13 @@ cnt_high_signal_level2->value(progdefaults.high_signal_level);
 cnt_over_signal_level2->value(progdefaults.over_signal_level);
 }
 
+Fl_Check_Button *btn_use_wsjtx_vumeter_scale2=(Fl_Check_Button *)0;
+
+static void cb_btn_use_wsjtx_vumeter_scale2(Fl_Check_Button* o, void*) {
+  progdefaults.use_wsjtx_vumeter_scale=o->value();
+btn_use_wsjtx_vumeter_scale->value(o->value());
+}
+
 Fl_ListBox *listbox_wav_samplerate=(Fl_ListBox *)0;
 
 static void cb_listbox_wav_samplerate(Fl_ListBox* o, void*) {
@@ -10036,7 +10050,7 @@ Fl_Double_Window* ConfigureDialog() {
         lowcolor->color(FL_FOREGROUND_COLOR);
         o->color(progdefaults.LowSignal);
       } // Fl_Box* lowcolor
-      { btnLowSignal = new Fl_Button(402, 96, 70, 21, _("Low"));
+      { btnLowSignal = new Fl_Button(402, 75, 70, 22, _("Low"));
         btnLowSignal->callback((Fl_Callback*)cb_btnLowSignal);
       } // Fl_Button* btnLowSignal
       { Fl_Box* o = normalcolor = new Fl_Box(365, 142, 21, 21);
@@ -10044,7 +10058,7 @@ Fl_Double_Window* ConfigureDialog() {
         normalcolor->color((Fl_Color)2);
         o->color(progdefaults.NormSignal);
       } // Fl_Box* normalcolor
-      { Fl_Counter* o = cnt_normal_signal_level = new Fl_Counter(480, 119, 114, 21, _("Transition\nLevel (dB)"));
+      { Fl_Counter* o = cnt_normal_signal_level = new Fl_Counter(480, 99, 114, 21, _("Transition\nLevel (dB)"));
         cnt_normal_signal_level->minimum(-90);
         cnt_normal_signal_level->maximum(0);
         cnt_normal_signal_level->callback((Fl_Callback*)cb_cnt_normal_signal_level);
@@ -10052,7 +10066,7 @@ Fl_Double_Window* ConfigureDialog() {
         o->value(progdefaults.normal_signal_level);
         o->lstep(1.0);
       } // Fl_Counter* cnt_normal_signal_level
-      { btnNormalSignal = new Fl_Button(402, 142, 70, 21, _("Normal"));
+      { btnNormalSignal = new Fl_Button(402, 122, 70, 21, _("Normal"));
         btnNormalSignal->callback((Fl_Callback*)cb_btnNormalSignal);
       } // Fl_Button* btnNormalSignal
       { Fl_Box* o = highcolor = new Fl_Box(365, 189, 21, 21);
@@ -10060,14 +10074,14 @@ Fl_Double_Window* ConfigureDialog() {
         highcolor->color((Fl_Color)3);
         o->color(progdefaults.HighSignal);
       } // Fl_Box* highcolor
-      { Fl_Counter* o = cnt_high_signal_level = new Fl_Counter(480, 165, 114, 21);
+      { Fl_Counter* o = cnt_high_signal_level = new Fl_Counter(480, 145, 114, 21);
         cnt_high_signal_level->minimum(-90);
         cnt_high_signal_level->maximum(0);
         cnt_high_signal_level->callback((Fl_Callback*)cb_cnt_high_signal_level);
         o->value(progdefaults.high_signal_level);
         o->lstep(1.0);
       } // Fl_Counter* cnt_high_signal_level
-      { btnHighSignal = new Fl_Button(402, 189, 70, 21, _("High"));
+      { btnHighSignal = new Fl_Button(402, 169, 70, 21, _("High"));
         btnHighSignal->callback((Fl_Callback*)cb_btnHighSignal);
       } // Fl_Button* btnHighSignal
       { Fl_Box* o = overcolor = new Fl_Box(365, 236, 21, 21);
@@ -10075,20 +10089,20 @@ Fl_Double_Window* ConfigureDialog() {
         overcolor->color((Fl_Color)1);
         o->color(progdefaults.OverSignal);
       } // Fl_Box* overcolor
-      { Fl_Counter* o = cnt_over_signal_level = new Fl_Counter(480, 212, 114, 21);
+      { Fl_Counter* o = cnt_over_signal_level = new Fl_Counter(480, 192, 114, 21);
         cnt_over_signal_level->minimum(-90);
         cnt_over_signal_level->maximum(0);
         cnt_over_signal_level->callback((Fl_Callback*)cb_cnt_over_signal_level);
         o->value(progdefaults.over_signal_level);
         o->lstep(1.0);
       } // Fl_Counter* cnt_over_signal_level
-      { btnOverSignal = new Fl_Button(402, 236, 70, 21, _("Over"));
+      { btnOverSignal = new Fl_Button(402, 216, 70, 21, _("Over"));
         btnOverSignal->callback((Fl_Callback*)cb_btnOverSignal);
       } // Fl_Button* btnOverSignal
       { Fl_Progress* o = new Fl_Progress(295, 289, 416, 25, _("label"));
         o->hide();
       } // Fl_Progress* o
-      { sig_vumeter = new vumeter(322, 280, 360, 24, _("label"));
+      { sig_vumeter = new vumeter(322, 260, 360, 24, _("label"));
         sig_vumeter->box(FL_DOWN_BOX);
         sig_vumeter->color(FL_BACKGROUND2_COLOR);
         sig_vumeter->selection_color(FL_YELLOW);
@@ -10099,11 +10113,17 @@ Fl_Double_Window* ConfigureDialog() {
         sig_vumeter->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
         sig_vumeter->when(FL_WHEN_RELEASE);
       } // vumeter* sig_vumeter
-      { new Fl_Box(375, 307, 237, 17, _("Input signal level"));
+      { new Fl_Box(375, 287, 237, 17, _("Input signal level"));
       } // Fl_Box* o
-      { btn_default_signal_levels = new Fl_Button(618, 166, 70, 20, _("Default"));
+      { btn_default_signal_levels = new Fl_Button(618, 146, 70, 20, _("Default"));
         btn_default_signal_levels->callback((Fl_Callback*)cb_btn_default_signal_levels);
       } // Fl_Button* btn_default_signal_levels
+      { Fl_Check_Button* o = btn_use_wsjtx_vumeter_scale = new Fl_Check_Button(332, 315, 70, 18, _("Use wsjtx scale"));
+        btn_use_wsjtx_vumeter_scale->tooltip(_("default scale is audo \"Vu Meter\"\nenable to emulate wsjtx scale"));
+        btn_use_wsjtx_vumeter_scale->down_box(FL_DOWN_BOX);
+        btn_use_wsjtx_vumeter_scale->callback((Fl_Callback*)cb_btn_use_wsjtx_vumeter_scale);
+        o->value(progdefaults.use_wsjtx_vumeter_scale);
+      } // Fl_Check_Button* btn_use_wsjtx_vumeter_scale
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Signal Level"));
       config_pages.push_back(p);
       tab_tree->add(_("Colors-Fonts/Signal Level"));
@@ -18328,65 +18348,64 @@ ll with your audio device."));
       o->hide();
       { new Fl_Box(340, 39, 316, 21, _("Signal Levels"));
       } // Fl_Box* o
-      { Fl_Box* o = lowcolor2 = new Fl_Box(365, 96, 21, 21);
+      { Fl_Box* o = lowcolor2 = new Fl_Box(365, 78, 21, 21);
         lowcolor2->box(FL_DIAMOND_DOWN_BOX);
         lowcolor2->color(FL_FOREGROUND_COLOR);
         o->color(progdefaults.LowSignal);
       } // Fl_Box* lowcolor2
-      { btnLowSignal2 = new Fl_Button(402, 96, 70, 21, _("Low"));
+      { btnLowSignal2 = new Fl_Button(402, 78, 70, 21, _("Low"));
         btnLowSignal2->callback((Fl_Callback*)cb_btnLowSignal2);
       } // Fl_Button* btnLowSignal2
-      { Fl_Box* o = normalcolor2 = new Fl_Box(365, 142, 21, 21);
+      { Fl_Box* o = normalcolor2 = new Fl_Box(365, 122, 21, 21);
         normalcolor2->box(FL_DIAMOND_DOWN_BOX);
         normalcolor2->color((Fl_Color)2);
         o->color(progdefaults.NormSignal);
       } // Fl_Box* normalcolor2
-      { Fl_Counter* o = cnt_normal_signal_level2 = new Fl_Counter(480, 119, 114, 21, _("Transition\nLevel (dB)"));
+      { Fl_Counter* o = cnt_normal_signal_level2 = new Fl_Counter(480, 100, 114, 21, _("Transition\nLevel (dB)"));
         cnt_normal_signal_level2->minimum(-90);
         cnt_normal_signal_level2->maximum(0);
         cnt_normal_signal_level2->callback((Fl_Callback*)cb_cnt_normal_signal_level2);
         cnt_normal_signal_level2->align(Fl_Align(FL_ALIGN_TOP));
-        cnt_normal_signal_level2->hide();
         o->value(progdefaults.normal_signal_level);
         o->lstep(1.0);
       } // Fl_Counter* cnt_normal_signal_level2
-      { btnNormalSignal2 = new Fl_Button(402, 142, 70, 21, _("Normal"));
+      { btnNormalSignal2 = new Fl_Button(402, 122, 70, 21, _("Normal"));
         btnNormalSignal2->callback((Fl_Callback*)cb_btnNormalSignal2);
       } // Fl_Button* btnNormalSignal2
-      { Fl_Box* o = highcolor2 = new Fl_Box(365, 189, 21, 21);
+      { Fl_Box* o = highcolor2 = new Fl_Box(365, 166, 21, 21);
         highcolor2->box(FL_DIAMOND_DOWN_BOX);
         highcolor2->color((Fl_Color)3);
         o->color(progdefaults.HighSignal);
       } // Fl_Box* highcolor2
-      { Fl_Counter* o = cnt_high_signal_level2 = new Fl_Counter(480, 165, 114, 21);
+      { Fl_Counter* o = cnt_high_signal_level2 = new Fl_Counter(480, 145, 114, 21);
         cnt_high_signal_level2->minimum(-90);
         cnt_high_signal_level2->maximum(0);
         cnt_high_signal_level2->callback((Fl_Callback*)cb_cnt_high_signal_level2);
         o->value(progdefaults.high_signal_level);
         o->lstep(1.0);
       } // Fl_Counter* cnt_high_signal_level2
-      { btnHighSignal2 = new Fl_Button(402, 189, 70, 21, _("High"));
+      { btnHighSignal2 = new Fl_Button(402, 166, 70, 21, _("High"));
         btnHighSignal2->callback((Fl_Callback*)cb_btnHighSignal2);
       } // Fl_Button* btnHighSignal2
-      { Fl_Box* o = overcolor2 = new Fl_Box(365, 236, 21, 21);
+      { Fl_Box* o = overcolor2 = new Fl_Box(365, 210, 21, 21);
         overcolor2->box(FL_DIAMOND_DOWN_BOX);
         overcolor2->color((Fl_Color)1);
         o->color(progdefaults.OverSignal);
       } // Fl_Box* overcolor2
-      { Fl_Counter* o = cnt_over_signal_level2 = new Fl_Counter(480, 212, 114, 21);
+      { Fl_Counter* o = cnt_over_signal_level2 = new Fl_Counter(480, 191, 114, 21);
         cnt_over_signal_level2->minimum(-90);
         cnt_over_signal_level2->maximum(0);
         cnt_over_signal_level2->callback((Fl_Callback*)cb_cnt_over_signal_level2);
         o->value(progdefaults.over_signal_level);
         o->lstep(1.0);
       } // Fl_Counter* cnt_over_signal_level2
-      { btnOverSignal2 = new Fl_Button(402, 236, 70, 21, _("Over"));
+      { btnOverSignal2 = new Fl_Button(402, 210, 70, 21, _("Over"));
         btnOverSignal2->callback((Fl_Callback*)cb_btnOverSignal2);
       } // Fl_Button* btnOverSignal2
       { Fl_Progress* o = new Fl_Progress(295, 289, 416, 25, _("label"));
         o->hide();
       } // Fl_Progress* o
-      { sig_vumeter2 = new vumeter(322, 280, 360, 24, _("label"));
+      { sig_vumeter2 = new vumeter(322, 248, 360, 24, _("label"));
         sig_vumeter2->box(FL_DOWN_BOX);
         sig_vumeter2->color(FL_BACKGROUND2_COLOR);
         sig_vumeter2->selection_color(FL_YELLOW);
@@ -18397,11 +18416,17 @@ ll with your audio device."));
         sig_vumeter2->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
         sig_vumeter2->when(FL_WHEN_RELEASE);
       } // vumeter* sig_vumeter2
-      { new Fl_Box(383, 307, 237, 17, _("Input signal level"));
+      { new Fl_Box(383, 275, 237, 17, _("Input signal level"));
       } // Fl_Box* o
-      { btn_default_signal_levels2 = new Fl_Button(618, 166, 70, 20, _("Default"));
+      { btn_default_signal_levels2 = new Fl_Button(618, 145, 70, 20, _("Default"));
         btn_default_signal_levels2->callback((Fl_Callback*)cb_btn_default_signal_levels2);
       } // Fl_Button* btn_default_signal_levels2
+      { Fl_Check_Button* o = btn_use_wsjtx_vumeter_scale2 = new Fl_Check_Button(322, 305, 70, 18, _("Use wsjtx scale"));
+        btn_use_wsjtx_vumeter_scale2->tooltip(_("default scale is audo \"Vu Meter\"\nenable to emulate wsjtx scale"));
+        btn_use_wsjtx_vumeter_scale2->down_box(FL_DOWN_BOX);
+        btn_use_wsjtx_vumeter_scale2->callback((Fl_Callback*)cb_btn_use_wsjtx_vumeter_scale2);
+        o->value(progdefaults.use_wsjtx_vumeter_scale);
+      } // Fl_Check_Button* btn_use_wsjtx_vumeter_scale2
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Signal Level"));
       config_pages.push_back(p);
       tab_tree->add(_("Soundcard/Signal Level"));

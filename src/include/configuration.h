@@ -86,7 +86,7 @@
         ELEM_(bool, noise, "NOISETEST",                                                 \
               "Noise test on/off",                                                      \
               false)                                                                    \
-        ELEM_(double, s2n, "SIGNAL2NOISE",                                             \
+        ELEM_(double, s2n, "SIGNAL2NOISE",                                              \
               "Signal to Noise ratio for test",                                         \
               +20.0)                                                                    \
         ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH",                                   \
@@ -149,6 +149,9 @@
         ELEM_(double, over_signal_level, "over_signal_level",                           \
               "Input signal level transition (dB); -90 to 0",                           \
               -3.0)                                                                     \
+        ELEM_(bool, use_wsjtx_vumeter_scale, "use_wsjtx_vumeter_scale",                 \
+              "Enable if WSJTX metering desired",                                       \
+              false)                                                                    \
                                                                                         \
         ELEM_(double, wfRefLevel, "WFREFLEVEL",                                         \
               "Waterfall reference level (dB)",                                         \

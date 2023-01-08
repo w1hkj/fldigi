@@ -480,7 +480,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {796 149 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
+    xywh {917 25 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
   } {
     Fl_Group {} {
       xywh {0 0 201 385} resizable
@@ -1734,7 +1734,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Colors-Fonts/Signal Level}
+      label {Colors-Fonts/Signal Level} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Signal Level"));}
       code1 {config_pages.push_back(p);}
@@ -1755,7 +1755,7 @@ progdefaults.changed = true;}
 lowcolor->color(progdefaults.LowSignal);
 lowcolor->redraw();
 progdefaults.changed = true;}
-        xywh {402 96 70 21}
+        xywh {402 75 70 22}
       }
       Fl_Box normalcolor {
         xywh {365 142 21 21} box DIAMOND_DOWN_BOX color 2
@@ -1778,7 +1778,7 @@ if (progdefaults.over_signal_level > 0)
 cnt_normal_signal_level->value(progdefaults.normal_signal_level);
 cnt_high_signal_level->value(progdefaults.high_signal_level);
 cnt_over_signal_level->value(progdefaults.over_signal_level);}
-        xywh {480 119 114 21} align 1 minimum -90 maximum 0
+        xywh {480 99 114 21} align 1 minimum -90 maximum 0
         code0 {o->value(progdefaults.normal_signal_level);}
         code1 {o->lstep(1.0);}
       }
@@ -1788,7 +1788,7 @@ cnt_over_signal_level->value(progdefaults.over_signal_level);}
 normalcolor->color(progdefaults.NormSignal);
 normalcolor->redraw();
 progdefaults.changed = true;}
-        xywh {402 142 70 21}
+        xywh {402 122 70 21}
       }
       Fl_Box highcolor {
         xywh {365 189 21 21} box DIAMOND_DOWN_BOX color 3
@@ -1809,7 +1809,7 @@ if (progdefaults.over_signal_level > 0)
 cnt_normal_signal_level->value(progdefaults.normal_signal_level);
 cnt_high_signal_level->value(progdefaults.high_signal_level);
 cnt_over_signal_level->value(progdefaults.over_signal_level);}
-        xywh {480 165 114 21} minimum -90 maximum 0
+        xywh {480 145 114 21} minimum -90 maximum 0
         code0 {o->value(progdefaults.high_signal_level);}
         code1 {o->lstep(1.0);}
       }
@@ -1819,7 +1819,7 @@ cnt_over_signal_level->value(progdefaults.over_signal_level);}
 highcolor->color(progdefaults.HighSignal);
 highcolor->redraw();
 progdefaults.changed = true;}
-        xywh {402 189 70 21}
+        xywh {402 169 70 21}
       }
       Fl_Box overcolor {
         xywh {365 236 21 21} box DIAMOND_DOWN_BOX color 1
@@ -1840,7 +1840,7 @@ if (progdefaults.over_signal_level > 0)
 cnt_normal_signal_level->value(progdefaults.normal_signal_level);
 cnt_high_signal_level->value(progdefaults.high_signal_level);
 cnt_over_signal_level->value(progdefaults.over_signal_level);}
-        xywh {480 212 114 21} minimum -90 maximum 0
+        xywh {480 192 114 21} minimum -90 maximum 0
         code0 {o->value(progdefaults.over_signal_level);}
         code1 {o->lstep(1.0);}
       }
@@ -1850,7 +1850,7 @@ cnt_over_signal_level->value(progdefaults.over_signal_level);}
 overcolor->color(progdefaults.OverSignal);
 overcolor->redraw();
 progdefaults.changed = true;}
-        xywh {402 236 70 21}
+        xywh {402 216 70 21}
       }
       Fl_Progress {} {
         label label
@@ -1858,13 +1858,13 @@ progdefaults.changed = true;}
       }
       Fl_Progress sig_vumeter {
         label label
-        xywh {322 280 360 24}
+        xywh {322 260 360 24}
         code0 {\#include "vumeter.h"}
         class vumeter
       }
       Fl_Box {} {
         label {Input signal level}
-        xywh {375 307 237 17}
+        xywh {375 287 237 17}
       }
       Fl_Button btn_default_signal_levels {
         label Default
@@ -1874,7 +1874,15 @@ cnt_high_signal_level->value(
   progdefaults.high_signal_level = -6.0);
 cnt_over_signal_level->value(
   progdefaults.over_signal_level = -3.0);}
-        xywh {618 166 70 20}
+        xywh {618 146 70 20}
+      }
+      Fl_Check_Button btn_use_wsjtx_vumeter_scale {
+        label {Use wsjtx scale}
+        callback {progdefaults.use_wsjtx_vumeter_scale=o->value();
+btn_use_wsjtx_vumeter_scale2->value(o->value());}
+        tooltip {default scale is audo "Vu Meter"
+enable to emulate wsjtx scale} xywh {332 315 70 18} down_box DOWN_BOX
+        code0 {o->value(progdefaults.use_wsjtx_vumeter_scale);}
       }
     }
     Fl_Group {} {
@@ -8375,7 +8383,7 @@ number to the default value.} xywh {624 313 73 22}
       }
     }
     Fl_Group grpOperator {
-      label {Operator-Station} selected
+      label {Operator-Station}
       xywh {200 0 600 350} box ENGRAVED_BOX color 50 align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Operator-Station"));}
       code1 {config_pages.push_back(p);}
@@ -10489,7 +10497,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Signal Level}
+      label {Signal Level} open
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Signal Level"));}
       code1 {config_pages.push_back(p);}
@@ -10500,7 +10508,7 @@ progdefaults.changed = true;}
         xywh {340 39 316 21}
       }
       Fl_Box lowcolor2 {
-        xywh {365 96 21 21} box DIAMOND_DOWN_BOX color 0
+        xywh {365 78 21 21} box DIAMOND_DOWN_BOX color 0
         code0 {o->color(progdefaults.LowSignal);}
       }
       Fl_Button btnLowSignal2 {
@@ -10511,10 +10519,10 @@ lowcolor->redraw();
 lowcolor2->color(progdefaults.LowSignal);
 lowcolor2->redraw();
 progdefaults.changed = true;}
-        xywh {402 96 70 21}
+        xywh {402 78 70 21}
       }
       Fl_Box normalcolor2 {
-        xywh {365 142 21 21} box DIAMOND_DOWN_BOX color 2
+        xywh {365 122 21 21} box DIAMOND_DOWN_BOX color 2
         code0 {o->color(progdefaults.NormSignal);}
       }
       Fl_Counter cnt_normal_signal_level2 {
@@ -10538,7 +10546,7 @@ cnt_over_signal_level->value(progdefaults.over_signal_level);
 cnt_normal_signal_level2->value(progdefaults.normal_signal_level);
 cnt_high_signal_level2->value(progdefaults.high_signal_level);
 cnt_over_signal_level2->value(progdefaults.over_signal_level);}
-        xywh {480 119 114 21} align 1 minimum -90 maximum 0 hide
+        xywh {480 100 114 21} align 1 minimum -90 maximum 0
         code0 {o->value(progdefaults.normal_signal_level);}
         code1 {o->lstep(1.0);}
       }
@@ -10552,10 +10560,10 @@ normalcolor2->color(progdefaults.NormSignal);
 normalcolor2->redraw();
 
 progdefaults.changed = true;}
-        xywh {402 142 70 21}
+        xywh {402 122 70 21}
       }
       Fl_Box highcolor2 {
-        xywh {365 189 21 21} box DIAMOND_DOWN_BOX color 3
+        xywh {365 166 21 21} box DIAMOND_DOWN_BOX color 3
         code0 {o->color(progdefaults.HighSignal);}
       }
       Fl_Counter cnt_high_signal_level2 {
@@ -10577,7 +10585,7 @@ cnt_over_signal_level->value(progdefaults.over_signal_level);
 cnt_normal_signal_level2->value(progdefaults.normal_signal_level);
 cnt_high_signal_level2->value(progdefaults.high_signal_level);
 cnt_over_signal_level2->value(progdefaults.over_signal_level);}
-        xywh {480 165 114 21} minimum -90 maximum 0
+        xywh {480 145 114 21} minimum -90 maximum 0
         code0 {o->value(progdefaults.high_signal_level);}
         code1 {o->lstep(1.0);}
       }
@@ -10591,10 +10599,10 @@ highcolor2->color(progdefaults.HighSignal);
 highcolor2->redraw();
 
 progdefaults.changed = true;}
-        xywh {402 189 70 21}
+        xywh {402 166 70 21}
       }
       Fl_Box overcolor2 {
-        xywh {365 236 21 21} box DIAMOND_DOWN_BOX color 1
+        xywh {365 210 21 21} box DIAMOND_DOWN_BOX color 1
         code0 {o->color(progdefaults.OverSignal);}
       }
       Fl_Counter cnt_over_signal_level2 {
@@ -10616,7 +10624,7 @@ cnt_over_signal_level->value(progdefaults.over_signal_level);
 cnt_normal_signal_level2->value(progdefaults.normal_signal_level);
 cnt_high_signal_level2->value(progdefaults.high_signal_level);
 cnt_over_signal_level2->value(progdefaults.over_signal_level);}
-        xywh {480 212 114 21} minimum -90 maximum 0
+        xywh {480 191 114 21} minimum -90 maximum 0
         code0 {o->value(progdefaults.over_signal_level);}
         code1 {o->lstep(1.0);}
       }
@@ -10630,7 +10638,7 @@ overcolor2->color(progdefaults.OverSignal);
 overcolor2->redraw();
 
 progdefaults.changed = true;}
-        xywh {402 236 70 21}
+        xywh {402 210 70 21}
       }
       Fl_Progress {} {
         label label
@@ -10638,13 +10646,13 @@ progdefaults.changed = true;}
       }
       Fl_Progress sig_vumeter2 {
         label label
-        xywh {322 280 360 24}
+        xywh {322 248 360 24}
         code0 {\#include "vumeter.h"}
         class vumeter
       }
       Fl_Box {} {
         label {Input signal level}
-        xywh {383 307 237 17}
+        xywh {383 275 237 17}
       }
       Fl_Button btn_default_signal_levels2 {
         label Default
@@ -10658,7 +10666,15 @@ cnt_over_signal_level->value(
 cnt_normal_signal_level2->value(progdefaults.normal_signal_level);
 cnt_high_signal_level2->value(progdefaults.high_signal_level);
 cnt_over_signal_level2->value(progdefaults.over_signal_level);}
-        xywh {618 166 70 20}
+        xywh {618 145 70 20}
+      }
+      Fl_Check_Button btn_use_wsjtx_vumeter_scale2 {
+        label {Use wsjtx scale}
+        callback {progdefaults.use_wsjtx_vumeter_scale=o->value();
+btn_use_wsjtx_vumeter_scale->value(o->value());}
+        tooltip {default scale is audo "Vu Meter"
+enable to emulate wsjtx scale} xywh {322 305 70 18} down_box DOWN_BOX
+        code0 {o->value(progdefaults.use_wsjtx_vumeter_scale);}
       }
     }
     Fl_Group {} {
