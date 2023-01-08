@@ -122,6 +122,21 @@ QRZ *qCall = 0;
 
 static notify_dialog *announce = 0;
 
+std::string percent_encode (std::string str) {
+	std::string chars = " !#$&'()*+,/:;=?@[]{}";
+	std::string out;
+	char chrstr[10];
+
+	for (size_t n = 0; n < str.length(); n++) {
+		if (chars.find(str[n]) != std::string::npos) {
+			snprintf(chrstr, sizeof(chrstr), "%%%2X", str[n]);
+			out.append(chrstr);
+		} else
+			out += str[n];
+	}
+	return out;
+}
+
 void print_query(const std::string &name, const std::string &s)
 {
 //	LOG_WARN("%s query:\n%s", name.c_str(), s.c_str());
@@ -335,9 +350,9 @@ bool getSessionKey(std::string& sessionpage)
 	std::string html = "http://";
 	html.append(qrzhost);
 	html.append(" /xml/current/?username=");
-	html.append(progdefaults.QRZusername);
+	html.append(percent_encode(progdefaults.QRZusername));
 	html.append(";password=");
-	html.append(progdefaults.QRZuserpassword);
+	html.append(percent_encode(progdefaults.QRZuserpassword));
 	html.append(";agent=");
 	html.append(PACKAGE_NAME);
 	html.append("-");
@@ -774,9 +789,9 @@ bool HAMCALLget(std::string& htmlpage)
 		html.erase(p1+4,1);
 	if (html[html.length()-1] != '/') html += '/';
 	html.append("/call?username=");
-	html.append(progdefaults.QRZusername);
+	html.append(percent_encode(progdefaults.QRZusername));
 	html.append("&password=");
-	html.append(progdefaults.QRZuserpassword);
+	html.append(percent_encode(progdefaults.QRZuserpassword));
 	html.append("&rawlookup=1&callsign=");
 	html.append(callsign);
 	html.append("&program=fldigi-");
@@ -878,8 +893,8 @@ bool HAMQTH_get_session_id()
 	if ((p1 = url.find("https")) != std::string::npos)
 		url.erase(p1+4,1);
 	if (url[url.length()-1] != '/') url += '/';
-	url.append("xml.php?u=").append(progdefaults.QRZusername);
-	url.append("&p=").append(progdefaults.QRZuserpassword);
+	url.append("xml.php?u=").append(percent_encode(progdefaults.QRZusername));
+	url.append("&p=").append(percent_encode(progdefaults.QRZuserpassword));
 
 	HAMQTH_session_id.clear();
 
