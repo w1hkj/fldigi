@@ -1738,9 +1738,9 @@ void btnRev_cb(Fl_Widget *w, void *v)
 	waterfall *wf = (waterfall *)w->parent();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	wf->Reverse(b->value());
+	progdefaults.rtty_reverse = wf->Reverse();
 	active_modem->set_reverse(wf->Reverse());
-	progdefaults.rtty_reverse = b->value();
-	set_mode_reverse(active_modem->get_mode(), progdefaults.rtty_reverse);
+	modeband.set_mode_reverse(wf->Reverse());
 	progdefaults.changed = true;
 	restoreFocus();
 }

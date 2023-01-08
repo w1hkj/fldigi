@@ -16161,16 +16161,18 @@ ed)"));
       { Fl_Check_Button* o = btnTXLEVEL_by_mode = new Fl_Check_Button(360, 96, 235, 30, _("Transmit level control"));
         btnTXLEVEL_by_mode->tooltip(_("Save transmit level control by mode"));
         btnTXLEVEL_by_mode->down_box(FL_DOWN_BOX);
+        btnTXLEVEL_by_mode->value(1);
         btnTXLEVEL_by_mode->callback((Fl_Callback*)cb_btnTXLEVEL_by_mode);
         o->value(progdefaults.txlevel_by_mode);
       } // Fl_Check_Button* btnTXLEVEL_by_mode
       { Fl_Check_Button* o = btnSQLCH_by_mode = new Fl_Check_Button(360, 140, 270, 30, _("Squelch level/activated control(s)"));
         btnSQLCH_by_mode->tooltip(_("Save Squelch level and state by mode"));
         btnSQLCH_by_mode->down_box(FL_DOWN_BOX);
+        btnSQLCH_by_mode->value(1);
         btnSQLCH_by_mode->callback((Fl_Callback*)cb_btnSQLCH_by_mode);
         o->value(progdefaults.sqlch_by_mode);
       } // Fl_Check_Button* btnSQLCH_by_mode
-      { Fl_Box* o = new Fl_Box(211, 28, 575, 39, _("Enable specific parameter to Save & Restore on a per mode basis."));
+      { Fl_Box* o = new Fl_Box(211, 28, 575, 39, _("Enable specific parameter to Save & Restore on a per mode/band basis."));
         o->box(FL_ENGRAVED_BOX);
         o->color((Fl_Color)53);
         o->labelsize(13);
@@ -16179,12 +16181,14 @@ ed)"));
       { Fl_Check_Button* o = btnAFC_by_mode = new Fl_Check_Button(360, 184, 270, 30, _("AFC control"));
         btnAFC_by_mode->tooltip(_("Save AFC state by mode"));
         btnAFC_by_mode->down_box(FL_DOWN_BOX);
+        btnAFC_by_mode->value(1);
         btnAFC_by_mode->callback((Fl_Callback*)cb_btnAFC_by_mode);
         o->value(progdefaults.afc_by_mode);
       } // Fl_Check_Button* btnAFC_by_mode
       { Fl_Check_Button* o = btnREVERSE_by_mode = new Fl_Check_Button(360, 228, 270, 30, _("Reverse (Rv) control"));
         btnREVERSE_by_mode->tooltip(_("Save Reverse state by mode"));
         btnREVERSE_by_mode->down_box(FL_DOWN_BOX);
+        btnREVERSE_by_mode->value(1);
         btnREVERSE_by_mode->callback((Fl_Callback*)cb_btnREVERSE_by_mode);
         o->value(progdefaults.reverse_by_mode);
       } // Fl_Check_Button* btnREVERSE_by_mode

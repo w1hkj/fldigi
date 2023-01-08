@@ -39,6 +39,7 @@
 #include "misc.h"
 #include "configuration.h"
 #include "status.h"
+#include "squelch_status.h"
 #include "dtmf.h"
 
 #include "soundconf.h"
@@ -702,6 +703,8 @@ void trx_start_modem_loop()
 	trx_state = STATE_RX;
 	REQ(&waterfall::opmode, wf);
 	REQ(set599);
+
+	modeband.band_mode_change();
 
 	if (old_modem) {
 		*mode_info[old_modem->get_mode()].modem = 0;

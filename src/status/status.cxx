@@ -146,7 +146,7 @@ status progStatus = {
 	true,				// bool afconoff
 	true,				// bool sqlonoff
 	false,				// bool reverse
-	-3.0,				// double txlevel
+	-12.0,				// double txlevel
 	50,					// int	scopeX;
 	50,					// int	scopeY;
 	false,				// bool	scopeVisible;
@@ -578,6 +578,12 @@ if (!bWF_only) {
 	spref.set("scope_w", scopeW);
 	spref.set("scope_h", scopeH);
 
+	spref.set("sqlevel", sldrSquelchValue);
+	spref.set("sqlonoff", sqlonoff);
+	spref.set("afconoff", afconoff);
+	spref.set("reverse", reverse);
+	spref.set("txlevel", txlevel);
+
 	spref.set("svX", svX);
 	spref.set("svY", svY);
 	spref.set("svW", svW);
@@ -751,7 +757,7 @@ if (!bWF_only) {
 //----------------------------------------------------------------------
 	spref.set("vumeter_shown", vumeter_shown);
 
-	save_mode_state();
+	modeband.save_mode_state();
 }
 
 void status::loadLastState()
@@ -889,6 +895,12 @@ void status::loadLastState()
 	spref.get("scope_y", scopeY, scopeY);
 	spref.get("scope_w", scopeW, scopeW);
 	spref.get("scope_h", scopeH, scopeH);
+
+	spref.get("sqlevel", sldrSquelchValue, sldrSquelchValue);
+	spref.get("sqlonoff", i, sqlonoff); sqlonoff = i;
+	spref.get("afconoff", i, afconoff); afconoff = i;
+	spref.get("reverse", i, reverse); reverse = i;
+	spref.get("txlevel", txlevel, txlevel);
 
 	spref.get("svX", svX, svX);
 	spref.get("svY", svY, svY);
@@ -1099,7 +1111,7 @@ void status::loadLastState()
 	spref.get("vumeter_shown", vumeter_shown, vumeter_shown);
 //----------------------------------------------------------------------
 
-	load_mode_state();
+	modeband.load_mode_state();
 
 	set_debug_mask(debug_mask);
 }

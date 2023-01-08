@@ -1346,7 +1346,7 @@ static void setTXATTEN(float v)
 	v = clamp(v, -30.0, 0.0);
 	progStatus.txlevel = v;
 	cntTxLevel->value(progStatus.txlevel);
-	set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
+	modeband.set_mode_txlevel(progStatus.txlevel);
 	que_ok = true;
 }
 

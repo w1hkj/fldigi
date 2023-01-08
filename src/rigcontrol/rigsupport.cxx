@@ -424,6 +424,9 @@ void qso_movFreq(Fl_Widget* w, void *data)
 	}
 
 	sendFreq(f);
+
+	modeband.band_mode_change();
+
 	if (restore == 1)
 		restoreFocus();
 	return;

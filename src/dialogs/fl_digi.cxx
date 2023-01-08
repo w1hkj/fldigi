@@ -1701,7 +1701,7 @@ static int squelch_val;
 void rsid_squelch_timer(void*)
 {
 	progStatus.sqlonoff = squelch_val;
-	set_mode_squelch_onoff(active_modem->get_mode(), squelch_val);
+	modeband.set_mode_squelch_onoff(squelch_val);
 	if (progStatus.sqlonoff) {
 		btnSQL->value(1);
 	}
@@ -1720,7 +1720,7 @@ void init_modem_squelch(trx_mode mode, int freq)
 void rsid_eot_squelch()
 {
 	progStatus.sqlonoff = squelch_val;
-	set_mode_squelch_onoff(active_modem->get_mode(), squelch_val);
+	modeband.set_mode_squelch_onoff(squelch_val);
 	if (progStatus.sqlonoff)
 		btnSQL->value(1);
 	Fl::remove_timeout(rsid_squelch_timer);
@@ -3137,7 +3137,7 @@ void cb_sldrSquelch(Fl_Slider* o, void*) {
 		progStatus.sldrPwrSquelchValue = o->value();
 	} else {
 		progStatus.sldrSquelchValue = o->value();
-		set_mode_squelch( active_modem->get_mode(), progStatus.sldrSquelchValue );
+		modeband.set_mode_squelch( progStatus.sldrSquelchValue );
 	}
 
 	restoreFocus(13);
@@ -4225,7 +4225,7 @@ void cbAFC(Fl_Widget *w, void *vi)
 	Fl_Button *b = (Fl_Button *)w;
 	int v = b->value();
 	progStatus.afconoff = v;
-	set_mode_afc(active_modem->get_mode(), progStatus.afconoff);
+	modeband.set_mode_afc(progStatus.afconoff);
 }
 
 void cbSQL(Fl_Widget *w, void *vi)
@@ -4233,7 +4233,7 @@ void cbSQL(Fl_Widget *w, void *vi)
 	Fl_Button *b = (Fl_Button *)w;
 	int v = b->value();
 	progStatus.sqlonoff = v ? true : false;
-	set_mode_squelch_onoff(active_modem->get_mode(), progStatus.sqlonoff);
+	modeband.set_mode_squelch_onoff( progStatus.sqlonoff );
 }
 
 extern void set_wf_mode(void);
@@ -4443,7 +4443,7 @@ int default_handler(int event)
 			progStatus.txlevel += 0.1;
 			if (progStatus.txlevel > 0) progStatus.txlevel = 0;
 			cntTxLevel->value(progStatus.txlevel);
-			set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
+			modeband.set_mode_txlevel(progStatus.txlevel);
 			return 1;
 		}
 #ifdef __APPLE__
@@ -4455,7 +4455,7 @@ int default_handler(int event)
 			progStatus.txlevel -= 0.1;
 			if (progStatus.txlevel < -30) progStatus.txlevel = -30;
 			cntTxLevel->value(progStatus.txlevel);
-			set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
+			modeband.set_mode_txlevel(progStatus.txlevel);
 			return 1;
 		}
 	}
@@ -4502,7 +4502,7 @@ int wo_default_handler(int event)
 			progStatus.txlevel += 0.1;
 			if (progStatus.txlevel > 0) progStatus.txlevel = 0;
 			cntTxLevel->value(progStatus.txlevel);
-			set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
+			modeband.set_mode_txlevel(progStatus.txlevel);
 			return 1;
 		}
 #ifdef __APPLE__
@@ -6776,7 +6776,6 @@ void _show_frequency(unsigned long long freq)
 	qsoFreqDisp1->value(freq);
 	qsoFreqDisp2->value(freq);
 	qsoFreqDisp3->value(freq);
-//	if (FD_logged_on) FD_band_check();
 }
 
 void show_frequency(unsigned long long freq)
@@ -6903,7 +6902,7 @@ static void cb_mainViewer_Seek(Fl_Input *, void *)
 
 static void cb_cntTxLevel(Fl_Counter2* o, void*) {
 	progStatus.txlevel = o->value();
-	set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
+	modeband.set_mode_txlevel(progStatus.txlevel);
 }
 
 static void cb_mainViewer(Fl_Hold_Browser*, void*) {
