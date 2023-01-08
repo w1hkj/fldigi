@@ -543,14 +543,17 @@ char snrmsg[80];
 void rtty::Metric()
 {
 	double delta = rtty_baud/8.0;
-	double np = wf->powerDensity(frequency, delta) * 3000 / delta;
+	double np = wf->powerDensity(frequency, delta) * 3000 / delta + 1e-8;
 	double sp =
 		wf->powerDensity(frequency - shift/2, delta) +
-		wf->powerDensity(frequency + shift/2, delta) + 1e-10;
+		wf->powerDensity(frequency + shift/2, delta) + 1e-8;
 	double snr = 0;
+
+	if (np < 1e-6) np = sp * 100;
 
 	sigpwr = decayavg( sigpwr, sp, sp > sigpwr ? 2 : 8);
 	noisepwr = decayavg( noisepwr, np, 16 );
+
 	snr = 10*log10(sigpwr / noisepwr);
 
 	snprintf(snrmsg, sizeof(snrmsg), "s/n %-3.0f dB", snr);

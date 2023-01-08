@@ -3036,7 +3036,7 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
       }
     }
     Fl_Group {} {
-      label {Logging/QSO logging}
+      label {Logging/QSO logging} open
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/QSO logging"));}
       code1 {config_pages.push_back(p);}
@@ -3047,7 +3047,7 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
         label {Prompt to save log on exit}
         callback {btn2NagMe->value(o->value());
 progdefaults.NagMe=o->value();
-progdefaults.changed = true;}
+progdefaults.changed = true;} selected
         tooltip {Bug me about saving log entries} xywh {255 63 236 20} down_box DOWN_BOX
         code0 {o->value(progdefaults.NagMe);}
       }
@@ -3129,7 +3129,7 @@ progdefaults.changed = true;}
         label {Transmit Power}
         callback {progdefaults.mytxpower = o->value();
 progdefaults.changed = true;}
-        tooltip {Tx power used for logbook entries} xywh {671 241 50 24}
+        tooltip {Tx power used for logbook entries} xywh {368 286 50 24}
         code0 {o->value(progdefaults.mytxpower.c_str());}
         code1 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Input2
@@ -3140,6 +3140,13 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
         tooltip {The filename is written to the RX text area} xywh {255 181 277 20} down_box DOWN_BOX
         code0 {o->value(progdefaults.DisplayLogbookRead);}
+      }
+      Fl_Check_Button btn_log_power_meter {
+        label {Log power meter }
+        callback {progdefaults.log_power_meter=o->value();
+progdefaults.changed = true;}
+        tooltip {Bug me about saving log entries} xywh {444 288 155 20} down_box DOWN_BOX value 1
+        code0 {o->value(progdefaults.log_power_meter);}
       }
     }
     Fl_Group {} {

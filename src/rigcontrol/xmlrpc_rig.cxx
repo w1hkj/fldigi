@@ -892,15 +892,19 @@ pthread_mutex_t mutex_flrig_pwrmeter = PTHREAD_MUTEX_INITIALIZER;
 static void xmlrpc_rig_set_pwrmeter(void *data)
 {
 	guard_lock flrig_lock(&mutex_flrig_pwrmeter);
-	if (!smeter && !pwrmeter) return;
 
-	if (pwrmeter && progStatus.meters) {
-		if (!pwrmeter->visible()) {
-			smeter->hide();
-			pwrmeter->show();
-		}
+	if (pwrmeter) {
 		int val = reinterpret_cast<intptr_t>(data);
 		pwrmeter->value(val);
+		if (pwrlevel_grp->visible())
+			return;
+		if (progStatus.meters) {
+			if (!pwrmeter->visible()) {
+				if (smeter) smeter->hide();
+				pwrmeter->show();
+			}
+			pwrmeter->redraw();
+		}
 	}
 }
 

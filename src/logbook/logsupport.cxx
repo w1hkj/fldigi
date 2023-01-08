@@ -1951,7 +1951,12 @@ void AddRecord ()
 
 	inpNotes_log->value (inpNotes->value());
 
-	inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
+	if (progdefaults.log_power_meter) {
+		static char sval[20];
+		snprintf(sval, sizeof(sval), "%3.0f", pwrmeter->peak());
+		inpTX_pwr_log->value(sval);
+	} else
+		inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
 
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");

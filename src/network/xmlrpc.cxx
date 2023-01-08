@@ -2475,14 +2475,22 @@ public:
 		_signature = "n:i";
 		_help = "Sets the power meter returns null.";
 	}
-	static void set_pwrmeter(int rfc)
+	static void set_pwrmeter(int val)
 	{
-		if (pwrmeter && smeter && progStatus.meters) {
-			pwrmeter->value(rfc);
-			smeter->hide();
-			pwrmeter->show();
+		if (pwrmeter) {
+			pwrmeter->value(val);
+			if (pwrlevel_grp->visible())
+				return;
+			if (progStatus.meters) {
+				if (!pwrmeter->visible()) {
+					if (smeter) smeter->hide();
+					pwrmeter->show();
+				}
+				pwrmeter->redraw();
+			}
 		}
 	}
+
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
