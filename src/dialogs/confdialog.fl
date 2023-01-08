@@ -4449,7 +4449,7 @@ chk_nanoIO_FSK_io->value(0);}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/DTR-RTS keying} open
+      label {Modem/CW/DTR-RTS keying} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/DTR-RTS keying"));}
       code1 {config_pages.push_back(p);}
@@ -4470,7 +4470,7 @@ No settings for baud, stops bits, etc are needed.}
         xywh {205 107 590 40} box ENGRAVED_FRAME
       } {
         Fl_Check_Button btn_CW_KEYLINE_flrig {
-          label {Use flrig DTR/CTS keying}
+          label {Use flrig DTR/RTS keying}
           callback {int val = o->value();
 progdefaults.use_FLRIGkeying = val;
 if (val) {

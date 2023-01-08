@@ -12776,7 +12776,7 @@ ettings for baud, stops bits, etc are needed."));
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(205, 107, 590, 40);
         o->box(FL_ENGRAVED_FRAME);
-        { Fl_Check_Button* o = btn_CW_KEYLINE_flrig = new Fl_Check_Button(215, 120, 23, 15, _("Use flrig DTR/CTS keying"));
+        { Fl_Check_Button* o = btn_CW_KEYLINE_flrig = new Fl_Check_Button(215, 120, 23, 15, _("Use flrig DTR/RTS keying"));
           btn_CW_KEYLINE_flrig->down_box(FL_DOWN_BOX);
           btn_CW_KEYLINE_flrig->callback((Fl_Callback*)cb_btn_CW_KEYLINE_flrig);
           btn_CW_KEYLINE_flrig->align(Fl_Align(FL_ALIGN_RIGHT));
