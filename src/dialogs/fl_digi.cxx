@@ -10520,19 +10520,29 @@ void display_fsq_mon_text(std::string text, int style)
 
 void cbFSQQTC(Fl_Widget *w, void *d)
 {
+	int mouse = Fl::event_button();
+	if (mouse == FL_RIGHT_MOUSE) {
+		open_config(TAB_FSQ);
+		return;
+	}
 	fsq_tx_text->add(progdefaults.fsqQTCtext.c_str());
+	restoreFocus();
+}
+
+void cbFSQQTH(Fl_Widget *w, void *d)
+{
+	int mouse = Fl::event_button();
+	if (mouse == FL_RIGHT_MOUSE) {
+		open_config(TAB_FSQ);
+		return;
+	}
+	fsq_tx_text->add(progdefaults.myQth.c_str());
 	restoreFocus();
 }
 
 void cbFSQCQ(Fl_Widget *w, void *d)
 {
 	fsq_xmt("cqcqcq");
-	restoreFocus();
-}
-
-void cbFSQQTH(Fl_Widget *w, void *d)
-{
-	fsq_tx_text->add(progdefaults.myQth.c_str());
 	restoreFocus();
 }
 

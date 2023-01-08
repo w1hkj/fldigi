@@ -4239,6 +4239,14 @@ static void cb_btn_fsq_lowercase(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Input2 *inpMyFSQQth=(Fl_Input2 *)0;
+
+static void cb_inpMyFSQQth(Fl_Input2* o, void*) {
+  progdefaults.myQth = o->value();
+inpMyQth->value(o->value());
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btn_fsq_msg_dt_stamp=(Fl_Check_Button *)0;
 
 static void cb_btn_fsq_msg_dt_stamp(Fl_Check_Button* o, void*) {
@@ -6593,6 +6601,7 @@ Fl_Input2 *inpMyQth=(Fl_Input2 *)0;
 
 static void cb_inpMyQth(Fl_Input2* o, void*) {
   progdefaults.myQth = o->value();
+inpMyFSQQth->value(o->value());
 progdefaults.changed = true;
 }
 
@@ -13560,17 +13569,32 @@ ver a +/- 10 WPM range.  Calibration/Test is 1 minute of\n\'PARIS \'."));
           cntr_FSQ_time_out->align(Fl_Align(FL_ALIGN_LEFT));
           o->value(progdefaults.fsq_time_out);
         } // Fl_Counter* cntr_FSQ_time_out
-        { Fl_Input* o = new Fl_Input(283, 136, 456, 22, _("QTC:"));
+        { Fl_Input* o = new Fl_Input(284, 135, 456, 22, _("QTC:"));
           o->tooltip(_("Enter QTC text"));
           o->callback((Fl_Callback*)cb_QTC);
           o->value(progdefaults.fsqQTCtext.c_str());
         } // Fl_Input* o
-        { Fl_Check_Button* o = btn_fsq_lowercase = new Fl_Check_Button(283, 162, 214, 15, _("MYCALL always lower case"));
+        { Fl_Check_Button* o = btn_fsq_lowercase = new Fl_Check_Button(214, 162, 214, 15, _("MYCALL lower case"));
           btn_fsq_lowercase->tooltip(_("convert operator callsign to lower case"));
           btn_fsq_lowercase->down_box(FL_DOWN_BOX);
           btn_fsq_lowercase->callback((Fl_Callback*)cb_btn_fsq_lowercase);
           o->value(progdefaults.fsq_lowercase);
         } // Fl_Check_Button* btn_fsq_lowercase
+        { Fl_Input2* o = inpMyFSQQth = new Fl_Input2(420, 158, 320, 22, _("QTH:"));
+          inpMyFSQQth->tooltip(_("Operators QTH"));
+          inpMyFSQQth->box(FL_DOWN_BOX);
+          inpMyFSQQth->color(FL_BACKGROUND2_COLOR);
+          inpMyFSQQth->selection_color(FL_SELECTION_COLOR);
+          inpMyFSQQth->labeltype(FL_NORMAL_LABEL);
+          inpMyFSQQth->labelfont(0);
+          inpMyFSQQth->labelsize(14);
+          inpMyFSQQth->labelcolor(FL_FOREGROUND_COLOR);
+          inpMyFSQQth->callback((Fl_Callback*)cb_inpMyFSQQth);
+          inpMyFSQQth->align(Fl_Align(FL_ALIGN_LEFT));
+          inpMyFSQQth->when(FL_WHEN_RELEASE);
+          inpMyFSQQth->labelsize(FL_NORMAL_SIZE);
+          o->value(progdefaults.myQth.c_str());
+        } // Fl_Input2* inpMyFSQQth
         o->end();
       } // Fl_Group* o
       { Fl_Group* o = new Fl_Group(208, 184, 585, 44, _("Message Logging"));
@@ -16678,7 +16702,7 @@ i.e. localhost"));
         inpMyAntenna->when(FL_WHEN_RELEASE);
         inpMyAntenna->labelsize(FL_NORMAL_SIZE);
       } // Fl_Input2* inpMyAntenna
-      { inpMyQth = new Fl_Input2(386, 176, 320, 24, _("Station QTH:"));
+      { Fl_Input2* o = inpMyQth = new Fl_Input2(386, 176, 320, 24, _("Station QTH:"));
         inpMyQth->tooltip(_("Operators QTH"));
         inpMyQth->box(FL_DOWN_BOX);
         inpMyQth->color(FL_BACKGROUND2_COLOR);
@@ -16691,6 +16715,7 @@ i.e. localhost"));
         inpMyQth->align(Fl_Align(FL_ALIGN_LEFT));
         inpMyQth->when(FL_WHEN_RELEASE);
         inpMyQth->labelsize(FL_NORMAL_SIZE);
+        o->value(progdefaults.myQth.c_str());
       } // Fl_Input2* inpMyQth
       { inpMyLocator = new Fl_Input2(386, 206, 85, 24, _("Station Locator:"));
         inpMyLocator->tooltip(_("Maidenhead locator as in EM64qv"));

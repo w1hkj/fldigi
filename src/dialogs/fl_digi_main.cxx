@@ -2675,14 +2675,14 @@ Logging_frame->resizable(NFtabs);
 						btn_FSQQTH = new Fl_Button(
 							_xp, _yp, bw4, bh, "QTH");
 						btn_FSQQTH->callback(cbFSQQTH, 0);
-						btn_FSQQTH->tooltip("QTH->tx panel");
+						btn_FSQQTH->tooltip("QTH->tx panel\nright click - edit");
 
 						_xp += bw4;
 
 						btn_FSQQTC  = new Fl_Button(
 							_xp, _yp, bw4, bh, "QTC");
 						btn_FSQQTC->callback(cbFSQQTC, 0);
-						btn_FSQQTC->tooltip("QTC->tx panel");
+						btn_FSQQTC->tooltip("QTC->tx panel\nright click - edit");
 
 						_xp += bw4;
 
