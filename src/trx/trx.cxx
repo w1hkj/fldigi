@@ -355,8 +355,12 @@ void trx_trx_receive_loop()
 					fft_modem->rx_process(rbvec[0].buf, numread);
 				active_modem->rx_process(rbvec[0].buf, numread);
 
-				if (audio_alert)
-					audio_alert->monitor(rbvec[0].buf, numread, current_RXsamplerate);
+				if (audio_alert && progdefaults.mon_xcvr_audio) {
+					audio_alert->monitor(
+						rbvec[0].buf, numread,
+						current_RXsamplerate,
+						(progdefaults.RxFilt_vol / (progdefaults.rxgain_x10 ? 10.0 : 100.0)));
+				}
 
 				if (progdefaults.rsid)
 					ReedSolomon->receive(fbuf, numread);

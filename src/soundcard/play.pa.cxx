@@ -20,7 +20,7 @@
 #define CHANNELS                  2
 #define SCRATE                44100  // 8000
 #define FRAMES_PER_BUFFER      8192 // 4096  // 1024  // lower than 1023 values causes audio distortion on pi3
-#define RBUFF_SIZE            32768  // 16384  // 4096
+#define RBUFF_SIZE            131072 // 65576 // 32768  // 16384  // 4096
 
 static pthread_t       alert_pthread;
 static pthread_cond_t  alert_cond;
@@ -295,8 +295,8 @@ c_portaudio::c_portaudio()
 	}
 
 	stream = 0;
-	fbuffer = new float[8192];
-	nubuffer = new float[8192 * 6];
+	fbuffer = new float[44100];//8192];
+	nubuffer = new float[44100 * 6];//8192 * 6];
 	data_frames = new float[ FRAMES_PER_BUFFER * CHANNELS ];
 
 	paStreamParameters.device = -1;
@@ -625,7 +625,8 @@ void c_portaudio::play_file(std::string fname)
 
 void c_portaudio::mon_write(double *buffer, int len, int mon_sr)
 {
-	float vol = 0.01 * progdefaults.RxFilt_vol;
+	guard_lock filter_lock(&filter_mutex);
+
 	float *rsbuffer = 0;
 
 	if (!bpfilt) init_filter();
@@ -634,31 +635,35 @@ void c_portaudio::mon_write(double *buffer, int len, int mon_sr)
 
 // do not resample if alert samplerate == modem samplerate
 		if (sr == mon_sr) {
+			rsbuffer = new float[2*len];
 			if (progdefaults.mon_dsp_audio) {
-				guard_lock filter_lock(&filter_mutex);
 				double out;
 				for (int n = 0; n < len; n++) {
 					if (bpfilt->Irun(buffer[n], out)) {
-						nubuffer[2*n] = nubuffer[2*n + 1] = vol * gain * out;
+						rsbuffer[2*n] = rsbuffer[2*n + 1] = gain * out;
 					}
 				}
 			} else
 				for (int i = 0; i < len; i++)
-					nubuffer[2*i] = nubuffer[2*i+1] = vol * buffer[i];
+					rsbuffer[2*i] = rsbuffer[2*i+1] = buffer[i];
 			monitor_rb->write(nubuffer, 2 * len);
+			delete [] rsbuffer;
 			return;
 		}
 
 // sample rates not equal; resample monophonic
 		else {
-			for (int i = 0; i < len; i++) fbuffer[i] = vol * buffer[i];
+			for (int i = 0; i < len; i++) fbuffer[i] = buffer[i];
 
 			double src_ratio = 1.0 * sr / mon_sr;
+			int oframes = len * src_ratio + 10;
+
+			float *nubuffer = new float[oframes];
 
 			rcdata.data_in		 = fbuffer;    // pointer to the input data samples.
 			rcdata.input_frames	 = len;        // number of frames of data pointed to by data_in.
 			rcdata.data_out		 = nubuffer;   // pointer to the output data samples.
-			rcdata.output_frames = 512 * 6;    //nusize;     // Maximum number of frames pointed to by data_out.
+			rcdata.output_frames = oframes;    // nusize;     // Maximum number of frames pointed to by data_out.
 			rcdata.src_ratio	 = src_ratio;  // output_sample_rate / input_sample_rate.
 			rcdata.end_of_input	 = 0;
 
@@ -672,7 +677,6 @@ void c_portaudio::mon_write(double *buffer, int len, int mon_sr)
 
 			float *rsbuffer = new float[2*flen];
 			if (progdefaults.mon_dsp_audio) {
-				guard_lock filter_lock(&filter_mutex);
 				double out;
 				for (int n = 0; n < flen; n++) {
 					if (bpfilt->Irun(nubuffer[n], out)) {
@@ -681,6 +685,7 @@ void c_portaudio::mon_write(double *buffer, int len, int mon_sr)
 				}
 				monitor_rb->write(rsbuffer, 2*flen);
 				delete [] rsbuffer;
+				delete [] nubuffer;
 				return;
 			}
 			else {
@@ -689,6 +694,7 @@ void c_portaudio::mon_write(double *buffer, int len, int mon_sr)
 				}
 				monitor_rb->write(rsbuffer, 2*flen);
 				delete [] rsbuffer;
+				delete [] nubuffer;
 				return;
 			}
 		}

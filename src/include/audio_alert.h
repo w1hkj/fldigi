@@ -57,7 +57,7 @@ public:
 
 	void alert(std::string s);
 
-	void monitor(double *buffer, int len, int _sr);
+	void monitor(double *buffer, int len, int _sr, double amp);
 	void monitor(cmplx *z, int len, double wf, int _sr);
 
 	Caudio_alert();
@@ -104,7 +104,7 @@ public:
 	void standard_tone() {}
 	void file(std::string sndfile) {}
 	void alert(std::string s) {}
-	void monitor(double *buffer, int len, int _sr) {}
+	void monitor(double *buffer, int len, int _sr, double amp = 1.0) {}
 	void monitor(cmplx *z, int len, double wf, int _sr) {}
 
 	void init_filter() {}

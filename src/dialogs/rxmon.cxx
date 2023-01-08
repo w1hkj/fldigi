@@ -21,6 +21,25 @@ static void cb_btn_mon_xcvr_audio(Fl_Check_Button* o, void*) {
   progdefaults.mon_xcvr_audio = o->value();
 }
 
+Fl_Value_Slider2 *sldrRxFilt_vol=(Fl_Value_Slider2 *)0;
+
+static void cb_sldrRxFilt_vol(Fl_Value_Slider2* o, void*) {
+  progdefaults.RxFilt_vol = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_rxgain_x10=(Fl_Check_Button *)0;
+
+static void cb_btn_rxgain_x10(Fl_Check_Button* o, void*) {
+  progdefaults.rxgain_x10 = o->value();
+}
+
+Fl_Check_Button *btn_mon_dsp_audio=(Fl_Check_Button *)0;
+
+static void cb_btn_mon_dsp_audio(Fl_Check_Button* o, void*) {
+  progdefaults.mon_dsp_audio = o->value();
+}
+
 Fl_Value_Slider2 *sldrRxFilt_bw=(Fl_Value_Slider2 *)0;
 
 static void cb_sldrRxFilt_bw(Fl_Value_Slider2* o, void*) {
@@ -109,29 +128,16 @@ static void cb_btn_RxFilt_at_track(Fl_Check_Button* o, void*) {
 if (o->value() == 1) center_rxfilt_at_track();
 }
 
-Fl_Value_Slider2 *sldrRxFilt_vol=(Fl_Value_Slider2 *)0;
+Fl_Check_Button *btn_mon_wf_display=(Fl_Check_Button *)0;
 
-static void cb_sldrRxFilt_vol(Fl_Value_Slider2* o, void*) {
-  progdefaults.RxFilt_vol = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_mon_dsp_audio=(Fl_Check_Button *)0;
-
-static void cb_btn_mon_dsp_audio(Fl_Check_Button* o, void*) {
-  progdefaults.mon_dsp_audio = o->value();
+static void cb_btn_mon_wf_display(Fl_Check_Button* o, void*) {
+  progdefaults.mon_wf_display = o->value();
 }
 
 Fl_Check_Button *btn_mon_xmt_audio=(Fl_Check_Button *)0;
 
 static void cb_btn_mon_xmt_audio(Fl_Check_Button* o, void*) {
   progdefaults.mon_xmt_audio = o->value();
-}
-
-Fl_Check_Button *btn_mon_wf_display=(Fl_Check_Button *)0;
-
-static void cb_btn_mon_wf_display(Fl_Check_Button* o, void*) {
-  progdefaults.mon_wf_display = o->value();
 }
 
 Fl_Value_Slider2 *sldr_tx_vol=(Fl_Value_Slider2 *)0;
@@ -143,18 +149,55 @@ progdefaults.changed = true;
 
 Fl_Double_Window* make_rxaudio_dialog() {
   Fl_Double_Window* w;
-  { Fl_Double_Window* o = new Fl_Double_Window(360, 252, _("Rx Audio Monitor"));
+  { Fl_Double_Window* o = new Fl_Double_Window(360, 290, _("Rx Audio Monitor"));
     w = o; if (w) {/* empty */}
-    { Fl_Check_Button* o = btn_mon_xcvr_audio = new Fl_Check_Button(50, 7, 70, 18, _("Monitor ON"));
-      btn_mon_xcvr_audio->tooltip(_("Rx audio stream ON"));
-      btn_mon_xcvr_audio->down_box(FL_DOWN_BOX);
-      btn_mon_xcvr_audio->callback((Fl_Callback*)cb_btn_mon_xcvr_audio);
-      o->value(progdefaults.mon_xcvr_audio);
-    } // Fl_Check_Button* btn_mon_xcvr_audio
-    { Fl_Group* o = new Fl_Group(5, 107, 350, 141, _("Filter Settings"));
-      o->box(FL_ENGRAVED_FRAME);
+    { Fl_Group* o = new Fl_Group(5, 4, 350, 50);
+      o->box(FL_BORDER_FRAME);
+      o->color(FL_FOREGROUND_COLOR);
+      { Fl_Check_Button* o = btn_mon_xcvr_audio = new Fl_Check_Button(15, 8, 70, 18, _("RX Monitor"));
+        btn_mon_xcvr_audio->tooltip(_("Rx audio stream ON"));
+        btn_mon_xcvr_audio->down_box(FL_DOWN_BOX);
+        btn_mon_xcvr_audio->callback((Fl_Callback*)cb_btn_mon_xcvr_audio);
+        o->value(progdefaults.mon_xcvr_audio);
+      } // Fl_Check_Button* btn_mon_xcvr_audio
+      { Fl_Value_Slider2* o = sldrRxFilt_vol = new Fl_Value_Slider2(15, 28, 290, 20, _("Rx Vol"));
+        sldrRxFilt_vol->tooltip(_("Rx audio volume"));
+        sldrRxFilt_vol->type(5);
+        sldrRxFilt_vol->box(FL_DOWN_BOX);
+        sldrRxFilt_vol->color((Fl_Color)206);
+        sldrRxFilt_vol->selection_color((Fl_Color)2);
+        sldrRxFilt_vol->labeltype(FL_NORMAL_LABEL);
+        sldrRxFilt_vol->labelfont(0);
+        sldrRxFilt_vol->labelsize(14);
+        sldrRxFilt_vol->labelcolor(FL_FOREGROUND_COLOR);
+        sldrRxFilt_vol->maximum(100);
+        sldrRxFilt_vol->step(1);
+        sldrRxFilt_vol->value(50);
+        sldrRxFilt_vol->textsize(14);
+        sldrRxFilt_vol->callback((Fl_Callback*)cb_sldrRxFilt_vol);
+        sldrRxFilt_vol->align(Fl_Align(FL_ALIGN_RIGHT));
+        sldrRxFilt_vol->when(FL_WHEN_CHANGED);
+        o->value(progdefaults.RxFilt_vol);
+      } // Fl_Value_Slider2* sldrRxFilt_vol
+      { Fl_Check_Button* o = btn_rxgain_x10 = new Fl_Check_Button(212, 7, 93, 18, _("Gain X 10"));
+        btn_rxgain_x10->tooltip(_("Rx audio stream ON"));
+        btn_rxgain_x10->down_box(FL_DOWN_BOX);
+        btn_rxgain_x10->callback((Fl_Callback*)cb_btn_rxgain_x10);
+        o->value(progdefaults.rxgain_x10);
+      } // Fl_Check_Button* btn_rxgain_x10
+      o->end();
+    } // Fl_Group* o
+    { Fl_Group* o = new Fl_Group(5, 58, 350, 168, _("Filter Settings"));
+      o->box(FL_BORDER_FRAME);
+      o->color(FL_FOREGROUND_COLOR);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-      { Fl_Value_Slider2* o = sldrRxFilt_bw = new Fl_Value_Slider2(10, 141, 300, 20, _("BW"));
+      { Fl_Check_Button* o = btn_mon_dsp_audio = new Fl_Check_Button(191, 68, 70, 18, _("Rx audio filter ON"));
+        btn_mon_dsp_audio->tooltip(_("Enable DSP filtering of rx audio stream"));
+        btn_mon_dsp_audio->down_box(FL_DOWN_BOX);
+        btn_mon_dsp_audio->callback((Fl_Callback*)cb_btn_mon_dsp_audio);
+        o->value(progdefaults.mon_dsp_audio);
+      } // Fl_Check_Button* btn_mon_dsp_audio
+      { Fl_Value_Slider2* o = sldrRxFilt_bw = new Fl_Value_Slider2(10, 93, 300, 20, _("BW"));
         sldrRxFilt_bw->tooltip(_("Filter bandwidth"));
         sldrRxFilt_bw->type(5);
         sldrRxFilt_bw->box(FL_DOWN_BOX);
@@ -174,7 +217,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
         sldrRxFilt_bw->when(FL_WHEN_CHANGED);
         o->value(progdefaults.RxFilt_bw);
       } // Fl_Value_Slider2* sldrRxFilt_bw
-      { Fl_Value_Slider2* o = sldrRxFilt_mid = new Fl_Value_Slider2(10, 167, 300, 20, _("Mid"));
+      { Fl_Value_Slider2* o = sldrRxFilt_mid = new Fl_Value_Slider2(10, 120, 300, 20, _("Mid"));
         sldrRxFilt_mid->tooltip(_("Filter center frequ ency"));
         sldrRxFilt_mid->type(5);
         sldrRxFilt_mid->box(FL_DOWN_BOX);
@@ -194,7 +237,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
         sldrRxFilt_mid->when(FL_WHEN_CHANGED);
         o->value(progdefaults.RxFilt_mid);
       } // Fl_Value_Slider2* sldrRxFilt_mid
-      { Fl_Value_Slider2* o = sldrRxFilt_low = new Fl_Value_Slider2(10, 193, 300, 20, _("Low"));
+      { Fl_Value_Slider2* o = sldrRxFilt_low = new Fl_Value_Slider2(10, 147, 300, 20, _("Low"));
         sldrRxFilt_low->tooltip(_("Filter low cutoff frequency"));
         sldrRxFilt_low->type(5);
         sldrRxFilt_low->box(FL_DOWN_BOX);
@@ -214,7 +257,7 @@ Fl_Double_Window* make_rxaudio_dialog() {
         sldrRxFilt_low->when(FL_WHEN_CHANGED);
         o->value(progdefaults.RxFilt_low);
       } // Fl_Value_Slider2* sldrRxFilt_low
-      { Fl_Value_Slider2* o = sldrRxFilt_high = new Fl_Value_Slider2(10, 219, 300, 20, _("High"));
+      { Fl_Value_Slider2* o = sldrRxFilt_high = new Fl_Value_Slider2(10, 174, 300, 20, _("High"));
         sldrRxFilt_high->tooltip(_("Filter high cutoff frequency"));
         sldrRxFilt_high->type(5);
         sldrRxFilt_high->box(FL_DOWN_BOX);
@@ -234,70 +277,50 @@ Fl_Double_Window* make_rxaudio_dialog() {
         sldrRxFilt_high->when(FL_WHEN_CHANGED);
         o->value(progdefaults.RxFilt_high);
       } // Fl_Value_Slider2* sldrRxFilt_high
-      { Fl_Check_Button* o = btn_RxFilt_at_track = new Fl_Check_Button(156, 116, 70, 15, _("track WF cursor"));
+      { Fl_Check_Button* o = btn_RxFilt_at_track = new Fl_Check_Button(15, 201, 70, 18, _("track WF cursor"));
         btn_RxFilt_at_track->tooltip(_("Filter center freq tracks waterfall track point"));
         btn_RxFilt_at_track->down_box(FL_DOWN_BOX);
         btn_RxFilt_at_track->callback((Fl_Callback*)cb_btn_RxFilt_at_track);
         o->value(progdefaults.RxFilt_track_wf);
       } // Fl_Check_Button* btn_RxFilt_at_track
+      { Fl_Check_Button* o = btn_mon_wf_display = new Fl_Check_Button(195, 201, 70, 18, _("Waterfall display"));
+        btn_mon_wf_display->tooltip(_("DSP filter width visible on waterfall"));
+        btn_mon_wf_display->down_box(FL_DOWN_BOX);
+        btn_mon_wf_display->callback((Fl_Callback*)cb_btn_mon_wf_display);
+        o->value(progdefaults.mon_wf_display);
+      } // Fl_Check_Button* btn_mon_wf_display
       o->end();
     } // Fl_Group* o
-    { Fl_Value_Slider2* o = sldrRxFilt_vol = new Fl_Value_Slider2(10, 55, 290, 20, _("Rx Vol"));
-      sldrRxFilt_vol->tooltip(_("Rx audio volume"));
-      sldrRxFilt_vol->type(5);
-      sldrRxFilt_vol->box(FL_DOWN_BOX);
-      sldrRxFilt_vol->color((Fl_Color)206);
-      sldrRxFilt_vol->selection_color((Fl_Color)2);
-      sldrRxFilt_vol->labeltype(FL_NORMAL_LABEL);
-      sldrRxFilt_vol->labelfont(0);
-      sldrRxFilt_vol->labelsize(14);
-      sldrRxFilt_vol->labelcolor(FL_FOREGROUND_COLOR);
-      sldrRxFilt_vol->maximum(100);
-      sldrRxFilt_vol->step(1);
-      sldrRxFilt_vol->value(50);
-      sldrRxFilt_vol->textsize(14);
-      sldrRxFilt_vol->callback((Fl_Callback*)cb_sldrRxFilt_vol);
-      sldrRxFilt_vol->align(Fl_Align(FL_ALIGN_RIGHT));
-      sldrRxFilt_vol->when(FL_WHEN_CHANGED);
-      o->value(progdefaults.RxFilt_vol);
-    } // Fl_Value_Slider2* sldrRxFilt_vol
-    { Fl_Check_Button* o = btn_mon_dsp_audio = new Fl_Check_Button(50, 29, 70, 18, _("Filtered audio"));
-      btn_mon_dsp_audio->tooltip(_("Enable DSP filtering of rx audio stream"));
-      btn_mon_dsp_audio->down_box(FL_DOWN_BOX);
-      btn_mon_dsp_audio->callback((Fl_Callback*)cb_btn_mon_dsp_audio);
-      o->value(progdefaults.mon_dsp_audio);
-    } // Fl_Check_Button* btn_mon_dsp_audio
-    { Fl_Check_Button* o = btn_mon_xmt_audio = new Fl_Check_Button(190, 7, 70, 18, _("Monitor xmt audio"));
-      btn_mon_xmt_audio->tooltip(_("Transmit audio monitored"));
-      btn_mon_xmt_audio->down_box(FL_DOWN_BOX);
-      btn_mon_xmt_audio->callback((Fl_Callback*)cb_btn_mon_xmt_audio);
-      o->value(progdefaults.mon_xmt_audio);
-    } // Fl_Check_Button* btn_mon_xmt_audio
-    { Fl_Check_Button* o = btn_mon_wf_display = new Fl_Check_Button(190, 29, 70, 18, _("Waterfall display"));
-      btn_mon_wf_display->tooltip(_("DSP filter width visible on waterfall"));
-      btn_mon_wf_display->down_box(FL_DOWN_BOX);
-      btn_mon_wf_display->callback((Fl_Callback*)cb_btn_mon_wf_display);
-      o->value(progdefaults.mon_wf_display);
-    } // Fl_Check_Button* btn_mon_wf_display
-    { Fl_Value_Slider2* o = sldr_tx_vol = new Fl_Value_Slider2(10, 82, 290, 20, _("Tx Vol"));
-      sldr_tx_vol->tooltip(_("Rx audio volume"));
-      sldr_tx_vol->type(5);
-      sldr_tx_vol->box(FL_DOWN_BOX);
-      sldr_tx_vol->color((Fl_Color)206);
-      sldr_tx_vol->selection_color((Fl_Color)2);
-      sldr_tx_vol->labeltype(FL_NORMAL_LABEL);
-      sldr_tx_vol->labelfont(0);
-      sldr_tx_vol->labelsize(14);
-      sldr_tx_vol->labelcolor(FL_FOREGROUND_COLOR);
-      sldr_tx_vol->maximum(100);
-      sldr_tx_vol->step(1);
-      sldr_tx_vol->value(50);
-      sldr_tx_vol->textsize(14);
-      sldr_tx_vol->callback((Fl_Callback*)cb_sldr_tx_vol);
-      sldr_tx_vol->align(Fl_Align(FL_ALIGN_RIGHT));
-      sldr_tx_vol->when(FL_WHEN_CHANGED);
-      o->value(progdefaults.mon_tx_vol);
-    } // Fl_Value_Slider2* sldr_tx_vol
+    { Fl_Group* o = new Fl_Group(5, 230, 350, 54);
+      o->box(FL_BORDER_FRAME);
+      o->color(FL_FOREGROUND_COLOR);
+      { Fl_Check_Button* o = btn_mon_xmt_audio = new Fl_Check_Button(10, 238, 70, 18, _("TX Monitor"));
+        btn_mon_xmt_audio->tooltip(_("Transmit audio monitored"));
+        btn_mon_xmt_audio->down_box(FL_DOWN_BOX);
+        btn_mon_xmt_audio->callback((Fl_Callback*)cb_btn_mon_xmt_audio);
+        o->value(progdefaults.mon_xmt_audio);
+      } // Fl_Check_Button* btn_mon_xmt_audio
+      { Fl_Value_Slider2* o = sldr_tx_vol = new Fl_Value_Slider2(10, 257, 290, 20, _("Tx Vol"));
+        sldr_tx_vol->tooltip(_("Rx audio volume"));
+        sldr_tx_vol->type(5);
+        sldr_tx_vol->box(FL_DOWN_BOX);
+        sldr_tx_vol->color((Fl_Color)206);
+        sldr_tx_vol->selection_color((Fl_Color)2);
+        sldr_tx_vol->labeltype(FL_NORMAL_LABEL);
+        sldr_tx_vol->labelfont(0);
+        sldr_tx_vol->labelsize(14);
+        sldr_tx_vol->labelcolor(FL_FOREGROUND_COLOR);
+        sldr_tx_vol->maximum(100);
+        sldr_tx_vol->step(1);
+        sldr_tx_vol->value(50);
+        sldr_tx_vol->textsize(14);
+        sldr_tx_vol->callback((Fl_Callback*)cb_sldr_tx_vol);
+        sldr_tx_vol->align(Fl_Align(FL_ALIGN_RIGHT));
+        sldr_tx_vol->when(FL_WHEN_CHANGED);
+        o->value(progdefaults.mon_tx_vol);
+      } // Fl_Value_Slider2* sldr_tx_vol
+      o->end();
+    } // Fl_Group* o
     o->end();
   } // Fl_Double_Window* o
   return w;

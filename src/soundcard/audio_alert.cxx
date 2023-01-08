@@ -174,10 +174,11 @@ void Caudio_alert::alert(std::string s)
 	else file(s);
 }
 
-void Caudio_alert::monitor(double *buffer, int len, int _sr)
+void Caudio_alert::monitor(double *buffer, int len, int _sr, double amp)
 {
-	if (progdefaults.mon_xcvr_audio)
-		sc_audio->mon_write(buffer, len, _sr);
+	double nubuff[len];
+	for (int i = 0; i < len; i++) nubuff[i] = buffer[i] * amp;
+	sc_audio->mon_write(nubuff, len, _sr);
 }
 
 Caudio_alert::Caudio_alert()

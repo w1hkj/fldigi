@@ -1175,6 +1175,9 @@
         ELEM_(int, RxFilt_vol, "RxFilt_vol",                                            \
               "Audio stream volume",                                                    \
               50)                                                                       \
+        ELEM_(int, rxgain_x10, "rxgain_x10",                                            \
+              "Rx monitor audio gain boost",                                            \
+              false)                                                                    \
         ELEM_(int, RxFilt_bw, "RxFilt_bw",                                              \
               "DSP audio stream filter bandwidth",                                      \
               500)                                                                      \
