@@ -102,6 +102,7 @@ int xcvr_controller = UNKNOWN;
 
 std::string tracked_freq = "";
 int  tracked_mode = -1;
+bool polling_enabled = true;
 
 enum {
   FJP_NONE,
@@ -346,7 +347,7 @@ void adjust_freq(std::string sfreq)
 
 	// N3FJP sends the READBMFRESPONSE message in response to a change of freq
 	// while having rig control; we need to update our notion of what digi last sent to n3
-	// to match so we don't send redundant commands in reply.
+	// to match so (in other functions) we don't send redundant commands in reply.
 
 	char szfreq[20];
 
@@ -2154,14 +2155,7 @@ static void send_data()
 	try {
 
 		send_command("IGNORERIGPOLLS", "TRUE");
-
-		send_call(rec.getField(CALL));
-		send_freq(n3fjp_freq());
-		send_band(n3fjp_opband());
-		send_mode(n3fjp_opmode());
-
 		enter_log_data();
-
 		send_command("IGNORERIGPOLLS", "FALSE");
 
 	} catch (...) { throw; }
@@ -2213,6 +2207,21 @@ void do_n3fjp_add_record_entries()
 	n3fjp_bool_add_record = false;
 }
 
+
+// Setting band and frequency values is done in a non-time-aligned way.  We have to do
+// some unintuitive things to prevent a freq change on the fldigi side (when fldigi is
+// using N3FJP for rig control) from getting overwritten by a response message from
+// N3 with inconsistent data; i.e., reflecting the band change without reflecting the
+// frequency change.  Ideally we would atomically set freq / band / mode so that a click
+// on the fldigi frequency list would set all three simultaneously in N3.  However ...
+// 1. We have to notify N3 of a band change, but N3 will respond with the new band
+//    and the old frequency - so we need to discard that response.
+// 2. We have to notify N3 of a frequency change.  We never need to process the
+//    response and should discard it but it signals the end point of the update transaction
+//    so we can use it to re-enable polling.
+// 3. We always need to wrap this sequence with IGNORERIGPOLLS because we do not want
+//    stale information coming back asynchronously from rig polling during this exchange.
+
 void n3fjp_set_freq(unsigned long long f)
 {
 	if (!active_modem) return;
@@ -2224,20 +2233,23 @@ void n3fjp_set_freq(unsigned long long f)
 	snprintf(szfreq, sizeof(szfreq), "%.6lf", ((double)f)/1000000.0);
 
 	// "tracked" holds a record of what we last sent to save a transmission if it hasn't changed
-	if (active_modem->get_mode() != tracked_mode ||
-		tracked_freq != szfreq) {
-		tracked_mode = active_modem->get_mode();
+	if (tracked_freq != szfreq) {
 		tracked_freq = szfreq;
 
 		if (xcvr_controller == FLDIGI) {
 			cmd = "<CMD><SENDRIGPOLL><FREQ>";
 			cmd.append(tracked_freq);
 			cmd.append("</FREQ><MODE>");
-			cmd.append( mode_info[tracked_mode].adif_name );
+			cmd.append(n3fjp_opmode());
 			cmd.append("</MODE></CMD>");
 			n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
 		} else {
 			if (xcvr_controller == N3FJP) {
+				// Disable polling for the freq change transaction.
+				cmd = "<CMD><IGNORERIGPOLLS><VALUE>TRUE</VALUE></CMD>";
+				n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
+				polling_enabled = false;
+
 				cmd = "<CMD><CHANGEBM>";
 				cmd.append("<BAND>").append(n3fjp_opband()).append("</BAND>");
 				cmd.append("<MODE>").append(n3fjp_opmode()).append("</MODE>");
@@ -2324,7 +2336,7 @@ void n3fjp_parse_response(std::string tempbuff)
 
 	// Regardless of which entity is controlling the rig, if a user changes
 	// the frequency on any app we want the other apps to reflect the change.
-	// The 'CHANGEFREQ' method is used by N3FJP for any user-commanded frequency
+	// The 'CHANGEFREQ' message is sent by N3FJP for any user-commanded frequency
 	// change (i.e., via the Ctrl-F Frequency Dialog or entering a freq into
 	// the Callsign box) or clicking on a spot regardless of which app is in control.
 	if ((p1 = tempbuff.find("<CHANGEFREQ><VALUE>")) != std::string::npos) {
@@ -2336,12 +2348,29 @@ void n3fjp_parse_response(std::string tempbuff)
 	}
 
 	// If n3 is in control, a change at the radio is reported via an unsolicited READBMF "response".
+	// However, we also get this message if fldigi sent the CHANGEBM/CHANGEFREQ command set
+	// associated with an fldigi-initiated frequency change.  In that case, we need to
+	// ignore the overloaded READBMFRESPONSE result from that exchange and we
+	// need to re-enable the poll responses we had to suppress during this action.
+	// Ideally the N3FJP API response to the CHANGEBM command would be named CHANGEBMRESPONSE and contain
+	// only band and mode (not frequency).  That would be consistent with the rest of the N3FJP API and
+	// would distinguish it from the unsolicited READBMFRESPONSE that is generated from a rig-poll cycle.
+
 	if (xcvr_controller == N3FJP) {
 		if (tempbuff.find("<READBMFRESPONSE>") != std::string::npos) {
-			std::string sfreq = ParseField(tempbuff, "FREQ");
-			REQ(adjust_freq, sfreq);
+			if (polling_enabled == true) {  // This RBMF response due to a rig poll
+				std::string sfreq = ParseField(tempbuff, "FREQ");
+				REQ(adjust_freq, sfreq);
+			}
+		}
+		if (tempbuff.find("<CHANGEFREQRESPONSE>") != std::string::npos) {
+			std::string cmd = "<CMD><IGNORERIGPOLLS><VALUE>FALSE</VALUE></CMD>";
+			n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
+			polling_enabled = true;
 		}
 	}
+
+
 
 	if (tempbuff.find("<CALLTABEVENT>") != std::string::npos) {
 		n3fjp_rxbuffer = tempbuff;
