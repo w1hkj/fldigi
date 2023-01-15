@@ -393,7 +393,9 @@ int hamlib_setfreq(unsigned long long f)
 		return -1;
 	guard_lock hamlib(&hamlib_mutex);
 	try {
-		LOG_DEBUG("%llu", f);
+		char dummy[20];
+		snprintf(dummy, sizeof(dummy), "%llu", f);
+		LOG_DEBUG("%s", dummy);
 		xcvr->setFreq((freq_t) f);
 	}
 	catch (const RigException& Ex) {

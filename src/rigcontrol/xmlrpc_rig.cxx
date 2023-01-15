@@ -116,7 +116,9 @@ void xmlrpc_rig_set_qsy(unsigned long long rfc)
 	wf->rfcarrier(rfc);
 	wf->movetocenter();
 	show_frequency(rfc);
-	LOG_VERBOSE("set qsy: %llu", rfc);
+	char dummy[100];
+	snprintf(dummy, sizeof(dummy), "set qsy: %llu", rfc);
+	LOG_VERBOSE("%s", dummy);
 }
 
 //======================================================================
@@ -277,7 +279,9 @@ void xmlrpc_rig_show_freq(void * fr)
 	guard_lock flrig_lock(&mutex_flrig_freq);
 	if (!wf) return;
 	unsigned long long freq = *(static_cast<unsigned long long*>(fr));
-	LOG_VERBOSE("xmlrpc_rig_show_freq %llu", freq);
+	char dummy[200];
+	snprintf(dummy, sizeof(dummy),  "xmlrpc_rig_show_freq %llu", freq);
+	LOG_VERBOSE("%s", dummy);
 	wf->rfcarrier(freq);
 	wf->movetocenter();
 	show_frequency(freq);
@@ -297,7 +301,9 @@ void set_flrig_freq(unsigned long long fr)
 			ret = flrig_client->execute("rig.set_vfo", val, result, timeout);
 		}
 		if (ret) {
-			LOG_VERBOSE("set freq: %llu", fr);
+			char dummy[100];
+			snprintf(dummy, sizeof(dummy), "set freq: %llu", fr);
+			LOG_VERBOSE("%s", dummy);
 			return;
 		}
 		LOG_ERROR("%s", "rig.set_vfo failed");
@@ -326,7 +332,9 @@ void flrig_get_frequency()
 				xcvr_freq = fr_show;
 				guard_lock flrig_lock(&mutex_flrig_freq);
 				Fl::awake(xmlrpc_rig_show_freq, static_cast<void*>(&fr_show));
-				LOG_VERBOSE("get freq: %llu", fr_show);
+				char dummy[200];
+				snprintf(dummy, sizeof(dummy), "get freq: %llu", fr_show);
+				LOG_VERBOSE("%s", dummy);
 			} else if (wait_freq && (fr_show == xcvr_freq)) {
 				wait_freq = false;
 				wait_freq_timeout = 0;

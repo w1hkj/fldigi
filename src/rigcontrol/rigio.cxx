@@ -475,11 +475,15 @@ unsigned long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 // convert the data field
 			f = fm_freqdata(rTemp.data, pData);
 			if ( f >= rTemp.data.min && f <= rTemp.data.max) {
-				LOG_VERBOSE("freq: %llu", f);
+				char dummy[100];
+				snprintf(dummy, sizeof(dummy), "%llu", f);
+				LOG_VERBOSE("%s", dummy);
 				return f;
 			} else {
-				LOG_ERROR("Retrieved freq %llu Hz outside bounds specified in <rig>.xml file"
+				char dummy[200];
+				snprintf(dummy, sizeof(dummy), "Retrieved freq %llu Hz outside bounds specified in <rig>.xml file"
 					" of %llu to %llu", f, rTemp.data.min, rTemp.data.max);
+				LOG_ERROR("%s", dummy);
 				return 0;
 			}
 retry_get_freq: ;
@@ -517,8 +521,11 @@ void rigCAT_setfreq(unsigned long long f)
 	modeCmd = *itrCmd;
 
 	if ( f < modeCmd.data.min || f > modeCmd.data.max) {
-		LOG_ERROR("Ordered freq %llu Hz outside bounds specified in <rig>.xml file of %llu to %llu", 
-		f, modeCmd.data.min, modeCmd.data.max);
+		char dummy[200];
+		snprintf(dummy, sizeof(dummy), 
+			"Ordered freq %llu Hz outside bounds specified in <rig>.xml file of %llu to %llu", 
+			f, modeCmd.data.min, modeCmd.data.max);
+		LOG_ERROR("%s", dummy);
 		return;
 	}
 

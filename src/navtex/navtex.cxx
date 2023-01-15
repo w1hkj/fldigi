@@ -756,13 +756,15 @@ public:
 
 		const NavtexRecord * ptrNavRec = NavtexCatalog::InstCatalog().FindStation(currFreq, m_origin, progdefaults.myLocator, *this );
 		if( ptrNavRec != NULL ) {
-			LOG_INFO("Locator=%s Origin=%c freq=%llu name=%s lon=%lf lat=%lf",
+			char dummy[500];
+			snprintf(dummy, sizeof(dummy), "Locator=%s Origin=%c freq=%llu name=%s lon=%lf lat=%lf",
 				progdefaults.myLocator.c_str(),
 				m_origin,
 				currFreq,
 				ptrNavRec->name().c_str(),
 				ptrNavRec->coordinates().longitude().angle(),
 				ptrNavRec->coordinates().latitude().angle() );
+			LOG_INFO("%s", dummy);
 		} else {
 			LOG_INFO("Locator=%s Origin=%c freq=%d Navtex station not found",
 				progdefaults.myLocator.c_str(),

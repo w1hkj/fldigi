@@ -2414,9 +2414,11 @@ public:
 		XMLRPC_LOCK;
 		double rfc = (double) wf->rfcarrier();
 		unsigned long long f = (unsigned long long)(params.getDouble(0,0.0));
-		LOG_INFO("[%s] rig.set_frequency %llu",
+		char dummy[200];
+		snprintf(dummy, sizeof(dummy), "[%s] rig.set_frequency %llu",
 			XmlRpc::client_id.c_str(),
 			f);
+		LOG_INFO("%s", dummy);
 		qsy(f);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
@@ -3342,9 +3344,11 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		std::string adif_str = all_adif_records();
-		LOG_INFO("[%s] logbook.all_adif_records export size %lu",
+		char dummy[200];
+		snprintf(dummy, sizeof(dummy), "[%s] logbook.all_adif_records export size %lu",
 			XmlRpc::client_id.c_str(),
 			adif_str.length());
+		LOG_INFO("%s", dummy);
 		*retval = xmlrpc_c::value_string(adif_str);
 	}
 };
