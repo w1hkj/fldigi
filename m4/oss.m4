@@ -3,7 +3,7 @@ AC_DEFUN([AC_FLDIGI_OSS], [
   AC_REQUIRE([AC_FLDIGI_WIN32])
   if test "x$target_darwin" = "xno" && test "x$target_win32" = "xno"; then
       AC_ARG_ENABLE([oss],
-                    AC_HELP_STRING([--disable-oss], [disable support for OSS @<:@autodetect@:>@]),
+                    AS_HELP_STRING([--disable-oss], [disable support for OSS @<:@autodetect@:>@]),
                     [case "${enableval}" in
                       yes|no) ac_cv_want_oss="${enableval}" ;;
                       *)      AC_MSG_ERROR([bad value "${enableval}" for --disable-oss]) ;;

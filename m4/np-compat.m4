@@ -3,7 +3,7 @@ AC_DEFUN([AC_FLDIGI_NP_COMPAT], [
   AC_REQUIRE([AC_FLDIGI_WIN32])
 
   AC_ARG_WITH([clock_gettime],
-                AC_HELP_STRING([--without-clock_gettime], [Do not use clock_gettime lib]),
+                AS_HELP_STRING([--without-clock_gettime], [Do not use clock_gettime lib]),
                 [case "${withval}" in
                   yes|no) ac_cv_with_clock_gettime="${withval}" ;;
                   *)      AC_MSG_ERROR([bad value ${withval} for --without-clock_gettime]) ;;

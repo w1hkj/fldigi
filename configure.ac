@@ -3,7 +3,7 @@
 
 AC_COPYRIGHT([Copyright (C) 2007, 2008, 2009 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)])
 
-AC_PREREQ(2.61)
+AC_PREREQ([2.71])
 
 dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
@@ -14,7 +14,7 @@ m4_define(FLARQ_MAJOR,  [4])
 m4_define(FLARQ_MINOR,  [3])
 m4_define(FLARQ_PATCH,  [.8])
 
-AC_INIT([fldigi], FLDIGI_MAJOR.FLDIGI_MINOR[]FLDIGI_PATCH, [fldigi-devel@sourceforge.net])
+AC_INIT([fldigi],[FLDIGI_MAJOR.FLDIGI_MINOR[]FLDIGI_PATCH],[fldigi-devel@sourceforge.net])
 
 # substitute in Makefiles
 AC_SUBST([FLDIGI_VERSION_MAJOR], [FLDIGI_MAJOR])
@@ -50,7 +50,7 @@ AM_INIT_AUTOMAKE([-Wall -Wno-portability foreign std-options subdir-objects 1.9.
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/main.cxx])
-AC_CONFIG_HEADER([src/config.h])
+AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 
@@ -92,7 +92,8 @@ AC_USE_SYSTEM_EXTENSIONS
 AX_CXX_COMPILE_STDCXX_11(, optional)
 
 # Checks for header files.
-AC_HEADER_STDC
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
 AC_HEADER_DIRENT
 AC_CHECK_HEADERS([arpa/inet.h execinfo.h fcntl.h limits.h memory.h netdb.h netinet/in.h regex.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h sys/utsname.h termios.h unistd.h values.h linux/ppdev.h dev/ppbus/ppi.h])
 
@@ -106,7 +107,6 @@ AC_TYPE_INT64_T
 AC_TYPE_INT8_T
 AC_C_RESTRICT
 AC_TYPE_SIZE_T
-AC_HEADER_TIME
 AC_STRUCT_TM
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
@@ -121,7 +121,6 @@ AC_PROG_GCC_TRADITIONAL
 dnl AC_FUNC_MALLOC
 dnl AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
-AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([getaddrinfo gethostbyname hstrerror gmtime_r localtime_r memmove memset mkdir select setenv snprintf socket socketpair strcasecmp strcasestr strchr strdup strerror strlcpy strncpy strncmp strnlen strncasecmp strrchr strstr strtol uname unsetenv vsnprintf])
@@ -133,6 +132,7 @@ AC_PRESERVE_HELP_ORDER
 
 ### Internationalization
 AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.21])
 AM_CONDITIONAL([USE_NLS], [test "x$USE_NLS" = "xyes"])
 
 ### Programs
