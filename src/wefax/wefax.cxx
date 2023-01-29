@@ -743,10 +743,8 @@ private:
 public:
 	/// If the delay is exceeded, returns with an error message.
 	std::string send_file(const std::string & filnam, double max_seconds) {
-		char dummy[100];
-		snprintf(dummy, sizeof(dummy), "%s rf_carrier = %llu carrier = %d", filnam.c_str(),
+		LOG_VERBOSE("%s rf_carrier = %llu carrier = %d", filnam.c_str(),
 				wf->rfcarrier(), m_carrier);
-		LOG_VERBOSE("%s", dummy);
 
 		bool is_acquired = transmit_lock_acquire(filnam, max_seconds);
 		if (! is_acquired) return "Timeout sending " + filnam ;
