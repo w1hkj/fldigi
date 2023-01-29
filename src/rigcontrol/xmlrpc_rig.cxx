@@ -116,7 +116,14 @@ void xmlrpc_rig_set_qsy(unsigned long long rfc)
 	wf->rfcarrier(rfc);
 	wf->movetocenter();
 	show_frequency(rfc);
+#ifdef __WIN32__
+// this subterfuge is necessary due to a bug in mingw gcc macro parser
+	char dummy[50];
+	snprintf(dummy, sizeof(dummy), "set qsy: %llu", rfc);
+	LOG_VERBOSE("%s", dummy);
+#else
 	LOG_VERBOSE("set qsy: %llu", rfc);
+#endif
 }
 
 //======================================================================
@@ -277,7 +284,14 @@ void xmlrpc_rig_show_freq(void * fr)
 	guard_lock flrig_lock(&mutex_flrig_freq);
 	if (!wf) return;
 	unsigned long long freq = *(static_cast<unsigned long long*>(fr));
+#ifdef __WIN32__
+// this subterfuge is necessary due to a bug in mingw gcc macro parser
+	char dummy[100];
+	snprintf(dummy, sizeof(dummy), "xmlrpc_rig_show_freq %llu", freq);
+	LOG_VERBOSE("%s", dummy);
+#else
 	LOG_VERBOSE("xmlrpc_rig_show_freq %llu", freq);
+#endif
 	wf->rfcarrier(freq);
 	wf->movetocenter();
 	show_frequency(freq);
