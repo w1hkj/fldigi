@@ -118,7 +118,7 @@ CWstruct cMorse::cw_table[] = {
 	{1, "8",	"8",	"---.." },
 	{1, "9",	"9",	"----." },
 // Punctuation
-	{1, "\\",	"\\",	".-..-." },
+	{1, "\"",	"\"",	".-..-." },
 	{1, "\'",	"'",	".----." },
 	{1, "$",	"$",	"...-..-" },
 	{1, "(",	"(",	"-.--."	 },
@@ -222,7 +222,8 @@ void cMorse::init()
 		{ enable("Û", 1); enable("û", 1); }
 
 	enable ("\\", progdefaults.CW_backslash);
-	enable ("\'", progdefaults.CW_single_quote);
+	enable ("\'", progdefaults.CW_apostrophe);
+	enable ("\"", progdefaults.CW_quote);
 	enable ("$", progdefaults.CW_dollar_sign);
 	enable ("(", progdefaults.CW_open_paren);
 	enable (")", progdefaults.CW_close_paren);
@@ -261,10 +262,7 @@ std::string cMorse::tx_lookup(int c)
 
 	c &= 0xFF;
 	utf8 += c;
-//	if (ptr < 4) utf8[ptr++] = c;
 
-//	if ( c > 0x7F && ptr == 1 )
-//		return "";
 	if (((utf8[0] & 0xFF) > 0x7F) && (utf8.length() == 1)) {
 		return "";
 	}

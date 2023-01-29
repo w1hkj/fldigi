@@ -222,8 +222,11 @@
         ELEM_(bool, CW_backslash, "CW_blackslash",                                      \
               "encode/decode backslash character",                                      \
               true)                                                                     \
-        ELEM_(bool, CW_single_quote, "CW_single_quote",                                 \
-              "encode/decode single_quote character",                                   \
+        ELEM_(bool, CW_apostrophe, "CW_apostrophe",                                     \
+              "encode/decode apostrophe character",                                     \
+              true)                                                                     \
+        ELEM_(bool, CW_quote, "CW_quote",                                               \
+              "encode/decode quote character",                                          \
               true)                                                                     \
         ELEM_(bool, CW_dollar_sign, "CW_dollar_sign",                                   \
               "encode/decode dollar_sign character",                                    \

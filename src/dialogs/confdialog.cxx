@@ -3050,10 +3050,18 @@ progdefaults.changed = true;
 CW_table_changed = true;
 }
 
-Fl_Check_Button *btn_CW_single_quote=(Fl_Check_Button *)0;
+Fl_Check_Button *btn_CW_apostrophe=(Fl_Check_Button *)0;
 
-static void cb_btn_CW_single_quote(Fl_Check_Button* o, void*) {
-  progdefaults.CW_single_quote = o->value();
+static void cb_btn_CW_apostrophe(Fl_Check_Button* o, void*) {
+  progdefaults.CW_apostrophe = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;
+}
+
+Fl_Check_Button *btn_CW_quote=(Fl_Check_Button *)0;
+
+static void cb_btn_CW_quote(Fl_Check_Button* o, void*) {
+  progdefaults.CW_quote = o->value();
 progdefaults.changed = true;
 CW_table_changed = true;
 }
@@ -12208,7 +12216,7 @@ ded Morse characters."));
       o->box(FL_ENGRAVED_BOX);
       o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       o->hide();
-      { Fl_Group* o = new Fl_Group(205, 30, 590, 185, _("Check to enable character encode/decode"));
+      { Fl_Group* o = new Fl_Group(205, 30, 590, 190, _("Check to enable character encode/decode"));
         o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
         { Fl_Check_Button* o = btn_CW_backslash = new Fl_Check_Button(265, 65, 70, 15, _(" backslash \\     \".-..-.\""));
@@ -12219,15 +12227,23 @@ ded Morse characters."));
           btn_CW_backslash->callback((Fl_Callback*)cb_btn_CW_backslash);
           o->value(progdefaults.CW_backslash);
         } // Fl_Check_Button* btn_CW_backslash
-        { Fl_Check_Button* o = btn_CW_single_quote = new Fl_Check_Button(265, 92, 70, 15, _(" single quote \'  \".----.\""));
-          btn_CW_single_quote->tooltip(_("disable for no printed character"));
-          btn_CW_single_quote->down_box(FL_DOWN_BOX);
-          btn_CW_single_quote->value(1);
-          btn_CW_single_quote->labelfont(4);
-          btn_CW_single_quote->callback((Fl_Callback*)cb_btn_CW_single_quote);
-          o->value(progdefaults.CW_single_quote);
-        } // Fl_Check_Button* btn_CW_single_quote
-        { Fl_Check_Button* o = btn_CW_dollar_sign = new Fl_Check_Button(265, 120, 70, 15, _(" dollar sign $   \"...-..-\""));
+        { Fl_Check_Button* o = btn_CW_apostrophe = new Fl_Check_Button(265, 90, 70, 15, _(" apostrophe \'    \".----.\""));
+          btn_CW_apostrophe->tooltip(_("disable for no printed character"));
+          btn_CW_apostrophe->down_box(FL_DOWN_BOX);
+          btn_CW_apostrophe->value(1);
+          btn_CW_apostrophe->labelfont(4);
+          btn_CW_apostrophe->callback((Fl_Callback*)cb_btn_CW_apostrophe);
+          o->value(progdefaults.CW_apostrophe);
+        } // Fl_Check_Button* btn_CW_apostrophe
+        { Fl_Check_Button* o = btn_CW_quote = new Fl_Check_Button(265, 115, 70, 15, _(" quote \"         \".-..-.\""));
+          btn_CW_quote->tooltip(_("disable for no printed character"));
+          btn_CW_quote->down_box(FL_DOWN_BOX);
+          btn_CW_quote->value(1);
+          btn_CW_quote->labelfont(4);
+          btn_CW_quote->callback((Fl_Callback*)cb_btn_CW_quote);
+          o->value(progdefaults.CW_quote);
+        } // Fl_Check_Button* btn_CW_quote
+        { Fl_Check_Button* o = btn_CW_dollar_sign = new Fl_Check_Button(265, 140, 70, 15, _(" dollar sign $   \"...-..-\""));
           btn_CW_dollar_sign->tooltip(_("disable for no printed character"));
           btn_CW_dollar_sign->down_box(FL_DOWN_BOX);
           btn_CW_dollar_sign->value(1);
@@ -12235,7 +12251,7 @@ ded Morse characters."));
           btn_CW_dollar_sign->callback((Fl_Callback*)cb_btn_CW_dollar_sign);
           o->value(progdefaults.CW_dollar_sign);
         } // Fl_Check_Button* btn_CW_dollar_sign
-        { Fl_Check_Button* o = btn_CW_open_paren = new Fl_Check_Button(265, 147, 70, 15, _(" open_paren (    \"-.--.\""));
+        { Fl_Check_Button* o = btn_CW_open_paren = new Fl_Check_Button(265, 165, 70, 15, _(" open_paren (    \"-.--.\""));
           btn_CW_open_paren->tooltip(_("disable for no printed character"));
           btn_CW_open_paren->down_box(FL_DOWN_BOX);
           btn_CW_open_paren->value(1);
@@ -12243,7 +12259,7 @@ ded Morse characters."));
           btn_CW_open_paren->callback((Fl_Callback*)cb_btn_CW_open_paren);
           o->value(progdefaults.CW_open_paren);
         } // Fl_Check_Button* btn_CW_open_paren
-        { Fl_Check_Button* o = btn_CW_close_paren = new Fl_Check_Button(265, 175, 70, 15, _(" close paren )   \"-.--.-\""));
+        { Fl_Check_Button* o = btn_CW_close_paren = new Fl_Check_Button(265, 190, 70, 15, _(" close paren )   \"-.--.-\""));
           btn_CW_close_paren->tooltip(_("disable for no printed character"));
           btn_CW_close_paren->down_box(FL_DOWN_BOX);
           btn_CW_close_paren->value(1);
@@ -12259,7 +12275,7 @@ ded Morse characters."));
           btn_CW_colon->callback((Fl_Callback*)cb_btn_CW_colon);
           o->value(progdefaults.CW_colon);
         } // Fl_Check_Button* btn_CW_colon
-        { Fl_Check_Button* o = btn_CW_semi_colon = new Fl_Check_Button(535, 92, 70, 15, _(" semi colon ;   \"-.-.-.\""));
+        { Fl_Check_Button* o = btn_CW_semi_colon = new Fl_Check_Button(535, 90, 70, 15, _(" semi colon ;   \"-.-.-.\""));
           btn_CW_semi_colon->tooltip(_("disable for no printed character"));
           btn_CW_semi_colon->down_box(FL_DOWN_BOX);
           btn_CW_semi_colon->value(1);
@@ -12267,7 +12283,7 @@ ded Morse characters."));
           btn_CW_semi_colon->callback((Fl_Callback*)cb_btn_CW_semi_colon);
           o->value(progdefaults.CW_semi_colon);
         } // Fl_Check_Button* btn_CW_semi_colon
-        { Fl_Check_Button* o = btn_CW_underscore = new Fl_Check_Button(535, 120, 70, 15, _(" underscore _   \"..--.-\""));
+        { Fl_Check_Button* o = btn_CW_underscore = new Fl_Check_Button(535, 115, 70, 15, _(" underscore _   \"..--.-\""));
           btn_CW_underscore->tooltip(_("disable for no printed character"));
           btn_CW_underscore->down_box(FL_DOWN_BOX);
           btn_CW_underscore->value(1);
@@ -12275,7 +12291,7 @@ ded Morse characters."));
           btn_CW_underscore->callback((Fl_Callback*)cb_btn_CW_underscore);
           o->value(progdefaults.CW_underscore);
         } // Fl_Check_Button* btn_CW_underscore
-        { Fl_Check_Button* o = btn_CW_at_symbol = new Fl_Check_Button(535, 147, 70, 15, _(" at symbol @@    \".--.-.\""));
+        { Fl_Check_Button* o = btn_CW_at_symbol = new Fl_Check_Button(535, 140, 70, 15, _(" at symbol @@    \".--.-.\""));
           btn_CW_at_symbol->tooltip(_("disable for no printed character"));
           btn_CW_at_symbol->down_box(FL_DOWN_BOX);
           btn_CW_at_symbol->value(1);
@@ -12283,7 +12299,7 @@ ded Morse characters."));
           btn_CW_at_symbol->callback((Fl_Callback*)cb_btn_CW_at_symbol);
           o->value(progdefaults.CW_at_symbol);
         } // Fl_Check_Button* btn_CW_at_symbol
-        { Fl_Check_Button* o = btn_CW_exclamation = new Fl_Check_Button(535, 175, 70, 15, _(" exclamation !  \"-.-.--\""));
+        { Fl_Check_Button* o = btn_CW_exclamation = new Fl_Check_Button(535, 165, 70, 15, _(" exclamation !  \"-.-.--\""));
           btn_CW_exclamation->tooltip(_("disable for no printed character"));
           btn_CW_exclamation->down_box(FL_DOWN_BOX);
           btn_CW_exclamation->value(1);
@@ -12293,31 +12309,31 @@ ded Morse characters."));
         } // Fl_Check_Button* btn_CW_exclamation
         o->end();
       } // Fl_Group* o
-      { Fl_Group* o = new Fl_Group(205, 203, 590, 142, _("Unknown character decode (noise)"));
+      { Fl_Group* o = new Fl_Group(205, 224, 590, 120, _("Unknown character decode (noise)"));
         o->box(FL_ENGRAVED_BOX);
         o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-        { Fl_Check_Button* o = btn_CW_noise0 = new Fl_Check_Button(265, 226, 193, 24, _(" Do not display unknown MORSE symbol"));
+        { Fl_Check_Button* o = btn_CW_noise0 = new Fl_Check_Button(265, 248, 193, 15, _(" Do not display unknown MORSE symbol"));
           btn_CW_noise0->tooltip(_("disable \'*\'or no printed character"));
           btn_CW_noise0->down_box(FL_DOWN_BOX);
           btn_CW_noise0->labelfont(4);
           btn_CW_noise0->callback((Fl_Callback*)cb_btn_CW_noise0);
           o->value(progdefaults.CW_noise == 0);
         } // Fl_Check_Button* btn_CW_noise0
-        { Fl_Check_Button* o = btn_CW_noise1 = new Fl_Check_Button(265, 254, 193, 24, _(" Display \'*\' character for unknown MORSE symbol"));
+        { Fl_Check_Button* o = btn_CW_noise1 = new Fl_Check_Button(265, 264, 193, 24, _(" Display \'*\' character for unknown MORSE symbol"));
           btn_CW_noise1->tooltip(_("disable \'*\'or no printed character"));
           btn_CW_noise1->down_box(FL_DOWN_BOX);
           btn_CW_noise1->labelfont(4);
           btn_CW_noise1->callback((Fl_Callback*)cb_btn_CW_noise1);
           o->value(progdefaults.CW_noise == '*');
         } // Fl_Check_Button* btn_CW_noise1
-        { Fl_Check_Button* o = btn_CW_noise2 = new Fl_Check_Button(265, 283, 193, 24, _(" Display \'_\' character for unknown MORSE symbol"));
+        { Fl_Check_Button* o = btn_CW_noise2 = new Fl_Check_Button(265, 289, 193, 24, _(" Display \'_\' character for unknown MORSE symbol"));
           btn_CW_noise2->tooltip(_("disable \'_\' for no printed character"));
           btn_CW_noise2->down_box(FL_DOWN_BOX);
           btn_CW_noise2->labelfont(4);
           btn_CW_noise2->callback((Fl_Callback*)cb_btn_CW_noise2);
           o->value(progdefaults.CW_noise == '_');
         } // Fl_Check_Button* btn_CW_noise2
-        { Fl_Check_Button* o = btn_CW_noise3 = new Fl_Check_Button(265, 312, 193, 24, _(" Display \' \' character for unknown MORSE symbol"));
+        { Fl_Check_Button* o = btn_CW_noise3 = new Fl_Check_Button(265, 314, 193, 24, _(" Display \' \' character for unknown MORSE symbol"));
           btn_CW_noise3->tooltip(_("disable \' \' for no printed character"));
           btn_CW_noise3->down_box(FL_DOWN_BOX);
           btn_CW_noise3->labelfont(4);

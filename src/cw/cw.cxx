@@ -1107,6 +1107,9 @@ void cw::send_ch(int ch)
 	}
 
 	code = morse->tx_lookup(ch);
+
+std::cout << (char)ch << "[" << code << "]"; std::cout.flush();
+
 	if (!code.length()) {
 		return;
 	}
@@ -1151,7 +1154,6 @@ void cw::send_ch(int ch)
 int cw::tx_process()
 {
 	int c = get_tx_char();
-
 	if (c == GET_TX_CHAR_NODATA) {
 		if (stopflag) {
 			stopflag = false;
@@ -1488,7 +1490,7 @@ static FILE *cwio_test = 0;
 
 void cwio_bit(int bit, double msecs)
 {
-std::cout << bit << " : " << msecs << std::endl;
+//std::cout << bit << " : " << msecs << std::endl;
 #ifdef CW_TTEST
 	if (!cwio_test) cwio_test = fopen("cwio_test.txt", "a");
 #endif

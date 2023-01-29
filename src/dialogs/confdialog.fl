@@ -1734,7 +1734,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Colors-Fonts/Signal Level} open selected
+      label {Colors-Fonts/Signal Level} open
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Signal Level"));}
       code1 {config_pages.push_back(p);}
@@ -3055,7 +3055,7 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
         label {Prompt to save log on exit}
         callback {btn2NagMe->value(o->value());
 progdefaults.NagMe=o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
         tooltip {Bug me about saving log entries} xywh {255 63 236 20} down_box DOWN_BOX
         code0 {o->value(progdefaults.NagMe);}
       }
@@ -3158,7 +3158,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/General}
+      label {Modem/CW/General} open
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/General"));}
       code1 {config_pages.push_back(p);}
@@ -3469,7 +3469,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/Prosigns}
+      label {Modem/CW/Prosigns} open
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Prosigns"));}
       code1 {config_pages.push_back(p);}
@@ -3883,7 +3883,7 @@ for information regarding extended Morse characters.} open
       }
     }
     Fl_Group {} {
-      label {Punctuation/Noise Processing}
+      label {Punctuation/Noise Processing} open selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Punctuation-Noise"));}
       code1 {config_pages.push_back(p);}
@@ -3891,7 +3891,7 @@ for information regarding extended Morse characters.} open
     } {
       Fl_Group {} {
         label {Check to enable character encode/decode} open
-        xywh {205 30 590 185} box ENGRAVED_BOX align 17
+        xywh {205 30 590 190} box ENGRAVED_BOX align 17
       } {
         Fl_Check_Button btn_CW_backslash {
           label { backslash \\     ".-..-."}
@@ -3901,20 +3901,28 @@ CW_table_changed = true;}
           tooltip {disable for no printed character} xywh {265 65 70 15} down_box DOWN_BOX value 1 labelfont 4
           code0 {o->value(progdefaults.CW_backslash);}
         }
-        Fl_Check_Button btn_CW_single_quote {
-          label { single quote '  ".----."}
-          callback {progdefaults.CW_single_quote = o->value();
+        Fl_Check_Button btn_CW_apostrophe {
+          label { apostrophe '    ".----."}
+          callback {progdefaults.CW_apostrophe = o->value();
 progdefaults.changed = true;
 CW_table_changed = true;}
-          tooltip {disable for no printed character} xywh {265 92 70 15} down_box DOWN_BOX value 1 labelfont 4
-          code0 {o->value(progdefaults.CW_single_quote);}
+          tooltip {disable for no printed character} xywh {265 90 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_apostrophe);}
+        }
+        Fl_Check_Button btn_CW_quote {
+          label { quote "         ".-..-."}
+          callback {progdefaults.CW_quote = o->value();
+progdefaults.changed = true;
+CW_table_changed = true;}
+          tooltip {disable for no printed character} xywh {265 115 70 15} down_box DOWN_BOX value 1 labelfont 4
+          code0 {o->value(progdefaults.CW_quote);}
         }
         Fl_Check_Button btn_CW_dollar_sign {
           label { dollar sign $   "...-..-"}
           callback {progdefaults.CW_dollar_sign = o->value();
 progdefaults.changed = true;
 CW_table_changed = true;}
-          tooltip {disable for no printed character} xywh {265 120 70 15} down_box DOWN_BOX value 1 labelfont 4
+          tooltip {disable for no printed character} xywh {265 140 70 15} down_box DOWN_BOX value 1 labelfont 4
           code0 {o->value(progdefaults.CW_dollar_sign);}
         }
         Fl_Check_Button btn_CW_open_paren {
@@ -3922,7 +3930,7 @@ CW_table_changed = true;}
           callback {progdefaults.CW_open_paren = o->value();
 progdefaults.changed = true;
 CW_table_changed = true;}
-          tooltip {disable for no printed character} xywh {265 147 70 15} down_box DOWN_BOX value 1 labelfont 4
+          tooltip {disable for no printed character} xywh {265 165 70 15} down_box DOWN_BOX value 1 labelfont 4
           code0 {o->value(progdefaults.CW_open_paren);}
         }
         Fl_Check_Button btn_CW_close_paren {
@@ -3930,7 +3938,7 @@ CW_table_changed = true;}
           callback {progdefaults.CW_close_paren = o->value();
 progdefaults.changed = true;
 CW_table_changed = true;}
-          tooltip {disable for no printed character} xywh {265 175 70 15} down_box DOWN_BOX value 1 labelfont 4
+          tooltip {disable for no printed character} xywh {265 190 70 15} down_box DOWN_BOX value 1 labelfont 4
           code0 {o->value(progdefaults.CW_close_paren);}
         }
         Fl_Check_Button btn_CW_colon {
@@ -3946,7 +3954,7 @@ CW_table_changed = true;}
           callback {progdefaults.CW_semi_colon = o->value();
 progdefaults.changed = true;
 CW_table_changed = true;}
-          tooltip {disable for no printed character} xywh {535 92 70 15} down_box DOWN_BOX value 1 labelfont 4
+          tooltip {disable for no printed character} xywh {535 90 70 15} down_box DOWN_BOX value 1 labelfont 4
           code0 {o->value(progdefaults.CW_semi_colon);}
         }
         Fl_Check_Button btn_CW_underscore {
@@ -3954,7 +3962,7 @@ CW_table_changed = true;}
           callback {progdefaults.CW_underscore = o->value();
 progdefaults.changed = true;
 CW_table_changed = true;}
-          tooltip {disable for no printed character} xywh {535 120 70 15} down_box DOWN_BOX value 1 labelfont 4
+          tooltip {disable for no printed character} xywh {535 115 70 15} down_box DOWN_BOX value 1 labelfont 4
           code0 {o->value(progdefaults.CW_underscore);}
         }
         Fl_Check_Button btn_CW_at_symbol {
@@ -3962,7 +3970,7 @@ CW_table_changed = true;}
           callback {progdefaults.CW_at_symbol = o->value();
 progdefaults.changed = true;
 CW_table_changed = true;}
-          tooltip {disable for no printed character} xywh {535 147 70 15} down_box DOWN_BOX value 1 labelfont 4
+          tooltip {disable for no printed character} xywh {535 140 70 15} down_box DOWN_BOX value 1 labelfont 4
           code0 {o->value(progdefaults.CW_at_symbol);}
         }
         Fl_Check_Button btn_CW_exclamation {
@@ -3970,13 +3978,13 @@ CW_table_changed = true;}
           callback {progdefaults.CW_exclamation = o->value();
 progdefaults.changed = true;
 CW_table_changed = true;}
-          tooltip {disable for no printed character} xywh {535 175 70 15} down_box DOWN_BOX value 1 labelfont 4
+          tooltip {disable for no printed character} xywh {535 165 70 15} down_box DOWN_BOX value 1 labelfont 4
           code0 {o->value(progdefaults.CW_exclamation);}
         }
       }
       Fl_Group {} {
         label {Unknown character decode (noise)} open
-        xywh {205 203 590 142} box ENGRAVED_BOX align 17
+        xywh {205 224 590 120} box ENGRAVED_BOX align 17
       } {
         Fl_Check_Button btn_CW_noise0 {
           label { Do not display unknown MORSE symbol}
@@ -3989,7 +3997,7 @@ if (o->value()) {
 else
   progdefaults.CW_noise = 0;
 progdefaults.changed = true;}
-          tooltip {disable '*'or no printed character} xywh {265 226 193 24} down_box DOWN_BOX labelfont 4
+          tooltip {disable '*'or no printed character} xywh {265 248 193 15} down_box DOWN_BOX labelfont 4
           code0 {o->value(progdefaults.CW_noise == 0);}
         }
         Fl_Check_Button btn_CW_noise1 {
@@ -4003,7 +4011,7 @@ if (o->value()) {
 else
   progdefaults.CW_noise = 0;
 progdefaults.changed = true;}
-          tooltip {disable '*'or no printed character} xywh {265 254 193 24} down_box DOWN_BOX labelfont 4
+          tooltip {disable '*'or no printed character} xywh {265 264 193 24} down_box DOWN_BOX labelfont 4
           code0 {o->value(progdefaults.CW_noise == '*');}
         }
         Fl_Check_Button btn_CW_noise2 {
@@ -4017,7 +4025,7 @@ if (o->value()) {
 else
   progdefaults.CW_noise = 0;
 progdefaults.changed = true;}
-          tooltip {disable '_' for no printed character} xywh {265 283 193 24} down_box DOWN_BOX labelfont 4
+          tooltip {disable '_' for no printed character} xywh {265 289 193 24} down_box DOWN_BOX labelfont 4
           code0 {o->value(progdefaults.CW_noise == '_');}
         }
         Fl_Check_Button btn_CW_noise3 {
@@ -4031,7 +4039,7 @@ if (o->value()) {
 else
   progdefaults.CW_noise = 0;
 progdefaults.changed = true;}
-          tooltip {disable ' ' for no printed character} xywh {265 312 193 24} down_box DOWN_BOX labelfont 4
+          tooltip {disable ' ' for no printed character} xywh {265 314 193 24} down_box DOWN_BOX labelfont 4
           code0 {o->value(progdefaults.CW_noise == ' ');}
         }
       }
