@@ -2,12 +2,12 @@
 //
 // Frequency Control Widget for the Fast Light Tool Kit
 //
-// Copyright (C) 2014
+// Copyright (C) 2023
 //              David Freese, W1HKJ
 //
-// This file is part of flrig.
+// This file is part of fldigi
 //
-// flrig is free software; you can redistribute it and/or modify
+// fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 3 of the License, or
 // (at your option) any later version.

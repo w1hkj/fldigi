@@ -61,7 +61,7 @@ then move the mouse cursor over the control and press the middle mouse button to
 
 <B> With Focus </B>
 
-Click (left mouse button) in the control to set focus.  The foreground and background
+Shift Click (left mouse button) in the control to set focus.  The foreground and background
 colors reverse to indicate the control has focus.
 
 <br>

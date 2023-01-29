@@ -1,12 +1,12 @@
 // ----------------------------------------------------------------------------
 // Frequency Control Widget
 //
-// Copyright (C) 2014
+// Copyright (C) 2023
 //              David Freese, W1HKJ
 //
-// This file is part of flrig.
+// This file is part of fldigi
 //
-// flrig is free software; you can redistribute it and/or modify
+// fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 3 of the License, or
 // (at your option) any later version.
@@ -20,12 +20,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
+#define GCC_VERSION (__GNUC__ * 10000 \
+                     + __GNUC_MINOR__ * 100 \
+                     + __GNUC_PATCHLEVEL__)
 #include <FL/fl_draw.H>
 #include <FL/names.h>
 
 #include <cstdlib>
 #include <iostream>
 #include <string>
+
+#if GCC_VERSION > 40201
+#	include <cstdint>
+#endif
+
 #include <string.h>
 
 #include "FreqControl.h"
@@ -194,29 +202,28 @@ void cFreqControl::set_ndigits(int nbr)
 	static char tt[1000];
 
 	snprintf(tt, sizeof(tt), "Set Frequency: (Max val: %.3f kHz)\n\
-  * Mousewheel over digit\n\
-  * MM click: paste from selection\n\
-  - or -\n\
-  * Click to set focus - colors reverse - then:\n\
-      R/L arrow +/- %s; w/SHIFT %s; w/CTRL %s\n\
-      U/D arrow +/- %s; w/SHIFT %s; w/CTRL %s\n\
-      Pg U/D    +/- %s; w/SHIFT %s; w/CTRL %s\n\
-      L/R mouse click (hold for rpt) in top/bot half of digit\n\
-      Ctrl/Meta-v: paste from clipboard\n\
-    ENTER, ESC, or click outside to release focus\n\
-    - or -\n\
-    * Enter frequency with number keys or Keypad\n\
-        (decimal point blinks once entry has started)\n\
-      ENTER to confirm and send to rig;\n\
-      BSP/Ctrl-BSP erase last digit/all digits entered;\n\
-      ESC to abort and revert to previous value",
+Mouse cursor over digit\n\
+ . Left/Right Click to incr/decr digit by one\n\
+ . Hold L/R Click for repeat (digit reverses colors)\n\
+ . Middle Mouse click: paste from clipboard\n\
+ . SHIFT Left Click to set focus - colors reverse - then:\n\
+   - R/L arrow +/- %s; w/SHIFT %s; w/CTRL %s\n\
+   - U/D arrow +/- %s; w/SHIFT %s; w/CTRL %s\n\
+   - Pg U/D    +/- %s; w/SHIFT %s; w/CTRL %s\n\
+   - L/R mouse click (hold for rpt) in top/bot half of digit\n\
+   - Ctrl/Meta-v: paste from clipboard\n\
+   or \n\
+   - Enter frequency with number keys or Keypad\n\
+     (decimal point blinks once entry has started)\n\
+    . BSP/Ctrl-BSP erase last digit/all digits entered\n\
+    . ENTER to confirm and send to rig and release focus\n\
+    . ESC to abort and revert to previous value",
 	  fmaxval_khz,
 	  freq_steps[3-dpoint], freq_steps[4-dpoint], freq_steps[5-dpoint],
 	  freq_steps[6-dpoint], freq_steps[7-dpoint], freq_steps[8-dpoint],
 	  freq_steps[9-dpoint], freq_steps[10-dpoint], freq_steps[11-dpoint]);
 	tooltip(tt);
 }
-
 
 
 cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
@@ -412,6 +419,11 @@ int cFreqControl::handle(int event)
 	//		std::cerr << this << " The focus widget tooltip: " << (Fl::focus()->tooltip() ? Fl::focus()->tooltip() : "no tooltip") << std::endl;
 	//	}
 
+	if (event == FL_LEAVE && !numeric_entry_mode()) {//colors_reversed) {
+		Fl::focus(Fl::first_window());
+		return 1;
+	}
+
 	if (!active) {
 		if (event == FL_MOUSEWHEEL) {
 			return 1;	// Prevent MW action over us from propagating
@@ -454,6 +466,9 @@ int cFreqControl::handle(int event)
 		//NOTREACHED
 
 	case FL_KEYBOARD:
+
+		if (Fl::focus() != this) return 1;  // Discard keyboard events when an RB has focus.
+
 		switch (Fl::event_key()) {
 			case FL_Right:
 				if (numeric_entry_mode()) return 1;
@@ -604,31 +619,28 @@ int cFreqControl::handle(int event)
 		//NOTREACHED
 
 	case FL_PUSH:
-		if (numeric_entry_mode()) {				// Ignore mouse click in numeric entry mode
+		{
+			if (colors_reversed)                // Ignore mouse click if colors reversed
 				return 1;
-		}
 
-		switch (Fl::event_button()) {
-
-			case FL_MIDDLE_MOUSE:
+			int ev = Fl::event_button();
+			if (ev == FL_MIDDLE_MOUSE) {
 				Fl::paste(*(this->finp), 0);	// Send FL_PASTE to the Fl_Float_Input widget; its parent
 												// Fl_Input_::handle checks for valid floating point entry.
 												// 0 = Paste from selection, not clipboard
 				do_callback();
 				return 1;
-			//NOTREACHED
+			}
 
-			default:
-
-				if (!this->contains(Fl::focus())) {
-					take_focus();	// Signal interest in focus if we don't have it; will result in an FL_FOCUS event
-					return 1;
-				} else {
-					return Fl_Group::handle(event);	// The appropriate Repeat Button will handle the event
-				}
-				//NOTREACHED
-		}
+			else if (ev == FL_LEFT_MOUSE && Fl::event_shift()) {
+				reverse_colors();
+				Fl::focus(this);
+				return 1;
+			} else {
+				return Fl_Group::handle(event); // The appropriate Repeat Button will handle the event
+			}
 		//NOTREACHED
+		}
 
 	default:
 		return Fl_Group::handle(event);
