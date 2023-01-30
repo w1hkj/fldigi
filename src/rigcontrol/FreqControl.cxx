@@ -1,10 +1,10 @@
 // ----------------------------------------------------------------------------
 // Frequency Control Widget
 //
-// Copyright (C) 2023
+// Copyright (C) 2014-2023
 //              David Freese, W1HKJ
 //
-// This file is part of fldigi
+// This file is part of fldigi.
 //
 // fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -420,7 +420,7 @@ int cFreqControl::handle(int event)
 	//	}
 
 	if (event == FL_LEAVE && !numeric_entry_mode()) {//colors_reversed) {
-		Fl::focus(Fl::first_window());
+		Fl::focus((Fl_Widget*)Fl::first_window());
 		return 1;
 	}
 
@@ -523,14 +523,14 @@ int cFreqControl::handle(int event)
 					numeric_entry_mode(false);
 				}
 				do_callback();
-				Fl::focus(Fl::first_window());
+				Fl::focus((Fl_Widget*)Fl::first_window());
 				return 1;
 				//NOTREACHED
 			case FL_Escape:
 				if (numeric_entry_mode())
 					cancel_kb_entry();
 				do_callback();
-				Fl::focus(Fl::first_window());
+				Fl::focus((Fl_Widget*)Fl::first_window());
 				return 1;
 				//NOTREACHED
 			case 'v':
@@ -542,7 +542,7 @@ int cFreqControl::handle(int event)
 						Fl::paste(*(this->finp), 1);		// 1 = Paste from clipboard
 						do_callback();
 					}
-					Fl::focus(Fl::first_window());
+					Fl::focus((Fl_Widget*)Fl::first_window());
 				}
 				return 1;
 				//NOTREACHED
