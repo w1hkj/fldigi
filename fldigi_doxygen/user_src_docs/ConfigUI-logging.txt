@@ -20,7 +20,12 @@ whether to clear all of the qso fields when the log is saved or to leave them
 intact.
 Auto-fill Country and Azimuth uses the data found in the file
 "cty.dat" that you should download and place in the fldigi default
-folder. You can force the callsign field to be upper case
+folder.
+<center>
+\image html config-cty.png "cty.dat file store"
+\image latex config-cty.png "cty.dat file store" width=5.0in
+</center>
+You can force the callsign field to be upper case
 independent of capture or keyboard entry. You enter your default
 Transmit Power which is used for the logbook record.
 <br>

@@ -482,8 +482,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     label {Fldigi configuration} open
     xywh {917 25 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
   } {
-    Fl_Group {} {
-      xywh {0 0 201 385} resizable
+    Fl_Group {} {open
+      xywh {0 0 201 380} resizable
     } {
       Fl_Tree tab_tree {
         callback SelectItem_CB
@@ -494,7 +494,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
         code3 {o->connectorwidth(15); // default is 17}
       }
       Fl_Group {} {open
-        xywh {0 350 201 35}
+        xywh {0 350 201 30}
       } {
         Fl_Group {} {open
           xywh {0 350 100 30} resizable
@@ -514,6 +514,233 @@ tab_tree->close(_("Waterfall"));
 tab_tree->close(_("Web"));}
           xywh {95 353 105 22}
         }
+      }
+    }
+    Fl_Group {} {
+      label {Call/Lookup}
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Call/Lookup"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Call/Lookup"));}
+    } {
+      Fl_Group {} {
+        label {Web Browser lookup} open
+        xywh {208 24 585 131} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Round_Button btnQRZWEBnotavailable {
+          label None
+          callback {set_qrzweb_buttons(o);
+progdefaults.QRZWEB = QRZWEBNONE;
+progdefaults.changed = true;}
+          tooltip {Do not use callsign lookup via web browser} xywh {248 43 61 20} down_box DOWN_BOX value 1
+          code0 {o->value(progdefaults.QRZWEB == QRZWEBNONE);}
+        }
+        Fl_Round_Button btnQRZonline {
+          label {QRZ on line}
+          callback {set_qrzweb_buttons(o);
+progdefaults.QRZWEB = QRZHTML;
+progdefaults.changed = true;}
+          tooltip {Visit QRZ web site} xywh {248 63 83 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.QRZWEB == QRZHTML);}
+        }
+        Fl_Round_Button btnHAMCALLonline {
+          label {HamCall online}
+          callback {set_qrzweb_buttons(o);
+progdefaults.QRZWEB = HAMCALLHTML;
+progdefaults.changed = true;}
+          tooltip {Visit Hamcall web site} xywh {248 84 83 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.QRZWEB == HAMCALLHTML);}
+        }
+        Fl_Round_Button btnHamQTHonline {
+          label {HamQTH online}
+          callback {set_qrzweb_buttons(o);
+progdefaults.QRZWEB = HAMQTHHTML;
+progdefaults.changed = true;}
+          tooltip {Visit hamQTH web site} xywh {248 105 20 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.QRZWEB == HAMQTHHTML);}
+        }
+        Fl_Round_Button btnCallookOnline {
+          label {Callook online}
+          callback {set_qrzweb_buttons(o);
+progdefaults.QRZWEB = CALLOOKHTML;
+progdefaults.changed = true;}
+          tooltip {Visit hamQTH web site} xywh {248 126 20 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.QRZWEB == CALLOOKHTML);}
+        }
+        Fl_Input inp_qrzurl {
+          label QRZ
+          callback {progdefaults.qrzurl = o->value();
+progdefaults.changed=true;}
+          xywh {502 37 270 22}
+          code0 {o->value(progdefaults.qrzurl.c_str());}
+          class Fl_Input2
+        }
+        Fl_Input inp_hamcallurl {
+          label Hamcall
+          callback {progdefaults.hamcallurl = o->value();
+progdefaults.changed = true;}
+          xywh {502 64 270 22}
+          code0 {o->value(progdefaults.hamcallurl.c_str());}
+          class Fl_Input2
+        }
+        Fl_Input inp_hamqthurl {
+          label HamQTH
+          callback {progdefaults.hamqthurl = o->value();
+progdefaults.changed = true;}
+          xywh {502 92 270 22}
+          code0 {o->value(progdefaults.hamqthurl.c_str());}
+          class Fl_Input2
+        }
+        Fl_Input inp_callook_url {
+          label Callook
+          callback {progdefaults.callookurl = o->value();
+progdefaults.changed = true;}
+          tooltip {Callook.info web site} xywh {502 121 270 22}
+          code0 {o->value(progdefaults.callookurl.c_str());}
+          class Fl_Input2
+        }
+      }
+      Fl_Group {} {
+        label {Data base lookup} open
+        xywh {208 156 585 185} box ENGRAVED_FRAME align 21
+      } {
+        Fl_Round_Button btnQRZXMLnotavailable {
+          label None
+          callback {set_qrzxml_buttons(o);
+progdefaults.QRZXML = QRZXMLNONE;
+progdefaults.changed = true;}
+          tooltip {Do not use callsign database} xywh {255 179 69 20} down_box DOWN_BOX value 1
+          code0 {o->value(progdefaults.QRZXML == QRZXMLNONE);}
+        }
+        Fl_Round_Button btnQRZcdrom {
+          label {QRZ cdrom}
+          callback {set_qrzxml_buttons(o);
+progdefaults.QRZXML = QRZCD;
+progdefaults.changed = true;}
+          tooltip {Use CD or hard drive CD image} xywh {255 205 76 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.QRZXML == QRZCD);}
+        }
+        Fl_Round_Button btnQRZsub {
+          label {QRZ.com}
+          callback {set_qrzxml_buttons(o);
+progdefaults.QRZXML = QRZNET;
+progdefaults.changed = true;}
+          tooltip {You need a paid QRZ online
+subscription to access} xywh {255 231 137 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.QRZXML == QRZNET);}
+        }
+        Fl_Round_Button btnHamcall {
+          label {Hamcall.net}
+          callback {set_qrzxml_buttons(o);
+progdefaults.QRZXML = HAMCALLNET;
+progdefaults.changed = true;}
+          tooltip {You need a paid Hamcall online
+subscription to access} xywh {255 258 137 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.QRZXML == HAMCALLNET);}
+        }
+        Fl_Round_Button btnHamQTH {
+          label {HamQTH.com}
+          callback {set_qrzxml_buttons(o);
+progdefaults.QRZXML = HAMQTH;
+progdefaults.changed = true;}
+          tooltip {Free service courtesy of OK} xywh {255 284 137 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.QRZXML == HAMQTH);}
+        }
+        Fl_Round_Button btnCALLOOK {
+          label {Callook.info}
+          callback {set_qrzxml_buttons(o);
+progdefaults.QRZXML = CALLOOK;
+progdefaults.changed = true;}
+          tooltip {Callook.info lookup (free service US callsigns only)} xywh {255 311 113 20} down_box DOWN_BOX
+          code0 {o->value(progdefaults.QRZXML == CALLOOK);}
+        }
+        Fl_Input txtQRZpathname {
+          callback {progdefaults.QRZpathname = o->value();
+progdefaults.QRZchanged = true;
+progdefaults.changed = true;}
+          tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/
+Leave blank to search for database} xywh {372 204 401 22}
+          code0 {o->value(progdefaults.QRZpathname.c_str());}
+          code1 {txtQRZpathname->labelsize(FL_NORMAL_SIZE);}
+          class Fl_Input2
+        }
+        Fl_Input inpQRZusername {
+          label {User name}
+          callback {progdefaults.QRZusername = o->value();
+progdefaults.changed = true;}
+          tooltip {Login name for QRZ / Hamcall / HamQTH} xywh {482 230 163 22}
+          code0 {o->value(progdefaults.QRZusername.c_str());}
+          code1 {inpQRZusername->labelsize(FL_NORMAL_SIZE);}
+          class Fl_Input2
+        }
+        Fl_Input inpQRZuserpassword {
+          label Password
+          callback {progdefaults.QRZuserpassword = o->value();
+progdefaults.changed = true;}
+          tooltip {Password for QRZ / Hamcall / HamQTH} xywh {482 257 163 22}
+          code0 {o->value(progdefaults.QRZuserpassword.c_str());}
+          code1 {o->type(FL_SECRET_INPUT);}
+          code2 {inpQRZuserpassword->labelsize(FL_NORMAL_SIZE);}
+          class Fl_Input2
+        }
+        Fl_Button btnQRZpasswordShow {
+          label Show
+          callback {inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
+inpQRZuserpassword->redraw();
+o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
+          tooltip {Show password in plain text} xywh {657 257 76 22}
+        }
+        Fl_Group {} {open
+          xywh {377 307 403 27} box ENGRAVED_FRAME
+        } {
+          Fl_Check_Button btn_notes_address {
+            label {Add address to notes field}
+            callback {progdefaults.notes_address = o->value();
+progdefaults.changed = true;}
+            xywh {401 313 207 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.notes_address);}
+          }
+          Fl_Check_Button btn_clear_notes {
+            label {clear old data}
+            callback {progdefaults.clear_notes = o->value();
+progdefaults.changed= true;}
+            xywh {628 313 122 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.clear_notes);}
+          }
+        }
+      }
+    }
+    Fl_Group {} {
+      label {Call/cty.dat} selected
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Call/Cty.dat"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Call/Cty.dat"));}
+      code3 {tab_tree->close(_("Call"));}
+    } {
+      Fl_Input txt_cty_dat_pathname {
+        label {cty.dat folder}
+        callback {progdefaults.cty_dat_pathname = o->value();
+progdefaults.changed = true;}
+        tooltip {Enter full path-name for cty.dat folder} xywh {330 56 346 24} when 1
+        code0 {o->value(progdefaults.cty_dat_pathname.c_str());}
+        code1 {\#include "dxcc.h"}
+        class Fl_Input2
+      }
+      Fl_Button btn_select_cty_dat {
+        label Browse
+        callback {select_cty_dat_pathname();}
+        tooltip {Locate cty.dat file} xywh {235 101 75 24}
+      }
+      Fl_Button btn_default_cty_dat {
+        label Default
+        callback {default_cty_dat_pathname();}
+        tooltip {Restore cty.dat default folder} xywh {330 101 75 24}
+      }
+      Fl_Button btn_reload_cty_dat {
+        label Reload
+        callback {reload_cty_dat();}
+        tooltip {Reload cty.dat} xywh {425 101 75 24}
       }
     }
     Fl_Group {} {
@@ -1734,7 +1961,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Colors-Fonts/Signal Level} open
+      label {Colors-Fonts/Signal Level}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Signal Level"));}
       code1 {config_pages.push_back(p);}
@@ -2605,200 +2832,6 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Logging/Call Lookup}
-      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
-      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/Call Lookup"));}
-      code1 {config_pages.push_back(p);}
-      code2 {tab_tree->add(_("Logging/Call Lookup"));}
-    } {
-      Fl_Group {} {
-        label {Web Browser lookup} open
-        xywh {208 24 585 131} box ENGRAVED_FRAME align 21
-      } {
-        Fl_Round_Button btnQRZWEBnotavailable {
-          label None
-          callback {set_qrzweb_buttons(o);
-progdefaults.QRZWEB = QRZWEBNONE;
-progdefaults.changed = true;}
-          tooltip {Do not use callsign lookup via web browser} xywh {248 43 61 20} down_box DOWN_BOX value 1
-          code0 {o->value(progdefaults.QRZWEB == QRZWEBNONE);}
-        }
-        Fl_Round_Button btnQRZonline {
-          label {QRZ on line}
-          callback {set_qrzweb_buttons(o);
-progdefaults.QRZWEB = QRZHTML;
-progdefaults.changed = true;}
-          tooltip {Visit QRZ web site} xywh {248 63 83 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.QRZWEB == QRZHTML);}
-        }
-        Fl_Round_Button btnHAMCALLonline {
-          label {HamCall online}
-          callback {set_qrzweb_buttons(o);
-progdefaults.QRZWEB = HAMCALLHTML;
-progdefaults.changed = true;}
-          tooltip {Visit Hamcall web site} xywh {248 84 83 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.QRZWEB == HAMCALLHTML);}
-        }
-        Fl_Round_Button btnHamQTHonline {
-          label {HamQTH online}
-          callback {set_qrzweb_buttons(o);
-progdefaults.QRZWEB = HAMQTHHTML;
-progdefaults.changed = true;}
-          tooltip {Visit hamQTH web site} xywh {248 105 20 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.QRZWEB == HAMQTHHTML);}
-        }
-        Fl_Round_Button btnCallookOnline {
-          label {Callook online}
-          callback {set_qrzweb_buttons(o);
-progdefaults.QRZWEB = CALLOOKHTML;
-progdefaults.changed = true;}
-          tooltip {Visit hamQTH web site} xywh {248 126 20 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.QRZWEB == CALLOOKHTML);}
-        }
-        Fl_Input inp_qrzurl {
-          label QRZ
-          callback {progdefaults.qrzurl = o->value();
-progdefaults.changed=true;}
-          xywh {502 37 270 22}
-          code0 {o->value(progdefaults.qrzurl.c_str());}
-          class Fl_Input2
-        }
-        Fl_Input inp_hamcallurl {
-          label Hamcall
-          callback {progdefaults.hamcallurl = o->value();
-progdefaults.changed = true;}
-          xywh {502 64 270 22}
-          code0 {o->value(progdefaults.hamcallurl.c_str());}
-          class Fl_Input2
-        }
-        Fl_Input inp_hamqthurl {
-          label HamQTH
-          callback {progdefaults.hamqthurl = o->value();
-progdefaults.changed = true;}
-          xywh {502 92 270 22}
-          code0 {o->value(progdefaults.hamqthurl.c_str());}
-          class Fl_Input2
-        }
-        Fl_Input inp_callook_url {
-          label Callook
-          callback {progdefaults.callookurl = o->value();
-progdefaults.changed = true;}
-          tooltip {Callook.info web site} xywh {502 121 270 22}
-          code0 {o->value(progdefaults.callookurl.c_str());}
-          class Fl_Input2
-        }
-      }
-      Fl_Group {} {
-        label {Data base lookup} open
-        xywh {208 156 585 185} box ENGRAVED_FRAME align 21
-      } {
-        Fl_Round_Button btnQRZXMLnotavailable {
-          label None
-          callback {set_qrzxml_buttons(o);
-progdefaults.QRZXML = QRZXMLNONE;
-progdefaults.changed = true;}
-          tooltip {Do not use callsign database} xywh {255 179 69 20} down_box DOWN_BOX value 1
-          code0 {o->value(progdefaults.QRZXML == QRZXMLNONE);}
-        }
-        Fl_Round_Button btnQRZcdrom {
-          label {QRZ cdrom}
-          callback {set_qrzxml_buttons(o);
-progdefaults.QRZXML = QRZCD;
-progdefaults.changed = true;}
-          tooltip {Use CD or hard drive CD image} xywh {255 205 76 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.QRZXML == QRZCD);}
-        }
-        Fl_Round_Button btnQRZsub {
-          label {QRZ.com}
-          callback {set_qrzxml_buttons(o);
-progdefaults.QRZXML = QRZNET;
-progdefaults.changed = true;}
-          tooltip {You need a paid QRZ online
-subscription to access} xywh {255 231 137 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.QRZXML == QRZNET);}
-        }
-        Fl_Round_Button btnHamcall {
-          label {Hamcall.net}
-          callback {set_qrzxml_buttons(o);
-progdefaults.QRZXML = HAMCALLNET;
-progdefaults.changed = true;}
-          tooltip {You need a paid Hamcall online
-subscription to access} xywh {255 258 137 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.QRZXML == HAMCALLNET);}
-        }
-        Fl_Round_Button btnHamQTH {
-          label {HamQTH.com}
-          callback {set_qrzxml_buttons(o);
-progdefaults.QRZXML = HAMQTH;
-progdefaults.changed = true;}
-          tooltip {Free service courtesy of OK} xywh {255 284 137 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.QRZXML == HAMQTH);}
-        }
-        Fl_Round_Button btnCALLOOK {
-          label {Callook.info}
-          callback {set_qrzxml_buttons(o);
-progdefaults.QRZXML = CALLOOK;
-progdefaults.changed = true;}
-          tooltip {Callook.info lookup (free service US callsigns only)} xywh {255 311 113 20} down_box DOWN_BOX
-          code0 {o->value(progdefaults.QRZXML == CALLOOK);}
-        }
-        Fl_Input txtQRZpathname {
-          callback {progdefaults.QRZpathname = o->value();
-progdefaults.QRZchanged = true;
-progdefaults.changed = true;}
-          tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/
-Leave blank to search for database} xywh {372 204 401 22}
-          code0 {o->value(progdefaults.QRZpathname.c_str());}
-          code1 {txtQRZpathname->labelsize(FL_NORMAL_SIZE);}
-          class Fl_Input2
-        }
-        Fl_Input inpQRZusername {
-          label {User name}
-          callback {progdefaults.QRZusername = o->value();
-progdefaults.changed = true;}
-          tooltip {Login name for QRZ / Hamcall / HamQTH} xywh {482 230 163 22}
-          code0 {o->value(progdefaults.QRZusername.c_str());}
-          code1 {inpQRZusername->labelsize(FL_NORMAL_SIZE);}
-          class Fl_Input2
-        }
-        Fl_Input inpQRZuserpassword {
-          label Password
-          callback {progdefaults.QRZuserpassword = o->value();
-progdefaults.changed = true;}
-          tooltip {Password for QRZ / Hamcall / HamQTH} xywh {482 257 163 22}
-          code0 {o->value(progdefaults.QRZuserpassword.c_str());}
-          code1 {o->type(FL_SECRET_INPUT);}
-          code2 {inpQRZuserpassword->labelsize(FL_NORMAL_SIZE);}
-          class Fl_Input2
-        }
-        Fl_Button btnQRZpasswordShow {
-          label Show
-          callback {inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
-inpQRZuserpassword->redraw();
-o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
-          tooltip {Show password in plain text} xywh {657 257 76 22}
-        }
-        Fl_Group {} {open
-          xywh {377 307 403 27} box ENGRAVED_FRAME
-        } {
-          Fl_Check_Button btn_notes_address {
-            label {Add address to notes field}
-            callback {progdefaults.notes_address = o->value();
-progdefaults.changed = true;}
-            xywh {401 313 207 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.notes_address);}
-          }
-          Fl_Check_Button btn_clear_notes {
-            label {clear old data}
-            callback {progdefaults.clear_notes = o->value();
-progdefaults.changed= true;}
-            xywh {628 313 122 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.clear_notes);}
-          }
-        }
-      }
-    }
-    Fl_Group {} {
       label {Logging/eQSL}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/eQSL"));}
@@ -3044,7 +3077,7 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
       }
     }
     Fl_Group {} {
-      label {Logging/QSO logging} open
+      label {Logging/QSO logging}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/QSO logging"));}
       code1 {config_pages.push_back(p);}
@@ -3109,35 +3142,11 @@ progdefaults.changed = true;}
         tooltip {Clear log controls sets RST out to 599/59} xywh {508 151 216 20} down_box DOWN_BOX
         code0 {o->value(progdefaults.RSTdefault);}
       }
-      Fl_Input txt_cty_dat_pathname {
-        label {cty.dat folder}
-        callback {progdefaults.cty_dat_pathname = o->value();
-progdefaults.changed = true;}
-        tooltip {Enter full path-name for cty.dat folder} xywh {375 212 346 24} when 1
-        code0 {o->value(progdefaults.cty_dat_pathname.c_str());}
-        code1 {\#include "dxcc.h"}
-        class Fl_Input2
-      }
-      Fl_Button btn_select_cty_dat {
-        label Browse
-        callback {select_cty_dat_pathname();}
-        tooltip {Locate cty.dat file} xywh {256 241 75 24}
-      }
-      Fl_Button btn_default_cty_dat {
-        label Default
-        callback {default_cty_dat_pathname();}
-        tooltip {Restore cty.dat default folder} xywh {351 241 75 24}
-      }
-      Fl_Button btn_reload_cty_dat {
-        label Reload
-        callback {reload_cty_dat();}
-        tooltip {Reload cty.dat} xywh {446 241 75 24}
-      }
       Fl_Input inpMyPower {
         label {Transmit Power}
         callback {progdefaults.mytxpower = o->value();
 progdefaults.changed = true;}
-        tooltip {Tx power used for logbook entries} xywh {368 286 50 24}
+        tooltip {Tx power used for logbook entries} xywh {368 219 50 24}
         code0 {o->value(progdefaults.mytxpower.c_str());}
         code1 {o->labelsize(FL_NORMAL_SIZE);}
         class Fl_Input2
@@ -3153,12 +3162,12 @@ progdefaults.changed = true;}
         label {Log power meter }
         callback {progdefaults.log_power_meter=o->value();
 progdefaults.changed = true;}
-        tooltip {Bug me about saving log entries} xywh {444 288 155 20} down_box DOWN_BOX value 1
+        tooltip {Bug me about saving log entries} xywh {444 221 155 20} down_box DOWN_BOX value 1
         code0 {o->value(progdefaults.log_power_meter);}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/General} open
+      label {Modem/CW/General}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/General"));}
       code1 {config_pages.push_back(p);}
@@ -3469,7 +3478,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Modem/CW/Prosigns} open
+      label {Modem/CW/Prosigns}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Prosigns"));}
       code1 {config_pages.push_back(p);}
@@ -3883,7 +3892,7 @@ for information regarding extended Morse characters.} open
       }
     }
     Fl_Group {} {
-      label {Punctuation/Noise Processing} open selected
+      label {Punctuation/Noise Processing}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Modem/CW/Punctuation-Noise"));}
       code1 {config_pages.push_back(p);}
@@ -10505,7 +10514,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Signal Level} open
+      label {Signal Level}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Soundcard/Signal Level"));}
       code1 {config_pages.push_back(p);}
