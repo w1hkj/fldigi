@@ -1,6 +1,71 @@
+2023-02-12  dave-w1hkj  <w1hkj@bellsouth.net>
+
+	371aa67ea: Version 4.1.24/4.3.9
+	cf7a3b7e4: CTY.dat
+	b1277e41c: cwio speed
+
+2023-01-29  Black Michael  <mdblack98@yahoo.com>
+
+	b4e892322: FreqControl / fltk-1.4
+
+2023-01-29  Dave Tillman  <blennie96@verizon.net>
+
+	d5dfca492: N3FJP Control Interface Fix
+	7ffca81f1: Resolve Compiler Warnings
+
+2023-01-29  dave-w1hkj  <w1hkj@bellsouth.net>
+
+	cc5d612d6: CW quote character
+	67e8b3376: FC update
+	758053b12: UI Freq Control / N3FJP Interface
+	2bec5f7db: PO files update
+
+2023-01-17  Harry G McGavran Jr  <w5pny@w5pny.com>
+
+	cff342e9a: Window Icon Transparency
+
+2023-01-16  dave-w1hkj  <w1hkj@bellsouth.net>
+
+	4c07ac309: Autotools/gettext update
+	19378f133: Fix MinGW warnings
+
+2023-01-11  Matt Melling  <mattmelling@fastmail.com>
+
+	e412699f9: Raster widget width
+
+2023-01-10  Dave Tillman  <blennie96@verizon.net>
+
+	cc25b03f3: N3FJP Control Interface
+
+2023-01-08  dave-w1hkj  <w1hkj@bellsouth.net>
+
+	9235b96a1: vumeter
+	d1048fc68: FSQ QTC/QTH buttons
+	9fefd778f: monitor audio
+	63718ac8a: DTR/RTS CW signaling
+	4ac6d7c0b: <LDT> macro tag
+	5d026359e: HTML5 escape sequence
+	25752e0ce: Mode State
+	5c8b53e9d: rtty squelch
+	192a36393: Audio Filter
+	821c5c102: Macro Editor modal state
+	43bba9dd0: K4 qrq CW
+	ed11b0ce5: Sans Portaudio
+
+2022-11-29  Dave Tillman  <blennie96@verizon.net>
+
+	14626de67: Resolve Compiler Warnings
+	813344e9f: UI Freq Control / N3FJP Interface
+	0a11155cc: UI - Frequency Control refinements
+	123a7e360: User Interface - Combobox fixes
+	33e9da4a5: Fixed County combo box crash to desktop
+	1018ba12c: Fixed 30 meter CW shortcut in frequencies2.txt
+	6bcbce8d8: Fixed grid locator spec in pskreporter query
+	b59616267: Activity Query Fix
+
 2022-06-23  dave-w1hkj  <w1hkj@bellsouth.net>
 
-	19c12f097: Version 4.1.23
+	61b97f413: Version 4.1.23
 	ce88da596: Deprecated code
 	5dd676f6b: Correct errors caused by commit 9c035e809b
 	4213bfaec: xmlrpc notch
@@ -3284,7 +3349,7 @@
 
 2009-05-05  David Freese  <w1hkj@w1hkj.com>
 
-	b4112dedc: Added <RSID:on|off|t>, <AFC:on:off|t> macro tags
+	b4112dedc: Added <RSID:on
 	5a3132e5d: Version 3.12AE
 	7ae826f67: RTTY pseudo output, corrected stop bit inversion
 
@@ -3744,7 +3809,7 @@
 	98e63fc54: Modifed search routines for psk viewer
 	2712de8ba: QRZ callback modification
 	9728d0d86: Add fixed field text report generator for logbook
-	b51ef6c3f: Add .,;| to white space characters for word capture in Rx pane
+	b51ef6c3f: Add .,;
 	5d305c971: Macro tag changes
 	5af4ad7e0: Logbook field transfer
 	bd3a8a292: Logbook file open/close changes
@@ -4322,7 +4387,7 @@
 	a60ca6ed9: Merge with upstream
 	c836b738c: Upstream version 2.09F
 	4c06b8317: Merge with upstream
-	c57b41130: Add regex support Add a beep button. Insert "@." when resizing Set inpSeek to constant width font Extend character range to include { | } ~
+	c57b41130: Add regex support Add a beep button. Insert "@." when resizing Set inpSeek to constant width font Extend character range to include { 
 	ad9f2d6a3: sprintf considered harmful Also fix a bug in putadif() where strings longer than the max field size would be truncated to one less than that size. Add a configure-time check for snprintf and vsnprintf because flstring.h looks for HAVE_SNPRINTF and HAVE_VSNPRINTF
 	c40dccc5b: Upstream version 2.09E
 	58839a1a4: Adjust PSK Viewer colours Also set window class and insert end-of-formatting char
