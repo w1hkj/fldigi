@@ -221,6 +221,11 @@ LOG_VERBOSE("get_ptt: %s", ptt_state ? "ON" : "OFF");
 	} catch (...) {}
 }
 
+void updateWPM(void *)
+{
+	set_CWwpm();
+}
+
 void flrig_get_wpm()
 {
 	if (!connected_to_flrig) {
@@ -237,7 +242,7 @@ void flrig_get_wpm()
 			int val = (int)result;
 			progdefaults.CWspeed = val;
 LOG_VERBOSE("rig.cwio_get_wpm = %d", val);
-			REQ(set_CWwpm);
+			Fl::awake(updateWPM);
 			return;
 		}
 		connected_to_flrig = false;
