@@ -1,6 +1,8 @@
-2023-02-12  dave-w1hkj  <w1hkj@bellsouth.net>
+2023-02-15  dave-w1hkj  <w1hkj@bellsouth.net>
 
-	371aa67ea: Version 4.1.24/4.3.9
+	5cee85fc9: Version 4.1.25
+	ee6a614ad: Fix Windows seg fault
+	9e15ddd3e: Version 4.1.24/4.3.9
 	cf7a3b7e4: CTY.dat
 	b1277e41c: cwio speed
 
