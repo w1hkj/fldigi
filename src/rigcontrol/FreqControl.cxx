@@ -419,7 +419,8 @@ int cFreqControl::handle(int event)
 	//		std::cerr << this << " The focus widget tooltip: " << (Fl::focus()->tooltip() ? Fl::focus()->tooltip() : "no tooltip") << std::endl;
 	//	}
 
-	if (event == FL_LEAVE && !numeric_entry_mode()) {//colors_reversed) {
+	if (event == FL_LEAVE && !numeric_entry_mode() && this->contains(Fl::focus())) {
+		// not in numeric entry and either the FC or one of its children has focus)	
 		Fl::focus((Fl_Widget*)Fl::first_window());
 		return 1;
 	}
