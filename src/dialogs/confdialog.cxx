@@ -710,8 +710,10 @@ static void cb_btn_freq_control_font(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.FreqControlFontnbr);
     font_browser->fontSize(14);
     font_browser->fontColor(FL_FOREGROUND_COLOR);
-    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
-    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    if (font_browser->fixed_width(progdefaults.FreqControlFontnbr))
+    	font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+    else
+	font_browser->fontFilter(Font_Browser::ALL_TYPES);
     font_browser->callback(cbFreqControlFontBrowser);
 font_browser->show();
 }
@@ -1062,10 +1064,13 @@ Fl_Button *btnMacroBtnFont=(Fl_Button *)0;
 
 static void cb_btnMacroBtnFont(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.MacroBtnFontnbr);
-    font_browser->fontSize(progdefaults.MacroBtnFontsize);
-    font_browser->fontColor(progdefaults.MacroBtnFontcolor);
+font_browser->fontSize(progdefaults.MacroBtnFontsize);
+font_browser->fontColor(progdefaults.MacroBtnFontcolor);
+if (font_browser->fixed_width(progdefaults.MacroBtnFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
-    font_browser->callback(cbMacroBtnFontBrowser);
+font_browser->callback(cbMacroBtnFontBrowser);
 font_browser->show();
 }
 
@@ -1096,7 +1101,10 @@ static void cb_btn_LOGGING_font(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.LOGGINGtextfont);
 font_browser->fontSize(progdefaults.LOGGINGtextsize);
 font_browser->fontColor(progdefaults.LOGGINGtextcolor);
-font_browser->fontFilter(Font_Browser::ALL_TYPES);
+if (font_browser->fixed_width(progdefaults.LOGGINGtextfont))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback(cbLOGGINGFontBrowser);
 font_browser->show();
 }
@@ -1147,7 +1155,10 @@ static void cb_btn_LOGBOOK_font(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.LOGBOOKtextfont);
 font_browser->fontSize(progdefaults.LOGBOOKtextsize);
 font_browser->fontColor(progdefaults.LOGBOOKtextcolor);
-font_browser->fontFilter(Font_Browser::ALL_TYPES);
+if (font_browser->fixed_width(progdefaults.LOGBOOKtextfont))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback(cbLOGBOOKFontBrowser);
 font_browser->show();
 }
@@ -1179,7 +1190,10 @@ static void cb_btn_DXC_font(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.DXC_textfont);
 font_browser->fontSize(progdefaults.DXC_textsize);
 font_browser->fontColor(progdefaults.DXC_textcolor);
-font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+if (font_browser->fixed_width(progdefaults.DXC_textfont))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback(cbDXC_FontBrowser);
 font_browser->show();
 }
@@ -1270,10 +1284,13 @@ Fl_Button *btnDXfont=(Fl_Button *)0;
 
 static void cb_btnDXfont(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.DXfontnbr);
-    font_browser->fontSize(progdefaults.DXfontsize);
-    font_browser->fontColor(progdefaults.DXfontcolor);
+font_browser->fontSize(progdefaults.DXfontsize);
+font_browser->fontColor(progdefaults.DXfontcolor);
+if (font_browser->fixed_width(progdefaults.DXfontnbr))
     font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
-    font_browser->callback(cbDXfont_browser);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+font_browser->callback(cbDXfont_browser);
 font_browser->show();
 }
 
@@ -1401,10 +1418,13 @@ Fl_Button *btnRxFont=(Fl_Button *)0;
 
 static void cb_btnRxFont(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.RxFontnbr);
-    font_browser->fontSize(progdefaults.RxFontsize);
-    font_browser->fontColor(progdefaults.RxFontcolor);
+font_browser->fontSize(progdefaults.RxFontsize);
+font_browser->fontColor(progdefaults.RxFontcolor);
+if (font_browser->fixed_width(progdefaults.RxFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
-    font_browser->callback(cbRxFontBrowser);
+font_browser->callback(cbRxFontBrowser);
 font_browser->show();
 }
 
@@ -1412,11 +1432,14 @@ Fl_Button *btnTxFont=(Fl_Button *)0;
 
 static void cb_btnTxFont(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.TxFontnbr);
-    font_browser->fontSize(progdefaults.TxFontsize);
-    font_browser->fontColor(progdefaults.TxFontcolor);
+font_browser->fontSize(progdefaults.TxFontsize);
+font_browser->fontColor(progdefaults.TxFontcolor);
+if (font_browser->fixed_width(progdefaults.TxFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
-    font_browser->callback(cbTxFontBrowser);
-    font_browser->show();
+font_browser->callback(cbTxFontBrowser);
+font_browser->show();
 }
 
 Fl_Input *MacroText=(Fl_Input *)0;
@@ -1426,7 +1449,10 @@ Fl_Button *btnMacroEditFont=(Fl_Button *)0;
 static void cb_btnMacroEditFont(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.MacroEditFontnbr);
 font_browser->fontSize(progdefaults.MacroEditFontsize);
-font_browser->fontFilter(Font_Browser::ALL_TYPES);
+if (font_browser->fixed_width(progdefaults.MacroEditFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback(cbMacroEditFontBrowser);
 font_browser->show();
 }
@@ -8497,7 +8523,10 @@ static void cb_btnViewerFont(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.ViewerFontnbr);
 font_browser->fontSize(progdefaults.ViewerFontsize);
 font_browser->fontColor(FL_FOREGROUND_COLOR);
-font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+if (font_browser->fixed_width(progdefaults.ViewerFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback(cbViewerFontBrowser);
 font_browser->show();
 }
@@ -9281,7 +9310,10 @@ static void cb_btnWaterfallFont(Fl_Button*, void*) {
   font_browser->fontNumber(progdefaults.WaterfallFontnbr);
 font_browser->fontSize(progdefaults.WaterfallFontsize);
 font_browser->fontColor(FL_FOREGROUND_COLOR);
-font_browser->fontFilter(Font_Browser::ALL_TYPES);
+if (font_browser->fixed_width(progdefaults.WaterfallFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback((Fl_Callback*)cbWaterfallFontBrowser);
 font_browser->show();
 }
@@ -9577,7 +9609,6 @@ static void cb_btnResetConfig(Fl_Button*, void*) {
 
 Fl_Double_Window* ConfigureDialog() {
   Fl_Double_Window* w;
-  font_browser = new Font_Browser;
   static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|850|Custom";
   static const char szBauds[]  = "45|45.45|50|56|75|100|110|150|200|300";
   static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";

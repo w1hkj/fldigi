@@ -42,22 +42,25 @@
 #include "threads.h"
 #include "debug.h"
 
+#include <time.h>
+#include <sys/time.h>
+
 void find_fonts();
 
-Font_Browser* font_browser;
+Font_Browser* font_browser = 0;
 
 int		Font_Browser::instance = 0;
-int 	*Font_Browser::fixed = 0;
 int 	Font_Browser::numfonts = 0;
 
 Font_Browser::font_pair *Font_Browser::font_pairs = 0;
 
-
 static int  font_compare(const void *p1, const void *p2)
 {
-	std::string s1 = *((const Font_Browser::font_pair *)p1)->name;
-	std::string s2 = *((const Font_Browser::font_pair *)p2)->name;
-	return strcasecmp( s1.c_str(), s2.c_str() );
+	std::string *s1 = ((const Font_Browser::font_pair *)p1)->name;
+	std::string *s2 = ((const Font_Browser::font_pair *)p2)->name;
+	size_t c1 = s1->find("@.");
+	size_t c2 = s2->find("@.");
+	return strcasecmp( &(*s1)[c1+2], &(*s2)[c2+2] );
 }
 
 // Font Color selected
@@ -77,28 +80,22 @@ void Font_Browser::fb_callback(Fl_Widget* w, void* arg)
 {
 	Font_Browser* fb = reinterpret_cast<Font_Browser*>(arg);
 
-	if (w == fb->btn_fixed) {
+	if (w == fb->btn_Cancel)
+		fb->hide();
+	else if (w == fb->btn_fixed) {
 		if (fb->btn_fixed->value())
 			fb->fontFilter(FIXED_WIDTH);
 		else
 			fb->fontFilter(ALL_TYPES);
-		return;
 	}
-
-	if (w == fb->btn_Cancel)
-	fb->hide();
-
 	else if (w == fb->btn_OK) {
 		if (fb->callback_)
 			(*fb->callback_)(fb, fb->data_);
 	}
-
 	else if (w == fb->btn_Color)
-	fb->ColorSelect();
-
+		fb->ColorSelect();
 	else if (w == fb->lst_Font)
-	fb->FontNameSelect();
-
+		fb->FontNameSelect();
 	else {
 		if (w == fb->lst_Size)
 			fb->txt_Size->value(strtol(fb->lst_Size->text(fb->lst_Size->value()), NULL, 10));
@@ -135,6 +132,10 @@ void Font_Browser::FontNameSelect()
 	}
 	fontSize(fontsize);
 }
+
+static long long usec;
+static long long sec;
+static double fsec;
 
 Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
 	 : Fl_Window(x, y, w, h, lbl)
@@ -190,34 +191,31 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ\n\
 	this->callback_ = 0;  // Initialize Widgets callback
 	this->data_ = 0;      // And the data
 
-	std::string fntname;
-	bool ok = true;
-
 	if (instance == 0) {
-
-		++instance;
 
 		numfonts =   Fl::set_fonts(0); // Nr of fonts available on the server
 		font_pairs = new font_pair[numfonts];
-		fixed = new int[numfonts];
 
 		int j = 0;
+		std::string fontname = "";
+		int t;
+
 		for (int i = 0; i < numfonts; i++) {
-			fntname = Fl::get_font_name((Fl_Font)i);
-			ok = true;
-			for (size_t k = 0; k < fntname.length(); k++) {
-				if (fntname[k] < ' '   || fntname[k] > 'z' ||
-					fntname[k] == '\\' || fntname[k] == '@') { // disallowed chars in browser widget
-					ok = false;
-					break;
+			fontname = Fl::get_font_name((Fl_Font)i, &t);
+
+			if ( fontname.find("Noto Color Emoji") != std::string::npos )
+				continue;
+
+			if (fontname.length() && isprint(fontname[0])) {
+				// Suppress subsequent formatting - some MS fonts have '@' in their name
+				fontname.insert(0, "@.");
+				if (t) {
+					if (t & FL_BOLD) fontname.insert(0, "@b");
+					if (t & FL_ITALIC) fontname.insert(0, "@i");
 				}
-			}
-			if (fntname.empty()) ok = false;
-			if (ok) {
-				font_pairs[j].name = new std::string;
-				*(font_pairs[j].name) = fntname;
 				font_pairs[j].nbr = i;
-				j++;
+				font_pairs[j].name = new std::string(fontname);
+				++j;
 			}
 		}
 
@@ -225,25 +223,19 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ\n\
 
 		qsort(&font_pairs[0], numfonts, sizeof(font_pair), font_compare);
 
-		for (int i = 0; i < numfonts; i++) {
-			lst_Font->add((*(font_pairs[i].name)).c_str(), reinterpret_cast<void *>(font_pairs[i].nbr));
-			fixed[i] = 0;
-		}
 		find_fonts();
-	} else {
-		++instance;
-		for (int i = 0; i < numfonts; i++) {
-			lst_Font->add((*(font_pairs[i].name)).c_str(), reinterpret_cast<void *>(font_pairs[i].nbr));
-		}
+
 	}
 
-	fontnbr = FL_HELVETICA;;
-	fontsize = FL_NORMAL_SIZE;
+	++instance;
+	for (int i = 0; i < numfonts; i++)
+		lst_Font->add((*(font_pairs[i].name)).c_str(), reinterpret_cast<void *>(font_pairs[i].nbr));
+
 	fontcolor = FL_FOREGROUND_COLOR;
 	filter = ALL_TYPES;
 
-	lst_Font->value(1);
-	FontNameSelect();
+	fontNumber(FL_HELVETICA);
+	box_Example->SetFont(fontnbr, fontsize, fontcolor);
 
 	xclass(PACKAGE_NAME);
 }
@@ -252,8 +244,6 @@ Font_Browser::~Font_Browser()
 {
 	--instance;
 	if (instance == 0) {
-		delete [] fixed;
-		fixed = 0;
 		delete [] font_pairs;
 		font_pairs = 0;
 	}
@@ -267,6 +257,7 @@ void Font_Browser::fontNumber(Fl_Font n)
 	for (int i = 1; i < s; i++ ) {
 		if ((Fl_Font)reinterpret_cast<intptr_t>(lst_Font->data(i)) == n) {
 			lst_Font->value(i);
+			lst_Font->display(i);
 			FontNameSelect();
 			break;
 		}
@@ -306,86 +297,40 @@ void Font_Browser::fontName(const char* n)
 
 void Font_Browser::fontFilter(filter_t filter)
 {
-	int s = lst_Font->size();
+	int sel = lst_Font->value();
 
 	switch (filter) {
-	case FIXED_WIDTH:
-		for (int i = 0; i < s; i++) {
-			if (fixed[i])
-				lst_Font->show(i + 1);
-			else
-				lst_Font->hide(i + 1);
-		}
-		btn_fixed->value(1);
-		break;
-	case VARIABLE_WIDTH:
-		for (int i = 0; i < s; i++) {
-			if (!fixed[i])
-				lst_Font->show(i + 1);
-			else
-				lst_Font->hide(i + 1);
-		}
-		btn_fixed->value(0);
-		break;
-	case ALL_TYPES:
-		for (int i = 0; i < s; i++)
-			lst_Font->show(i + 1);
-		btn_fixed->value(0);
-		break;
+		case FIXED_WIDTH:
+			for (int i = 0; i < numfonts; i++) {
+				if (font_pairs[i].fixed)
+					lst_Font->show(i + 1);
+				else
+					lst_Font->hide(i + 1);
+			}
+			btn_fixed->value(1);
+			btn_fixed->redraw();
+			break;
+		case VARIABLE_WIDTH:
+			for (int i = 0; i < numfonts; i++) {
+				if (!font_pairs[i].fixed)
+					lst_Font->show(i + 1);
+				else
+					lst_Font->hide(i + 1);
+			}
+			btn_fixed->value(0);
+			btn_fixed->redraw();
+			break;
+		case ALL_TYPES:
+		default:
+			for (int i = 0; i < numfonts; i++)
+				lst_Font->show(i+1);
+			btn_fixed->value(0);
+			btn_fixed->redraw();
+			break;
 	}
 	lst_Font->redraw();
-	lst_Font->topline(lst_Font->value());
-}
-
-// separate thread used to evaluate fixed / proportional fonts
-// friend of Font_Browser
-// launched by Font_Browser instance 1
-
-static pthread_t find_font_thread;
-
-//#define FBDEBUG 1
-
-static int is_fixed;
-Fl_Font test_font;
-void font_test(void *)
-{
-	fl_font(test_font, FL_NORMAL_SIZE);
-	is_fixed = (fl_width(".") == fl_width("W"));
-}
-
-void *find_fixed_fonts(void *)
-{
-#ifdef FBDEBUG
-	FILE *sys_fonts = fopen("fonts.txt", "w");
-	fprintf(sys_fonts, "Font #, Type, Name\n");
-#endif
-	for (int i = 0; i < Font_Browser::numfonts; i++) {
-		test_font = Font_Browser::font_pairs[i].nbr;
-		is_fixed = -1;
-		Fl::awake(font_test);
-		while (is_fixed == -1) MilliSleep(10);
-		Font_Browser::fixed[i] = is_fixed;
-#ifdef FBDEBUG
-		fprintf(
-			sys_fonts,
-			"%d, %c, %s\n",
-			Font_Browser::font_pairs[i].nbr,
-			Font_Browser::fixed[i] ? 'F' : 'P',
-			(*(Font_Browser::font_pairs[i].name)).c_str());
-#endif
-	}
-#ifdef FBDEBUG
-		fclose(sys_fonts);
-#endif
-	return NULL;
-}
-
-void find_fonts()
-{
-	if (pthread_create(&find_font_thread, NULL, find_fixed_fonts, NULL) < 0) {
-		LOG_ERROR("%s", "pthread_create find_fixed_fonts failed");
-	}
-	return;
+	lst_Font->make_visible(sel);
+	box_Example->SetFont(fontnbr, fontsize, fontcolor);
 }
 
 bool Font_Browser::fixed_width(Fl_Font f)
@@ -421,3 +366,48 @@ void Preview_Box::SetFont(int fontname, int fontsize, Fl_Color c)
 	fontColor = c;
 	redraw();
 }
+
+//======================================================================
+
+// separate thread used to evaluate fixed / proportional fonts
+// friend of Font_Browser
+// launched by Font_Browser instance 1
+
+static pthread_t find_font_thread;
+
+void *find_fixed_fonts(void *)
+{
+	timeval tv1;
+	timeval tv2;
+
+	gettimeofday(&tv1, NULL);
+	for (int i = 0; i < Font_Browser::numfonts; i++) {
+		Fl::lock();
+		fl_font( Font_Browser::font_pairs[i].nbr, FL_NORMAL_SIZE );
+		Font_Browser::font_pairs[i].fixed = (fl_width('1') == fl_width('9'));
+		Fl::unlock();
+		MilliSleep(2);  // don't steal too much time from screen redraw
+	}
+
+	gettimeofday(&tv2, NULL);
+	usec = (tv2.tv_usec - tv1.tv_usec);
+	sec = (tv2.tv_sec - tv1.tv_sec);
+	if (usec < 0) {
+		usec += 1000000;
+		--sec;
+	}
+	fsec = sec + usec / 1000000.0;
+	LOG_INFO("Evaluation of %d fonts took %0.3f seconds", Font_Browser::numfonts, fsec);
+
+	return NULL;
+}
+
+void find_fonts()
+{
+	if (pthread_create(&find_font_thread, NULL, find_fixed_fonts, NULL) < 0) {
+		LOG_ERROR("%s", "pthread_create find_fixed_fonts failed");
+	}
+	return;
+}
+
+//======================================================================

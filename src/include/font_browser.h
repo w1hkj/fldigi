@@ -49,6 +49,7 @@ private:
 	Fl_Color	fontColor;
 
 	void	draw();
+
 public:
 	Preview_Box(int x, int y, int w, int h, const char* l);
 	void SetFont( int fontname, int fontsize, Fl_Color c);
@@ -63,9 +64,11 @@ public:
 	struct font_pair {
 		int  nbr;
 		std::string *name;
+		bool fixed;
 		font_pair() {
 			nbr = 0;
 			name = 0;
+			fixed = false;
 		}
 		~font_pair() {
 			if (name) delete name;
@@ -77,7 +80,6 @@ public:
 // these are shared by all instances of Font_Browser
 // created for instance 1 and deleted for instance 0
 
-	static int			*fixed;
 	static font_pair	*font_pairs;
 	static int			instance;
 	static int			numfonts;

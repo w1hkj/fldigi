@@ -466,7 +466,6 @@ Function {createConfig()} {return_type void
 
 Function {ConfigureDialog()} {open
 } {
-  code {font_browser = new Font_Browser;} {}
   code {static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|850|Custom";
 static const char szBauds[]  = "45|45.45|50|56|75|100|110|150|200|300";
 static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";
@@ -711,7 +710,7 @@ progdefaults.changed= true;}
       }
     }
     Fl_Group {} {
-      label {Call/cty.dat} selected
+      label {Call/cty.dat}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Call/Cty.dat"));}
       code1 {config_pages.push_back(p);}
@@ -944,8 +943,10 @@ progdefaults.changed = true;}
           callback {font_browser->fontNumber(progdefaults.FreqControlFontnbr);
     font_browser->fontSize(14);
     font_browser->fontColor(FL_FOREGROUND_COLOR);
-    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
-    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    if (font_browser->fixed_width(progdefaults.FreqControlFontnbr))
+    	font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+    else
+	font_browser->fontFilter(Font_Browser::ALL_TYPES);
     font_browser->callback(cbFreqControlFontBrowser);
 font_browser->show();}
           xywh {311 106 90 24}
@@ -1310,10 +1311,13 @@ progdefaults.changed = true;}
       Fl_Button btnMacroBtnFont {
         label {Font/Color}
         callback {font_browser->fontNumber(progdefaults.MacroBtnFontnbr);
-    font_browser->fontSize(progdefaults.MacroBtnFontsize);
-    font_browser->fontColor(progdefaults.MacroBtnFontcolor);
+font_browser->fontSize(progdefaults.MacroBtnFontsize);
+font_browser->fontColor(progdefaults.MacroBtnFontcolor);
+if (font_browser->fixed_width(progdefaults.MacroBtnFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
-    font_browser->callback(cbMacroBtnFontBrowser);
+font_browser->callback(cbMacroBtnFontBrowser);
 font_browser->show();}
         xywh {509 87 90 30}
       }
@@ -1359,7 +1363,10 @@ font_browser->show();}
           callback {font_browser->fontNumber(progdefaults.LOGGINGtextfont);
 font_browser->fontSize(progdefaults.LOGGINGtextsize);
 font_browser->fontColor(progdefaults.LOGGINGtextcolor);
-font_browser->fontFilter(Font_Browser::ALL_TYPES);
+if (font_browser->fixed_width(progdefaults.LOGGINGtextfont))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback(cbLOGGINGFontBrowser);
 font_browser->show();}
           xywh {566 57 55 25}
@@ -1417,7 +1424,10 @@ progdefaults.changed = true;}
           callback {font_browser->fontNumber(progdefaults.LOGBOOKtextfont);
 font_browser->fontSize(progdefaults.LOGBOOKtextsize);
 font_browser->fontColor(progdefaults.LOGBOOKtextcolor);
-font_browser->fontFilter(Font_Browser::ALL_TYPES);
+if (font_browser->fixed_width(progdefaults.LOGBOOKtextfont))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback(cbLOGBOOKFontBrowser);
 font_browser->show();}
           xywh {565 123 55 25}
@@ -1457,7 +1467,10 @@ progdefaults.changed = true;}
           callback {font_browser->fontNumber(progdefaults.DXC_textfont);
 font_browser->fontSize(progdefaults.DXC_textsize);
 font_browser->fontColor(progdefaults.DXC_textcolor);
-font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+if (font_browser->fixed_width(progdefaults.DXC_textfont))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback(cbDXC_FontBrowser);
 font_browser->show();}
           xywh {422 203 86 25}
@@ -1550,10 +1563,13 @@ progdefaults.changed = true;}
         Fl_Button btnDXfont {
           label Font
           callback {font_browser->fontNumber(progdefaults.DXfontnbr);
-    font_browser->fontSize(progdefaults.DXfontsize);
-    font_browser->fontColor(progdefaults.DXfontcolor);
+font_browser->fontSize(progdefaults.DXfontsize);
+font_browser->fontColor(progdefaults.DXfontcolor);
+if (font_browser->fixed_width(progdefaults.DXfontnbr))
     font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
-    font_browser->callback(cbDXfont_browser);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+font_browser->callback(cbDXfont_browser);
 font_browser->show();}
           xywh {514 273 86 25}
         }
@@ -1702,21 +1718,27 @@ progdefaults.changed = true;}
       Fl_Button btnRxFont {
         label {Rx font}
         callback {font_browser->fontNumber(progdefaults.RxFontnbr);
-    font_browser->fontSize(progdefaults.RxFontsize);
-    font_browser->fontColor(progdefaults.RxFontcolor);
+font_browser->fontSize(progdefaults.RxFontsize);
+font_browser->fontColor(progdefaults.RxFontcolor);
+if (font_browser->fixed_width(progdefaults.RxFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
-    font_browser->callback(cbRxFontBrowser);
+font_browser->callback(cbRxFontBrowser);
 font_browser->show();}
         xywh {608 78 75 21}
       }
       Fl_Button btnTxFont {
         label {Tx font}
         callback {font_browser->fontNumber(progdefaults.TxFontnbr);
-    font_browser->fontSize(progdefaults.TxFontsize);
-    font_browser->fontColor(progdefaults.TxFontcolor);
+font_browser->fontSize(progdefaults.TxFontsize);
+font_browser->fontColor(progdefaults.TxFontcolor);
+if (font_browser->fixed_width(progdefaults.TxFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
-    font_browser->callback(cbTxFontBrowser);
-    font_browser->show();}
+font_browser->callback(cbTxFontBrowser);
+font_browser->show();}
         xywh {608 121 75 21}
       }
       Fl_Input MacroText {
@@ -1730,7 +1752,10 @@ font_browser->show();}
         label {Macro Edit Font}
         callback {font_browser->fontNumber(progdefaults.MacroEditFontnbr);
 font_browser->fontSize(progdefaults.MacroEditFontsize);
-font_browser->fontFilter(Font_Browser::ALL_TYPES);
+if (font_browser->fixed_width(progdefaults.MacroEditFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback(cbMacroEditFontBrowser);
 font_browser->show();}
         xywh {523 164 120 21}
@@ -1961,7 +1986,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Colors-Fonts/Signal Level}
+      label {Colors-Fonts/Signal Level} selected
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Signal Level"));}
       code1 {config_pages.push_back(p);}
@@ -10765,7 +10790,10 @@ progdefaults.changed = true;} open
         callback {font_browser->fontNumber(progdefaults.ViewerFontnbr);
 font_browser->fontSize(progdefaults.ViewerFontsize);
 font_browser->fontColor(FL_FOREGROUND_COLOR);
-font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+if (font_browser->fixed_width(progdefaults.ViewerFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback(cbViewerFontBrowser);
 font_browser->show();}
         tooltip {select browser font} xywh {563 130 70 24}
@@ -11723,7 +11751,10 @@ progdefaults.changed = true;}
           callback {font_browser->fontNumber(progdefaults.WaterfallFontnbr);
 font_browser->fontSize(progdefaults.WaterfallFontsize);
 font_browser->fontColor(FL_FOREGROUND_COLOR);
-font_browser->fontFilter(Font_Browser::ALL_TYPES);
+if (font_browser->fixed_width(progdefaults.WaterfallFontnbr))
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+else
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback((Fl_Callback*)cbWaterfallFontBrowser);
 font_browser->show();}
           tooltip {Select waterfall scale font} xywh {559 246 71 24}

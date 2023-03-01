@@ -1124,6 +1124,8 @@ int main (int argc, char *argv[])
 	Fl::set_fonts(0);
 
 	Fl::scheme(progdefaults.ui_scheme.c_str());
+
+	font_browser = new Font_Browser;
 	progdefaults.initFonts();
 
 	if (progdefaults.cty_dat_pathname.empty())
