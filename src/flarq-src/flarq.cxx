@@ -1969,12 +1969,13 @@ int main (int argc, char *argv[] )
 #ifdef USE_X
 	// See https://groups.google.com/g/fltkgeneral/c/hcjV-rgjHWM
 	// read in the current window hints, then modify them to allow icon transparency
-	Pixmap mask = -1;
+
 	XWMHints* hints = XGetWMHints(fl_display, fl_xid(arqwin));
 	hints->flags |= IconMaskHint; // ensure transparency mask is enabled for the XPM icon
-	hints->icon_mask = mask; // set the transparency mask
+	hints->icon_mask |= IconPixmapHint;
 	XSetWMHints(fl_display, fl_xid(arqwin), hints);
 	XFree(hints);
+
 #endif
 
 	return Fl::run();

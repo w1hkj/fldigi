@@ -1248,17 +1248,19 @@ int main (int argc, char *argv[])
 #ifndef __APPLE__
 	progStatus.initLastState();
 	fl_digi_main->show(argc, argv);
+
 #	ifndef __WIN32__
 	// See https://groups.google.com/g/fltkgeneral/c/hcjV-rgjHWM
 	// read in the current window hints, then modify them to allow icon transparency
-	Pixmap mask = -1;
 	XWMHints* hints = XGetWMHints(fl_display, fl_xid(fl_digi_main));
 	hints->flags |= IconMaskHint; // ensure transparency mask is enabled for the XPM icon
-	hints->icon_mask = mask; // set the transparency mask
+	hints->icon_mask |= IconPixmapHint;
 	XSetWMHints(fl_display, fl_xid(fl_digi_main), hints);
 	XFree(hints);
 #	endif
+
 #else
+
 #	if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 4
 	fl_digi_main->show(argc, argv);
 	progStatus.initLastState();
@@ -1266,6 +1268,7 @@ int main (int argc, char *argv[])
 	progStatus.initLastState();
 	fl_digi_main->show(argc, argv);
 #	endif
+
 #endif
 
 	if (iconified)
