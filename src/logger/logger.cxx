@@ -84,6 +84,11 @@ std::string str_lotw;
 void submit_eQSL(cQsoRec &rec, std::string msg);
 //======================================================================
 
+//======================================================================
+// Cloudlog
+void submit_cloudlog(cQsoRec &rec);
+//======================================================================
+//
 static std::string adif;
 
 void writeADIF () {
@@ -450,6 +455,8 @@ void submit_record(cQsoRec &rec)
 		submit_lotw(rec);
 	if (progdefaults.eqsl_when_logged)
 		submit_eQSL(rec, "");
+	if (progdefaults.EnCloudlog)
+		submit_cloudlog(rec);
 	n3fjp_add_record(rec);
 }
 
@@ -758,4 +765,48 @@ void makeEQSL(const char *message)
 	if (qsodb.nbrRecs() <= 0) return;
 	rec = qsodb.getRec(qsodb.nbrRecs() - 1); // last record
 	submit_eQSL(*rec, message);
+}
+
+void submit_cloudlog(cQsoRec &rec)
+{
+	std::string cloudlog_data;
+	std::string tempstr;
+	cloudlog_data = "";
+	putadif(CALL, rec.getField(CALL), cloudlog_data);
+	putadif(ADIF_MODE, adif2export(rec.getField(ADIF_MODE)).c_str(), cloudlog_data);
+
+	std::string sm = adif2submode(rec.getField(ADIF_MODE));
+	if (!sm.empty())
+		putadif(SUBMODE, sm.c_str(), cloudlog_data);
+
+	tempstr = rec.getField(FREQ);
+	tempstr.resize(7);
+	size_t p = 0;
+	if ((p = tempstr.find(",")) != std::string::npos)
+		tempstr.replace(p, 1, ".");
+	putadif(FREQ, tempstr.c_str(), cloudlog_data);
+	putadif(BAND, rec.getField(BAND), cloudlog_data);
+	putadif(QSO_DATE, sDate_on.c_str(), cloudlog_data);
+	tempstr = rec.getField(TIME_ON);
+	if (tempstr.length() > 4) tempstr.erase(4);
+	putadif(TIME_ON, tempstr.c_str(), cloudlog_data);
+	putadif(QSO_DATE_OFF, rec.getField(QSO_DATE_OFF), cloudlog_data);
+	putadif(TIME_OFF, rec.getField(TIME_OFF), cloudlog_data);
+	putadif(GRIDSQUARE, rec.getField(GRIDSQUARE), cloudlog_data);
+	putadif(NAME, rec.getField(NAME), cloudlog_data);
+	putadif(QTH, rec.getField(QTH), cloudlog_data);
+	putadif(STATE, rec.getField(STATE), cloudlog_data);
+	putadif(VE_PROV, rec.getField(VE_PROV), cloudlog_data);
+	putadif(COUNTRY, rec.getField(COUNTRY), cloudlog_data);
+	putadif(RST_SENT, rec.getField(RST_SENT), cloudlog_data);
+	putadif(RST_RCVD, rec.getField(RST_RCVD), cloudlog_data);
+	putadif(STX, rec.getField(STX), cloudlog_data);
+	putadif(SRX, rec.getField(SRX), cloudlog_data);
+	cloudlog_data.append("<EOR>");
+	tempstr.clear();
+	//printf("ADIF string: %s", cloudlog_data.c_str());
+	std::string cloudlogUrl    = progdefaults.cloudlog_api_url;
+	std::string cloudlogApiKey = progdefaults.cloudlog_api_key;
+	int cloudlogStationId      = progdefaults.cloudlog_station_id;
+	post_http(cloudlogUrl.c_str(), cloudlogApiKey.c_str(), cloudlogStationId, cloudlog_data.c_str(), EQSL_xmlpage, 5.0);
 }

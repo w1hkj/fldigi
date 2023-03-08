@@ -264,6 +264,11 @@ extern Fl_Button *btn_verify_lotw;
 extern void cb_btn_view_unmatched(Fl_Button*, void*);
 extern Fl_Button *btn_view_unmatched;
 extern Fl_Counter *cnt_tracefile_timeout;
+extern Fl_Check_Button *btnEnCloudlog;
+extern Fl_Input2 *txt_cloudlog_api_url;
+extern Fl_Input2 *txt_cloudlog_api_key;
+#include <FL/Fl_Spinner.H>
+extern Fl_Spinner *sp_cloudlog_station_id;
 extern Fl_Check_Button *btnNagMe;
 extern Fl_Check_Button *btnClearOnSave;
 extern Fl_Check_Button *btnCallUpperCase;
@@ -967,7 +972,6 @@ extern Fl_Check_Button *btn2NagMe;
 extern Fl_Check_Button *btn2_confirm_exit;
 extern Fl_Check_Button *btn_check_for_updates;
 extern Fl_Check_Button *btn_tx_show_timer;
-#include <FL/Fl_Spinner.H>
 extern Fl_Spinner *val_tx_timeout;
 extern Fl_Check_Button *btnMacroMouseWheel;
 extern Fl_Counter *cnt_macro_height;

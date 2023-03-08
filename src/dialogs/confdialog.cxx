@@ -2497,6 +2497,35 @@ static void cb_cnt_tracefile_timeout(Fl_Counter* o, void*) {
   progdefaults.tracefile_timeout = o->value();
 }
 
+Fl_Check_Button *btnEnCloudlog=(Fl_Check_Button *)0;
+
+static void cb_btnEnCloudlog(Fl_Check_Button* o, void*) {
+  btnEnCloudlog->value(o->value());
+progdefaults.EnCloudlog=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_cloudlog_api_url=(Fl_Input2 *)0;
+
+static void cb_txt_cloudlog_api_url(Fl_Input2* o, void*) {
+  progdefaults.cloudlog_api_url = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_cloudlog_api_key=(Fl_Input2 *)0;
+
+static void cb_txt_cloudlog_api_key(Fl_Input2* o, void*) {
+  progdefaults.cloudlog_api_key = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Spinner *sp_cloudlog_station_id=(Fl_Spinner *)0;
+
+static void cb_sp_cloudlog_station_id(Fl_Spinner* o, void*) {
+  progdefaults.cloudlog_station_id=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
 
 static void cb_btnNagMe(Fl_Check_Button* o, void*) {
@@ -11403,6 +11432,59 @@ work!"));
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/LoTW"));
       config_pages.push_back(p);
       tab_tree->add(_("Logging/LoTW"));
+      o->end();
+    } // Fl_Group* o
+    { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Logging/Cloudlog"));
+      o->box(FL_ENGRAVED_BOX);
+      o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+      o->hide();
+      { Fl_Group* o = new Fl_Group(205, 25, 590, 35, _("This allows for logging of QSOs to a Cloudlog instance."));
+        o->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
+        o->end();
+      } // Fl_Group* o
+      { Fl_Check_Button* o = btnEnCloudlog = new Fl_Check_Button(265, 76, 70, 15, _("Enable Cloudlog API logging"));
+        btnEnCloudlog->tooltip(_("This enables logging of QSOs to Cloudlog via API"));
+        btnEnCloudlog->down_box(FL_DOWN_BOX);
+        btnEnCloudlog->callback((Fl_Callback*)cb_btnEnCloudlog);
+        o->value(progdefaults.EnCloudlog);
+      } // Fl_Check_Button* btnEnCloudlog
+      { Fl_Input2* o = txt_cloudlog_api_url = new Fl_Input2(310, 131, 379, 24, _("API URL:"));
+        txt_cloudlog_api_url->tooltip(_("Enter the URL of your Cloudlog API"));
+        txt_cloudlog_api_url->box(FL_DOWN_BOX);
+        txt_cloudlog_api_url->color(FL_BACKGROUND2_COLOR);
+        txt_cloudlog_api_url->selection_color(FL_SELECTION_COLOR);
+        txt_cloudlog_api_url->labeltype(FL_NORMAL_LABEL);
+        txt_cloudlog_api_url->labelfont(0);
+        txt_cloudlog_api_url->labelsize(14);
+        txt_cloudlog_api_url->labelcolor(FL_FOREGROUND_COLOR);
+        txt_cloudlog_api_url->callback((Fl_Callback*)cb_txt_cloudlog_api_url);
+        txt_cloudlog_api_url->align(Fl_Align(FL_ALIGN_LEFT));
+        txt_cloudlog_api_url->when(FL_WHEN_RELEASE);
+        o->value(progdefaults.cloudlog_api_url.c_str());
+      } // Fl_Input2* txt_cloudlog_api_url
+      { Fl_Input2* o = txt_cloudlog_api_key = new Fl_Input2(310, 171, 379, 24, _("API Key:"));
+        txt_cloudlog_api_key->tooltip(_("Enter the API key for your Cloudlog instance"));
+        txt_cloudlog_api_key->box(FL_DOWN_BOX);
+        txt_cloudlog_api_key->color(FL_BACKGROUND2_COLOR);
+        txt_cloudlog_api_key->selection_color(FL_SELECTION_COLOR);
+        txt_cloudlog_api_key->labeltype(FL_NORMAL_LABEL);
+        txt_cloudlog_api_key->labelfont(0);
+        txt_cloudlog_api_key->labelsize(14);
+        txt_cloudlog_api_key->labelcolor(FL_FOREGROUND_COLOR);
+        txt_cloudlog_api_key->callback((Fl_Callback*)cb_txt_cloudlog_api_key);
+        txt_cloudlog_api_key->align(Fl_Align(FL_ALIGN_LEFT));
+        txt_cloudlog_api_key->when(FL_WHEN_RELEASE);
+        o->value(progdefaults.cloudlog_api_key.c_str());
+      } // Fl_Input2* txt_cloudlog_api_key
+      { Fl_Spinner* o = sp_cloudlog_station_id = new Fl_Spinner(310, 215, 60, 25, _("Station ID:"));
+        sp_cloudlog_station_id->maximum(9999);
+        sp_cloudlog_station_id->callback((Fl_Callback*)cb_sp_cloudlog_station_id);
+        o->value(progdefaults.cloudlog_station_id);
+      } // Fl_Spinner* sp_cloudlog_station_id
+      CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/Cloudlog"));
+      config_pages.push_back(p);
+      tab_tree->add(_("Logging/Cloudlog"));
+      tab_tree->close(_("Logging"));
       o->end();
     } // Fl_Group* o
     { Fl_Group* o = new Fl_Group(200, 0, 600, 350, _("Logging/QSO logging"));

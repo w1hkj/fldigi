@@ -1052,6 +1052,18 @@
         ELEM_(bool, NagMe, "NAGME",                                                     \
               "Prompt to save log",                                                     \
               true)                                                                     \
+        ELEM_(bool, EnCloudlog, "ENCLOUDLOG",                                           \
+              "Enable Cloudlog",                                                        \
+              false)                                                                    \
+        ELEM_(std::string, cloudlog_api_url, "CLOUDLOG_API_URL",                        \
+              "Cloudlog API URL",                                                       \
+              "")                                                                       \
+        ELEM_(std::string, cloudlog_api_key, "CLOUDLOG_API_KEY",                        \
+              "Cloudlog API Key",                                                       \
+              "")                                                                       \
+        ELEM_(int, cloudlog_station_id, "CLOUDLOG_STATION_ID",                          \
+              "Cloudlog Station ID",                                                    \
+              1)                                                                        \
         ELEM_(bool, ClearOnSave, "CLEARONSAVE",                                         \
               "Clear log fields on save",                                               \
               false)                                                                    \

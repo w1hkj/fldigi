@@ -479,9 +479,9 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {917 25 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
+    xywh {487 80 800 380} type Double color 45 selection_color 51 labelsize 18 align 80 resizable size_range {750 380 0 380} visible
   } {
-    Fl_Group {} {open
+    Fl_Group {} {
       xywh {0 0 201 380} resizable
     } {
       Fl_Tree tab_tree {
@@ -1986,7 +1986,7 @@ progdefaults.changed = true;}
       }
     }
     Fl_Group {} {
-      label {Colors-Fonts/Signal Level} selected
+      label {Colors-Fonts/Signal Level}
       xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
       code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Colors-Fonts/Signal Level"));}
       code1 {config_pages.push_back(p);}
@@ -3099,6 +3099,50 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
         callback {progdefaults.tracefile_timeout = o->value();}
         tooltip {Wait NN seconds for LoTW response} xywh {647 146 79 21} type Simple align 4 minimum 4 maximum 60 step 1 value 5
         code0 {o->value(progdefaults.tracefile_timeout);}
+      }
+    }
+    Fl_Group {} {
+      label {Logging/Cloudlog} open selected
+      xywh {200 0 600 350} box ENGRAVED_BOX align 21 hide
+      code0 {CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/Cloudlog"));}
+      code1 {config_pages.push_back(p);}
+      code2 {tab_tree->add(_("Logging/Cloudlog"));}
+      code3 {tab_tree->close(_("Logging"));}
+    } {
+      Fl_Group {} {
+        label {This allows for logging of QSOs to a Cloudlog instance.} open
+        xywh {205 25 590 35} align 16
+      } {}
+      Fl_Check_Button btnEnCloudlog {
+        label {Enable Cloudlog API logging}
+        callback {btnEnCloudlog->value(o->value());
+progdefaults.EnCloudlog=o->value();
+progdefaults.changed = true;}
+        tooltip {This enables logging of QSOs to Cloudlog via API} xywh {265 76 70 15} down_box DOWN_BOX
+        code0 {o->value(progdefaults.EnCloudlog);}
+      }
+      Fl_Input txt_cloudlog_api_url {
+        label {API URL:}
+        callback {progdefaults.cloudlog_api_url = o->value();
+progdefaults.changed = true;}
+        tooltip {Enter the URL of your Cloudlog API} xywh {310 131 379 24}
+        code0 {o->value(progdefaults.cloudlog_api_url.c_str());}
+        class Fl_Input2
+      }
+      Fl_Input txt_cloudlog_api_key {
+        label {API Key:}
+        callback {progdefaults.cloudlog_api_key = o->value();
+progdefaults.changed = true;}
+        tooltip {Enter the API key for your Cloudlog instance} xywh {310 171 379 24}
+        code0 {o->value(progdefaults.cloudlog_api_key.c_str());}
+        class Fl_Input2
+      }
+      Fl_Spinner sp_cloudlog_station_id {
+        label {Station ID:}
+        callback {progdefaults.cloudlog_station_id=o->value();
+progdefaults.changed = true;}
+        xywh {310 215 60 25} maximum 9999
+        code0 {o->value(progdefaults.cloudlog_station_id);}
       }
     }
     Fl_Group {} {
