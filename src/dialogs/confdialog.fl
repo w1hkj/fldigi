@@ -3144,6 +3144,13 @@ progdefaults.changed = true;}
         xywh {310 215 60 25} maximum 9999
         code0 {o->value(progdefaults.cloudlog_station_id);}
       }
+      Fl_Button btnTestApiKey {
+        label Initialize
+        callback {progdefaults.initInterface();
+        o->labelcolor(FL_FOREGROUND_COLOR);
+progdefaults.changed = true;}
+        tooltip {Test API Key} xywh {696 313 80 24}
+      }
     }
     Fl_Group {} {
       label {Logging/QSO logging}

@@ -43,6 +43,7 @@
 
 extern bool get_http(const std::string& url, std::string& reply, double timeout = 0.0);
 extern bool post_http(const std::string& url, const std::string& apikey, int profile_id, std::string adifdata, std::string& reply, double timeout = 0.0);
+extern bool test_api_key(std::string url, const std::string& apiKey, double timeout = 0.0);
 
 extern char ca_crt_rsa[];
 extern size_t ca_crt_rsa_size;
@@ -151,7 +152,9 @@ class Url {
 	int http_get(std::string &response);
 	int https_get(std::string &response);
 	int http_post(std::string apikey, int profile_id, std::string adifdata, std::string &response);
+	int http_test(std::string apikey);
 	int https_post(std::string apikey, int profile_id, std::string adifdata, std::string &response);
+	int https_test(std::string apikey);
 
 public:
 	Url() {
@@ -201,6 +204,7 @@ public:
 	int get(std::string url, std::string &response);
 	int post(std::string response);
 	int post(std::string url, std::string apikey, int profile_id, std::string adifdata, std::string &response);
+	int test(std::string url, std::string apikey);
 
 	void timeout(double t) { _timeout = t; }
 	double timeout() { return _timeout; }

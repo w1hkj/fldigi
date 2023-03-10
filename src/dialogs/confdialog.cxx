@@ -29,6 +29,7 @@
 #include "fileselect.h"
 #include "psm/psm.h"
 #include "dx_cluster.h"
+#include "network.h"
 extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
 #include "dx_dialog.h"
 #if USE_HAMLIB
@@ -2508,7 +2509,15 @@ progdefaults.changed = true;
 Fl_Input2 *txt_cloudlog_api_url=(Fl_Input2 *)0;
 
 static void cb_txt_cloudlog_api_url(Fl_Input2* o, void*) {
-  progdefaults.cloudlog_api_url = o->value();
+  std::string url;
+  url = o->value();
+  if (url[url.length()-1] == '/') {
+    url = url.substr(0, url.length()-1);
+  }
+  if (url.find("/index.php/api/qso") != std::string::npos) {
+    url.erase(url.find("/index.php/api/qso"), 18);
+  }
+  progdefaults.cloudlog_api_url = url;
 progdefaults.changed = true;
 }
 
@@ -2524,6 +2533,24 @@ Fl_Spinner *sp_cloudlog_station_id=(Fl_Spinner *)0;
 static void cb_sp_cloudlog_station_id(Fl_Spinner* o, void*) {
   progdefaults.cloudlog_station_id=o->value();
 progdefaults.changed = true;
+}
+
+Fl_Button *btnTestApiKey=(Fl_Button *)0;
+
+static void cb_btnTestApiKey(Fl_Button* o, void*) {
+  std::string url;
+  std::string apiKey;
+  url = txt_cloudlog_api_url->value();
+  apiKey = txt_cloudlog_api_key->value();
+  if (url.empty() || apiKey.empty()) {
+    btnTestApiKey->labelcolor(FL_RED);
+    return;
+  }
+  if (test_api_key(url.c_str(), apiKey.c_str(), 5.0)) {
+    btnTestApiKey->labelcolor(FL_GREEN);
+  } else {
+    btnTestApiKey->labelcolor(FL_RED);
+  }
 }
 
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
@@ -9624,6 +9651,7 @@ static void cb_btnSaveConfig(Fl_Button*, void*) {
 Fl_Return_Button *btnCloseConfig=(Fl_Return_Button *)0;
 
 static void cb_btnCloseConfig(Fl_Return_Button*, void*) {
+  btnTestApiKey->labelcolor(FL_FOREGROUND_COLOR);
   closeDialog();
 }
 
@@ -11481,6 +11509,10 @@ work!"));
         sp_cloudlog_station_id->callback((Fl_Callback*)cb_sp_cloudlog_station_id);
         o->value(progdefaults.cloudlog_station_id);
       } // Fl_Spinner* sp_cloudlog_station_id
+      { btnTestApiKey = new Fl_Button(676, 313, 100, 24, _("Test API Key"));
+        btnTestApiKey->tooltip(_("Test API Key"));
+        btnTestApiKey->callback((Fl_Callback*)cb_btnTestApiKey);
+      } // Fl_Button* btnTestApiKey
       CONFIG_PAGE *p = new CONFIG_PAGE(o, _("Logging/Cloudlog"));
       config_pages.push_back(p);
       tab_tree->add(_("Logging/Cloudlog"));

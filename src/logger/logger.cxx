@@ -804,8 +804,8 @@ void submit_cloudlog(cQsoRec &rec)
 	putadif(SRX, rec.getField(SRX), cloudlog_data);
 	cloudlog_data.append("<EOR>");
 	tempstr.clear();
-	//printf("ADIF string: %s", cloudlog_data.c_str());
 	std::string cloudlogUrl    = progdefaults.cloudlog_api_url;
+	cloudlogUrl                = cloudlogUrl + "/index.php/api/qso";
 	std::string cloudlogApiKey = progdefaults.cloudlog_api_key;
 	int cloudlogStationId      = progdefaults.cloudlog_station_id;
 	post_http(cloudlogUrl.c_str(), cloudlogApiKey.c_str(), cloudlogStationId, cloudlog_data.c_str(), EQSL_xmlpage, 5.0);
