@@ -138,6 +138,7 @@
 	</ul>
 	<li>\ref maclogger_page</li>
 	<li>\ref n3fjp_logs_page</li>
+	<li>\ref Cloudlog_page</li>
 	<li>\ref dxcc_list_page</li>
 	<li>\ref callsign_db_configuration_page "WEB Call Database Access"</li>
 	<ul><li>\ref qrz</li>
