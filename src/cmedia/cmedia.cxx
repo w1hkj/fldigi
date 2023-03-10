@@ -41,9 +41,6 @@
 #ifndef __WIN32__
 #include <termios.h>
 #include <glob.h>
-#  ifndef __APPLE__
-#    include <error.h>
-#  endif
 #endif
 
 #include "config.h"
