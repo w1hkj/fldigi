@@ -1,6 +1,24 @@
-2023-02-15  dave-w1hkj  <w1hkj@bellsouth.net>
+2023-03-14  dave-w1hkj  <w1hkj@bellsouth.net>
 
-	5cee85fc9: Version 4.1.25
+	1ac0d07ab: Version 4.1.26
+	ff11160bd: Audio Monitor
+	3c32f3fb4: musl file conflict
+
+2023-03-10  Florian Wolters  <github@florian-wolters.de>
+
+	ca70585bc: Add documentation for Cloudlog part
+	3f24f9b4d: Add button for testing the API key
+
+2023-03-07  Florian Wolters DF2ET  <df2et@df2et.de>
+
+	28fdd8cd7: cloud logging
+
+2023-03-06  dave-w1hkj  <w1hkj@bellsouth.net>
+
+	c1a62ea4d: window icon tranparency
+	67f6a7814: fonts
+	dc15c0be0: FC LEAVE
+	e680c4361: Version 4.1.25
 	ee6a614ad: Fix Windows seg fault
 	9e15ddd3e: Version 4.1.24/4.3.9
 	cf7a3b7e4: CTY.dat
