@@ -591,7 +591,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 
 	tx_sample_count += len;
 
-	if (audio_alert && progdefaults.mon_xmt_audio ) {
+	if (audio_alert && progdefaults.enable_audio_alerts && progdefaults.mon_xmt_audio ) {
 		audio_alert->monitor(buffer, len, samplerate, progdefaults.mon_tx_vol / 100.0 );
 	}
 
