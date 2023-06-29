@@ -877,9 +877,6 @@ class navtex_implementation {
 	ccir_message                    m_curr_msg ;
 
 	double               m_message_time ;
-	double               m_early_accumulator ;
-	double               m_prompt_accumulator ;
-	double               m_late_accumulator ;
 	double               m_mark_f, m_space_f;
 	double               m_time_sec;
 
@@ -924,9 +921,6 @@ public:
 		m_time_sec = 0.0 ;
 		m_state = SYNC_SETUP;
 		m_message_time = 0.0 ;
-		m_early_accumulator = 0;
-		m_prompt_accumulator = 0;
-		m_late_accumulator = 0;
 		m_sample_rate = the_sample_rate;
 		m_bit_duration = 0;
 		m_shift = false;
@@ -1167,7 +1161,7 @@ private:
 
 	// Turns accumulator values (estimates of whether a bit is 1 or 0)
 	// into navtex messages
-	void handle_bit_value(int accumulator) {
+	void handle_bit_value(int logic_level) {
 		int buffersize = m_bit_values.size();
 		int i, offset = 0;
 
@@ -1175,7 +1169,7 @@ private:
 		for (i = 0; i < buffersize - 1; i++) {
 			m_bit_values[i] = m_bit_values[i+1];
 		}
-		m_bit_values[buffersize - 1] = accumulator;
+		m_bit_values[buffersize - 1] = logic_level;
 		if (m_bit_cursor > 0)
 			m_bit_cursor--;
 
@@ -1463,26 +1457,17 @@ private:
 
 		// Calculate the slope between early and late signals
 		// to align the logic sampling with the received signal
+		// This usually returns a value between -1..1, closer to 0.
 		double slope = m_average_late_signal - m_average_early_signal;
+		slope /= (m_average_prompt_signal + 0.1);
 
-		if (m_average_prompt_signal * 1.05 < m_average_early_signal &&
-		    m_average_prompt_signal * 1.05 < m_average_late_signal) {
-			// At a signal minimum. Get out quickly.
-			if (m_average_early_signal > m_average_late_signal) {
-				// move prompt to where early is
-				slope = m_next_early_event - m_next_prompt_event;
-				slope = fmod(slope - m_bit_sample_count, m_bit_sample_count);
-				m_average_late_signal = m_average_prompt_signal;
-				m_average_prompt_signal = m_average_early_signal;
-			} else {
-				// move prompt to where late is
-				slope = m_next_late_event - m_next_prompt_event;
-				slope = fmod(slope + m_bit_sample_count, m_bit_sample_count);
-				m_average_early_signal = m_average_prompt_signal;
-				m_average_prompt_signal = m_average_late_signal;
-			}
-		} else
-			slope /= 1024;
+		// Scale by the distance between the sample points
+		slope *= 22;
+
+		// Slow down the adjustment at the peak
+		if (m_average_prompt_signal > m_average_early_signal &&
+		    m_average_prompt_signal > m_average_late_signal)
+			slope /= 2;
 
 		if (slope) {
 			m_next_early_event += slope;
@@ -1602,18 +1587,7 @@ private:
 				0.5 * ( (mark_env - noise_floor) * (mark_env - noise_floor) -
 					 (space_env - noise_floor) * (space_env - noise_floor));
 
-			// Using the logarithm of the logic_level tells the
-			// bit synchronization and character decoding which
-			// samples were decoded well, and which poorly.
-			// This helps fish signals out of the noise.
-			int mark_state = log(1 + abs(logic_level));
-			if (logic_level < 0)
-				mark_state = -mark_state;
-			m_early_accumulator += mark_state;
-			m_prompt_accumulator += mark_state;
-			m_late_accumulator += mark_state;
-
-			// An average of the magnitude of the accumulator
+			// An average of the magnitude of the logic_level
 			// is taken at the sample point, as well as a quarter
 			// bit before and after. This allows the code to see
 			// the best time to sample the signal without relying
@@ -1621,31 +1595,26 @@ private:
 			if (m_sample_count >= m_next_early_event) {
 				m_average_early_signal = decayavg(
 						m_average_early_signal,
-						fabs(m_early_accumulator), 64);
+						fabs(logic_level), 64);
 				m_next_early_event += m_bit_sample_count;
-				m_early_accumulator = 0;
 			}
 
 			if (m_sample_count >= m_next_late_event) {
 				m_average_late_signal = decayavg(
 						m_average_late_signal,
-						fabs(m_late_accumulator), 64);
+						fabs(logic_level), 64);
 				m_next_late_event += m_bit_sample_count;
-				m_late_accumulator = 0;
 			}
 
-			// the end of a signal pulse
-			// the accumulator should be at maximum deviation
+			// the peak of a signal pulse
 			m_pulse_edge_event = m_sample_count >= m_next_prompt_event;
 			if (m_pulse_edge_event) {
 				m_average_prompt_signal = decayavg(
 						m_average_prompt_signal,
-						fabs(m_prompt_accumulator), 64);
+						fabs(logic_level), 64);
 				m_next_prompt_event += m_bit_sample_count;
-				m_averaged_mark_state = m_prompt_accumulator;
 				if (m_ptr_navtex->get_reverse())
 					m_averaged_mark_state = -m_averaged_mark_state;
-				m_prompt_accumulator = 0;
 			}
 
 			switch (m_state) {
@@ -1657,7 +1626,7 @@ private:
 				case SYNC:
 				case READ_DATA:
 					if (m_pulse_edge_event)
-						handle_bit_value(m_averaged_mark_state);
+						handle_bit_value(logic_level);
 			}
 
 			m_sample_count++;
