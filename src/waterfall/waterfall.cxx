@@ -751,17 +751,29 @@ void WFdisp::handle_sig_data()
 
 		for (int n = 0; n < WF_FFTLEN - WF_BLOCKSIZE; n++)
 			circbuff[n] = circbuff[n + WF_BLOCKSIZE];
+
 		{
 // this block guarded by data_mutex
 			guard_lock data_lock(&data_mutex);
 			current = audio_blocks.front();
 			audio_blocks.pop();
 		}
+		double fftavg = 0;
 		for (int n = 0; n < WF_BLOCKSIZE; n++)
-			circbuff[n + WF_FFTLEN - WF_BLOCKSIZE - 1] = current.sig[n];
+			fftavg += fabs(circbuff[n + WF_FFTLEN - WF_BLOCKSIZE - 1] = current.sig[n]);
+
+		{
+			sig_vumeter->wsjtx_meter_face( progdefaults.use_wsjtx_vumeter_scale );
+			sig_vumeter2->wsjtx_meter_face( progdefaults.use_wsjtx_vumeter_scale );
+			VuMeter->wsjtx_meter_face( progdefaults.use_wsjtx_vumeter_scale );
+			fftavg /= WF_BLOCKSIZE;
+			sig_vumeter->value(fftavg);
+			sig_vumeter2->value(fftavg);
+			VuMeter->value(fftavg);
+		}
 
 		overload = false;
-		double overval = 0, peak = 0.0;
+		double overval = 0.0, peak = 0.0;
 		for (int i = WF_FFTLEN - WF_BLOCKSIZE; i < WF_FFTLEN; i++) {
 			overval = fabs(circbuff[i]);
 			if (overval > peak) peak = overval;
@@ -809,10 +821,10 @@ void WFdisp::handle_sig_data()
 				else
 					dfreq = rfc - afreq - offset;
 			}
-			snprintf(szFrequency, sizeof(szFrequency), "%-.3f", dfreq / 1000.0);
+			snprintf(szFrequency, sizeof(szFrequency), "%-.3lf", dfreq / 1000.0);
 		} else {
 			dfreq = active_modem->get_txfreq();
-			snprintf(szFrequency, sizeof(szFrequency), "%-.0f", dfreq);
+			snprintf(szFrequency, sizeof(szFrequency), "%-.0lf", dfreq);
 		}
 		inpFreq->value(szFrequency);
 
@@ -1073,6 +1085,33 @@ case Step: for (int row = 0; row < image_height; row++) { \
 		}
 	}
 #undef UPD_LOOP
+
+	if (progdefaults.mon_wf_display && 
+		progdefaults.mon_xcvr_audio &&
+		progdefaults.mon_dsp_audio) {
+
+		int trk_low = progdefaults.RxFilt_low;
+		int trk_high = progdefaults.RxFilt_high;
+		RGBI *pos1 = fft_img + trk_low / step;
+		RGBI *pos2 = fft_img + trk_high / step;
+		if (likely(pos1 >= fft_img && pos2 < fft_img + disp_width)) {
+				if (progdefaults.mon_wide_tracks) {
+					for (int y = 0; y < image_height; y ++) {
+						*(pos1 + 1) = *pos1 = progdefaults.monitorRGBI;
+						*(pos2 - 1) = *pos2 = progdefaults.monitorRGBI;
+						pos1 += disp_width;
+						pos2 += disp_width;
+					}
+				} else {
+					for (int y = 0; y < image_height; y ++) {
+						*pos1 = progdefaults.monitorRGBI;
+						*pos2 = progdefaults.monitorRGBI;
+						pos1 += disp_width;
+						pos2 += disp_width;
+					}
+				}
+		}
+	}
 
 	if (active_modem && progdefaults.UseBWTracks) {
 		trx_mode mode = active_modem->get_mode();
@@ -1711,9 +1750,9 @@ void btnRev_cb(Fl_Widget *w, void *v)
 	waterfall *wf = (waterfall *)w->parent();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	wf->Reverse(b->value());
+	progdefaults.rtty_reverse = wf->Reverse();
 	active_modem->set_reverse(wf->Reverse());
-	progdefaults.rtty_reverse = b->value();
-	set_mode_reverse(active_modem->get_mode(), progdefaults.rtty_reverse);
+	modeband.set_mode_reverse(wf->Reverse());
 	progdefaults.changed = true;
 	restoreFocus();
 }
@@ -1893,11 +1932,11 @@ void waterfall::Carrier(int f)
 	if (active_modem) active_modem->set_freq(f);
 }
 
-void waterfall::rfcarrier(long long cf) {
+void waterfall::rfcarrier(unsigned long long cf) {
 	wfdisp->rfcarrier(cf);
 }
 
-long long waterfall::rfcarrier() {
+unsigned long long waterfall::rfcarrier() {
 	return wfdisp->rfcarrier();
 }
 

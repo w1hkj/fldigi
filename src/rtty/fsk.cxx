@@ -46,7 +46,7 @@
 #    define CLOCK_REALTIME 0
 #    define CLOCK_MONOTONIC 6
 #  endif
-#  if TIME_WITH_SYS_TIME
+#  if HAVE_SYS_TIME_H
 #    include <sys/time.h>
 #  endif
 #endif

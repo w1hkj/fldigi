@@ -21,6 +21,8 @@
 #ifndef _status_H
 #define _status_H
 
+#ifndef BUILD_FLARQ
+
 #include <string>
 
 #include "globals.h"
@@ -49,7 +51,7 @@ struct status {
 	int		rigW;
 	int		rigH;
 	int		carrier;
-	int		noCATfreq;
+	unsigned long long	noCATfreq;
 	std::string	noCATmode;
 	std::string noCATwidth;
 	int		mag;
@@ -292,5 +294,7 @@ struct status {
 };
 
 extern status progStatus;
+
+#endif // BUILD_FLARQ
 
 #endif

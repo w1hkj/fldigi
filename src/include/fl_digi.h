@@ -408,7 +408,7 @@ extern void put_Status1(const char *msg, double timeout = 0.0, status_timeout ac
 extern void put_Status2(const char *msg, double timeout = 0.0, status_timeout action = STATUS_CLEAR);
 extern void show_clock(bool);
 
-extern void show_frequency(long long);
+extern void show_frequency(unsigned long long);
 
 extern void show_mode(const std::string sMode);
 extern void show_bw(const std::string sWidth);
@@ -564,10 +564,10 @@ extern void setTabColors();
 
 extern void toggle_visible_modes(Fl_Widget*, void*);
 
-extern void qsy(long long rfc, int fmid = -1);
+extern void qsy(unsigned long long rfc, int fmid = -1);
 
 extern void note_qrg(bool no_dup = true, const char* prefix = " ", const char* suffix = " ",
-	      trx_mode mode = NUM_MODES, long long rfc = 0LL, int afreq = 0);
+	      trx_mode mode = NUM_MODES, unsigned long long rfc = 0ULL, int afreq = 0);
 
 extern void set_olivia_bw(int bw);
 extern void set_olivia_tones(int tones);

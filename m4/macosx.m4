@@ -15,7 +15,7 @@ if test "$target_darwin" = "yes"; then
    AC_DEFINE([HAVE_REGEX_H], 0, [Define to 1 if you have the <regex.h> header file.])
 fi
 
-AC_ARG_ENABLE([mac-universal], AC_HELP_STRING([--enable-mac-universal],
+AC_ARG_ENABLE([mac-universal], AS_HELP_STRING([--enable-mac-universal],
                                               [build a universal binary on Mac OS X @<:@no@:>@]),
               [case "${enableval}" in
                  yes|no) ac_cv_mac_universal="${enableval}" ;;

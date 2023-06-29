@@ -3,6 +3,10 @@
 #ifndef PLAY_PA_H
 #define PLAY_PA_H
 
+#include "config.h"
+
+#if USE_PORTAUDIO
+
 #include <portaudio.h>
 
 #include <stdio.h>
@@ -130,5 +134,7 @@ public:
 
 void open_alert_port(c_portaudio *cpa);
 void close_alert_port(c_portaudio *cpa);
+
+#endif
 
 #endif

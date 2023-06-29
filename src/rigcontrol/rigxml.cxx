@@ -114,7 +114,7 @@ void print(size_t &);
 
 std::list<XMLIOS>	commands;
 std::list<XMLIOS>	reply;
-std::list<MODE> 		lmodes;
+std::list<MODE> 	lmodes;
 std::list<BW> 		lbws;
 std::list<BW>		lbwCMD;
 std::list<BW>		lbwREPLY;
@@ -264,6 +264,14 @@ int getInt(size_t p0)
 	if (stemp.length() == 0)
 		return 0;
 	return atoi(stemp.c_str());
+}
+
+int getUnsignedLongLong(size_t p0)
+{
+	std::string stemp = getElement(p0);
+	if (stemp.length() == 0)
+		return 0;
+	return strtoull(stemp.c_str(), NULL, 10);
 }
 
 float getFloat(size_t p0)
@@ -866,13 +874,13 @@ void parseDSIZE(size_t &p1)
 void parseDMAX(size_t &p1)
 {
 	print(p1,2);
-	iosTemp.data.max = getInt(p1);
+	iosTemp.data.max = getUnsignedLongLong(p1);
 }
 
 void parseDMIN(size_t &p1)
 {
 	print(p1,2);
-	iosTemp.data.min = getInt(p1);
+	iosTemp.data.min = getUnsignedLongLong(p1);
 }
 
 void parseDRESOL(size_t &p1)

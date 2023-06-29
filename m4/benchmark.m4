@@ -1,6 +1,6 @@
 AC_DEFUN([AC_FLDIGI_BENCHMARK], [
   AC_ARG_ENABLE([benchmark],
-                AC_HELP_STRING([--enable-benchmark], [build for benchmark-only operation]),
+                AS_HELP_STRING([--enable-benchmark], [build for benchmark-only operation]),
                 [case "${enableval}" in
                   yes|no) ac_cv_benchmark="${enableval}" ;;
                   *)      AC_MSG_ERROR([bad value ${enableval} for --enable-benchmark]) ;;

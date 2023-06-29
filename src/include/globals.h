@@ -282,7 +282,7 @@ extern const struct mode_info_t mode_info[NUM_MODES];
 class qrg_mode_t
 {
 public:
-	long long rfcarrier;
+	unsigned long long rfcarrier;
 	std::string rmode;
 	int carrier;
 	trx_mode mode;
@@ -294,7 +294,7 @@ public:
 		carrier(0),
 		mode(NUM_MODES),
 		usage("") { }
-	qrg_mode_t(long long rfc_, std::string rm_, int c_, trx_mode m_, std::string use_ = "")
+	qrg_mode_t(unsigned long long rfc_, std::string rm_, int c_, trx_mode m_, std::string use_ = "")
                 : rfcarrier(rfc_), rmode(rm_), carrier(c_), mode(m_), usage(use_) { }
 	bool operator<(const qrg_mode_t& rhs) const
         {

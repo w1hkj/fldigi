@@ -1,0 +1,50 @@
+/**
+\page  Cloudlog_page  Cloudlog Setup
+
+\tableofcontents
+
+\section Cloudlog_intro Introduction
+
+This logbook interface applies to users who want fldigi to automatically
+transfer the logged QSOs to a Cloudlog instance via the Cloudlog REST API.
+More information and documentation regarding Cloudlog can be found at
+https://www.magicbug.co.uk/cloudlog/.
+<br>
+
+\section Cloudlog_setup Cloudlog Configuration
+
+The configuration for Cloudlog requires the URL, an API key and a Station
+Location number to log to. The API key can be created within Cloudlog by
+selecting "API Keys" within the user account menu. Be sure to generate a
+read % write key. The top of the page also shows the API URL. The number
+of the station location can be found on the "Station Locations" page
+from the user menu. It is shown as ID for every location listed.
+
+\image html cloudlog.png ""
+\image latex cloudlog.png "" width=5.0in
+
+These three values have to be configured in the Cloudlog section in the
+fldigi configuration under Logging - Cloudlog.
+<br>
+
+There is a test button that allows for testing the functionality of the
+configured Cloudlog instance and its API key. If the key is valid and
+allows write access the button will turn green after pressing it. If it
+turns red either the API key or the URL is wrong. For a basic test there
+also is a test function within Cloudlog to test API keys.
+<br>
+
+\section Cloudlog_usage Cloudlog Usage
+
+If Cloudlog is enabled in the configuration of fldigi all QSO data will
+automatically be transmitted to Cloudlog via its REST API if the log QSO
+button is pressed. All other logging mechanism are not affected by these
+settings
+<br>
+
+\ref Cloudlog_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+ 

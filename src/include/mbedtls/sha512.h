@@ -141,7 +141,7 @@ int mbedtls_sha512_update_ret( mbedtls_sha512_context *ctx,
  * \return         A negative error code on failure.
  */
 int mbedtls_sha512_finish_ret( mbedtls_sha512_context *ctx,
-                               unsigned char output[64] );
+                               unsigned char *output );
 
 /**
  * \brief          This function processes a single data block within

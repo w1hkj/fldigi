@@ -31,7 +31,7 @@
 #  ifdef __APPLE__
 #    include <mach/mach_time.h>
 #  endif
-#  if TIME_WITH_SYS_TIME
+#  if HAVE_SYS_TIME_H
 #    include <sys/time.h>
 #  endif
 #  include <errno.h>

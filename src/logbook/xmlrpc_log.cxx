@@ -237,14 +237,19 @@ void xml_add_record()
 	adif_str(TIME_OFF, sTime_off.c_str());
 	adif_str(CALL, inpCall->value());
 	{
-		snprintf(Mhz, sizeof(Mhz), "%-f", atof(inpFreq->value()) / 1000.0);
+		snprintf(Mhz, sizeof(Mhz), "%-.6lf", atof(inpFreq->value()) / 1000.0);
 		inpFreq_log->value(Mhz);
 		adif_str(FREQ, Mhz);
 	}
 	adif_str(ADIF_MODE, mode_info[active_modem->get_mode()].adif_name);
 	adif_str(RST_SENT, inpRstOut->value());
 	adif_str(RST_RCVD, inpRstIn->value());
-	adif_str(TX_PWR, progdefaults.mytxpower.c_str());
+	if (progdefaults.log_power_meter) {
+		static char sval[20];
+		snprintf(sval, sizeof(sval), "%3.0f", pwrmeter->peak());
+		adif_str(TX_PWR, sval);
+	} else
+		adif_str(TX_PWR, progdefaults.mytxpower.c_str());
 	adif_str(NAME, inpName->value());
 	
 	adif_str(QTH, inpQth->value());

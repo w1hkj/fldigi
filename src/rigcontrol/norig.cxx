@@ -52,11 +52,11 @@
 // functions used when no xcvr control is in use
 //----------------------------------------------------------------------
 
-long long noCAT_getfreq() {
+unsigned long long noCAT_getfreq() {
 	return progStatus.noCATfreq;
 }
 
-void noCAT_setfreq(long long f)
+void noCAT_setfreq(unsigned long long f)
 {
 	progStatus.noCATfreq = f;
 	wf->rfcarrier(f);

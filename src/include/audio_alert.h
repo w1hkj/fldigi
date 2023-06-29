@@ -5,6 +5,9 @@
 #ifndef AUDIO_ALERT_H
 #define AUDIO_ALERT_H
 
+#include "config.h"
+#if USE_PORTAUDIO
+
 #include "play.pa.h"
 
 #define STEAM_TRAIN_SIZE 50225
@@ -54,7 +57,7 @@ public:
 
 	void alert(std::string s);
 
-	void monitor(double *buffer, int len, int _sr);
+	void monitor(double *buffer, int len, int _sr, double amp);
 	void monitor(cmplx *z, int len, double wf, int _sr);
 
 	Caudio_alert();
@@ -78,5 +81,42 @@ extern Caudio_alert *audio_alert;
 extern void reset_audio_alerts();
 
 extern void center_rxfilt_at_track();
+
+#else
+
+#include <string>
+#include "complex.h"
+
+class Caudio_alert {
+public:
+	Caudio_alert() {}
+	~Caudio_alert() {}
+
+	void bark() {}
+	void checkout() {}
+	void doesnot() {}
+	void diesel() {}
+	void steam_train() {}
+	void beeboo() {}
+	void phone() {}
+	void dinner_bell() {}
+	void tty_bell() {}
+	void standard_tone() {}
+	void file(std::string sndfile) {}
+	void alert(std::string s) {}
+	void monitor(double *buffer, int len, int _sr, double amp = 1.0) {}
+	void monitor(cmplx *z, int len, double wf, int _sr) {}
+
+	void init_filter() {}
+
+};
+
+extern Caudio_alert *audio_alert;
+
+extern void reset_audio_alerts();
+
+extern void center_rxfilt_at_track();
+
+#endif // USE_PORTAUDIO
 
 #endif

@@ -512,18 +512,18 @@ fldigi_SOURCES += \
 	config_script/script_parsing.cxx \
 	config_script/script_parsing.h \
 	contestia/contestia.cxx \
-	cw_rtty/cw.cxx \
-	cw_rtty/fsk.cxx \
-	cw_rtty/morse.cxx \
-	cw_rtty/nanoIO.cxx \
-	cw_rtty/ICOMkeying.cxx \
-	cw_rtty/KYkeying.cxx  \
-	cw_rtty/YAESUkeying.cxx \
-	cw_rtty/Nav.cxx \
-	cw_rtty/rtty.cxx \
-	cw_rtty/view_cw.cxx \
-	cw_rtty/view_rtty.cxx \
-	cw_rtty/winkeyer.cxx \
+	cw/cw.cxx \
+	cw/ICOMkeying.cxx \
+	cw/KYkeying.cxx  \
+	cw/morse.cxx \
+	cw/nanoIO.cxx \
+	cw/Nav.cxx \
+	cw/view_cw.cxx \
+	cw/winkeyer.cxx \
+	cw/YAESUkeying.cxx \
+	rtty/fsk.cxx \
+	rtty/rtty.cxx \
+	rtty/view_rtty.cxx \
 	debug/debug.cxx \
 	debug/debug_dialog.cxx \
 	dialogs/confdialog.cxx \

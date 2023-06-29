@@ -503,7 +503,8 @@ const std::string Cstates::county( std::string st, std::string cnty) // st/cnty 
 		}
 		return "";
 	} else {
-		for (n = 0; !vec_SQSO[n].ST.empty(); n++) {
+		for (n = 0; n < vec_SQSO.size(); n++) {
+			if (vec_SQSO[n].ST.empty()) return "";
 			dST = ucasestr(vec_SQSO[n].ST);
 			if (ST == dST) break;
 		}

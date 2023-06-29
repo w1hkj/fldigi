@@ -5,7 +5,7 @@ AC_DEFUN([AC_FLDIGI_RDYNAMIC], [
   AC_MSG_CHECKING([whether $CC supports -rdynamic])
   # don't try this on win32; it succeeds but emits a warning at link time
   if test "x$target_win32" != "xyes"; then
-      AC_TRY_LINK([], [], [ac_cv_rdynamic=yes], [ac_cv_rdynamic=no])
+      AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[ac_cv_rdynamic=yes],[ac_cv_rdynamic=no])
   else
       ac_cv_rdynamic=no
   fi
@@ -14,7 +14,7 @@ AC_DEFUN([AC_FLDIGI_RDYNAMIC], [
   AC_LANG_PUSH(C++)
     AC_MSG_CHECKING([whether $CXX supports -rdynamic])
     if test "x$target_win32" != "xyes"; then
-        AC_TRY_LINK([], [], [ac_cv_rdynamic=yes], [ac_cv_rdynamic=no])
+        AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[ac_cv_rdynamic=yes],[ac_cv_rdynamic=no])
     else
         ac_cv_rdynamic=no
     fi
@@ -28,7 +28,7 @@ AC_DEFUN([AC_FLDIGI_RDYNAMIC], [
 AC_DEFUN([AC_FLDIGI_DEBUG], [
   AC_REQUIRE([AC_FLDIGI_OPT])
   AC_ARG_ENABLE([debug],
-                AC_HELP_STRING([--enable-debug], [turn on debugging]),
+                AS_HELP_STRING([--enable-debug], [turn on debugging]),
                 [case "${enableval}" in
                   yes|no) ac_cv_debug="${enableval}" ;;
                   *)      AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
@@ -38,7 +38,7 @@ AC_DEFUN([AC_FLDIGI_DEBUG], [
   AC_ARG_VAR([BFD_CFLAGS], [C compiler flags for libbfd])
   AC_ARG_VAR([BFD_LIBS], [linker flags for libbfd])
   AC_ARG_WITH([bfd],
-              AC_HELP_STRING([--with-bfd@<:@=DIR@:>@],
+              AS_HELP_STRING([--with-bfd@<:@=DIR@:>@],
                              [search for libbfd in DIR/include and DIR/lib @<:@mingw32 only@:>@]),
               [ac_cv_want_bfd="$withval"],
               [ac_cv_want_bfd=yes])

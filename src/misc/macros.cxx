@@ -1346,7 +1346,7 @@ static void setTXATTEN(float v)
 	v = clamp(v, -30.0, 0.0);
 	progStatus.txlevel = v;
 	cntTxLevel->value(progStatus.txlevel);
-	set_mode_txlevel(active_modem->get_mode(), progStatus.txlevel);
+	modeband.set_mode_txlevel(progStatus.txlevel);
 	que_ok = true;
 }
 
@@ -1727,8 +1727,8 @@ static void pQSYPLUS(std::string &s, size_t &i, size_t endbracket)
 		substitute(s, i, endbracket, "");
 		return;
 	}
-	int rf = 0;
-	float rfd = 0;
+	unsigned long long rf = 0;
+	double rfd = 0;
 	std::string sIncrFreq = s.substr(i+6, endbracket - i - 6);
 	// no frequency(s) specified
 	if (sIncrFreq.length() == 0) {
@@ -1736,9 +1736,9 @@ static void pQSYPLUS(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	// rf first value
-	sscanf(sIncrFreq.c_str(), "%f", &rfd);
+	sscanf(sIncrFreq.c_str(), "%lf", &rfd);
 	if (rfd != 0) {
-		rf = wf->rfcarrier() + (int)(1000*rfd);
+		rf = wf->rfcarrier() + (1000.0*rfd);
 		qsy(rf, active_modem ? active_modem->get_freq() : 1500);
 	}
 	substitute(s, i, endbracket, "");
@@ -3570,9 +3570,9 @@ static void pQSYFM(std::string &s, size_t &i, size_t endbracket)
 	do_qsy(false);
 }
 
-struct rfafmd { int rf; int af; std::string mdname;
-	rfafmd(int a, int b, std::string nm) { rf = a; af = b; mdname = nm;}
-	rfafmd(int a, int b) {rf = a; af = b; mdname = active_modem->get_mode_name();}
+struct rfafmd { unsigned long long rf; int af; std::string mdname;
+	rfafmd(unsigned long long a, int b, std::string nm) { rf = a; af = b; mdname = nm;}
+	rfafmd(unsigned long long a, int b) {rf = a; af = b; mdname = active_modem->get_mode_name();}
 	rfafmd(){rf = af = 0; mdname = active_modem->get_mode_name();}
 };
 static std::queue<rfafmd> fpairs;
@@ -3585,9 +3585,9 @@ static void pQSY(std::string &s, size_t &i, size_t endbracket)
 	}
 
 	std::string mdname = active_modem->get_mode_name();
-	int rf = 0;
+	unsigned long long rf = 0;
 	int af = 0;
-	float rfd = 0;
+	double rfd = 0;
 	std::string sGoFreq = s.substr(i+5, endbracket - i - 5);
 	// no frequency(s) specified
 	if (sGoFreq.length() == 0) {
@@ -3603,8 +3603,8 @@ static void pQSY(std::string &s, size_t &i, size_t endbracket)
 			if (pos == std::string::npos) triad = sGoFreq;
 			else  triad = sGoFreq.substr(0, pos);
 			sGoFreq.erase(0, triad.length()+1);
-			sscanf(triad.c_str(), "%f", &rfd);
-			if (rfd > 0) rf = (int)(1000*rfd);
+			sscanf(triad.c_str(), "%lf", &rfd);
+			if (rfd > 0) rf = (unsigned long long)(1000*rfd);
 			if ((pos = triad.find(":")) != std::string::npos) {
 				triad.erase(0,pos+1);
 				if (triad.length())
@@ -3648,9 +3648,9 @@ static void pQSY(std::string &s, size_t &i, size_t endbracket)
 
 static void doQSY(std::string s)
 {
-	int rf = 0;
+	unsigned long long rf = 0;
 	int audio = 0;
-	float rfd = 0;
+	double rfd = 0;
 	std::string sGoFreq;
 	sGoFreq = s.substr(6, s.length() - 7);
 	// no frequency(s) specified
@@ -3659,9 +3659,9 @@ static void doQSY(std::string s)
 		return;
 	}
 	// rf first value
-	sscanf(sGoFreq.c_str(), "%f", &rfd);
+	sscanf(sGoFreq.c_str(), "%lf", &rfd);
 	if (rfd > 0)
-		rf = (int)(1000*rfd);
+		rf = (unsigned long long)(1000.0*rfd);
 	size_t pos;
 	if ((pos = sGoFreq.find(":")) != std::string::npos) {
 		// af second value
@@ -3677,7 +3677,7 @@ static void doQSY(std::string s)
 	if (rf && rf != wf->rfcarrier())
 		qsy(rf, audio);
 	else
-		active_modem->set_freq(audio);
+		active_modem->set_freq((double)audio);
 	que_ok = true;
 }
 
@@ -4135,15 +4135,15 @@ void set_macro_env(void)
 
 	// frequencies
 	char dial_freq[20];
-	snprintf(dial_freq, sizeof(dial_freq), "%ld", (long)wf->rfcarrier());
+	snprintf(dial_freq, sizeof(dial_freq), "%llu", wf->rfcarrier());
 	env[FLDIGI_DIAL_FREQUENCY].val = dial_freq;
 	char audio_freq[6];
 	snprintf(audio_freq, sizeof(audio_freq), "%d", active_modem->get_freq());
 	env[FLDIGI_AUDIO_FREQUENCY].val = audio_freq;
 	char freq[20];
-	snprintf(freq, sizeof(freq), "%ld", (long)(wf->rfcarrier() + (wf->USB()
-																  ? active_modem->get_freq()
-																  : -active_modem->get_freq())));
+	snprintf(freq, sizeof(freq), "%llu", (wf->rfcarrier() + (wf->USB()
+															  ? active_modem->get_freq()
+															  : -active_modem->get_freq())));
 	env[FLDIGI_FREQUENCY].val = freq;
 
 	// debugging vars

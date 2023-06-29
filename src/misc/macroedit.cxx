@@ -129,7 +129,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(LINE_SEP);
 	w->add(_("<QSOTIME>\tQSO time (HHMM))"));
 	w->add(_("<ILDT[:fmt]>\tLDT default '%Y-%m-%d %H:%M%z'"));
-	w->add(_("<LDT[[fmt]>\tLocal datetime, default '%x %H:%M %Z'"));
+	w->add(_("<LDT[fmt]>\tLocal datetime, default '%x %H:%M %Z'"));
 	w->add(_("<IZDT[:fmt]>\tZDT default '%Y-%m-%d %H:%MZ'"));
 	w->add(_("<ZDT[:fmt]>\tUTC datetime, default '%x %H:%MZ'"));
 	w->add(_("<LT[:fmt]>\tlocal time, default %H%M"));
@@ -512,6 +512,8 @@ Fl_Double_Window* make_macroeditor(void)
 	w->xclass(PACKAGE_NAME);
 
 	loadBrowser(macroDefs);
+
+	w->set_non_modal();
 
 	return w;
 }

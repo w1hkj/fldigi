@@ -147,7 +147,10 @@ void PTT::set(bool ptt)
 
 	switch (pttdev) {
 	case PTT_NONE:
-		noCAT_setPTT(ptt);
+		if (n3fjp_connected)
+			n3fjp_set_ptt(ptt);
+		else
+			noCAT_setPTT(ptt);
 		break;
 #if USE_HAMLIB
 	case PTT_HAMLIB:
@@ -186,8 +189,7 @@ void PTT::set(bool ptt)
 		}
 		break;
 	default:
-		if (n3fjp_connected)
-			n3fjp_set_ptt(ptt);
+		break;
 	}
 
 	nano_PTT(ptt);

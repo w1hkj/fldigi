@@ -58,7 +58,7 @@ public:
 	void checkBand();
 	void checkDateTimes();
 	void setDateTime(bool dtOn);
-	void setFrequency(long long freq);
+	void setFrequency(unsigned long long freq);
 // operator overloads
 	const cQsoRec &operator=(const cQsoRec &);
 	bool operator==(const cQsoRec &) const;

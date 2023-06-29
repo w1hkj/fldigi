@@ -103,7 +103,7 @@ status progStatus = {
 	560,				// int rigW
 	80,					// int rigH
 	1000,				// int carrier;
-	14070000,			// int noCATfreq;
+	14070000ULL,		// unsigned long long noCATfreq;
 	"USB",				// string noCATmode;
 	"3000",				// string noCATwidth;
 	1,					// int mag;
@@ -146,7 +146,7 @@ status progStatus = {
 	true,				// bool afconoff
 	true,				// bool sqlonoff
 	false,				// bool reverse
-	-3.0,				// double txlevel
+	-12.0,				// double txlevel
 	50,					// int	scopeX;
 	50,					// int	scopeY;
 	false,				// bool	scopeVisible;
@@ -515,7 +515,13 @@ void status::saveLastState()
 	spref.set("int_wf_reflevel", (int)round(reflevel * 100));
 	spref.set("int_wf_ampspan", (int)round(ampspan * 100));
 
-	spref.set("noCATfreq", noCATfreq);
+	int hval, lval;
+	hval = noCATfreq / INT_MAX;
+	lval = noCATfreq  - hval * INT_MAX;
+
+	spref.set("noCATfreqH", hval);
+	spref.set("noCATfreqL", lval);
+
 	spref.set("noCATmode", noCATmode.c_str());
 	spref.set("noCATwidth", noCATwidth.c_str());
 
@@ -571,6 +577,12 @@ if (!bWF_only) {
 	spref.set("scope_y", scopeY);
 	spref.set("scope_w", scopeW);
 	spref.set("scope_h", scopeH);
+
+	spref.set("sqlevel", sldrSquelchValue);
+	spref.set("sqlonoff", sqlonoff);
+	spref.set("afconoff", afconoff);
+	spref.set("reverse", reverse);
+	spref.set("txlevel", txlevel);
 
 	spref.set("svX", svX);
 	spref.set("svY", svY);
@@ -745,7 +757,7 @@ if (!bWF_only) {
 //----------------------------------------------------------------------
 	spref.set("vumeter_shown", vumeter_shown);
 
-	save_mode_state();
+	modeband.save_mode_state();
 }
 
 void status::loadLastState()
@@ -806,7 +818,10 @@ void status::loadLastState()
 	ampspan = int_ampspan / 100.0;
 	progdefaults.wfAmpSpan = ampspan;
 
-	spref.get("noCATfreq", noCATfreq, noCATfreq);
+	int hval = 0, lval = 0;
+	spref.get("noCATfreqH", hval, hval);
+	spref.get("noCATfreqL", lval, lval);
+	noCATfreq = 1ULL * hval * INT_MAX + lval;
 
 	memset(strbuff, 0, sizeof(strbuff));
 	spref.get("noCATmode", strbuff, "USB", sizeof(strbuff) - 1);
@@ -880,6 +895,12 @@ void status::loadLastState()
 	spref.get("scope_y", scopeY, scopeY);
 	spref.get("scope_w", scopeW, scopeW);
 	spref.get("scope_h", scopeH, scopeH);
+
+	spref.get("sqlevel", sldrSquelchValue, sldrSquelchValue);
+	spref.get("sqlonoff", i, sqlonoff); sqlonoff = i;
+	spref.get("afconoff", i, afconoff); afconoff = i;
+	spref.get("reverse", i, reverse); reverse = i;
+	spref.get("txlevel", txlevel, txlevel);
 
 	spref.get("svX", svX, svX);
 	spref.get("svY", svY, svY);
@@ -1090,7 +1111,7 @@ void status::loadLastState()
 	spref.get("vumeter_shown", vumeter_shown, vumeter_shown);
 //----------------------------------------------------------------------
 
-	load_mode_state();
+	modeband.load_mode_state();
 
 	set_debug_mask(debug_mask);
 }

@@ -38,7 +38,7 @@ AC_ARG_VAR([PTW32_CFLAGS], [C compiler flags for pthreads-w32])
 AC_ARG_VAR([PTW32_LIBS], [linker flags for pthreads-w32])
 
 AC_ARG_WITH([ptw32],
-            AC_HELP_STRING([--with-ptw32@<:@=DIR@:>@],
+            AS_HELP_STRING([--with-ptw32@<:@=DIR@:>@],
                            [search for pthreads-w32 in DIR/include and DIR/lib @<:@mingw32 only@:>@]),
             [ac_cv_want_ptw32="$withval"],
             [ac_cv_want_ptw32=no])

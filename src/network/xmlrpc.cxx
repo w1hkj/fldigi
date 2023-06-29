@@ -1190,9 +1190,9 @@ public:
 	}
 };
 
-void xmlrpc_set_qsy(long long rfc)
+void xmlrpc_set_qsy(unsigned long long rfc)
 {
-	unsigned long int freq = static_cast<unsigned long int>(rfc);
+	unsigned long long freq = rfc;
 	wf->rfcarrier(freq);
 	wf->movetocenter();
 	show_frequency(freq);
@@ -1209,11 +1209,11 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		double rfc = wf->rfcarrier();
-		LOG_INFO("[%s] main.set_freq: %f",
+		double rfc = (double) wf->rfcarrier();
+		LOG_INFO("[%s] main.set_freq: %lf",
 			XmlRpc::client_id.c_str(),
 			rfc);
-		qsy((long long int)params.getDouble(0, 0.0));
+		qsy((unsigned long long)params.getDouble(0, 0.0));
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -1229,9 +1229,9 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		double rfc = wf->rfcarrier() + params.getDouble(0);
-		qsy((long long int)rfc);
-		LOG_INFO("[%s] main.inc_freq: %f",
+		double rfc = (double) wf->rfcarrier() + params.getDouble(0);
+		qsy((unsigned long long)rfc);
+		LOG_INFO("[%s] main.inc_freq: %lf",
 			XmlRpc::client_id.c_str(),
 			rfc);
 		*retval = xmlrpc_c::value_double(rfc);
@@ -2412,11 +2412,13 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		double rfc = wf->rfcarrier();
-		unsigned long int f = (long int)(params.getDouble(0,0.0));
-		LOG_INFO("[%s] rig.set_frequency %lu",
+		double rfc = (double) wf->rfcarrier();
+		unsigned long long f = (unsigned long long)(params.getDouble(0,0.0));
+		char dummy[200];
+		snprintf(dummy, sizeof(dummy), "[%s] rig.set_frequency %llu",
 			XmlRpc::client_id.c_str(),
 			f);
+		LOG_INFO("%s", dummy);
 		qsy(f);
 		*retval = xmlrpc_c::value_double(rfc);
 	}
@@ -2432,8 +2434,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		double rfc = wf->rfcarrier();
-		LOG_INFO("[%s] rig.get_frequency %f",
+		double rfc = (double) wf->rfcarrier();
+		LOG_INFO("[%s] rig.get_frequency %lf",
 			XmlRpc::client_id.c_str(),
 			rfc);
 		*retval = xmlrpc_c::value_double(rfc);
@@ -2475,14 +2477,22 @@ public:
 		_signature = "n:i";
 		_help = "Sets the power meter returns null.";
 	}
-	static void set_pwrmeter(int rfc)
+	static void set_pwrmeter(int val)
 	{
-		if (pwrmeter && smeter && progStatus.meters) {
-			pwrmeter->value(rfc);
-			smeter->hide();
-			pwrmeter->show();
+		if (pwrmeter) {
+			pwrmeter->value(val);
+			if (pwrlevel_grp->visible())
+				return;
+			if (progStatus.meters) {
+				if (!pwrmeter->visible()) {
+					if (smeter) smeter->hide();
+					pwrmeter->show();
+				}
+				pwrmeter->redraw();
+			}
 		}
 	}
+
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
@@ -3334,7 +3344,11 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		std::string adif_str = all_adif_records();
+#ifdef __WIN32__
+		LOG_INFO("[%s] logbook.all_adif_records export size %u",
+#else
 		LOG_INFO("[%s] logbook.all_adif_records export size %lu",
+#endif
 			XmlRpc::client_id.c_str(),
 			adif_str.length());
 		*retval = xmlrpc_c::value_string(adif_str);

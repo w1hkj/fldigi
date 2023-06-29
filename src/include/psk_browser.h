@@ -71,7 +71,7 @@ public:
 	static int cheight;
 	static int sbarwidth;
 
-	long long rfc;
+	unsigned long long rfc;
 	bool usb;
 	fre_t *seek_re;
 

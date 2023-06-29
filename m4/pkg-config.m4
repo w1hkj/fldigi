@@ -4,7 +4,7 @@ AC_DEFUN([AC_FLDIGI_PKG_CHECK], [
 m4_define([PKG_NAME_UC], m4_translit([$1], [a-z], [A-Z]))
 
 m4_if([$3], [yes],
-    [ AC_ARG_WITH($1, AC_HELP_STRING([--with-[]$1], [$5]),
+    [ AC_ARG_WITH($1, AS_HELP_STRING([--with-[]$1], [$5]),
                      [case "${withval}" in
                         yes|no) ac_cv_want_[]$1="${withval}" ;;
                         *)      AC_MSG_ERROR([bad value "${withval}" for --with-[]$1]) ;;

@@ -190,7 +190,7 @@ void create_fl_digi_main_primary() {
 			qsoFreqDisp1->align(FL_ALIGN_CENTER);
 			qsoFreqDisp1->when(FL_WHEN_RELEASE);
 			qsoFreqDisp1->callback(qso_movFreq);
-			qsoFreqDisp1->SetONOFFCOLOR(
+			qsoFreqDisp1->SetCOLORS(
 				fl_rgb_color(	progdefaults.FDforeground.R,
 								progdefaults.FDforeground.G,
 								progdefaults.FDforeground.B),
@@ -1184,7 +1184,7 @@ Logging_frame->resizable(NFtabs);
 			qsoFreqDisp2->when(FL_WHEN_RELEASE);
 			qsoFreqDisp2->callback(qso_movFreq);
 			qsoFreqDisp2->font(progdefaults.FreqControlFontnbr);
-			qsoFreqDisp2->SetONOFFCOLOR(
+			qsoFreqDisp2->SetCOLORS(
 				fl_rgb_color(	progdefaults.FDforeground.R,
 								progdefaults.FDforeground.G,
 								progdefaults.FDforeground.B),
@@ -1319,7 +1319,7 @@ Logging_frame->resizable(NFtabs);
 			qsoFreqDisp3->when(FL_WHEN_RELEASE);
 			qsoFreqDisp3->callback(qso_movFreq);
 			qsoFreqDisp3->font(progdefaults.FreqControlFontnbr);
-			qsoFreqDisp3->SetONOFFCOLOR(
+			qsoFreqDisp3->SetCOLORS(
 				fl_rgb_color(	progdefaults.FDforeground.R,
 								progdefaults.FDforeground.G,
 								progdefaults.FDforeground.B),
@@ -2675,14 +2675,14 @@ Logging_frame->resizable(NFtabs);
 						btn_FSQQTH = new Fl_Button(
 							_xp, _yp, bw4, bh, "QTH");
 						btn_FSQQTH->callback(cbFSQQTH, 0);
-						btn_FSQQTH->tooltip("QTH->tx panel");
+						btn_FSQQTH->tooltip("QTH->tx panel\nright click - edit");
 
 						_xp += bw4;
 
 						btn_FSQQTC  = new Fl_Button(
 							_xp, _yp, bw4, bh, "QTC");
 						btn_FSQQTC->callback(cbFSQQTC, 0);
-						btn_FSQQTC->tooltip("QTC->tx panel");
+						btn_FSQQTC->tooltip("QTC->tx panel\nright click - edit");
 
 						_xp += bw4;
 

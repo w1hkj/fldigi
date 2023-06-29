@@ -209,15 +209,15 @@ public:
 	~pskrep();
 
 	static void recv(trx_mode mode, int afreq, const char* str, const regmatch_t* calls, size_t len, void* obj);
-	static void log(const char* call, const char* loc, long long freq, trx_mode mode, time_t rtime, void* obj);
-	static void manual(const char* call, const char* loc, long long freq, trx_mode mode, time_t rtime, void* obj);
+	static void log(const char* call, const char* loc, unsigned long long freq, trx_mode mode, time_t rtime, void* obj);
+	static void manual(const char* call, const char* loc, unsigned long long freq, trx_mode mode, time_t rtime, void* obj);
 	bool progress(void);
 	unsigned count(void) { return new_count; }
 
 	static fre_t locator_re;
 private:
 
-	void append(std::string call, const char* loc, long long freq, trx_mode mode, time_t rtime, rtype_t rtype);
+	void append(std::string call, const char* loc, unsigned long long freq, trx_mode mode, time_t rtime, rtype_t rtype);
 	void gc(void);
 
 	void load_queue(void);
@@ -381,7 +381,7 @@ void pskrep::recv(trx_mode mode, int afreq, const char* str, const regmatch_t* c
 		return;
 
 	std::string call(str + calls[PSKREP_RE_INDEX].rm_so, calls[PSKREP_RE_INDEX].rm_eo - calls[PSKREP_RE_INDEX].rm_so);
-	long long freq = afreq;
+	unsigned long long freq = afreq;
 	if (!wf->USB())
 		freq = -freq;
 	freq += wf->rfcarrier();
@@ -392,18 +392,18 @@ void pskrep::recv(trx_mode mode, int afreq, const char* str, const regmatch_t* c
 }
 
 // This function is called by spot_log()
-void pskrep::log(const char* call, const char* loc, long long freq, trx_mode mode, time_t rtime, void* obj)
+void pskrep::log(const char* call, const char* loc, unsigned long long freq, trx_mode mode, time_t rtime, void* obj)
 {
 	reinterpret_cast<pskrep*>(obj)->append(call, loc, freq, mode, rtime, PSKREP_LOG);
 }
 
 // This function is called by spot_manual()
-void pskrep::manual(const char* call, const char* loc, long long freq, trx_mode mode, time_t rtime, void* obj)
+void pskrep::manual(const char* call, const char* loc, unsigned long long freq, trx_mode mode, time_t rtime, void* obj)
 {
 	reinterpret_cast<pskrep*>(obj)->append(call, loc, freq, mode, rtime, PSKREP_MANUAL);
 }
 
-void pskrep::append(std::string call, const char* loc, long long freq, trx_mode mode, time_t rtime, rtype_t rtype)
+void pskrep::append(std::string call, const char* loc, unsigned long long freq, trx_mode mode, time_t rtime, rtype_t rtype)
 {
 	if (unlikely(call.empty()))
 		return;

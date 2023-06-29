@@ -35,8 +35,8 @@ extern bool hexout(const std::string&);
 extern bool sendCommand(std::string cmd, std::string catstr, int retnbr, int waitval);
 extern void add_to_cmdque( std::string cmd, std::string s, int retnbr, int waitval);
 
-extern long long rigCAT_getfreq(int retries, bool &failed, int waitval = 0);
-extern void rigCAT_setfreq(long long);
+extern unsigned long long rigCAT_getfreq(int retries, bool &failed, int waitval = 0);
+extern void rigCAT_setfreq(unsigned long long);
 
 extern std::string rigCAT_getmode();
 extern void rigCAT_setmode(const std::string&);
@@ -57,15 +57,15 @@ extern bool rigCAT_active();
 extern void rigCAT_sendINIT(const std::string& icmd, int multiplier = 1);
 
 extern void rigCAT_set_ptt(int);
-extern void rigCAT_set_qsy(long long f);
+extern void rigCAT_set_qsy(unsigned long long f);
 
 extern void rigCAT_defaults();
 //extern void rigCAT_restore_defaults();
 
 // no xcvr 
 
-extern long long noCAT_getfreq();
-extern void noCAT_setfreq(long long f);
+extern unsigned long long noCAT_getfreq();
+extern void noCAT_setfreq(unsigned long long f);
 extern std::string noCAT_getmode();
 extern void noCAT_setmode(const std::string &md);
 extern std::string noCAT_getwidth();

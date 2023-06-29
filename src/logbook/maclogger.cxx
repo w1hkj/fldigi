@@ -68,8 +68,8 @@ std::string maclogger_ip_address= "";;
 std::string maclogger_ip_port= "";;
 
 std::string mclg_str = "";
-int    mclg_rxhz;
-int    mclg_txhz;
+unsigned long long mclg_rxhz;
+unsigned long long mclg_txhz;
 std::string mclg_band;
 std::string mclg_mode;
 std::string mclg_power;
@@ -102,7 +102,7 @@ static std::string get_str(std::string s)
 	return s2;
 }
 
-static int get_freq(std::string s)
+static unsigned long long get_freq(std::string s)
 {
 	std::string s2 = get_str(s);
 	size_t dpt = s2.find(".");
@@ -111,18 +111,18 @@ static int get_freq(std::string s)
 	std::string sm = s2.substr(dpt+1);
 	while(sm.length() < 6) sm.append("0");
 	sf.append(sm);
-	int fr = sf[0] - '0';
+	unsigned long long fr = sf[0] - '0';
 	for (size_t n = 1; n < sf.length(); n++) {
 		fr *= 10;
 		fr += (sf[n] - '0');
 	}
-//std::cout << "string: " << sf << ", int freq: " << fr << std::endl;
+//std::cout << "string: " << sf << ", unsigned long long freq: " << fr << std::endl;
 	return fr;
 }
 
 void maclogger_set_qsy()
 {
-	long hz = mclg_rxhz;
+	unsigned long long hz = mclg_rxhz;
 	if (hz <= 0 || !progdefaults.maclogger_spot_rx) hz = mclg_txhz;
 	if (hz <= 0) return;
 	sendFreq(hz);

@@ -39,12 +39,15 @@
 
 class PWRmeter : public Fl_Widget
 {
+#define NPEAKS 50
+
 public:
 enum {P25, P50, P100, P200, AUTO};
 
 private:
-	double	value_,
+	double	value_, peak_, peaks_[NPEAKS],
 			maximum_;
+	int ppeak;
 	int		sval;			// Size of sval bar...
 	int		bx, by, bw, bh;	// Box areas...
 	int		tx, tw;			// Temporary X + width
@@ -69,8 +72,20 @@ protected:
 public:
 	PWRmeter(int x, int y, int w, int h, const char *l = 0);
 
-	void	value(double v) { value_ = v; redraw(); }
+	void	value(double v) { 
+		value_ = v;
+		if (ppeak++ > 9) ppeak = 0;
+		peaks_[ppeak] = value_;
+		peak_ = 0;
+		for (int n = 0; n < NPEAKS; n++) {
+			if (peaks_[n] > peak_)
+				peak_ = peaks_[n];
+		}
+//		redraw();
+	}
 	double	value() const { return (value_); }
+	double	peak() const { return (peak_); }
+
 	void	resize(int x, int y, int w, int h);
 	int		handle(int);
 

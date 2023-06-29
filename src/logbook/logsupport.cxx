@@ -1496,10 +1496,11 @@ void cb_btnRetrieve(Fl_Button* b, void* d)
 	double drf  = atof(inpFreq_log->value());
 	if (!drf) return;
 
-	int rf1, rf, audio;
+	unsigned long long rf1, rf;
+	int audio;
 	rf1 = drf * 1e6;
-	rf = rf1 / 10000;
-	rf *= 10000;
+	rf = rf1 / 10000ULL;	// Round down
+	rf *= 10000ULL;			// to nearest 10 kHz
 	audio = rf1 - rf;
 // try to keep within normal xcvr bw, 500 - 3000 Hz
 	while (audio > 3000) {
@@ -1921,7 +1922,7 @@ void AddRecord ()
 	inpRstS_log->value (inpRstOut->value());
 	{
 		char Mhz[30];
-		snprintf(Mhz, sizeof(Mhz), "%-f", atof(inpFreq->value()) / 1000.0);
+		snprintf(Mhz, sizeof(Mhz), "%-.6lf", atof(inpFreq->value()) / 1000.0);
 		inpFreq_log->value(Mhz);
 		inpBand_log->value(band_name(Mhz));
 	}
@@ -1950,7 +1951,12 @@ void AddRecord ()
 
 	inpNotes_log->value (inpNotes->value());
 
-	inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
+	if (progdefaults.log_power_meter) {
+		static char sval[20];
+		snprintf(sval, sizeof(sval), "%3.0f", pwrmeter->peak());
+		inpTX_pwr_log->value(sval);
+	} else
+		inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
 
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");

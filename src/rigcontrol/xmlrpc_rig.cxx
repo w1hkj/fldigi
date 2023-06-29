@@ -45,6 +45,7 @@
 #include "qrunner.h"
 #include "debug.h"
 #include "status.h"
+#include "squelch_status.h"
 #include "icons.h"
 
 LOG_FILE_SOURCE(debug::debug::LOG_RPC_CLIENT);
@@ -105,16 +106,24 @@ static double timeout = 5.0;
 
 static int wait_bws_timeout = 0;
 
+static unsigned long long fr_show = 0;
+
 //======================================================================
 
-void xmlrpc_rig_set_qsy(long long rfc)
+void xmlrpc_rig_set_qsy(unsigned long long rfc)
 {
-	unsigned long int freq = static_cast<unsigned long int>(rfc);
-	set_flrig_freq(freq);
-	wf->rfcarrier(freq);
+	set_flrig_freq(rfc);
+	wf->rfcarrier(rfc);
 	wf->movetocenter();
-	show_frequency(freq);
-	LOG_VERBOSE("set qsy: %lu", freq);
+	show_frequency(rfc);
+#ifdef __WIN32__
+// this subterfuge is necessary due to a bug in mingw gcc macro parser
+	char dummy[50];
+	snprintf(dummy, sizeof(dummy), "set qsy: %llu", rfc);
+	LOG_VERBOSE("%s", dummy);
+#else
+	LOG_VERBOSE("set qsy: %llu", rfc);
+#endif
 }
 
 //======================================================================
@@ -212,6 +221,11 @@ LOG_VERBOSE("get_ptt: %s", ptt_state ? "ON" : "OFF");
 	} catch (...) {}
 }
 
+void updateWPM(void *)
+{
+	set_CWwpm();
+}
+
 void flrig_get_wpm()
 {
 	if (!connected_to_flrig) {
@@ -228,6 +242,7 @@ void flrig_get_wpm()
 			int val = (int)result;
 			progdefaults.CWspeed = val;
 LOG_VERBOSE("rig.cwio_get_wpm = %d", val);
+			Fl::awake(updateWPM);
 			return;
 		}
 		connected_to_flrig = false;
@@ -266,7 +281,7 @@ LOG_VERBOSE("set wpm %f", progdefaults.CWspeed);
 
 static bool wait_freq = false; // wait for transceiver to respond
 static int  wait_freq_timeout = 5; // 5 polls and then disable wait
-static unsigned long int  xcvr_freq = 0;
+static unsigned long long  xcvr_freq = 0;
 
 pthread_mutex_t mutex_flrig_freq = PTHREAD_MUTEX_INITIALIZER;
 
@@ -274,14 +289,22 @@ void xmlrpc_rig_show_freq(void * fr)
 {
 	guard_lock flrig_lock(&mutex_flrig_freq);
 	if (!wf) return;
-	unsigned long int freq = reinterpret_cast<intptr_t>(fr);
-LOG_VERBOSE("xmlrpc_rig_show_freq %lu", freq);
+	unsigned long long freq = *(static_cast<unsigned long long*>(fr));
+#ifdef __WIN32__
+// this subterfuge is necessary due to a bug in mingw gcc macro parser
+	char dummy[100];
+	snprintf(dummy, sizeof(dummy), "xmlrpc_rig_show_freq %llu", freq);
+	LOG_VERBOSE("%s", dummy);
+#else
+	LOG_VERBOSE("xmlrpc_rig_show_freq %llu", freq);
+#endif
 	wf->rfcarrier(freq);
 	wf->movetocenter();
 	show_frequency(freq);
+	modeband.band_mode_change();
 }
 
-void set_flrig_freq(unsigned long int fr)
+void set_flrig_freq(unsigned long long fr)
 {
 	if (!connected_to_flrig) return;
 
@@ -294,7 +317,9 @@ void set_flrig_freq(unsigned long int fr)
 			ret = flrig_client->execute("rig.set_vfo", val, result, timeout);
 		}
 		if (ret) {
-			LOG_VERBOSE("set freq: %lu", fr);
+			char dummy[100];
+			snprintf(dummy, sizeof(dummy), "set freq: %llu", fr);
+			LOG_VERBOSE("%s", dummy);
 			return;
 		}
 		LOG_ERROR("%s", "rig.set_vfo failed");
@@ -317,14 +342,16 @@ void flrig_get_frequency()
 		}
 		if (ret) {
 			str_freq = (std::string)result;
-			unsigned long int fr = atoll(str_freq.c_str());
+			fr_show = strtoull(str_freq.c_str(), NULL, 10);
 
-			if (!wait_freq && (fr != xcvr_freq)) {
-				xcvr_freq = fr;
+			if (!wait_freq && (fr_show != xcvr_freq)) {
+				xcvr_freq = fr_show;
 				guard_lock flrig_lock(&mutex_flrig_freq);
-				Fl::awake(xmlrpc_rig_show_freq, reinterpret_cast<void*>(fr));
-				LOG_VERBOSE("get freq: %lu", fr);
-			} else if (wait_freq && (fr == xcvr_freq)) {
+				Fl::awake(xmlrpc_rig_show_freq, static_cast<void*>(&fr_show));
+				char dummy[200];
+				snprintf(dummy, sizeof(dummy), "get freq: %llu", fr_show);
+				LOG_VERBOSE("%s", dummy);
+			} else if (wait_freq && (fr_show == xcvr_freq)) {
 				wait_freq = false;
 				wait_freq_timeout = 0;
 			} else if (wait_freq_timeout == 0) {
@@ -891,15 +918,19 @@ pthread_mutex_t mutex_flrig_pwrmeter = PTHREAD_MUTEX_INITIALIZER;
 static void xmlrpc_rig_set_pwrmeter(void *data)
 {
 	guard_lock flrig_lock(&mutex_flrig_pwrmeter);
-	if (!smeter && !pwrmeter) return;
 
-	if (pwrmeter && progStatus.meters) {
-		if (!pwrmeter->visible()) {
-			smeter->hide();
-			pwrmeter->show();
-		}
+	if (pwrmeter) {
 		int val = reinterpret_cast<intptr_t>(data);
 		pwrmeter->value(val);
+		if (pwrlevel_grp->visible())
+			return;
+		if (progStatus.meters) {
+			if (!pwrmeter->visible()) {
+				if (smeter) smeter->hide();
+				pwrmeter->show();
+			}
+			pwrmeter->redraw();
+		}
 	}
 }
 

@@ -365,7 +365,7 @@ void mbedtls_sha512_update( mbedtls_sha512_context *ctx,
  * SHA-512 final digest
  */
 int mbedtls_sha512_finish_ret( mbedtls_sha512_context *ctx,
-                               unsigned char output[64] )
+                               unsigned char *output )
 {
     int ret;
     unsigned used;

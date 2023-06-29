@@ -1,6 +1,6 @@
 AC_DEFUN([AC_FLDIGI_DOCS], [
   AC_ARG_WITH([asciidoc],
-              AC_HELP_STRING([--with-asciidoc], [build documentation using asciidoc @<:@autodetect@:>@]),
+              AS_HELP_STRING([--with-asciidoc], [build documentation using asciidoc @<:@autodetect@:>@]),
               [case "${withval}" in
                 yes|no) ac_cv_want_asciidoc="${withval}" ;;
                 *)      AC_MSG_ERROR([bad value "${withval}" for --with-asciidoc]) ;;

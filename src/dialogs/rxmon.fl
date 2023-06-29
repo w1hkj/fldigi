@@ -1,44 +1,98 @@
- # data file for the Fltk User Interface Designer (fluid)
-version 1.0305
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0308
 i18n_type 1
 i18n_include "gettext.h"
 i18n_function _
 header_name {.h}
 code_name {.cxx}
+decl {\#include <config.h>} {private local
+}
 
-decl {\#include <config.h>} {private local}
-decl {\#include <FL/Fl_Tooltip.H>} {private local}
-decl {\#include <FL/Fl_Box.H>} {private local}
-decl {\#include <FL/filename.H>} {private local}
-decl {\#include <FL/Fl_File_Chooser.H>} {private local}
-decl {\#include "main.h"} {private local}
-decl {\#include "fl_digi.h"} {private local}
-decl {\#include "soundconf.h"} {private local}
-decl {\#include "configuration.h"} {public local}
-decl {\#include "combo.h"} {public local}
-decl {\#include "icons.h"} {private local}
-decl {\#include "flinput2.h"} {public local}
-decl {\#include "flslider2.h"} {public local}
-decl {\#include "status.h"} {private local}
-decl {\#include "fileselect.h"} {private local}
-decl {\#include "audio_alert.h"} {private local}
+decl {\#include <FL/Fl_Tooltip.H>} {private local
+}
+
+decl {\#include <FL/Fl_Box.H>} {private local
+}
+
+decl {\#include <FL/filename.H>} {private local
+}
+
+decl {\#include <FL/Fl_File_Chooser.H>} {private local
+}
+
+decl {\#include "main.h"} {private local
+}
+
+decl {\#include "fl_digi.h"} {private local
+}
+
+decl {\#include "soundconf.h"} {private local
+}
+
+decl {\#include "configuration.h"} {public local
+}
+
+decl {\#include "combo.h"} {public local
+}
+
+decl {\#include "icons.h"} {private local
+}
+
+decl {\#include "flinput2.h"} {public local
+}
+
+decl {\#include "flslider2.h"} {public local
+}
+
+decl {\#include "status.h"} {private local
+}
+
+decl {\#include "fileselect.h"} {private local
+}
+
+decl {\#include "audio_alert.h"} {private local
+}
 
 Function {make_rxaudio_dialog()} {open
 } {
   Fl_Window {} {
-    label {Rx Audio Monitor} open selected
-    xywh {621 225 360 230} type Double visible
+    label {Rx Audio Monitor} open
+    xywh {611 189 360 290} type Double visible
   } {
-    Fl_Check_Button btn_mon_xcvr_audio {
-      label {Monitor ON}
-      callback {progdefaults.mon_xcvr_audio = o->value();}
-      tooltip {Rx audio stream ON} xywh {50 7 70 18} down_box DOWN_BOX
-      code0 {o->value(progdefaults.mon_xcvr_audio);}
+    Fl_Group {} {open
+      xywh {5 4 350 50} box BORDER_FRAME color 0
+    } {
+      Fl_Check_Button btn_mon_xcvr_audio {
+        label {RX Monitor}
+        callback {progdefaults.mon_xcvr_audio = o->value();}
+        tooltip {Rx audio stream ON} xywh {15 8 70 18} down_box DOWN_BOX
+        code0 {o->value(progdefaults.mon_xcvr_audio);}
+      }
+      Fl_Value_Slider sldrRxFilt_vol {
+        label {Rx Vol}
+        callback {progdefaults.RxFilt_vol = o->value();
+progdefaults.changed = true;}
+        tooltip {Rx audio volume} xywh {15 28 290 20} type {Horz Knob} color 206 selection_color 2 align 8 maximum 100 step 1 value 50 textsize 14
+        code0 {o->value(progdefaults.RxFilt_vol);}
+        class Fl_Value_Slider2
+      }
+      Fl_Check_Button btn_rxgain_x10 {
+        label {Gain X 10}
+        callback {progdefaults.rxgain_x10 = o->value();} selected
+        tooltip {Rx audio stream ON} xywh {212 7 93 18} down_box DOWN_BOX
+        code0 {o->value(progdefaults.rxgain_x10);}
+      }
     }
     Fl_Group {} {
       label {Filter Settings} open
-      xywh {5 84 350 141} box ENGRAVED_FRAME align 21
+      xywh {5 58 350 168} box BORDER_FRAME color 0 align 21
     } {
+      Fl_Check_Button btn_mon_dsp_audio {
+        label {Rx audio filter ON}
+        callback {progdefaults.mon_dsp_audio = o->value();}
+        tooltip {Enable DSP filtering of rx audio stream} xywh {191 68 70 18} down_box DOWN_BOX
+        code0 {o->value(progdefaults.mon_dsp_audio);}
+      }
       Fl_Value_Slider sldrRxFilt_bw {
         label BW
         callback {progdefaults.RxFilt_bw = o->value();
@@ -57,7 +111,7 @@ sldrRxFilt_high->redraw();
 
 progdefaults.changed = true;
 audio_alert->init_filter();}
-        tooltip {Filter bandwidth} xywh {10 118 300 20} type {Horz Knob} color 206 selection_color 2 align 8 minimum 50 maximum 4000 step 10 value 500 textsize 14
+        tooltip {Filter bandwidth} xywh {10 93 300 20} type {Horz Knob} color 206 selection_color 2 align 8 minimum 50 maximum 4000 step 10 value 500 textsize 14
         code0 {o->value(progdefaults.RxFilt_bw);}
         class Fl_Value_Slider2
       }
@@ -79,7 +133,7 @@ sldrRxFilt_high->redraw();
 
 progdefaults.changed = true;
 audio_alert->init_filter();}
-        tooltip {Filter center frequ ency} xywh {10 144 300 20} type {Horz Knob} color 206 selection_color 2 align 8 minimum 400 maximum 3500 step 10 value 1500 textsize 14
+        tooltip {Filter center frequ ency} xywh {10 120 300 20} type {Horz Knob} color 206 selection_color 2 align 8 minimum 400 maximum 3500 step 10 value 1500 textsize 14
         code0 {o->value(progdefaults.RxFilt_mid);}
         class Fl_Value_Slider2
       }
@@ -99,7 +153,7 @@ sldrRxFilt_mid->redraw();
 
 progdefaults.changed = true;
 audio_alert->init_filter();}
-        tooltip {Filter low cutoff frequency} xywh {10 170 300 20} type {Horz Knob} color 206 selection_color 2 align 8 minimum 100 maximum 3000 step 10 value 500 textsize 14
+        tooltip {Filter low cutoff frequency} xywh {10 147 300 20} type {Horz Knob} color 206 selection_color 2 align 8 minimum 100 maximum 3000 step 10 value 500 textsize 14
         code0 {o->value(progdefaults.RxFilt_low);}
         class Fl_Value_Slider2
       }
@@ -119,7 +173,7 @@ sldrRxFilt_mid->redraw();
 
 progdefaults.changed = true;
 audio_alert->init_filter();}
-        tooltip {Filter high cutoff frequency} xywh {10 196 300 20} type {Horz Knob} color 206 selection_color 2 align 8 minimum 500 maximum 4000 step 10 value 900 textsize 14
+        tooltip {Filter high cutoff frequency} xywh {10 174 300 20} type {Horz Knob} color 206 selection_color 2 align 8 minimum 500 maximum 4000 step 10 value 900 textsize 14
         code0 {o->value(progdefaults.RxFilt_high);}
         class Fl_Value_Slider2
       }
@@ -128,23 +182,33 @@ audio_alert->init_filter();}
         callback {progdefaults.RxFilt_track_wf = o->value();
 
 if (o->value() == 1) center_rxfilt_at_track();}
-        tooltip {Filter center freq tracks waterfall track point} xywh {156 93 70 15} down_box DOWN_BOX
+        tooltip {Filter center freq tracks waterfall track point} xywh {15 201 70 18} down_box DOWN_BOX
         code0 {o->value(progdefaults.RxFilt_track_wf);}
       }
+      Fl_Check_Button btn_mon_wf_display {
+        label {Waterfall display}
+        callback {progdefaults.mon_wf_display = o->value();}
+        tooltip {DSP filter width visible on waterfall} xywh {195 201 70 18} down_box DOWN_BOX
+        code0 {o->value(progdefaults.mon_wf_display);}
+      }
     }
-    Fl_Value_Slider sldrRxFilt_vol {
-      label {Vol'}
-      callback {progdefaults.RxFilt_vol = o->value();
+    Fl_Group {} {open
+      xywh {5 230 350 54} box BORDER_FRAME color 0
+    } {
+      Fl_Check_Button btn_mon_xmt_audio {
+        label {TX Monitor}
+        callback {progdefaults.mon_xmt_audio = o->value();}
+        tooltip {Transmit audio monitored} xywh {10 238 70 18} down_box DOWN_BOX
+        code0 {o->value(progdefaults.mon_xmt_audio);}
+      }
+      Fl_Value_Slider sldr_tx_vol {
+        label {Tx Vol}
+        callback {progdefaults.mon_tx_vol = o->value();
 progdefaults.changed = true;}
-      tooltip {Rx audio volume} xywh {10 55 300 20} type {Horz Knob} color 206 selection_color 2 align 8 maximum 100 step 1 value 50 textsize 14
-      code0 {o->value(progdefaults.RxFilt_vol);}
-      class Fl_Value_Slider2
-    }
-    Fl_Check_Button btn_mon_dsp_audio {
-      label {Filtered audio}
-      callback {progdefaults.mon_dsp_audio = o->value();}
-      tooltip {Enable DSP filtering of rx audio stream} xywh {50 29 70 18} down_box DOWN_BOX
-      code0 {o->value(progdefaults.mon_dsp_audio);}
+        tooltip {Rx audio volume} xywh {10 257 290 20} type {Horz Knob} color 206 selection_color 2 align 8 maximum 100 step 1 value 50 textsize 14
+        code0 {o->value(progdefaults.mon_tx_vol);}
+        class Fl_Value_Slider2
+      }
     }
   }
 }

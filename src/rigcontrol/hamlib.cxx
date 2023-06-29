@@ -66,7 +66,7 @@ static bool hamlib_bypass = false;
 static bool hamlib_closed = true;//false;
 static 	int hamlib_passes = 20;
 
-static long int hamlib_freq;
+static unsigned long long hamlib_freq;
 static rmode_t hamlib_rmode = RIG_MODE_USB;
 static pbwidth_t hamlib_pbwidth = 3000;
 
@@ -369,7 +369,7 @@ void hamlib_set_ptt(int ptt)
 	}
 }
 
-void hamlib_set_qsy(long long f)
+void hamlib_set_qsy(unsigned long long f)
 {
 	if (xcvr->isOnLine() == false)
 		return;
@@ -387,14 +387,16 @@ void hamlib_set_qsy(long long f)
 	}
 }
 
-int hamlib_setfreq(long f)
+int hamlib_setfreq(unsigned long long f)
 {
 	if (xcvr->isOnLine() == false)
 		return -1;
 	guard_lock hamlib(&hamlib_mutex);
 	try {
-		LOG_DEBUG("%ld", f);
-		xcvr->setFreq(f);
+		char dummy[20];
+		snprintf(dummy, sizeof(dummy), "%llu", f);
+		LOG_DEBUG("%s", dummy);
+		xcvr->setFreq((freq_t) f);
 	}
 	catch (const RigException& Ex) {
 		show_error("SetFreq", Ex.what());
@@ -487,7 +489,7 @@ static void *hamlib_loop(void *args)
 {
 	SET_THREAD_ID(RIGCTL_TID);
 
-	long int freq = 0L;
+	unsigned long long freq = 0ULL;
 	rmode_t  numode = RIG_MODE_NONE;
     int skips = 0;
 
@@ -521,7 +523,7 @@ static void *hamlib_loop(void *args)
 				freq_t f;
 				try {
 					f = xcvr->getFreq();
-					freq = (long int) f;
+					freq = (unsigned long long) f;
 					if (freq == 0) continue;
 					hamlib_freq = freq;
 					show_frequency(hamlib_freq);

@@ -125,7 +125,7 @@ struct notify_dup_t
 	time_t when;
 	band_t band;
 	trx_mode mode;
-	long long freq;
+	unsigned long long freq;
 };
 
 typedef MAP_TYPE<std::string, notify_dup_t> notify_seen_t;
@@ -137,7 +137,7 @@ struct notify_t
 	std::string re;
 	bool enabled;
 	int afreq;
-	long long rfreq;
+	unsigned long long rfreq;
 	trx_mode mode;
 
 	const char* match_string;
@@ -772,12 +772,12 @@ struct replace_refs
 			str[len - 1] = '\0';
 			break;
 		case REF_DF_HZ:
-			snprintf(str, len, "%lld", wf->rfcarrier());
+			snprintf(str, len, "%llu", wf->rfcarrier());
 			break;
 		case REF_RF_HZ: case REF_RF_KHZ: {
-			long long hz = wf->rfcarrier() + (wf->USB() ? n.afreq : -n.afreq);
+			unsigned long long hz = wf->rfcarrier() + (wf->USB() ? n.afreq : -n.afreq);
 			if (t == REF_RF_HZ)
-				snprintf(str, len, "%lld", hz);
+				snprintf(str, len, "%llu", hz);
 			else // REF_RF_KHZ
 				snprintf(str, len, "%.3f", (double)hz / 1000.0);
 			break;

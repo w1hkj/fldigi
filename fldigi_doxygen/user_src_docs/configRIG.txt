@@ -53,11 +53,9 @@ building generic rig interface definitions and how they are used with
 fldigi.  fldigi will look for a file in the $HOME/.fldigi/rigs directory for
 all files with extension ".xml".  These contain definitions for the
 transceiver indicated by the file name, ie: FT-450.xml, IC-756PRO.xml,
-etc.  You can download the appropriate xml files from the resource directory
-tree <a href="http://www.w1hkj.com/xmls">http://www.w1hkj.com/xmls</a>
-or from the
-archives <a href="http://www.w1hkj.com/xmlarchives.html">web page</a>.  Place
-the file in your rigs directory and fldigi will find it.
+etc.  You can download the appropriate xml files from the
+<a href="https://sourceforge.net/projects/fldigi/files/xmls/">xml archives</a>.
+Place the file in your rigs directory and fldigi will find it.
 <br>
 
 You will need to specify how your PTT will be triggered.  This can be

@@ -44,8 +44,15 @@ bool active = false;
 
 Raster::Raster (int X, int Y, int W, int H, int rh, bool rv) :
 	Fl_Widget (X, Y, W, H) {
+
 	width = W - 4;
+	if (width <= 0)
+		width = 1;
+
 	height = H - 4;
+	if (height <= 0)
+		height = 1;
+
 	space = 1;
 	rowheight = 2 * rh;
 	rhs = rowheight + space;

@@ -22,6 +22,10 @@ Fldigi can also control a transceiver using Hamlib or RigCAT I/O, perform online
 or cdrom QRZ queries, log QSOs with the built-in logbook or Xlog, and send
 reception reports to the PSK Automatic Propagation Reporter.
 
+If the Portaudio library is available then fldigi can process audio for
+  . alert outputs for various event announcements
+  . monitor and bandpass filter received audio
+
 The latest version can always be found at:
 
   http://www.w1hkj.com/

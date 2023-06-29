@@ -86,7 +86,7 @@
         ELEM_(bool, noise, "NOISETEST",                                                 \
               "Noise test on/off",                                                      \
               false)                                                                    \
-        ELEM_(double, s2n, "SIGNAL2NOISE",                                             \
+        ELEM_(double, s2n, "SIGNAL2NOISE",                                              \
               "Signal to Noise ratio for test",                                         \
               +20.0)                                                                    \
         ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH",                                   \
@@ -149,6 +149,9 @@
         ELEM_(double, over_signal_level, "over_signal_level",                           \
               "Input signal level transition (dB); -90 to 0",                           \
               -3.0)                                                                     \
+        ELEM_(bool, use_wsjtx_vumeter_scale, "use_wsjtx_vumeter_scale",                 \
+              "Enable if WSJTX metering desired",                                       \
+              false)                                                                    \
                                                                                         \
         ELEM_(double, wfRefLevel, "WFREFLEVEL",                                         \
               "Waterfall reference level (dB)",                                         \
@@ -219,8 +222,11 @@
         ELEM_(bool, CW_backslash, "CW_blackslash",                                      \
               "encode/decode backslash character",                                      \
               true)                                                                     \
-        ELEM_(bool, CW_single_quote, "CW_single_quote",                                 \
-              "encode/decode single_quote character",                                   \
+        ELEM_(bool, CW_apostrophe, "CW_apostrophe",                                     \
+              "encode/decode apostrophe character",                                     \
+              true)                                                                     \
+        ELEM_(bool, CW_quote, "CW_quote",                                               \
+              "encode/decode quote character",                                          \
               true)                                                                     \
         ELEM_(bool, CW_dollar_sign, "CW_dollar_sign",                                   \
               "encode/decode dollar_sign character",                                    \
@@ -962,14 +968,14 @@
         ELEM_(bool, UseBWTracks, "USEBWTRACKS",                                         \
               "Draw bandwidth marker with vertical lines",                              \
               true)                                                                     \
-        ELEM_(bool, UseWideTracks, "USEWIDETRACKS",                                     \
-              "Draw bandwidth marker with 3x vertical lines",                           \
-              false)                                                                    \
         ELEM_(bool, UseWideCursor, "USEWIDECURSOR",                                     \
               "Draw cursor with 3x vertical lines",                                     \
               false)                                                                    \
         ELEM_(bool, UseWideCenter, "USEWIDECENTER",                                     \
               "Draw center line marker with 3x vertical lines",                         \
+              false)                                                                    \
+        ELEM_(bool, UseWideTracks, "USEWIDETRACKS",                                     \
+              "Draw bandwidth marker with 3x vertical lines",                           \
               false)                                                                    \
         ELEM_(RGBI, cursorLineRGBI, "CLCOLORS",                                         \
               "Color of cursor lines (RGBI)",                                           \
@@ -986,6 +992,12 @@
         ELEM_(RGBI, rttymarkRGBI, "RTTYMARKRGBI",                                       \
               "Color of RTTY MARK freq marker (RGBI)",                                  \
               {255, 120, 0, 255})                                                       \
+        ELEM_(RGBI, monitorRGBI, "MONITORRGBI",                                         \
+              "Color of audio filter bandwidth (RGBI)",                                 \
+              {0, 255, 0, 255})                                                         \
+        ELEM_(bool, UseWideMonitor, "USEWIDEMONITOR",                                   \
+              "Draw bandwidth lines with 3x vertical lines",                            \
+              false)                                                                    \
         ELEM_(int, feldfontnbr, "FELDFONTNBR",                                          \
               "Index of raster font used for transmission",                             \
               4)                                                                        \
@@ -1040,6 +1052,18 @@
         ELEM_(bool, NagMe, "NAGME",                                                     \
               "Prompt to save log",                                                     \
               true)                                                                     \
+        ELEM_(bool, EnCloudlog, "ENCLOUDLOG",                                           \
+              "Enable Cloudlog",                                                        \
+              false)                                                                    \
+        ELEM_(std::string, cloudlog_api_url, "CLOUDLOG_API_URL",                        \
+              "Cloudlog API URL",                                                       \
+              "")                                                                       \
+        ELEM_(std::string, cloudlog_api_key, "CLOUDLOG_API_KEY",                        \
+              "Cloudlog API Key",                                                       \
+              "")                                                                       \
+        ELEM_(int, cloudlog_station_id, "CLOUDLOG_STATION_ID",                          \
+              "Cloudlog Station ID",                                                    \
+              1)                                                                        \
         ELEM_(bool, ClearOnSave, "CLEARONSAVE",                                         \
               "Clear log fields on save",                                               \
               false)                                                                    \
@@ -1154,9 +1178,24 @@
         ELEM_(int, mon_dsp_audio, "mon_dsp_audio",                                      \
               "monitor dsp filter output for selected modem @ waterfall frequency",     \
               0)                                                                        \
+        ELEM_(bool, mon_wf_display, "MON_WF_DISPLAY",                                   \
+              "Display monitor filter",                                                 \
+              true)                                                                     \
+        ELEM_(bool, mon_wide_tracks, "WIDEMONITORTRACKS",                               \
+              "Draw bandwidth lines with 3x vertical lines",                            \
+              false)                                                                    \
+        ELEM_(int, mon_xmt_audio, "mon_xmt_audio",                                      \
+              "monitor transmit audio on alert audio device",                           \
+              true)                                                                     \
+        ELEM_(double, mon_tx_vol, "mon_tx_vol",                                         \
+              "monitor transmit monitor volume level",                                  \
+              25.0)                                                                     \
         ELEM_(int, RxFilt_vol, "RxFilt_vol",                                            \
               "Audio stream volume",                                                    \
               50)                                                                       \
+        ELEM_(int, rxgain_x10, "rxgain_x10",                                            \
+              "Rx monitor audio gain boost",                                            \
+              false)                                                                    \
         ELEM_(int, RxFilt_bw, "RxFilt_bw",                                              \
               "DSP audio stream filter bandwidth",                                      \
               500)                                                                      \
@@ -1806,6 +1845,9 @@
         ELEM_(std::string, mytxpower, "TXPOWER",                                        \
               "TX power used for logbook entries",                                      \
               "")                                                                       \
+        ELEM_(bool, log_power_meter, "LOG_POWER_METER",                                 \
+             "Use power meter reading for logged TX power",                             \
+             true)                                                                      \
         ELEM_(std::string, my_FD_call, "FD_CALL",                                       \
               "Field Day call sign",                                                    \
               "")                                                                       \
@@ -2813,19 +2855,19 @@
         ELEM_(double, FMT_freq_err, "FMT_freq_err",                                     \
              "limit to frequency error before automatic reset",                         \
              2.0)                                                                       \
-    /* save operating parameters by mode */                                             \
+    /* save operating parameters by mode and band */                                    \
         ELEM_(bool, sqlch_by_mode, "SQLCH_BY_MODE",                                     \
               "Save/restore SQUELCH on per mode basis",                                 \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, txlevel_by_mode, "TXLEVEL_BY_MODE",                                 \
               "Save/restore TXLEVEL on per mode basis",                                 \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, afc_by_mode, "AFC_BY_MODE",                                         \
               "Save/restore AFC on per mode basis",                                     \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, reverse_by_mode, "REVERSE_BY_MODE",                                 \
               "Save/restore REVERSE on per mode basis",                                 \
-              false)                                                                    \
+              true)                                                                     \
 
 // declare the struct
 #define ELEM_DECLARE_CONFIGURATION(type_, var_, tag_, ...) type_ var_;

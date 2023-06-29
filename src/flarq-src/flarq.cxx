@@ -1965,6 +1965,19 @@ int main (int argc, char *argv[] )
 	start_xml_server(FLARQ_XML_PORT);
 
 	arqwin->show(argc, argv);
+
+#ifdef USE_X
+	// See https://groups.google.com/g/fltkgeneral/c/hcjV-rgjHWM
+	// read in the current window hints, then modify them to allow icon transparency
+
+	XWMHints* hints = XGetWMHints(fl_display, fl_xid(arqwin));
+	hints->flags |= IconMaskHint; // ensure transparency mask is enabled for the XPM icon
+	hints->icon_mask |= IconPixmapHint;
+	XSetWMHints(fl_display, fl_xid(arqwin), hints);
+	XFree(hints);
+
+#endif
+
 	return Fl::run();
 }
 

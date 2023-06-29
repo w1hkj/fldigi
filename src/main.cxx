@@ -961,6 +961,10 @@ int main (int argc, char *argv[])
 				cbq[i]->attach(i, "WKEY_TID");
 				break;
 
+			case ACTIVITY_TID:
+				cbq[i]->attach(i, "ACTIVITY_TID");
+				break;
+
 			case FLMAIN_TID:
 				cbq[i]->attach(i, "FLMAIN_TID");
 				break;
@@ -1112,11 +1116,16 @@ int main (int argc, char *argv[])
 
 	Fl::lock();  // start the gui thread!!
 	Fl::visual(FL_RGB); // insure 24 bit color operation
+	// DST This call highly recommended by fltk 31.26.1 to enable
+	// Xdbe on servers where double buffering does not exist for every visual.
+	Fl::visual(FL_DOUBLE|FL_INDEX);
 
 	fl_register_images();
 	Fl::set_fonts(0);
 
 	Fl::scheme(progdefaults.ui_scheme.c_str());
+
+	font_browser = new Font_Browser;
 	progdefaults.initFonts();
 
 	if (progdefaults.cty_dat_pathname.empty())
@@ -1239,14 +1248,27 @@ int main (int argc, char *argv[])
 #ifndef __APPLE__
 	progStatus.initLastState();
 	fl_digi_main->show(argc, argv);
+
+#	ifndef __WIN32__
+	// See https://groups.google.com/g/fltkgeneral/c/hcjV-rgjHWM
+	// read in the current window hints, then modify them to allow icon transparency
+	XWMHints* hints = XGetWMHints(fl_display, fl_xid(fl_digi_main));
+	hints->flags |= IconMaskHint; // ensure transparency mask is enabled for the XPM icon
+	hints->icon_mask |= IconPixmapHint;
+	XSetWMHints(fl_display, fl_xid(fl_digi_main), hints);
+	XFree(hints);
+#	endif
+
 #else
-#  if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 4
+
+#	if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 4
 	fl_digi_main->show(argc, argv);
 	progStatus.initLastState();
-#  else
+#	else
 	progStatus.initLastState();
 	fl_digi_main->show(argc, argv);
-#  endif
+#	endif
+
 #endif
 
 	if (iconified)

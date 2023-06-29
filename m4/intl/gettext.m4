@@ -61,7 +61,7 @@ AC_DEFUN([AM_GNU_GETTEXT],
     [errprint([ERROR: invalid first argument to AM_GNU_GETTEXT
 ])])])])])
   ifelse(ifelse([$1], [], [old])[]ifelse([$1], [no-libtool], [old]), [old],
-    [AC_DIAGNOSE([obsolete], [Use of AM_GNU_GETTEXT without [external] argument is deprecated.])])
+    [m4_warn([obsolete],[Use of AM_GNU_GETTEXT without [external] argument is deprecated.])])
   ifelse([$2], [], , [ifelse([$2], [need-ngettext], , [ifelse([$2], [need-formatstring-macros], ,
     [errprint([ERROR: invalid second argument to AM_GNU_GETTEXT
 ])])])])

@@ -35,7 +35,9 @@
 // vumeter is a vumeter bar widget based off Fl_Widget that shows a
 // standard vumeter bar in horizontal format
 
-const char * vumeter::meter_face = "|.-120.-110.-100..-90..-80..-70..-60..-50..-40..-30..-20..-10...|";
+const char * vumeter::meter_face_A = "|.-120.-110.-100..-90..-80..-70..-60..-50..-40..-30..-20..-10...|";
+const char * vumeter::meter_face_B = "|..-30..-20..-10....0...10...20...30...40...50...60...70...80...|";
+
 void vumeter::draw()
 {
 	int	bx, by, bw;//, bh;	// Box areas...
@@ -66,8 +68,13 @@ void vumeter::draw()
 	meter_height = fl_height();
 // Find visible scale
 	const char *meter = meter_face;
-	minimum_ = -130;
-	maximum_ = 0;
+	if (meter == meter_face_A) {
+		minimum_ = -130;
+		maximum_ = 0;
+	} else {
+		minimum_ = -40;
+		maximum_ = 90;
+	}
 
 	meter_width = fl_width(meter);
 	while (meter_width > tw && *meter != 0) {
@@ -116,9 +123,11 @@ vumeter::vumeter(int X, int Y, int W, int H, const char *label)
 	peak_color  = FL_RED;
 	scale_color = FL_BLACK;
 
+	meter_face = meter_face_A;
 	minimum_ = -100.0;
 	maximum_ = 0.0;
 	value_ = -50;
+
 	avg_ = 10;
 	aging_ = 10;
 	clear();
@@ -126,25 +135,32 @@ vumeter::vumeter(int X, int Y, int W, int H, const char *label)
 }
 
 void vumeter::value(double v) {
-	double vdb = 20 * log10(v == 0 ? 1e-9 : v);
-//	if (vdb < minimum_) vdb = minimum_;
-//	if (vdb > maximum_) vdb = maximum_;
+	double val;
+	double peak = 0;
 
-	peakv_ = -100;
+	if (v < 1e-9) v = 1e-9;
+
 	for (int i = 1; i < aging_; i++) {
 		peak_[i-1] = peak_[i];
-		if (peakv_ < peak_[i])
-			peakv_ = peak_[i];
+		if (peak < peak_[i])
+			peak = peak_[i];
 	}
-	peak_[aging_ - 1] = vdb;
-	if (peakv_ < peak_[aging_ - 1])
-		peakv_ = peak_[aging_ - 1];
+	peak_[aging_ - 1] = v;
+	if (peak > v) peak = v;
 
-	value_ -= vals_[0];
+	val = v;
 	for (int i = 1; i < avg_; i++)
-		vals_[i-1] = vals_[i];
-	value_ += (vals_[avg_- 1] = vdb / avg_); 
+		val += (vals_[i-1] = vals_[i]);
+	vals_[avg_-1] = v;
+	val /= avg_;
 
+	value_ = 20 * log10(val);
+	peakv_ = 20 * log10(peak);
+
+	if (meter_face == meter_face_B) {
+		value_ += 90;
+		peakv_ += 90;
+	}
 	redraw();
 }
 

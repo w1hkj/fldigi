@@ -93,13 +93,16 @@ std::string n3fjp_ip_port    = "";
 std::string n3fjp_rxbuffer;
 std::string connected_to;
 
+void n3fjp_print(std::string s);
+
 enum {UNKNOWN, N3FJP, FLDIGI};
 
 bool n3fjp_bool_add_record = false;
-int n3fjp_has_xcvr_control = UNKNOWN;
+int xcvr_controller = UNKNOWN;
 
 std::string tracked_freq = "";
 int  tracked_mode = -1;
+bool polling_enabled = true;
 
 enum {
   FJP_NONE,
@@ -281,7 +284,6 @@ void n3fjp_parse_response(std::string s);
 void n3fjp_disp_report(std::string s, std::string fm = "", bool tofile = true);
 void n3fjp_send(std::string cmd, bool tofile = true);
 void n3fjp_rcv(std::string &rx, bool tofile = true);
-void n3fjp_send_freq_mode();
 void n3fjp_clear_record();
 void n3fjp_getfields();
 void n3fjp_get_record(std::string call);
@@ -302,9 +304,9 @@ static void send_action(const std::string action);
 static void send_command(const std::string command, std::string val="");
 static void send_data();
 static void send_data_norig();
-void get_n3fjp_frequency();
 void do_n3fjp_add_record_entries();
-void n3fjp_set_freq(long f);
+void n3fjp_get_freq();
+void n3fjp_set_freq(unsigned long long f);
 void n3fjp_set_ptt(int on);
 void n3fjp_add_record(cQsoRec &record);
 void n3fjp_parse_response(std::string tempbuff);
@@ -330,49 +332,37 @@ static std::string strip(std::string s)
 //
 //======================================================================
 
+// N3FJP app sent us CHANGEFREQ
 void adjust_freq(std::string sfreq)
 {
-	long freq;
+	unsigned long long freq;
 	size_t pp = sfreq.find(".");
 	if (pp == std::string::npos) return;
 
-	while ((sfreq.length() - pp) < 7) sfreq.append("0");
+	while ((sfreq.length() - pp) < 7) sfreq.append("0");	// Convert from MHz to Hz
 	sfreq.erase(pp,1);
-	freq = atol(sfreq.c_str());
+	freq = strtoull(sfreq.c_str(), NULL, 10);
 
 	if (freq == 0) return;
 
+	// N3FJP sends the READBMFRESPONSE message in response to a change of freq
+	// while having rig control; we need to update our notion of what digi last sent to n3
+	// to match so (in other functions) we don't send redundant commands in reply.
+
+	char szfreq[20];
+
+	snprintf(szfreq, sizeof(szfreq), "%.6lf", ((double)freq)/1000000.0);
+
+	// "tracked" holds a record of what we last sent to save a transmission if it hasn't changed
+	tracked_mode = active_modem->get_mode();
+	tracked_freq = szfreq;
+
 	wf->rfcarrier(freq);
 	wf->movetocenter();
 	show_frequency(freq);
+	if (xcvr_controller == FLDIGI) sendFreq(freq);
 
 	return;
-
-	if (progdefaults.N3FJP_sweet_spot) {
-		int afreq;
-		if (active_modem->get_mode() == MODE_CW) {
-			afreq = progdefaults.CWsweetspot;
-		}
-		else if (active_modem->get_mode() == MODE_RTTY) {
-			afreq = progdefaults.RTTYsweetspot;
-		}
-		else if (active_modem->get_mode() < MODE_SSB)
-			afreq = progdefaults.PSKsweetspot;
-		else {
-			wf->rfcarrier(freq);
-			wf->movetocenter();
-			show_frequency(freq);
-			return;
-		}
-		freq -= (wf->USB() ? afreq : -afreq);
-		wf->rfcarrier(freq);
-		wf->movetocenter();
-		show_frequency(freq);
-		return;
-	}
-	wf->rfcarrier(freq);
-	wf->movetocenter();
-	show_frequency(freq);
 }
 
 //======================================================================
@@ -450,6 +440,7 @@ void n3fjp_disp_report(std::string s, std::string fm, bool tofile)
 		report.replace(p, 11, "</CMD>\n<CMD>");
 		p = report.find("</CMD><CMD>");
 	}
+	report.append("\n");
 
 	if (progdefaults.enable_N3FJP_log) REQ(n3fjp_show, report);
 
@@ -494,28 +485,6 @@ void n3fjp_rcv(std::string &rx, bool tofile)
 		n3fjp_print(result.str());
 		throw e;
 	} catch (...) { throw; }
-}
-
-void n3fjp_send_freq_mode()
-{
-	if (!active_modem) return;
-
-	std::string cmd;
-	char szfreq[20];
-	double freq = atof(inpFreq->value()) / 1e3;
-	snprintf(szfreq, sizeof(szfreq), "%f", freq);
-
-	if (active_modem->get_mode() != tracked_mode ||
-		tracked_freq != szfreq) {
-		tracked_mode = active_modem->get_mode();
-		tracked_freq = szfreq;
-		cmd = "<CMD><SENDRIGPOLL><FREQ>";
-		cmd.append(tracked_freq);
-		cmd.append("</FREQ><MODE>");
-		cmd.append( mode_info[tracked_mode].adif_name );
-		cmd.append("</MODE></CMD>");
-		n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
-	}
 }
 
 //======================================================================
@@ -773,6 +742,7 @@ static std::string ucasestr(std::string s)
 static void n3fjp_parse_data_stream(std::string buffer)
 {
 	std::string field;
+
 	field = ParseTextField(buffer, "NAMER");
 	if (!field.empty() && ucasestr(field) != ucasestr(inpName->value())) {
 		for (size_t n = 1; n < field.length(); n++) field[n] = tolower(field[n]);
@@ -795,7 +765,9 @@ static void n3fjp_parse_data_stream(std::string buffer)
 	if (!field.empty() && field != inpLoc->value())
 
 	field = ParseTextField(buffer, "FREQUENCY");
-	if (!field.empty()) adjust_freq(field);
+	if (!field.empty()) {
+		adjust_freq(field);
+	}
 
 	field = ParseTextField(buffer, "CQZONE");
 	if (!field.empty() && field != inp_CQzone->value())
@@ -818,7 +790,9 @@ static void n3fjp_parse_data_stream(std::string buffer)
 //  <BAND>40</BAND>
 //  <MODE>SSB</MODE>
 //  <MODETEST>PH</MODETEST>
+//  <FREQ>7.20000</FREQ>
 //  <COUNTRY>Belgium</COUNTRY>
+//  <DXCC>, etc etc.
 //</CMD>
 //======================================================================
 static void n3fjp_parse_calltab_event(std::string buffer)
@@ -892,7 +866,7 @@ static std::string n3fjp_opband()
 {
 	if (!active_modem) return "";
 
-	float freq = qsoFreqDisp->value();
+	double freq = qsoFreqDisp->value();
 	freq /= 1e6;
 
 	if (freq >= 1.8 && freq < 3.5) return "160";
@@ -914,7 +888,7 @@ static std::string n3fjp_opband()
 static std::string n3fjp_freq()
 {
 	if (!active_modem) return "";
-	float freq = qsoFreqDisp->value();
+	double freq = qsoFreqDisp->value();
 	if (progdefaults.N3FJP_modem_carrier) {
 		if (ModeIsLSB(mode_info[active_modem->get_mode()].adif_name)) {
 			freq -= active_modem->get_txfreq();
@@ -928,7 +902,7 @@ static std::string n3fjp_freq()
 	}
 	freq /= 1e6;
 	char szfreq[20];
-	snprintf(szfreq, sizeof(szfreq), "%f", freq);
+	snprintf(szfreq, sizeof(szfreq), "%lf", freq);
 	return szfreq;
 }
 
@@ -2181,14 +2155,7 @@ static void send_data()
 	try {
 
 		send_command("IGNORERIGPOLLS", "TRUE");
-
-		send_call(rec.getField(CALL));
-		send_freq(n3fjp_freq());
-		send_band(n3fjp_opband());
-		send_mode(n3fjp_opmode());
-
 		enter_log_data();
-
 		send_command("IGNORERIGPOLLS", "FALSE");
 
 	} catch (...) { throw; }
@@ -2211,7 +2178,7 @@ static void send_data_norig()
 	} catch (...) { throw; }
 }
 
-void get_n3fjp_frequency()
+void n3fjp_get_freq()
 {
 	try {
 		send_command("READBMF");
@@ -2226,7 +2193,7 @@ void do_n3fjp_add_record_entries()
 	std::string cmd, response, val;
 
 	try {
-		if (n3fjp_has_xcvr_control == N3FJP)
+		if (xcvr_controller == N3FJP)
 			send_data();
 		else
 			send_data_norig();
@@ -2240,28 +2207,68 @@ void do_n3fjp_add_record_entries()
 	n3fjp_bool_add_record = false;
 }
 
-void n3fjp_set_freq(long f)
+
+// Setting band and frequency values is done in a non-time-aligned way.  We have to do
+// some unintuitive things to prevent a freq change on the fldigi side (when fldigi is
+// using N3FJP for rig control) from getting overwritten by a response message from
+// N3 with inconsistent data; i.e., reflecting the band change without reflecting the
+// frequency change.  Ideally we would atomically set freq / band / mode so that a click
+// on the fldigi frequency list would set all three simultaneously in N3.  However ...
+// 1. We have to notify N3 of a band change, but N3 will respond with the new band
+//    and the old frequency - so we need to discard that response.
+// 2. We have to notify N3 of a frequency change.  We never need to process the
+//    response and should discard it but it signals the end point of the update transaction
+//    so we can use it to re-enable polling.
+// 3. We always need to wrap this sequence with IGNORERIGPOLLS because we do not want
+//    stale information coming back asynchronously from rig polling during this exchange.
+
+void n3fjp_set_freq(unsigned long long f)
 {
-	char szfreq[20];
-	snprintf(szfreq, sizeof(szfreq), "%ld", f);
-	std::string freq = szfreq;
-	while (freq.length() < 7) freq.insert(0, "0");
-	freq.insert(freq.length() - 6, ".");
+	if (!active_modem) return;
+	if (xcvr_controller == UNKNOWN) return;
 
 	std::string cmd;
+	char szfreq[20];
 
-	cmd.assign("<CMD><CHANGEFREQ><VALUE>");
-	cmd.append(freq);
-	cmd.append("</VALUE><SUPPRESSMODEDEFAULT>TRUE</SUPPRESSMODEDEFAULT></CMD>");
+	snprintf(szfreq, sizeof(szfreq), "%.6lf", ((double)f)/1000000.0);
 
-	{	guard_lock send_lock(&send_this_mutex);
-		send_this = cmd;
+	// "tracked" holds a record of what we last sent to save a transmission if it hasn't changed
+	if (tracked_freq != szfreq) {
+		tracked_freq = szfreq;
+
+		if (xcvr_controller == FLDIGI) {
+			cmd = "<CMD><SENDRIGPOLL><FREQ>";
+			cmd.append(tracked_freq);
+			cmd.append("</FREQ><MODE>");
+			cmd.append(n3fjp_opmode());
+			cmd.append("</MODE></CMD>");
+			n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
+		} else {
+			if (xcvr_controller == N3FJP) {
+				// Disable polling for the freq change transaction.
+				cmd = "<CMD><IGNORERIGPOLLS><VALUE>TRUE</VALUE></CMD>";
+				n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
+				polling_enabled = false;
+
+				cmd = "<CMD><CHANGEBM>";
+				cmd.append("<BAND>").append(n3fjp_opband()).append("</BAND>");
+				cmd.append("<MODE>").append(n3fjp_opmode()).append("</MODE>");
+				cmd.append("</CMD>");
+				n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
+
+				cmd = "<CMD><CHANGEFREQ><VALUE>";
+				cmd.append(szfreq);
+				cmd.append("</VALUE><SUPPRESSMODEDEFAULT>TRUE</SUPPRESSMODEDEFAULT></CMD>");
+				n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
+			}
+		}
 	}
+	return;
 }
 
 void n3fjp_set_ptt(int on)
 {
-	if (n3fjp_has_xcvr_control != N3FJP) return;
+	if (xcvr_controller != N3FJP) return;
 
 	std::string cmd = "<CMD>";
 	if (on) {
@@ -2314,26 +2321,56 @@ void n3fjp_parse_response(std::string tempbuff)
 			if (p0 != std::string::npos) {
 				rigname.erase(p0);
 				if (rigname != "None" && rigname != "Client API") {
-					n3fjp_has_xcvr_control = N3FJP;
+					xcvr_controller = N3FJP;
 					send_command("READBMF");
-				} else
-				n3fjp_has_xcvr_control = FLDIGI;
+					n3fjp_rcv_data();	// Need the recursive call here; have to resolve N3FJP's response
+										// before returning to the thread loop to avoid a freq-setting
+										// loop with the n3fjp_set_freq call.
+				} else {
+					xcvr_controller = FLDIGI;
+//					n3fjp_set_freq(qsoFreqDisp->value());
+				}
 			}
 		}
 	}
 
-	if (n3fjp_has_xcvr_control == N3FJP) {
-		if ((p1 = tempbuff.find("<CHANGEFREQ><VALUE>")) != std::string::npos) {
-			p1 += strlen("<CHANGEFREQ><VALUE>");
-			p2 = tempbuff.find("</VALUE>", p1);
-			if (p2 == std::string::npos) return;
-			std::string sfreq = tempbuff.substr(p1, p2 - p1);
-			REQ(adjust_freq, sfreq);
-		} else if (tempbuff.find("<READBMFRESPONSE>") != std::string::npos) {
-			std::string sfreq = ParseField(tempbuff, "FREQ");
-			REQ(adjust_freq, sfreq);
+	// Regardless of which entity is controlling the rig, if a user changes
+	// the frequency on any app we want the other apps to reflect the change.
+	// The 'CHANGEFREQ' message is sent by N3FJP for any user-commanded frequency
+	// change (i.e., via the Ctrl-F Frequency Dialog or entering a freq into
+	// the Callsign box) or clicking on a spot regardless of which app is in control.
+	if ((p1 = tempbuff.find("<CHANGEFREQ><VALUE>")) != std::string::npos) {
+		p1 += strlen("<CHANGEFREQ><VALUE>");
+		p2 = tempbuff.find("</VALUE>", p1);
+		if (p2 == std::string::npos) return;
+		std::string sfreq = tempbuff.substr(p1, p2 - p1);
+		REQ(adjust_freq, sfreq);
+	}
+
+	// If n3 is in control, a change at the radio is reported via an unsolicited READBMF "response".
+	// However, we also get this message if fldigi sent the CHANGEBM/CHANGEFREQ command set
+	// associated with an fldigi-initiated frequency change.  In that case, we need to
+	// ignore the overloaded READBMFRESPONSE result from that exchange and we
+	// need to re-enable the poll responses we had to suppress during this action.
+	// Ideally the N3FJP API response to the CHANGEBM command would be named CHANGEBMRESPONSE and contain
+	// only band and mode (not frequency).  That would be consistent with the rest of the N3FJP API and
+	// would distinguish it from the unsolicited READBMFRESPONSE that is generated from a rig-poll cycle.
+
+	if (xcvr_controller == N3FJP) {
+		if (tempbuff.find("<READBMFRESPONSE>") != std::string::npos) {
+			if (polling_enabled == true) {  // This RBMF response due to a rig poll
+				std::string sfreq = ParseField(tempbuff, "FREQ");
+				REQ(adjust_freq, sfreq);
+			}
+		}
+		if (tempbuff.find("<CHANGEFREQRESPONSE>") != std::string::npos) {
+			std::string cmd = "<CMD><IGNORERIGPOLLS><VALUE>FALSE</VALUE></CMD>";
+			n3fjp_send(cmd, progdefaults.enable_N3FJP_log);
+			polling_enabled = true;
 		}
 	}
+
+
 
 	if (tempbuff.find("<CALLTABEVENT>") != std::string::npos) {
 		n3fjp_rxbuffer = tempbuff;
@@ -2614,7 +2651,7 @@ void n3fjp_start()
 		n3fjp_socket = 0;
 		n3fjp_connected = false;
 		REQ(set_connect_box);
-		n3fjp_has_xcvr_control = UNKNOWN;
+		xcvr_controller = UNKNOWN;
 	} catch (...) {
 		n3fjp_print("Caught unknown error");
 		n3fjp_print(result.str());
@@ -2623,7 +2660,7 @@ void n3fjp_start()
 		n3fjp_socket = 0;
 		n3fjp_connected = false;
 		REQ(set_connect_box);
-		n3fjp_has_xcvr_control = UNKNOWN;
+		xcvr_controller = UNKNOWN;
 	}
 }
 
@@ -2638,7 +2675,7 @@ void n3fjp_disconnect(bool clearlog)
 		n3fjp_socket = 0;
 	}
 	n3fjp_connected = false;
-	n3fjp_has_xcvr_control = UNKNOWN;
+	xcvr_controller = UNKNOWN;
 	n3fjp_serno.clear();
 	connected_to.clear();
 	REQ(set_connect_box);
@@ -2703,8 +2740,8 @@ void *n3fjp_loop(void *args)
 							continue;
 						}
 					}
-					if (n3fjp_has_xcvr_control == FLDIGI)
-						n3fjp_send_freq_mode();
+					if (!qsoFreqDisp->numeric_entry_mode())
+						n3fjp_set_freq(qsoFreqDisp->value());
 					if (!send_this.empty()) {
 						guard_lock send_lock(&send_this_mutex);
 						n3fjp_send(send_this, progdefaults.enable_N3FJP_log);

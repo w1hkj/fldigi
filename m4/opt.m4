@@ -1,6 +1,6 @@
 AC_DEFUN([AC_FLDIGI_OPT], [
   AC_ARG_ENABLE([optimizations],
-		AC_HELP_STRING([--enable-optimizations],
+		AS_HELP_STRING([--enable-optimizations],
 		               [use CPU optimizations (none|sse|sse2|sse3|sse4|i486|i686|avx|avx2|x86-64|rpi1|rpi2|rpi3|rpi4|bbb|cyclone5|nativeARM|native) @<:@none@:>@]),
                 [case "${enableval}" in
                   none|sse|sse2|sse3|sse4|i486|i686|avx|avx2|x86-64|rpi1|rpi2|rpi3|rpi4|bbb|cyclone5|nativeARM|native)

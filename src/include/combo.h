@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include <FL/Fl_Window.H>
+#include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Select_Browser.H>
@@ -43,7 +43,7 @@ struct datambr {
   void *d;
 };
 
-class Fl_PopBrowser : public Fl_Window {
+class Fl_PopBrowser : public Fl_Double_Window {
 
 friend void popbrwsr_cb(Fl_Widget *, long);
 
@@ -64,6 +64,8 @@ public:
 	void sort ();
 	int  handle (int);
 	void clear_kbd() { keystrokes.clear(); }
+
+	Fl_Select_Browser *sb() { return popbrwsr; }
 
 	Fl_ComboBox *parentCB;
 	Fl_Widget *parentWindow;

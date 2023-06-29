@@ -116,7 +116,7 @@ void cQsoRec::setDateTime(bool dtOn) {
 }
 
 /// It must match a specific format. Input in Hertz.
-void cQsoRec::setFrequency(long long freq) {
+void cQsoRec::setFrequency(unsigned long long freq) {
 	double freq_dbl = freq / 1000000.0 ;
 	char buf_freq[64];
 	snprintf( buf_freq, sizeof(buf_freq), "%lf", freq_dbl );
