@@ -2431,6 +2431,16 @@ static void pSERNO(std::string &s, size_t &i, size_t endbracket)
 		s.replace (i, 7, "");
 }
 
+static void pSERNOIN(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+
+	s.replace( i, 9, inpSerNo->value() );
+}
+
 static void pLASTNO(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -4754,6 +4764,7 @@ static const MTAGS mtags[] = {
 	{"<XEND>",		pXEND},
 	{"<SAVEXCHG>",	pSAVEXCHG},
 	{"<SERNO>",		pSERNO},
+	{"<SERNOIN>",	pSERNOIN},
 	{"<LASTNO>",	pLASTNO},
 	{"<LOG",		pLOG},
 	{"<LNW",		pLNW},
