@@ -149,6 +149,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<XEND>\texchange end"));
 	w->add(_("<SAVEXCHG>\tsave contest out"));
 	w->add(_("<SERNO>\tcurrent contest serno"));
+	w->add(_("<SERNOIN>\treceived contest serno"));
 	w->add(_("<LASTNO>\tlast serno sent"));
 	w->add(_("<FDCLASS>\tFD class"));
 	w->add(_("<FDSECT>\tFD section"));
