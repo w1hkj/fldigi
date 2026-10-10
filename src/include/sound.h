@@ -355,6 +355,24 @@ public:
 	void	flush(unsigned);
 };
 
+// Modem audio carried as TCI binary frames (Zeus / ExpertSDR3).
+class SoundTCI : public SoundBase
+{
+public:
+	SoundTCI();
+	int	Open(int mode, int freq = 8000);
+	void	Close(unsigned dir = UINT_MAX);
+	void	Abort(unsigned dir = UINT_MAX);
+	size_t	Write(double* buf, size_t count);
+	size_t	Write_stereo(double* bufleft, double* bufright, size_t count);
+	size_t	resample_write(float* buf, size_t count) { return 0; }
+	size_t	Read(float *buf, size_t count);
+	bool	must_close(int dir = 0) { return false; }
+	void	flush(unsigned dir = UINT_MAX);
+private:
+	int	open_mode;
+};
+
 namespace SND_SUPPORT {
 	bool format_supported(int format);
 	void get_file_params(std::string def_fname, std::string &fname, int &format, bool check);

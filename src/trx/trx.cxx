@@ -38,6 +38,7 @@
 #include "ascii.h"
 #include "misc.h"
 #include "configuration.h"
+#include "tci.h"
 #include "status.h"
 #include "dtmf.h"
 
@@ -745,6 +746,26 @@ void trx_reset_loop()
 		TXscard = 0;
 	}
 
+	if (tci_audio_wanted()) {
+		try {
+			RXscard = new SoundTCI();
+			RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
+			RXsc_is_open = true;
+			TXscard = new SoundTCI();
+			TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
+			if (progdefaults.is_full_duplex)
+				TXsc_is_open = true;
+			trx_state = STATE_RX;
+			return;
+		} catch (const SndException& e) {
+			LOG_ERROR("TCI audio: %s", e.what());
+			if (RXscard) delete RXscard;
+			if (TXscard) delete TXscard;
+			RXscard = 0;
+			TXscard = 0;
+		}
+	}
+
 	switch (progdefaults.btnAudioIOis) {
 #if USE_OSS
 	case SND_IDX_OSS:
@@ -895,7 +916,10 @@ void trx_start(void)
 	if (dtmf) delete dtmf;
 
 
-	switch (progdefaults.btnAudioIOis) {
+	if (tci_audio_wanted()) {
+		RXscard = new SoundTCI();
+		TXscard = new SoundTCI();
+	} else switch (progdefaults.btnAudioIOis) {
 #if USE_OSS
 	case SND_IDX_OSS:
 		RXscard = new SoundOSS(scDevice[0].c_str());

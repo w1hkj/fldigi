@@ -645,6 +645,7 @@ fldigi_SOURCES += \
 	rigcontrol/FreqControl.cxx \
 	rigcontrol/norig.cxx \
 	rigcontrol/ptt.cxx \
+	rigcontrol/tci.cxx \
 	rigcontrol/rigio.cxx \
 	rigcontrol/rigsupport.cxx \
 	rigcontrol/rigxml.cxx \
@@ -920,6 +921,7 @@ EXTRA_fldigi_SOURCES += \
 	include/synop.h \
 	include/tabdefs.h \
 	include/table.h \
+	include/tci.h \
 	include/testmodem.h \
 	include/test_signal.h \
 	include/testsigs.h \

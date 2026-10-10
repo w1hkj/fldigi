@@ -112,6 +112,7 @@ extern Fl_Scroll       *wefax_pic_rx_scroll;
 	#include "rigclass.h"
 #endif
 #include "rigsupport.h"
+#include "tci.h"
 
 #include "log.h"
 #include "qrunner.h"
@@ -705,6 +706,7 @@ void delayed_startup(void *)
 	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
 
 	FLRIG_start_flrig_thread();
+	tci_start();
 
 	data_io_enabled = DISABLED_IO;
 

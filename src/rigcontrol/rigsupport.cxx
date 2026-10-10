@@ -43,6 +43,7 @@
 #include "trx.h"
 
 #include "configuration.h"
+#include "tci.h"
 
 #include "globals.h"
 
@@ -332,6 +333,10 @@ void build_frequencies2_list()
 
 int cb_qso_opMODE()
 {
+	if (tci_is_active()) {
+		tci_set_mode(qso_opMODE->value());
+		return 0;
+	}
 	if (connected_to_flrig) {
 		set_flrig_mode(qso_opMODE->value());
 		return 0;
@@ -350,6 +355,10 @@ int cb_qso_opMODE()
 
 int cb_qso_opBW()
 {
+	if (tci_is_active()) {
+		tci_set_filter(qso_opBW->value());
+		return 0;
+	}
 	if (connected_to_flrig)
 		set_flrig_bw(qso_opBW->index(), -1);
 	else if (progdefaults.chkUSERIGCATis)
@@ -393,7 +402,9 @@ int cb_qso_opBW2()
 
 void sendFreq(long int f)
 {
-	if (connected_to_flrig)
+	if (tci_is_active())
+		tci_set_freq((unsigned long)f);
+	else if (connected_to_flrig)
 		set_flrig_freq(f);
 #if USE_HAMLIB
 	else if (progdefaults.chkUSEHAMLIBis)
