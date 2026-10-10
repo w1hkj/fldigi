@@ -66,6 +66,7 @@
 
 #include "fl_digi.h"
 #include "confdialog.h"
+#include "tci.h"
 
 #include "n3fjp_logger.h"
 
@@ -127,6 +128,7 @@ void PTT::reset(ptt_t dev)
 void PTT::set(bool ptt)
 {
 	std::string ptt_temp =
+		tci_is_active() ? "TCI" :
 		pttdev == PTT_NONE ? "NONE" :
 		pttdev == PTT_HAMLIB ? "HAMLIB" :
 		pttdev == PTT_RIGCAT ? "RIGCAT" :
@@ -143,6 +145,11 @@ void PTT::set(bool ptt)
 
 	if (active_modem == cw_modem && (CW_KEYLINE_isopen || progdefaults.CW_KEYLINE_on_cat_port)) {
 		guard_lock lk(&cwio_ptt_mutex);
+	}
+
+	if (tci_is_active()) {
+		tci_set_ptt(ptt);
+		return;
 	}
 
 	switch (pttdev) {

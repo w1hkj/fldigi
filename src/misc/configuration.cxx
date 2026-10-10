@@ -782,7 +782,11 @@ void configuration::initInterface()
 	listbox_baudrate->hide();
 #endif
 
-	if (connected_to_flrig) {
+	if (tci_enable) {
+		LOG_INFO("%s", "using TCI xcvr control");
+		wf->USB(true);
+		wf->setQSY(1);
+	} else if (connected_to_flrig) {
 		LOG_INFO("%s", "using flrig xcvr control");
 		wf->setQSY(1);
 	} else if (chkUSERIGCATis) { // start the rigCAT thread
@@ -820,7 +824,9 @@ void configuration::initInterface()
 	}
 	build_frequencies2_list();
 
-	if (HamlibCMDptt && chkUSEHAMLIBis)
+	if (tci_enable)
+		push2talk->reset(PTT::PTT_NONE);
+	else if (HamlibCMDptt && chkUSEHAMLIBis)
 		push2talk->reset(PTT::PTT_HAMLIB);
 	else if ((RigCatCMDptt || RigCatRTSptt || RigCatDTRptt) && chkUSERIGCATis)
 		push2talk->reset(PTT::PTT_RIGCAT);

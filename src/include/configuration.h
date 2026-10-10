@@ -1632,6 +1632,21 @@
               "Audio subsystem.  Values are as follows:\n"                              \
               "  0: OSS; 1: PortAudio; 2: PulseAudio; 3: File I/O",                     \
               SND_IDX_NULL)                                                             \
+        ELEM_(bool, tci_enable, "TCI_ENABLE",                                           \
+              "Enable TCI rig control for Zeus and ExpertSDR3",                         \
+              false)                                                                    \
+        ELEM_(bool, tci_audio, "TCI_AUDIO",                                             \
+              "Carry RX and TX audio on the TCI WebSocket",                             \
+              true)                                                                     \
+        ELEM_(std::string, tci_host, "TCI_HOST",                                        \
+              "TCI server host",                                                        \
+              "127.0.0.1")                                                              \
+        ELEM_(std::string, tci_port, "TCI_PORT",                                        \
+              "TCI server TCP port",                                                    \
+              "40001")                                                                  \
+        ELEM_(int, tci_rx, "TCI_RX",                                                    \
+              "TCI receiver index",                                                     \
+              0)                                                                        \
         ELEM_(std::string, OSSdevice, "OSSDEVICE",                                      \
               "OSS device name",                                                        \
               "")                                                                       \
